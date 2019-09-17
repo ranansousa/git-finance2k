@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<TfrxReport Version="5.3.14" DotMatrixReport="False" IniFile="\Software\Fast Reports" PreviewOptions.Buttons="4095" PreviewOptions.Zoom="1" PrintOptions.Printer="Default" PrintOptions.PrintOnSheet="0" ReportOptions.CreateDate="42573,4134647106" ReportOptions.Description.Text="" ReportOptions.LastChange="42659,5220649769" ScriptLanguage="PascalScript" ScriptText.Text="begin&#13;&#10;&#13;&#10;end." StoreInDFM="False">
+  <Datasets>
+    <item DataSet="frxDBCentroCusto" DataSetName="CentroCusto"/>
+    <item DataSet="frxDBCCustoTR" DataSetName="CentroCustoTR"/>
+    <item DataSet="frxDBHistoricos" DataSetName="Historicos"/>
+    <item DataSet="frxDBHistTR" DataSetName="HistoricosTR"/>
+    <item DataSet="frxDBTitulos" DataSetName="Titulos"/>
+    <item DataSet="frxDBTRProv" DataSetName="TitulosReceberProv"/>
+  </Datasets>
+  <Variables>
+    <item Name=" Pempec"/>
+    <item Name="strRazaoSocial"/>
+    <item Name="strCNPJ"/>
+    <item Name="strEndereco"/>
+    <item Name="strCEP"/>
+    <item Name="strCidade"/>
+    <item Name="strUF"/>
+    <item Name="strTipoStatus"/>
+    <item Name="strTipo"/>
+  </Variables>
+  <TfrxDataPage Name="Data" Height="1000" Left="0" Top="0" Width="1000"/>
+  <TfrxReportPage Name="Page1" Orientation="poLandscape" PaperWidth="297" PaperHeight="210" PaperSize="9" LeftMargin="10" RightMargin="10" TopMargin="10" BottomMargin="10" ColumnWidth="0" ColumnPositions.Text="" LargeDesignHeight="True" HGuides.Text="" VGuides.Text="">
+    <TfrxPageHeader Name="PageHeader1" FillType="ftBrush" FillGap.Top="0" FillGap.Left="0" FillGap.Bottom="0" FillGap.Right="0" Height="60,47248" Left="0" Top="18,89765" Width="1046,92981" Child="Child1">
+      <TfrxMemoView Name="Memo2" Left="3,77953" Top="11,33859" Width="109,60637" Height="22,67718" Font.Charset="1" Font.Color="0" Font.Height="-16" Font.Name="Arial" Font.Style="1" ParentFont="False" Text="Organização: "/>
+      <TfrxMemoView Name="strRazaoSocial1" Left="117,28355" Top="11,33859" Width="449,76407" Height="18,89765" Font.Charset="1" Font.Color="0" Font.Height="-16" Font.Name="Arial" Font.Style="0" ParentFont="False" Text="[strRazaoSocial]"/>
+      <TfrxMemoView Name="Memo3" Left="572,43321" Top="11,33859" Width="52,91342" Height="18,89765" Font.Charset="1" Font.Color="0" Font.Height="-16" Font.Name="Arial" Font.Style="1" ParentFont="False" Text="CNPJ:"/>
+      <TfrxMemoView Name="strCNPJ" Left="639,97681" Top="11,33859" Width="158,74026" Height="18,89765" Font.Charset="1" Font.Color="0" Font.Height="-16" Font.Name="Arial" Font.Style="0" ParentFont="False" Text="[strCNPJ]"/>
+      <TfrxMemoView Name="Memo4" Left="3,77953" Top="34,01577" Width="109,60637" Height="18,89765" Font.Charset="1" Font.Color="0" Font.Height="-16" Font.Name="Arial" Font.Style="1" ParentFont="False" Text="Endereço:"/>
+      <TfrxMemoView Name="strEndereco" Left="117,28355" Top="34,01577" Width="449,76407" Height="18,89765" Font.Charset="1" Font.Color="0" Font.Height="-16" Font.Name="Arial" Font.Style="0" ParentFont="False" Text="[strEndereco]"/>
+      <TfrxMemoView Name="strCEP" Left="639,97681" Top="34,01577" Width="79,37013" Height="18,89765" Font.Charset="1" Font.Color="0" Font.Height="-16" Font.Name="Arial" Font.Style="0" ParentFont="False" Text="[strCEP]"/>
+      <TfrxMemoView Name="Memo5" Left="570,70903" Top="34,01577" Width="56,69295" Height="18,89765" Font.Charset="1" Font.Color="0" Font.Height="-16" Font.Name="Arial" Font.Style="1" ParentFont="False" Text="CEP  :"/>
+      <TfrxMemoView Name="Memo6" Left="793,7013" Top="37,7953" Width="98,26778" Height="18,89765" Font.Charset="1" Font.Color="0" Font.Height="-16" Font.Name="Arial" Font.Style="1" ParentFont="False" Text="CIDADE/UF:"/>
+      <TfrxMemoView Name="strCidade" Left="903,30767" Top="37,7953" Width="120,94496" Height="18,89765" Font.Charset="1" Font.Color="0" Font.Height="-16" Font.Name="Arial" Font.Style="0" ParentFont="False" Text="[strCidade]/[strUF]">
+        <Formats>
+          <item/>
+          <item/>
+        </Formats>
+      </TfrxMemoView>
+      <TfrxMemoView Name="Page" Left="975,11874" Top="11,33859" Width="56,69295" Height="18,89765" Font.Charset="1" Font.Color="0" Font.Height="-16" Font.Name="Arial" Font.Style="0" ParentFont="False" Text="[Page]">
+        <Formats>
+          <item/>
+          <item/>
+        </Formats>
+      </TfrxMemoView>
+      <TfrxMemoView Name="Memo15" Left="925,98485" Top="11,33859" Width="45,35436" Height="18,89765" Font.Charset="1" Font.Color="0" Font.Height="-16" Font.Name="Arial" Font.Style="1" HAlign="haCenter" ParentFont="False" Text="PÁG."/>
+    </TfrxPageHeader>
+    <TfrxChild Name="Child1" FillType="ftBrush" FillGap.Top="0" FillGap.Left="0" FillGap.Bottom="0" FillGap.Right="0" Height="41,57483" Left="0" Top="102,04731" Width="1046,92981">
+      <TfrxMemoView Name="Memo1" Align="baWidth" Left="0" Top="0" Width="1046,92981" Height="37,7953" Font.Charset="1" Font.Color="0" Font.Height="-24" Font.Name="Arial" Font.Style="1" HAlign="haCenter" ParentFont="False" Text="RELATÓRIO EXPORTAÇÃO"/>
+    </TfrxChild>
+    <TfrxGroupHeader Name="GroupHeader1" FillType="ftBrush" FillGap.Top="0" FillGap.Left="0" FillGap.Bottom="0" FillGap.Right="0" Height="18,8976622" Left="0" Top="204,09462" Width="1046,92981" Condition="1=1" ReprintOnNewPage="True">
+      <TfrxMemoView Name="Memo7" Left="-0,22047" Top="1,33859000000001" Width="64,25201" Height="11,33859" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="1" ParentFont="False" VAlign="vaBottom" Text="EMISSÃO"/>
+      <TfrxMemoView Name="Memo13" Left="195,34655921" Top="1,33859000000001" Width="124,72449" Height="11,33859" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="1" ParentFont="False" VAlign="vaBottom" Text="DESCRIÇÃO"/>
+      <TfrxMemoView Name="Memo12" Left="63,03154" Top="1,33859000000001" Width="75,5906" Height="11,33859" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="1" ParentFont="False" VAlign="vaBottom" Text="DOCUMENTO"/>
+      <TfrxMemoView Name="Memo14" Left="323,81911" Top="1,33859000000001" Width="257,00804" Height="11,33859" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="1" ParentFont="False" VAlign="vaBottom" Text="DESCRIÇÃO CONTÁBIL"/>
+      <TfrxMemoView Name="Memo16" Left="640,33117" Top="1,33859000000001" Width="90,70872" Height="11,33859" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="1" HAlign="haRight" ParentFont="False" VAlign="vaBottom" Text="CONTA  CONTÁBIL"/>
+      <TfrxMemoView Name="Memo17" Left="783,80365" Top="1,33859000000001" Width="120,94496" Height="11,33859" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="1" HAlign="haRight" ParentFont="False" VAlign="vaBottom" Text="DÉBITO"/>
+      <TfrxMemoView Name="Memo18" Left="944,8825" Top="1,33859000000001" Width="98,26778" Height="11,33859" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="1" HAlign="haRight" ParentFont="False" VAlign="vaBottom" Text="CRÉDITO"/>
+      <TfrxMemoView Name="Memo8" Left="587,14997" Top="1,33859000000001" Width="49,13389" Height="11,33859" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="1" ParentFont="False" VAlign="vaBottom" Text="PARCELA"/>
+      <TfrxMemoView Name="Memo23" Left="151,1812" Top="1,33859000000001" Width="37,7953" Height="11,33859" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="1" ParentFont="False" VAlign="vaBottom" Text="TIPO"/>
+    </TfrxGroupHeader>
+    <TfrxMasterData Name="MasterData1" FillType="ftBrush" FillGap.Top="0" FillGap.Left="0" FillGap.Bottom="0" FillGap.Right="0" Height="15,11812" Left="0" Top="272,12616" Width="1046,92981" ColumnWidth="0" ColumnGap="0" DataSet="frxDBTitulos" DataSetName="Titulos" RowCount="0">
+      <TfrxMemoView Name="TitulosNUMERO_DOCUMENTO" Left="63,03154" Top="0" Width="75,5906" Height="15,11812" DataField="NUMERO_DOCUMENTO" DataSet="frxDBTitulos" DataSetName="Titulos" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="0" ParentFont="False" Text="[Titulos.&#34;NUMERO_DOCUMENTO&#34;]"/>
+      <TfrxMemoView Name="TitulosDESCRICAO" Left="195,34655921" Top="0" Width="124,72449" Height="15,11812" DataField="DESCRICAO" DataSet="frxDBTitulos" DataSetName="Titulos" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="0" ParentFont="False" Text="[Titulos.&#34;DESCRICAO&#34;]"/>
+      <TfrxMemoView Name="TitulosDATA_EMISSAO" Left="-0,22047" Top="0" Width="60,47248" Height="15,11812" DataField="DATA_EMISSAO" DataSet="frxDBTitulos" DataSetName="Titulos" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="0" ParentFont="False" Text="[Titulos.&#34;DATA_EMISSAO&#34;]"/>
+      <TfrxMemoView Name="TitulosVALOR_NOMINAL1" Left="944,8825" Top="0" Width="98,26778" Height="15,11812" DataSet="frxDBTitulos" DataSetName="Titulos" DisplayFormat.FormatStr="%2.2n" DisplayFormat.Kind="fkNumeric" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="0" HAlign="haRight" ParentFont="False" Text="[Titulos.&#34;VALOR_NOMINAL&#34;]"/>
+      <TfrxMemoView Name="TitulosCONTA_CREDITO" Left="640,33117" Top="0" Width="90,70872" Height="15,11812" DataField="CONTA_CREDITO" DataSet="frxDBTitulos" DataSetName="Titulos" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="0" HAlign="haRight" ParentFont="False" Text="[Titulos.&#34;CONTA_CREDITO&#34;]"/>
+      <TfrxMemoView Name="TitulosDSC_CONTA" Left="323,81911" Top="0" Width="257,00804" Height="15,11812" DataField="DSC_CONTA" DataSet="frxDBTitulos" DataSetName="Titulos" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="0" ParentFont="False" Text="[Titulos.&#34;DSC_CONTA&#34;]"/>
+      <TfrxMemoView Name="TitulosPARCELA" Left="587,14997" Top="0" Width="49,13389" Height="15,11812" DataSet="frxDBTitulos" DataSetName="Titulos" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="Arial" Font.Style="0" HAlign="haCenter" ParentFont="False" Text="Parc.  [Titulos.&#34;PARCELA&#34;]"/>
+      <TfrxMemoView Name="Memo25" Left="144,157235" Top="0" Width="37,7953" Height="15,11812" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="Arial" Font.Style="0" ParentFont="False" Text="[strTipo]"/>
+    </TfrxMasterData>
+    <TfrxDetailData Name="DetailData1" FillType="ftBrush" FillGap.Top="0" FillGap.Left="0" FillGap.Bottom="0" FillGap.Right="0" Height="15,11812" Left="0" Top="332,59864" Width="1046,92981" ColumnWidth="0" ColumnGap="0" DataSet="frxDBHistoricos" DataSetName="Historicos" RowCount="0">
+      <TfrxMemoView Name="HistoricosDESCRICAO" Left="323,81911" Top="0" Width="309,92146" Height="11,33859" DataField="DESCRICAO" DataSet="frxDBHistoricos" DataSetName="Historicos" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="0" ParentFont="False" Text="[Historicos.&#34;DESCRICAO&#34;]"/>
+      <TfrxMemoView Name="HistoricosVALOR" Left="783,80365" Top="0" Width="120,94496" Height="15,11812" DataSet="frxDBHistoricos" DataSetName="Historicos" DisplayFormat.FormatStr="%2.2n" DisplayFormat.Kind="fkNumeric" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="0" HAlign="haRight" ParentFont="False" Text="[Historicos.&#34;VALOR&#34;]"/>
+      <TfrxMemoView Name="HistoricosCONTA" Left="640,33117" Top="0" Width="90,70872" Height="11,33859" DataField="CONTA" DataSet="frxDBHistoricos" DataSetName="Historicos" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="0" HAlign="haRight" ParentFont="False" Text="[Historicos.&#34;CONTA&#34;]"/>
+      <TfrxMemoView Name="Memo19" Left="71,81107" Top="0" Width="124,72449" Height="11,33859" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="1" ParentFont="False" VAlign="vaBottom" Text="HISTÓRICO(S) &#62;&#62;&#62;&#62;&#62;"/>
+    </TfrxDetailData>
+    <TfrxGroupHeader Name="GroupHeader2" FillType="ftBrush" FillGap.Top="0" FillGap.Left="0" FillGap.Bottom="0" FillGap.Right="0" Height="0" Left="0" Top="309,92146" Width="1046,92981" Condition="Historicos.&#34;ID_TITULO_PAGAR&#34;"/>
+    <TfrxGroupHeader Name="GroupHeader3" FillType="ftBrush" FillGap.Top="0" FillGap.Left="0" FillGap.Bottom="0" FillGap.Right="0" Height="1,77953" Left="0" Top="245,66945" Width="1046,92981" Condition="Titulos.&#34;ID_TITULO_PAGAR&#34;">
+      <TfrxLineView Name="Line1" Left="0" Top="1,77952999999997" Width="1046,92981" Height="0" Color="0" Frame.Typ="4"/>
+    </TfrxGroupHeader>
+    <TfrxReportSummary Name="ReportSummary1" FillType="ftBrush" FillGap.Top="0" FillGap.Left="0" FillGap.Bottom="0" FillGap.Right="0" Height="45,35436" Left="0" Top="589,60668" Width="1046,92981">
+      <TfrxLineView Name="Line2" Left="0" Top="3,00000000000011" Width="1046,92981" Height="0" Color="0" Frame.Typ="4"/>
+      <TfrxMemoView Name="Memo10" Left="753,56741" Top="26,45671" Width="151,1812" Height="18,89765" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="Arial" Font.Style="0" HAlign="haRight" ParentFont="False" Text="[SUM(&#60;Historicos.&#34;VALOR&#34;&#62;,DetailData1)]">
+        <Formats>
+          <item FormatStr="%2.2n" Kind="fkNumeric"/>
+          <item/>
+        </Formats>
+      </TfrxMemoView>
+      <TfrxMemoView Name="Memo11" Left="918,42579" Top="26,45671" Width="124,72449" Height="18,89765" DisplayFormat.FormatStr="%2.2n" DisplayFormat.Kind="fkNumeric" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="Arial" Font.Style="0" HAlign="haRight" ParentFont="False" Text="[SUM(&#60;Titulos.&#34;VALOR_NOMINAL&#34;&#62;,MasterData1)]"/>
+      <TfrxMemoView Name="Memo20" Left="753,56741" Top="11,33859" Width="151,1812" Height="11,33859" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="1" HAlign="haRight" ParentFont="False" VAlign="vaBottom" Text="TOTAL DE DÉBITOS"/>
+      <TfrxMemoView Name="Memo21" Left="918,42579" Top="11,33859" Width="124,72449" Height="11,33859" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="1" HAlign="haRight" ParentFont="False" VAlign="vaBottom" Text="TOTAL DE CRÉDITOS"/>
+      <TfrxMemoView Name="Memo22" Left="480,00031" Top="22,67718" Width="177,63791" Height="11,33859" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="1" ParentFont="False" VAlign="vaBottom" Text="SUMÁRIO DOS TITULOS PROVICIONADOS "/>
+    </TfrxReportSummary>
+    <TfrxGroupHeader Name="GroupHeader4" FillType="ftBrush" FillGap.Top="0" FillGap.Left="0" FillGap.Bottom="0" FillGap.Right="0" Height="3,77953" Left="0" Top="370,39394" Width="1046,92981" Condition="Titulos.&#34;ID_TITULO_PAGAR&#34;"/>
+    <TfrxDetailData Name="DetailData2" FillType="ftBrush" FillGap.Top="0" FillGap.Left="0" FillGap.Bottom="0" FillGap.Right="0" Height="15,11812" Left="0" Top="396,85065" Width="1046,92981" ColumnWidth="0" ColumnGap="0" DataSet="frxDBCentroCusto" DataSetName="CentroCusto" RowCount="0">
+      <TfrxMemoView Name="CentroCustoDESCRICAO" Left="323,81911" Top="0" Width="257,00804" Height="11,33859" DataField="DESCRICAO" DataSet="frxDBCentroCusto" DataSetName="CentroCusto" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="Arial" Font.Style="0" ParentFont="False" Text="[CentroCusto.&#34;DESCRICAO&#34;]"/>
+      <TfrxMemoView Name="CentroCustoCODIGO" Left="534,23655" Top="0" Width="102,04731" Height="11,33859" DataSet="frxDBCentroCusto" DataSetName="CentroCusto" DisplayFormat.FormatStr="%2.0f" DisplayFormat.Kind="fkNumeric" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="Arial" Font.Style="0" ParentFont="False" Text="[CentroCusto.&#34;CODIGO&#34;]"/>
+      <TfrxMemoView Name="Memo9" Left="71,81107" Top="0" Width="124,72449" Height="11,33859" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="1" ParentFont="False" VAlign="vaBottom" Text="CENTRO DE CUSTOS &#62;&#62;&#62;&#62;&#62;"/>
+    </TfrxDetailData>
+    <TfrxMemoView Name="Memo41" Left="7,55906" Top="-7,55906" Width="49,13389" Height="15,11812" DataSet="frxDBTitulos" DataSetName="Titulos" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="Arial" Font.Style="0" ParentFont="False" Text=""/>
+    <TfrxGroupHeader Name="GroupHeader6" FillType="ftBrush" FillGap.Top="0" FillGap.Left="0" FillGap.Bottom="0" FillGap.Right="0" Height="22,67718" Left="0" Top="434,64595" Width="1046,92981" Condition="1=1" StartNewPage="True">
+      <TfrxMemoView Name="Memo43" Left="-0,22047" Top="7,55905999999999" Width="64,25201" Height="11,33859" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="1" ParentFont="False" VAlign="vaBottom" Text="EMISSÃO"/>
+      <TfrxMemoView Name="Memo44" Left="195,34655921" Top="7,55905999999999" Width="124,72449" Height="11,33859" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="1" ParentFont="False" VAlign="vaBottom" Text="DESCRIÇÃO"/>
+      <TfrxMemoView Name="Memo45" Left="63,03154" Top="7,55905999999999" Width="75,5906" Height="11,33859" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="1" ParentFont="False" VAlign="vaBottom" Text="DOCUMENTO"/>
+      <TfrxMemoView Name="Memo46" Left="151,1812" Top="7,55905999999999" Width="37,7953" Height="11,33859" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="1" ParentFont="False" VAlign="vaBottom" Text="TIPO"/>
+      <TfrxMemoView Name="Memo47" Left="323,81911" Top="7,55905999999999" Width="257,00804" Height="11,33859" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="1" ParentFont="False" VAlign="vaBottom" Text="DESCRIÇÃO CONTÁBIL"/>
+      <TfrxMemoView Name="Memo48" Left="640,33117" Top="7,55905999999999" Width="90,70872" Height="11,33859" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="1" HAlign="haRight" ParentFont="False" VAlign="vaBottom" Text="CONTA  CONTÁBIL"/>
+      <TfrxMemoView Name="Memo49" Left="785,02412" Top="7,55905999999999" Width="120,94496" Height="11,33859" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="1" HAlign="haRight" ParentFont="False" VAlign="vaBottom" Text="DÉBITO"/>
+      <TfrxMemoView Name="Memo50" Left="946,10297" Top="7,55905999999999" Width="98,26778" Height="11,33859" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="1" HAlign="haRight" ParentFont="False" VAlign="vaBottom" Text="CRÉDITO"/>
+      <TfrxMemoView Name="Memo51" Left="588,37044" Top="7,55905999999999" Width="49,13389" Height="11,33859" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="1" ParentFont="False" VAlign="vaBottom" Text="PARCELA"/>
+    </TfrxGroupHeader>
+    <TfrxGroupHeader Name="GroupHeader5" FillType="ftBrush" FillGap.Top="0" FillGap.Left="0" FillGap.Bottom="0" FillGap.Right="0" Height="1,77953" Left="0" Top="480,00031" Width="1046,92981" Condition="TitulosReceberProv.&#34;ID_TITULO_RECEBER&#34;">
+      <TfrxLineView Name="Line4" Left="0" Top="1,77952999999997" Width="1046,92981" Height="0" Color="0" Frame.Typ="4"/>
+    </TfrxGroupHeader>
+    <TfrxMasterData Name="MasterData2" FillType="ftBrush" FillGap.Top="0" FillGap.Left="0" FillGap.Bottom="0" FillGap.Right="0" Height="22,67718" Left="0" Top="506,45702" Width="1046,92981" ColumnWidth="0" ColumnGap="0" DataSet="frxDBHistTR" DataSetName="HistoricosTR" RowCount="0">
+      <TfrxMemoView Name="HistoricosTRDESCRICAO" Left="328,81911" Top="0,779530000000023" Width="400,63018" Height="18,89765" DataField="DESCRICAO" DataSet="frxDBHistTR" DataSetName="HistoricosTR" Text="[HistoricosTR.&#34;DESCRICAO&#34;]"/>
+    </TfrxMasterData>
+  </TfrxReportPage>
+</TfrxReport>

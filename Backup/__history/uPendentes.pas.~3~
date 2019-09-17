@@ -1,0 +1,59 @@
+unit uPendentes;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Data.DB, Vcl.Grids, Vcl.DBGrids, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
+  FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client;
+
+type
+  TFPendentes = class(TForm)
+    DBGrid1: TDBGrid;
+    DataSource1: TDataSource;
+    DataSource2: TDataSource;
+    Button1: TButton;
+    QryPreenche: TFDQuery;
+    procedure FormCreate(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  FPendentes: TFPendentes;
+
+implementation
+uses
+uBackup;
+
+{$R *.dfm}
+
+procedure TFPendentes.FormCreate(Sender: TObject);
+var
+QryPreenche : TFDQuery;
+  linha,comando: String;
+  indx,aux: integer;
+
+begin
+
+
+
+
+                comando := 'Select * from titulo_receber_pendente' ;
+                QryPreenche := TFDQuery.Create(Self);
+                QryPreenche.Connection := uBackup.FrmBackup.Conn;
+                QryPreenche.Connection.Connected;
+                QryPreenche.Close;
+                QryPreenche.SQL.Add(comando);
+
+                QryPreenche.Open();
+
+
+
+
+
+end;
+
+end.

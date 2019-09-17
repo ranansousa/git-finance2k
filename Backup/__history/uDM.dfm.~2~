@@ -1,0 +1,23 @@
+object DataModule1: TDataModule1
+  OldCreateOrder = False
+  Height = 412
+  Width = 510
+  object Connection: TFDConnection
+    Left = 280
+    Top = 120
+  end
+  object FDGUIxErrorDialog1: TFDGUIxErrorDialog
+    Provider = 'Forms'
+    Left = 168
+    Top = 152
+  end
+  object FDGUIxWaitCursor1: TFDGUIxWaitCursor
+    Provider = 'Forms'
+    Left = 312
+    Top = 224
+  end
+  object FDPhysFBDriverLink1: TFDPhysFBDriverLink
+    Left = 152
+    Top = 248
+  end
+end

@@ -1,0 +1,139 @@
+object dmContasPagar: TdmContasPagar
+  OldCreateOrder = False
+  Height = 543
+  Width = 758
+  object DSPreencheGridMain: TDataSource
+    AutoEdit = False
+    Left = 87
+    Top = 48
+  end
+  object qryRelPagamentos: TFDQuery
+    Connection = dmConexao.Conn
+    SQL.Strings = (
+      'SELECT'
+      '  TP.NUMERO_DOCUMENTO,'
+      '  TP.VALOR_NOMINAL,'
+      '  TP.DATA_VENCIMENTO AS DATA_VENCIMENTO,'
+      '  TP.DATA_PAGAMENTO AS DATA_PAGAMENTO,'
+      '  TP.DESCRICAO,'
+      '  H.DESCRICAO AS DESC_HISTORICO,'
+      '  C.NOME AS NOME_CEDENTE,'
+      '  T.DESCRICAO AS STATUS,'
+      '  CC.DESCRICAO AS CENTRO_DE_CUSTO'
+      'FROM'
+      '  TITULO_PAGAR TP'
+      
+        '  LEFT OUTER JOIN TIPO_STATUS T ON (T.ID_TIPO_STATUS = TP.ID_TIP' +
+        'O_STATUS AND T.ID_ORGANIZACAO = TP.ID_ORGANIZACAO)'
+      
+        '  LEFT OUTER JOIN CENTRO_CUSTO CC ON (CC.ID_CENTRO_CUSTO = TP.ID' +
+        '_CENTRO_CUSTO AND T.ID_ORGANIZACAO = TP.ID_ORGANIZACAO)'
+      
+        '  LEFT OUTER JOIN HISTORICO H ON (H.ID_HISTORICO = TP.ID_HISTORI' +
+        'CO AND H.ID_ORGANIZACAO = TP.ID_ORGANIZACAO)'
+      
+        '  LEFT OUTER JOIN CEDENTE C ON (C.ID_CEDENTE = TP.ID_CEDENTE AND' +
+        ' C.ID_ORGANIZACAO = TP.ID_ORGANIZACAO)')
+    Left = 160
+    Top = 288
+  end
+  object qryOrganizacoes: TFDQuery
+    Connection = dmConexao.Conn
+    FetchOptions.AssignedValues = [evCursorKind]
+    FetchOptions.CursorKind = ckDynamic
+    SQL.Strings = (
+      'SELECT'
+      '  O.ID_ORGANIZACAO,'
+      
+        '  RPAD(O.RAZAO_SOCIAL, T.QTDE) ||  '#39' | '#39' || TRIM(O.CNPJ) AS NOME' +
+        ','
+      'O.RAZAO_SOCIAL'
+      'FROM'
+      '  ORGANIZACAO O,'
+      
+        '  (SELECT MAX(CHAR_LENGTH(O2.RAZAO_SOCIAL)) AS QTDE FROM ORGANIZ' +
+        'ACAO O2) AS T'
+      'ORDER BY'
+      '  O.RAZAO_SOCIAL DESC')
+    Left = 264
+    Top = 288
+  end
+  object qryCentroCusto: TFDQuery
+    Connection = dmConexao.Conn
+    SQL.Strings = (
+      'SELECT'
+      '  CC.ID_CENTRO_CUSTO,'
+      '  CC.DESCRICAO'
+      'FROM'
+      '  CENTRO_CUSTO CC')
+    Left = 352
+    Top = 288
+  end
+  object sqlScriptContainer: TFDScript
+    SQLScripts = <
+      item
+        Name = 'sqlRelPagamentos'
+        SQL.Strings = (
+          'SELECT'
+          '  TP.NUMERO_DOCUMENTO,'
+          '  TP.VALOR_NOMINAL,'
+          '  TP.DATA_VENCIMENTO AS DATA_VENCIMENTO,'
+          '  TP.DATA_PAGAMENTO AS DATA_PAGAMENTO,'
+          '  TP.DESCRICAO,'
+          '  H.DESCRICAO AS DESC_HISTORICO,'
+          '  C.NOME AS NOME_CEDENTE,'
+          '  T.DESCRICAO AS STATUS,'
+          '  CC.DESCRICAO AS CENTRO_DE_CUSTO'
+          'FROM'
+          '  TITULO_PAGAR TP'
+          
+            '  LEFT OUTER JOIN TIPO_STATUS T ON (T.ID_TIPO_STATUS = TP.ID_TIP' +
+            'O_STATUS AND T.ID_ORGANIZACAO = TP.ID_ORGANIZACAO)'
+          
+            '  LEFT OUTER JOIN CENTRO_CUSTO CC ON (CC.ID_CENTRO_CUSTO = TP.ID' +
+            '_CENTRO_CUSTO AND T.ID_ORGANIZACAO = TP.ID_ORGANIZACAO)'
+          
+            '  LEFT OUTER JOIN HISTORICO H ON (H.ID_HISTORICO = TP.ID_HISTORI' +
+            'CO AND H.ID_ORGANIZACAO = TP.ID_ORGANIZACAO)'
+          
+            '  LEFT OUTER JOIN CEDENTE C ON (C.ID_CEDENTE = TP.ID_CEDENTE AND' +
+            ' C.ID_ORGANIZACAO = TP.ID_ORGANIZACAO)')
+      end>
+    Connection = dmConexao.Conn
+    Params = <>
+    Macros = <>
+    Left = 456
+    Top = 288
+  end
+  object qryDadosEmpresa: TFDQuery
+    Connection = dmConexao.Conn
+    FetchOptions.AssignedValues = [evCursorKind]
+    FetchOptions.CursorKind = ckDynamic
+    SQL.Strings = (
+      'SELECT'
+      '  O.RAZAO_SOCIAL,'
+      '  O.CNPJ,'
+      
+        '  TRIM(O.LOGRADOURO) || '#39' '#39' || TRIM(O.NUMERO) || IIF(TRIM(O.COMP' +
+        'LEMENTO)='#39#39','#39#39','#39' '#39' ||TRIM(O.COMPLEMENTO)) || '#39' - '#39' || TRIM(B.BAI' +
+        'RRO) AS ENDERECO,'
+      '  O.CEP,'
+      '  C.CIDADE,'
+      '  E.SIGLA AS UF'
+      'FROM'
+      '  ORGANIZACAO O'
+      '  JOIN BAIRRO B ON (O.ID_BAIRRO = B.ID_BAIRRO)'
+      '  JOIN CIDADE C ON (B.ID_CIDADE = C.ID_CIDADE)'
+      '  JOIN ESTADO E ON (C.ID_ESTADO = E.ID_ESTADO)'
+      'WHERE'
+      '  (O.ID_ORGANIZACAO = :PIDORGANIZACAO)')
+    Left = 64
+    Top = 288
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+      end>
+  end
+end

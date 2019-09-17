@@ -1,0 +1,41 @@
+object dmPrincipal: TdmPrincipal
+  OldCreateOrder = False
+  OnCreate = DataModuleCreate
+  Height = 412
+  Width = 510
+  object Conn: TFDConnection
+    Params.Strings = (
+      'Database=F:\Clientes\Imap\Finance\Dados\FINANCE.FDB'
+      'User_Name=SYSDBA'
+      'Password=masterkey'
+      'Protocol=TCPIP'
+      'Server=127.0.0.01'
+      'Port=3050'
+      'DriverID=FB')
+    Left = 240
+    Top = 88
+  end
+  object FDGUIxErrorDialog1: TFDGUIxErrorDialog
+    Provider = 'Forms'
+    Left = 360
+    Top = 312
+  end
+  object FDGUIxWaitCursor1: TFDGUIxWaitCursor
+    Provider = 'Forms'
+    ScreenCursor = gcrHourGlass
+    Left = 312
+    Top = 224
+  end
+  object FDPhysFBDriverLink1: TFDPhysFBDriverLink
+    Left = 152
+    Top = 248
+  end
+  object qryLoadOrgs: TFDQuery
+    Connection = Conn
+    SQL.Strings = (
+      'SELECT * FROM ORGANIZACAO WHERE 1=1'
+      'ORDER BY SIGLA DESC')
+    Left = 384
+    Top = 88
+  end
+end

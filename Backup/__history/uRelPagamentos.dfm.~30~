@@ -1,0 +1,440 @@
+object FRelPagamentos: TFRelPagamentos
+  Left = 0
+  Top = 0
+  BorderIcons = [biSystemMenu]
+  Caption = 'Relat'#243'rio Contas a Pagar'
+  ClientHeight = 528
+  ClientWidth = 1106
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  Position = poDesktopCenter
+  OnClose = FormClose
+  OnCreate = FormCreate
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Label2: TLabel
+    Left = 27
+    Top = 13
+    Width = 53
+    Height = 13
+    Caption = 'Data Inicial'
+  end
+  object Label3: TLabel
+    Left = 304
+    Top = 13
+    Width = 48
+    Height = 13
+    Caption = 'Data Final'
+  end
+  object Label4: TLabel
+    Left = 24
+    Top = 69
+    Width = 41
+    Height = 13
+    Caption = 'Empresa'
+  end
+  object Label5: TLabel
+    Left = 304
+    Top = 69
+    Width = 84
+    Height = 13
+    Caption = 'Centro de Custos'
+  end
+  object Label6: TLabel
+    Left = 24
+    Top = 117
+    Width = 34
+    Height = 13
+    Caption = 'Status '
+  end
+  object Label7: TLabel
+    Left = 304
+    Top = 117
+    Width = 53
+    Height = 13
+    Caption = 'Ordena'#231#227'o'
+  end
+  object dtDataInicial: TDateTimePicker
+    Left = 24
+    Top = 32
+    Width = 186
+    Height = 21
+    Date = 42572.376240046300000000
+    Time = 42572.376240046300000000
+    TabOrder = 0
+  end
+  object dtDataFinal: TDateTimePicker
+    Left = 304
+    Top = 32
+    Width = 186
+    Height = 21
+    Date = 42572.376240046300000000
+    Time = 42572.376240046300000000
+    TabOrder = 1
+  end
+  object cbxOrganizacoes: TComboBox
+    Left = 24
+    Top = 88
+    Width = 186
+    Height = 21
+    ItemIndex = 0
+    TabOrder = 2
+    Text = 'Organiza'#231#245'es'
+    Items.Strings = (
+      'Organiza'#231#245'es')
+  end
+  object cbxCentrosCusto: TComboBox
+    Left = 304
+    Top = 88
+    Width = 186
+    Height = 21
+    ItemIndex = 0
+    TabOrder = 3
+    Text = 'Centro de Custo'
+    Items.Strings = (
+      'Centro de Custo')
+  end
+  object cbxStatus: TComboBox
+    Left = 24
+    Top = 136
+    Width = 186
+    Height = 21
+    ItemIndex = 0
+    TabOrder = 4
+    Text = 'TODOS'
+    Items.Strings = (
+      'TODOS'
+      'ABERTO'
+      'EXCLUIDO'
+      'QUITADO')
+  end
+  object cbxOrdem: TComboBox
+    Left = 304
+    Top = 136
+    Width = 186
+    Height = 21
+    ItemIndex = 0
+    TabOrder = 5
+    Text = 'VALOR'
+    Items.Strings = (
+      'VALOR'
+      'CEDENTE'
+      'CENTRO DE CUSTO'
+      'DATA DE PAGAMENTO'
+      'DATA DE VENCIMENTO'
+      'HIST'#211'RICO'
+      'STATUS')
+  end
+  object Button1: TButton
+    Left = 24
+    Top = 184
+    Width = 75
+    Height = 25
+    Caption = 'Confirmar'
+    TabOrder = 6
+    OnClick = Button1Click
+  end
+  object DBGrid1: TDBGrid
+    Left = 24
+    Top = 215
+    Width = 1074
+    Height = 298
+    Cursor = crSQLWait
+    Color = clInfoBk
+    DataSource = DataSource1
+    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
+    TabOrder = 7
+    TitleFont.Charset = DEFAULT_CHARSET
+    TitleFont.Color = clWindowText
+    TitleFont.Height = -11
+    TitleFont.Name = 'Tahoma'
+    TitleFont.Style = []
+    Columns = <
+      item
+        Expanded = False
+        FieldName = 'NUMERO_DOCUMENTO'
+        Title.Caption = 'NUM.DOC'
+        Width = 60
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'VALOR_NOMINAL'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = [fsBold]
+        Title.Caption = 'VALOR'
+        Width = 90
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'DATA_VENCIMENTO'
+        Title.Caption = 'VENCIMENTO'
+        Width = 62
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'DATA_PAGAMENTO'
+        Title.Caption = 'PAGAMENTO'
+        Title.Color = clMoneyGreen
+        Width = 62
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'DESCRICAO'
+        Width = 200
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'DESC_HISTORICO'
+        Title.Caption = 'HISTORICO'
+        Width = 200
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'NOME_CEDENTE'
+        Title.Caption = 'FORNECEDOR'
+        Width = 120
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'CENTRO_DE_CUSTO'
+        Title.Caption = 'CENTRO DE CUSTO'
+        Width = 180
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'STATUS'
+        Title.Color = clYellow
+        Width = 80
+        Visible = True
+      end>
+  end
+  object qryRelPagamentos: TFDQuery
+    Connection = dmPrincipal.Conn
+    SQL.Strings = (
+      'SELECT'
+      '  TP.NUMERO_DOCUMENTO,'
+      '  TP.VALOR_NOMINAL,'
+      '  TP.DATA_VENCIMENTO AS DATA_VENCIMENTO,'
+      '  TP.DATA_PAGAMENTO AS DATA_PAGAMENTO,'
+      '  TP.DESCRICAO,'
+      '  H.DESCRICAO AS DESC_HISTORICO,'
+      '  C.NOME AS NOME_CEDENTE,'
+      '  T.DESCRICAO AS STATUS,'
+      '  CC.DESCRICAO AS CENTRO_DE_CUSTO'
+      'FROM'
+      '  TITULO_PAGAR TP'
+      
+        '  LEFT OUTER JOIN TIPO_STATUS T ON (T.ID_TIPO_STATUS = TP.ID_TIP' +
+        'O_STATUS AND T.ID_ORGANIZACAO = TP.ID_ORGANIZACAO)'
+      
+        '  LEFT OUTER JOIN CENTRO_CUSTO CC ON (CC.ID_CENTRO_CUSTO = TP.ID' +
+        '_CENTRO_CUSTO AND T.ID_ORGANIZACAO = TP.ID_ORGANIZACAO)'
+      
+        '  LEFT OUTER JOIN HISTORICO H ON (H.ID_HISTORICO = TP.ID_HISTORI' +
+        'CO AND H.ID_ORGANIZACAO = TP.ID_ORGANIZACAO)'
+      
+        '  LEFT OUTER JOIN CEDENTE C ON (C.ID_CEDENTE = TP.ID_CEDENTE AND' +
+        ' C.ID_ORGANIZACAO = TP.ID_ORGANIZACAO)')
+    Left = 160
+    Top = 288
+  end
+  object qryOrganizacoes: TFDQuery
+    Connection = dmPrincipal.Conn
+    FetchOptions.AssignedValues = [evCursorKind]
+    FetchOptions.CursorKind = ckDynamic
+    SQL.Strings = (
+      'SELECT'
+      '  O.ID_ORGANIZACAO,'
+      
+        '  RPAD(O.RAZAO_SOCIAL, T.QTDE) ||  '#39' | '#39' || TRIM(O.CNPJ) AS NOME' +
+        ','
+      'O.RAZAO_SOCIAL'
+      'FROM'
+      '  ORGANIZACAO O,'
+      
+        '  (SELECT MAX(CHAR_LENGTH(O2.RAZAO_SOCIAL)) AS QTDE FROM ORGANIZ' +
+        'ACAO O2) AS T'
+      'ORDER BY'
+      '  O.RAZAO_SOCIAL DESC')
+    Left = 264
+    Top = 288
+  end
+  object qryCentroCusto: TFDQuery
+    Connection = dmPrincipal.Conn
+    SQL.Strings = (
+      'SELECT'
+      '  CC.ID_CENTRO_CUSTO,'
+      '  CC.DESCRICAO'
+      'FROM'
+      '  CENTRO_CUSTO CC')
+    Left = 352
+    Top = 288
+  end
+  object sqlScriptContainer: TFDScript
+    SQLScripts = <
+      item
+        Name = 'sqlRelPagamentos'
+        SQL.Strings = (
+          'SELECT'
+          '  TP.NUMERO_DOCUMENTO,'
+          '  TP.VALOR_NOMINAL,'
+          '  TP.DATA_VENCIMENTO AS DATA_VENCIMENTO,'
+          '  TP.DATA_PAGAMENTO AS DATA_PAGAMENTO,'
+          '  TP.DESCRICAO,'
+          '  H.DESCRICAO AS DESC_HISTORICO,'
+          '  C.NOME AS NOME_CEDENTE,'
+          '  T.DESCRICAO AS STATUS,'
+          '  CC.DESCRICAO AS CENTRO_DE_CUSTO'
+          'FROM'
+          '  TITULO_PAGAR TP'
+          
+            '  LEFT OUTER JOIN TIPO_STATUS T ON (T.ID_TIPO_STATUS = TP.ID_TIP' +
+            'O_STATUS AND T.ID_ORGANIZACAO = TP.ID_ORGANIZACAO)'
+          
+            '  LEFT OUTER JOIN CENTRO_CUSTO CC ON (CC.ID_CENTRO_CUSTO = TP.ID' +
+            '_CENTRO_CUSTO AND T.ID_ORGANIZACAO = TP.ID_ORGANIZACAO)'
+          
+            '  LEFT OUTER JOIN HISTORICO H ON (H.ID_HISTORICO = TP.ID_HISTORI' +
+            'CO AND H.ID_ORGANIZACAO = TP.ID_ORGANIZACAO)'
+          
+            '  LEFT OUTER JOIN CEDENTE C ON (C.ID_CEDENTE = TP.ID_CEDENTE AND' +
+            ' C.ID_ORGANIZACAO = TP.ID_ORGANIZACAO)')
+      end>
+    Connection = dmPrincipal.Conn
+    Params = <>
+    Macros = <>
+    Left = 456
+    Top = 288
+  end
+  object DataSource1: TDataSource
+    AutoEdit = False
+    DataSet = qryRelPagamentos
+    Left = 536
+    Top = 264
+  end
+  object frxRelContasPagar: TfrxReport
+    Version = '5.3.14'
+    DotMatrixReport = False
+    IniFile = '\Software\Fast Reports'
+    PreviewOptions.Buttons = [pbPrint, pbLoad, pbSave, pbExport, pbZoom, pbFind, pbOutline, pbPageSetup, pbTools, pbEdit, pbNavigator, pbExportQuick]
+    PreviewOptions.Zoom = 1.000000000000000000
+    PrintOptions.Printer = 'Default'
+    PrintOptions.PrintOnSheet = 0
+    ReportOptions.CreateDate = 42573.413464710600000000
+    ReportOptions.LastChange = 42574.358524097200000000
+    ScriptLanguage = 'PascalScript'
+    StoreInDFM = False
+    Left = 624
+    Top = 80
+  end
+  object frxDBTitulos: TfrxDBDataset
+    UserName = 'Titulos'
+    CloseDataSource = False
+    FieldAliases.Strings = (
+      'NUMERO_DOCUMENTO=NUMERO_DOCUMENTO'
+      'VALOR_NOMINAL=VALOR_NOMINAL'
+      'DATA_VENCIMENTO=DATA_VENCIMENTO'
+      'DATA_PAGAMENTO=DATA_PAGAMENTO'
+      'DESCRICAO=DESCRICAO'
+      'DESC_HISTORICO=DESC_HISTORICO'
+      'NOME_CEDENTE=NOME_CEDENTE'
+      'STATUS=STATUS'
+      'CENTRO_DE_CUSTO=CENTRO_DE_CUSTO')
+    DataSet = qryRelPagamentos
+    BCDToCurrency = False
+    Left = 776
+    Top = 80
+  end
+  object frxDBCentroCusto: TfrxDBDataset
+    UserName = 'CentroCusto'
+    CloseDataSource = False
+    DataSet = qryCentroCusto
+    BCDToCurrency = False
+    Left = 704
+    Top = 80
+  end
+  object qryDadosEmpresa: TFDQuery
+    Connection = dmPrincipal.Conn
+    FetchOptions.AssignedValues = [evCursorKind]
+    FetchOptions.CursorKind = ckDynamic
+    SQL.Strings = (
+      'SELECT'
+      '  O.RAZAO_SOCIAL,'
+      '  O.CNPJ,'
+      
+        '  TRIM(O.LOGRADOURO) || '#39' '#39' || TRIM(O.NUMERO) || IIF(TRIM(O.COMP' +
+        'LEMENTO)='#39#39','#39#39','#39' '#39' ||TRIM(O.COMPLEMENTO)) || '#39' - '#39' || TRIM(B.BAI' +
+        'RRO) AS ENDERECO,'
+      '  O.CEP,'
+      '  C.CIDADE,'
+      '  E.SIGLA AS UF'
+      'FROM'
+      '  ORGANIZACAO O'
+      '  JOIN BAIRRO B ON (O.ID_BAIRRO = B.ID_BAIRRO)'
+      '  JOIN CIDADE C ON (B.ID_CIDADE = C.ID_CIDADE)'
+      '  JOIN ESTADO E ON (C.ID_ESTADO = E.ID_ESTADO)'
+      'WHERE'
+      '  (O.ID_ORGANIZACAO = :PIDORGANIZACAO)')
+    Left = 64
+    Top = 288
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+      end>
+  end
+  object frxCSVExport1: TfrxCSVExport
+    UseFileCache = True
+    ShowProgress = True
+    OverwritePrompt = False
+    DataOnly = False
+    Separator = ';'
+    OEMCodepage = False
+    UTF8 = False
+    NoSysSymbols = True
+    ForcedQuotes = False
+    Left = 880
+    Top = 80
+  end
+  object frxPDFExport1: TfrxPDFExport
+    UseFileCache = True
+    ShowProgress = True
+    OverwritePrompt = False
+    DataOnly = False
+    PrintOptimized = False
+    Outline = False
+    Background = False
+    HTMLTags = True
+    Quality = 95
+    Transparency = False
+    Author = 'FastReport'
+    Subject = 'FastReport PDF export'
+    ProtectionFlags = [ePrint, eModify, eCopy, eAnnot]
+    HideToolbar = False
+    HideMenubar = False
+    HideWindowUI = False
+    FitWindow = False
+    CenterWindow = False
+    PrintScaling = False
+    PdfA = False
+    Left = 976
+    Top = 80
+  end
+end

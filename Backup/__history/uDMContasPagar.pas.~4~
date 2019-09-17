@@ -1,0 +1,29 @@
+unit uDMContasPagar;
+
+// Será responsável por toda parte de acesso a SGBD.
+//Usa conexao definida em uDM.
+
+interface
+
+uses
+  System.SysUtils, System.Classes,uDM, Data.DB;
+
+type
+  TDataModule1 = class(TDataModule)
+    DSPreencheGridMain: TDataSource;
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  DataModule1: TDataModule1;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+
+{$R *.dfm}
+
+end.
