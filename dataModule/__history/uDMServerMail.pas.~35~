@@ -1,0 +1,77 @@
+unit uDMServerMail;
+
+interface
+
+uses
+  System.SysUtils, System.Classes,udmConexao, FireDAC.Stan.Intf,
+  FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
+  FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
+  Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client;
+
+type
+  TdmServerMail = class(TDataModule)
+    qryObterDadosMail: TFDQuery;
+    qryServidorEmail: TFDQuery;
+  private
+    { Private declarations }
+
+  public
+    { Public declarations }
+    function verificaConectarBanco() :Boolean;
+    function obterDadosServidorEmail(pIdOrganizacao: String) :Boolean;
+  end;
+
+var
+  dmServerMail: TdmServerMail;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+
+{$R *.dfm}
+
+{ TdmServerMail }
+
+function TdmServerMail.verificaConectarBanco() :Boolean;
+var
+msg : String;
+begin
+msg := sLineBreak + 'Banco de dados não conectado.!';
+
+      try
+
+      if not(Assigned(dmConexao)) then begin
+             dmConexao := TdmConexao.Create(Self);
+      end;
+      except on e: Exception do
+      raise Exception.Create(e.Message + msg);
+     end;
+
+     try
+     msg := sLineBreak + 'Banco de dados FINANCE não conectado.!';
+      if not (dmConexao.Conn.Connected) then begin
+              dmConexao.conectarBanco;
+      end;
+      except on e: Exception do
+       raise Exception.Create(e.Message + msg);
+     end;
+
+     Result := dmConexao.Conn.Ping;
+end;
+
+
+
+function TdmServerMail.obterDadosServidorEmail(pIdOrganizacao: String) : Boolean;
+ begin
+  Result := false;
+
+    qryObterDadosMail.Close;
+    qryObterDadosMail.Connection := dmConexao.Conn;
+    qryObterDadosMail.ParamByName('pIdServidor').AsString := pIdOrganizacao ;
+    qryObterDadosMail.Open;
+
+
+    Result := not qryObterDadosMail.IsEmpty;
+end;
+
+end.

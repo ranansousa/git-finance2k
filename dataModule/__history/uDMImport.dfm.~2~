@@ -1,0 +1,9 @@
+object dmImport: TdmImport
+  OldCreateOrder = False
+  Height = 364
+  Width = 418
+  object qryInserePorLinha: TFDQuery
+    Left = 184
+    Top = 160
+  end
+end

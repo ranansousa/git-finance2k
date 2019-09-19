@@ -1,0 +1,5 @@
+object dmRelTPHistorico: TdmRelTPHistorico
+  OldCreateOrder = False
+  Height = 298
+  Width = 435
+end

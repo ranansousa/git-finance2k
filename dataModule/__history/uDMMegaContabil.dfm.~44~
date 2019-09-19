@@ -1,0 +1,211 @@
+object dmMegaContabil: TdmMegaContabil
+  OldCreateOrder = False
+  Height = 437
+  Width = 751
+  object qryDadosEmpresaMega: TFDQuery
+    Connection = dmConexao.ConnMega
+    SQL.Strings = (
+      'SELECT'
+      '  *'
+      ''
+      'FROM'
+      '  CADASTRO C'
+      ''
+      'WHERE'
+      '  (C.INSCMF = :pCnpj)')
+    Left = 72
+    Top = 144
+    ParamData = <
+      item
+        Name = 'PCNPJ'
+        DataType = ftString
+        ParamType = ptInput
+      end>
+  end
+  object qryExistLote: TFDQuery
+    Connection = dmConexao.ConnMega
+    SQL.Strings = (
+      'SELECT '
+      '  L.ID,'
+      '  L.EMPRESA,'
+      '  L.ANO, '
+      '  L.LOTE'
+      ''
+      'FROM'
+      '  CLOTES L'
+      ''
+      'WHERE'
+      '  (L.EMPRESA = :pIDEmpresa) AND'
+      '  (L.ANO = :pAno) AND'
+      '  (L.LOTE = :pLote)')
+    Left = 168
+    Top = 40
+    ParamData = <
+      item
+        Name = 'PIDEMPRESA'
+        ParamType = ptInput
+      end
+      item
+        Name = 'PANO'
+        ParamType = ptInput
+      end
+      item
+        Name = 'PLOTE'
+        ParamType = ptInput
+      end>
+  end
+  object qryGenIdClotes: TFDQuery
+    Connection = dmConexao.ConnMega
+    SQL.Strings = (
+      'select gen_id(gen_id_clotes,1) from rdb$database')
+    Left = 64
+    Top = 40
+  end
+  object qryVerificaFechamento: TFDQuery
+    Connection = dmConexao.ConnMega
+    SQL.Strings = (
+      'SELECT '
+      '  L.ID'
+      ''
+      'FROM'
+      '  CLANCAMENTOS L'
+      ''
+      'WHERE'
+      '  (L.EMPRESA = :pIDEmpresa) AND'
+      '  ((L.CDHIST = 65) OR (L.CDHIST = 66) OR'
+      '   (L.CDHIST = 75) OR (L.CDHIST = 76)) AND'
+      '(L.DATA BETWEEN :pDataInicial AND '#39'31.12.2020'#39')'
+      ''
+      '')
+    Left = 328
+    Top = 40
+    ParamData = <
+      item
+        Name = 'PIDEMPRESA'
+        ParamType = ptInput
+      end
+      item
+        Name = 'PDATAINICIAL'
+        ParamType = ptInput
+      end>
+  end
+  object qryGravaLote: TFDQuery
+    Connection = dmConexao.ConnMega
+    Left = 456
+    Top = 40
+  end
+  object qryObterPlanoContas: TFDQuery
+    Connection = dmConexao.ConnMega
+    FetchOptions.AssignedValues = [evRowsetSize]
+    FetchOptions.RowsetSize = 500000
+    SQL.Strings = (
+      'SELECT '
+      '    NMCONTA,'
+      '    CONTA, '
+      '    DGVER, '
+      '    CODREDUZ, '
+      '    DGREDUZ, '
+      '    INSCMF, '
+      '    TIPO, '
+      '    GRAU, '
+      '    ORDEM_DIPJ, '
+      '    RELACIONAMENTO, '
+      '    NATUREZA '
+      'FROM CPLANOEMPRESA '
+      
+        'WHERE (LEI11638 <> 0 ) AND (GRAU = 5)  AND (EMPRESA = :PIDEMPRES' +
+        'A) ORDER BY CONTA')
+    Left = 208
+    Top = 144
+    ParamData = <
+      item
+        Name = 'PIDEMPRESA'
+        DataType = ftInteger
+        ParamType = ptInput
+      end>
+  end
+  object dtsPlanoContas: TDataSource
+    DataSet = qryObterPlanoContas
+    Left = 328
+    Top = 144
+  end
+  object qryInsereLancamento: TFDQuery
+    Connection = dmConexao.ConnMega
+    Left = 56
+    Top = 264
+  end
+  object qryConsultaContaContabil: TFDQuery
+    Connection = dmConexao.ConnMega
+    FetchOptions.AssignedValues = [evRowsetSize]
+    FetchOptions.RowsetSize = 500000
+    SQL.Strings = (
+      'SELECT '
+      '    NMCONTA,'
+      '    CONTA, '
+      '    DGVER, '
+      '    CODREDUZ, '
+      '    DGREDUZ, '
+      '    INSCMF, '
+      '    TIPO, '
+      '    GRAU, '
+      '    ORDEM_DIPJ, '
+      '    RELACIONAMENTO, '
+      '    NATUREZA '
+      'FROM CPLANOEMPRESA '
+      'WHERE CONTA = :PCONTA'
+      'AND CODREDUZ = :PCDREDUZ'
+      'AND (LEI11638 <> 0 )'
+      'AND (GRAU = 5)'
+      'AND (EMPRESA = :PIDEMPRESA)')
+    Left = 464
+    Top = 144
+    ParamData = <
+      item
+        Name = 'PCONTA'
+        DataType = ftString
+        ParamType = ptInput
+      end
+      item
+        Name = 'PCDREDUZ'
+        DataType = ftInteger
+        ParamType = ptInput
+      end
+      item
+        Name = 'PIDEMPRESA'
+        DataType = ftInteger
+        ParamType = ptInput
+      end>
+  end
+  object qryObterLotePorFiltro: TFDQuery
+    Connection = dmConexao.ConnMega
+    FetchOptions.AssignedValues = [evRowsetSize]
+    FetchOptions.RowsetSize = 500000
+    SQL.Strings = (
+      'SELECT cl.id, '
+      '       cl.ano, '
+      '       cl.empresa, '
+      '       cl.lote'
+      'FROM clotes cl'
+      'WHERE cl.ano = :PANO'
+      '  AND cl.empresa = :PIDEMPRESA'
+      '  AND cl.lote = :PLOTE')
+    Left = 208
+    Top = 224
+    ParamData = <
+      item
+        Name = 'PANO'
+        DataType = ftString
+        ParamType = ptInput
+      end
+      item
+        Name = 'PIDEMPRESA'
+        DataType = ftInteger
+        ParamType = ptInput
+      end
+      item
+        Name = 'PLOTE'
+        DataType = ftInteger
+        ParamType = ptInput
+      end>
+  end
+end
