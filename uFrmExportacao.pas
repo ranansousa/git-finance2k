@@ -98,6 +98,8 @@ type
     linha :Integer; //armazena a linha atual do registro inserido no MEGA -> CLANCAMENTOS
     pDataInicial: TDate;
     pDataFinal: TDate;
+    valorCredito, valorDebito :Currency;
+
     procedure inicializarDM(Sender: TObject);
     procedure freeAndNilDM();
     procedure statusExportar(sinal: Integer);
@@ -1357,7 +1359,7 @@ begin
 
 
 
-aux :=0;
+     aux :=0;
   // dmOrganizacao.carregarDadosEmpresa(idOrganizacao); ver
      limpaPainelExportacao;
 
@@ -1591,105 +1593,6 @@ begin
   end;
 
 
-
-
-    {
- if (Assigned(dmExdportFinanceManter)) then
-  begin
-     FreeAndNil(dmExdportFinanceManter);
-  end;
-
-
-  if not (Assigned(dmExdportFinanceManter)) then
-  begin
-    dmExdportFinanceManter := TdmExdportFinanceManter.Create(Self);
-  end;
-
-
-
-
-
-  if not (Assigned(dmRelExportacaoMega)) then
-  begin
-    dmRelExportacaoMega := TdmRelExportacaoMega.Create(Self);
-  end;
-
-
-
-  if not (Assigned(dmTPDTS)) then
-  begin
-    dmTPDTS := TdmTPDTS.Create(Self);
-  end;
-
-  if not (Assigned(dmHistoricoConsulta)) then
-  begin
-    dmHistoricoConsulta := TdmHistoricoConsulta.Create(Self);
-  end;
-
-   //ERRO AQUI.. INVALID POINT
-  if (Assigned(dmExportFinanceTP)) then
-  begin
-     FreeAndNil(dmExportFinanceTP);
-  end;
-
-
-  if not (Assigned(dmExportFinanceTP)) then
-  begin
-    dmExportFinanceTP := TdmExportFinanceTP.Create(Self);
-  end;
-
-  if (Assigned(dmExportFinanceTR)) then
-  begin
-     FreeAndNil(dmExportFinanceTR);
-  end;
-
-  if not (Assigned(dmExportFinanceTR)) then
-  begin
-    dmExportFinanceTR := TdmExportFinanceTR.Create(Self);
-  end;
-
-    // conta bancaria transferencia
-    if (Assigned(dmCBT)) then
-  begin
-     FreeAndNil(dmCBT);
-  end;
-
-  if not (Assigned(dmCBT)) then
-  begin
-    dmCBT := TdmCBT.Create(Self);
-  end;
-
-  // conta bancaria credito
-
-    if (Assigned(dmCBCConsulta)) then
-  begin
-     FreeAndNil(dmCBCConsulta);
-  end;
-
-  if not (Assigned(dmCBCConsulta)) then
-  begin
-    dmCBCConsulta := TdmCBCConsulta.Create(Self);
-  end;
-
-  // conta bancaria debito
-
-        if (Assigned(dmCBDConsulta)) then
-  begin
-     FreeAndNil(dmCBDConsulta);
-  end;
-
-
-  if not (Assigned(dmCBDConsulta)) then
-  begin
-    dmCBDConsulta := TdmCBDConsulta.Create(Self);
-  end;
-
-  }
-
-  //instancia lista de lancamnentos
-
-  //tempListaLancamentoCredito.Create;
-
 end;
 
 // tipo:  cbt = 1 ; cbd=2; cbc = 3; tp = 4; tpb=5; tr=6; trb=7
@@ -1698,7 +1601,7 @@ var
   valor: Integer;
 begin
   valor := 0;
-  
+
   valor := 100;
   Result := valor;
 
@@ -1772,11 +1675,6 @@ begin
   if  (Assigned(dmRelExportacaoMega)) then
   begin
     FreeAndNil(dmRelExportacaoMega);
-  end;
-
-  if  (Assigned(dmExportaFinance)) then
-  begin
-    FreeAndNil(dmExportaFinance);
   end;
 
   if  (Assigned(dmTPDTS)) then
@@ -1981,15 +1879,15 @@ begin
   if (lista <> nil) then
   begin
      linha :=0;
-     vDEB:=0; vCRE :=0;
+     valorDebito:=0; valorCredito :=0;
      tamLista :=0; listaDB :=0; listaCR :=0; lancamentoDB :=0; lancamentoCR :=0;  aux :=0;
 
-     tamLista :=TListaLancamentoDebito(lista.ListaDebito[0]).FListaLancamentoDebito.Count ;   //usado só na barra de progresso
+     tamLista := TListaLancamentoDebito(lista).Count ;   //usado só na barra de progresso
 
-    for  listaCR := 0 to TListaLancamentoCredito(lista.ListaCredito).Count -1 do begin
-      for listaDB := 0 to TListaLancamentoCredito(lista.ListaCredito[listaCR]).FListaLancamentoCredito.Count  - 1 do
+    for   listaCR := 0 to TListaLancamentoCredito(lista).Count -1 do begin
+      for lancamentoCR := 0 to TListaLancamentoCredito(lista.ListaCredito[listaCR]).FListaLancamentoCredito.Count  - 1 do
       begin
-        linha := linha +1;
+            Inc(linha);
         dmMegaContabil.insereLancamentoCRE(StrToInt(ano),lote,linha,
                                           TLancamentoCreditoModel(TListaLancamentoCredito(lista.ListaCredito[listaCR]).FListaLancamentoCredito.Items[lancamentoCR]).CodReduzCre,
                                           TLancamentoCreditoModel(TListaLancamentoCredito(lista.ListaCredito[listaCR]).FListaLancamentoCredito.Items[lancamentoCR]).CodHistorico,
@@ -2006,8 +1904,8 @@ begin
                                           );
 
                                           //insere debito
-                                          vCRE := vCRE + TLancamentoCreditoModel(TListaLancamentoCredito(lista.ListaCredito[listaCR]).FListaLancamentoCredito.Items[lancamentoCR]).Valor;
-                                          linha := linha +1;
+                                          valorCredito := valorCredito + TLancamentoCreditoModel(TListaLancamentoCredito(lista.ListaCredito[listaCR]).FListaLancamentoCredito.Items[lancamentoCR]).Valor;
+
                                           framePB1.progressBar(linha,(tamLista+1));
                                           Application.ProcessMessages;
         end;
@@ -2015,10 +1913,12 @@ begin
      end;
 
 
-     for  listaDB := 0 to TListaLancamentoDebito(lista.listaDebito).Count-1 do begin
+
+     for  listaDB := 0 to TListaLancamentoDebito(lista).Count-1 do begin
         for lancamentoDB := 0 to TListaLancamentoDebito(lista.ListaDebito[listaDB]).FListaLancamentoDebito.Count  - 1 do
         begin
-
+      //  INC(X);
+         Inc(linha);
       dmMegaContabil.insereLancamentoDEB(StrToInt(ano),lote,linha,
                                         TLancamentoDebitoModel(TListaLancamentoDebito(lista.ListaDebito[listaDB]).FListaLancamentoDebito.Items[lancamentoDB]).CodReduzDeb,
                                         TLancamentoDebitoModel(TListaLancamentoDebito(lista.ListaDebito[listaDB]).FListaLancamentoDebito.Items[lancamentoDB]).CodHistorico,
@@ -2032,8 +1932,10 @@ begin
                                         TLancamentoDebitoModel(TListaLancamentoDebito(lista.ListaDebito[listaDB]).FListaLancamentoDebito.Items[lancamentoDB]).FncIdentificacao,
                                         TLancamentoDebitoModel(TListaLancamentoDebito(lista.ListaDebito[listaDB]).FListaLancamentoDebito.Items[lancamentoDB]).Valor,
                                         TLancamentoDebitoModel(TListaLancamentoDebito(lista.ListaDebito[listaDB]).FListaLancamentoDebito.Items[lancamentoDB]).Data );
-                                        vDEB := vDEB +  TLancamentoDebitoModel(TListaLancamentoDebito(lista.ListaDebito[listaDB]).FListaLancamentoDebito.Items[lancamentoDB]).Valor;
-                                        linha := linha +1;
+
+
+                                        valorDebito := valorDebito +  TLancamentoDebitoModel(TListaLancamentoDebito(lista.ListaDebito[listaDB]).FListaLancamentoDebito.Items[lancamentoDB]).Valor;
+
                                         framePB1.progressBar(linha,(tamLista+1));
                                         Application.ProcessMessages;
       end;
@@ -2063,7 +1965,6 @@ begin
        loMostraErros.Add('Existe diferença de valores no lote', False, True);
        loMostraErros.Add(' Verifique o relatório de lote ' + IntToStr(lote), False, True);
        loMostraErros.Add(' ERRO EM CDATA--------------------------------------------------', True, True);
-
 
       //ver o que fazer quando encontrar
       //lançar o registro na table pendencias da exportacao
@@ -2116,7 +2017,7 @@ begin
     //(pIdLote, pIdOrganizacao, pLote, pDataInicial, pDataFinal: string; pLista :TListaLancamentos; pTable :string):
     if (dmExportaFinance.gravarLoteContabil('FNCEXP@' + ano + '@' + IntToStr(lote) + '@' + IntToStr(linha), idOrganizacao,
         IntToStr(lote), FormatDateTime('dd/mm/yyyy', dtDataInicial.Date), FormatDateTime('dd/mm/yyyy', dtDataFinal.Date),
-        lista, pTable,linha)) then
+          lista, pTable,linha, valorDebito, valorCredito)) then
        begin
 
       lblSalvaLoteFnc.Visible := True;

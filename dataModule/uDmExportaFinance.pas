@@ -38,6 +38,8 @@ type
     qryTPBCaixa: TFDQuery;
     qryTPBCheque: TFDQuery;
     qryTPBInternet: TFDQuery;
+    qryObterTodosLoteContabil: TFDQuery;
+    qryDeletaLoteContabil: TFDQuery;
     procedure DataModuleCreate(Sender: TObject);
   private
     { Private declarations }
@@ -81,7 +83,7 @@ type
     function obterValorDebitoTitulo(pIdOrganizacao, pTable, pCampoSum, pCampoData: string; pDataInicial, pDataFinal: TDate; isProvisao :Integer): Currency;
 
     //exportacao para o mega
-    function gravarLoteContabil(pIdLote, pIdOrganizacao, pLote, pDataInicial, pDataFinal: string; pLista :TListaLancamentos; pTable :string; qtdRegistros :Integer): Boolean;
+    function gravarLoteContabil(pIdLote, pIdOrganizacao, pLote, pDataInicial, pDataFinal: string; pLista :TListaLancamentos; pTable :string; qtdRegistros :Integer; valorDebito, valorCredito : Currency): Boolean;
     function convertTFDQueryToLancamentoMega(pIdOrganizacao, pAno: string; pCodEmpresa, pLote: Integer; query: TFDQuery): TListaLancamentos;
     function obterCBTPorPeriodo(pIdOrganizacao, pAno: string; pDataInicial, pDataFinal: TDate; pCodEmpresa, pLote: Integer; var loMostraErros: TFMostraErros): TListaLancamentos;
     function obterTBTPorPeriodo(pIdOrganizacao, pAno: string; pDataInicial, pDataFinal: TDate; pCodEmpresa, pLote: Integer; var loMostraErros: TFMostraErros): TListaLancamentos;
@@ -96,6 +98,10 @@ type
     function convertTPB_PROVToLancamentoMega(pTipoTitulo,pIdOrganizacao, pAno: string; pCodEmpresa, pLote: Integer; query: TFDQuery; var loMostraErros: TFMostraErros): TListaLancamentos;
     function convertoTPB_PROVToLancamentoDebito(pCodEmpresa, pLote, pAno, pCodReduzDeb,pCodHist: Integer; pHistorico, pComple, pDgCodReduzDeb, pContaDeb, pDgDeb,  pTipo,pIdFinance, pIdentFnc: string; pValor: Currency; pData: TDateTime) : TLancamentoDebitoModel;
     function convertoTPB_PROVToLancamentoCredito(pCodEmpresa, pLote, pAno, pCodReduzCre,pCodHist: Integer; pHistorico, pComple, pDgCodReduzCre, pContaCre, pDgCre,  pTipo,pIdFinance, pIdentFnc: string; pValor: Currency; pData: TDateTime) : TLancamentoCreditoModel;
+//LOTE CONTABIL
+    function obterTodosLoteContabil(pIdOrganizacao : string; pDataInicial, pDataFinal: TDate) :boolean;
+    function deletaLoteContabil(pIdOrganizacao, pIdLote : string ) :boolean;
+    function preencheComboLoteContabil(pIdOrganizacao : string ) :boolean;
 
   //function listaExportacaoCBC(pIdOrganizacao: string; pDataInicial, pDataFinal: TDate): TListaLancamentos;
  //function listaExportacaoCBD(pIdOrganizacao: string; pDataInicial, pDataFinal: TDate): TListaLancamentos;
@@ -112,6 +118,25 @@ implementation
 procedure TdmExportaFinance.DataModuleCreate(Sender: TObject);
 begin
 inicializarDM(Self);
+end;
+
+function TdmExportaFinance.deletaLoteContabil(pIdOrganizacao,
+  pIdLote: string): boolean;
+begin
+//coloca o lote como excluido
+
+  try
+    qryDeletaLoteContabil.Close;
+    qryDeletaLoteContabil.Connection := dmConexao.Conn;
+    qryDeletaLoteContabil.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+    qryDeletaLoteContabil.ParamByName('PIDLOTE').AsString := pIdLote;
+
+    qryDeletaLoteContabil.ExecSQL;
+  except
+    raise(Exception).Create('Problemas ao deletar lote contabil ');
+
+  end;
+
 end;
 
 procedure TdmExportaFinance.freeAndNilDM(Sender: TObject);
@@ -231,6 +256,26 @@ begin
 end;
 
 
+function TdmExportaFinance.obterTodosLoteContabil(pIdOrganizacao: string;
+  pDataInicial, pDataFinal: TDate): boolean;
+begin
+
+  try
+        qryObterTodosLoteContabil.Connection := dmConexao.Conn;
+        qryObterTodosLoteContabil.Close;
+        qryObterTodosLoteContabil.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+        qryObterTodosLoteContabil.ParamByName('DTDATAINICIAL').AsString := FormatDateTime('mm/dd/yyyy', pDataInicial);
+        qryObterTodosLoteContabil.ParamByName('DTDATAFINAL').AsString := FormatDateTime('mm/dd/yyyy', pDataFinal);
+
+        qryObterTodosLoteContabil.Open;
+
+  except
+    raise(Exception).Create('Problemas ao OBTER TODOS OS LOTES CONTÁBEIS');
+  end;
+
+  Result := not qryObterTodosLoteContabil.IsEmpty;
+
+end;
 
 //obter valor do debito por tipo operacao bancaria
 function TdmExportaFinance.obterValorDebitoGenericTOB(pIdOrganizacao, pTable, pCampo, pTipo: string; pDataInicial, pDataFinal: TDate): Currency;
@@ -431,7 +476,7 @@ end;
     TIPO_TABLE        VARCHAR(200) CHARACTER SET ISO8859_1,
     QTD_REGISTROS     SMALLINT     }
 
-function TdmExportaFinance.gravarLoteContabil(pIdLote, pIdOrganizacao, pLote, pDataInicial, pDataFinal: string; pLista :TListaLancamentos; pTable :string; qtdRegistros :Integer): Boolean;
+function TdmExportaFinance.gravarLoteContabil(pIdLote, pIdOrganizacao, pLote, pDataInicial, pDataFinal: string; pLista :TListaLancamentos; pTable :string; qtdRegistros :Integer; valorDebito, valorCredito : Currency): Boolean;
 var
  registroProvisao, pUsuario,pStatus,pDataRegistro,pDataAtualizacao, idRegistro, comando, station: string;
   I :Integer;
@@ -447,9 +492,9 @@ begin
 
   comando := 'INSERT INTO LOTE_CONTABIL (ID_LOTE_CONTABIL,ID_ORGANIZACAO, LOTE, STATUS, '
            + 'ID_USUARIO, PERIODO_INICIAL, PERIODO_FINAL, DATA_REGISTRO, DATA_ATUALIZACAO, '
-           + 'TIPO_TABLE, QTD_REGISTROS ) '
+           + 'TIPO_TABLE, QTD_REGISTROS, VALOR_DB, VALOR_CR ) '
            + 'VALUES (:pIdLote, :pIdOrganizacao, :pLote, :pStatus, :pUsuario, '
-           + ':pDataInicial,:pDataFinal,:pDataRegistro,:pDataAtualizacao, :pTable,:pQtdRegistros )';
+           + ':pDataInicial,:pDataFinal,:pDataRegistro,:pDataAtualizacao, :pTable, :pQtdRegistros, :pValorDB, :pValorCR )';
 
   try
     qryGravarLoteContabil.Close;
@@ -467,6 +512,9 @@ begin
     qryGravarLoteContabil.ParamByName('pDataAtualizacao').AsDate := StrToDate(pDataAtualizacao);
     qryGravarLoteContabil.ParamByName('pTable').AsString := pTable;
     qryGravarLoteContabil.ParamByName('pQtdRegistros').AsInteger := qtdRegistros;
+    qryGravarLoteContabil.ParamByName('pValorDB').AsCurrency := valorDebito;
+    qryGravarLoteContabil.ParamByName('pValorCR').AsCurrency := valorCredito;
+
 
 
     qryGravarLoteContabil.ExecSQL;
@@ -1048,7 +1096,6 @@ begin
           // 'AND TB.IS_PROVISAO = :PROVISAO ' +
            'AND TB.ID_LOTE_CONTABIL IS NULL ';
 
-
     try
           qryObterValorTitulo.Close;
           qryObterValorTitulo.Connection := dmConexao.Conn;
@@ -1536,6 +1583,44 @@ comando := ' SELECT SUM(TR.valor_nominal) AS VALOR_DEBITO  FROM  TITULO_RECEBER 
 
        Result := qryObterValorTitulo.FieldByName('VALOR_DEBITO').AsCurrency;
 
+end;
+
+function TdmExportaFinance.preencheComboLoteContabil(pIdOrganizacao : string ) :boolean;
+var
+ano, cmd :string;
+pDataInicial, pDataFinal, dataServer :TDateTime;
+
+begin
+  dataServer := uUtil.getDataServer;
+  ano := FormatDateTime('yyyy', dataServer );
+  pDataInicial := StrToDateTime('01/01/'+ano);
+
+  Result := false;
+  cmd :=  ' SELECT  LC.ID_LOTE_CONTABIL, LC.LOTE '+
+          ' FROM LOTE_CONTABIL LC ' +
+          ' WHERE (LC.ID_ORGANIZACAO = :PIDORGANIZACAO) AND ' +
+          ' (LC.DATA_REGISTRO BETWEEN :DTDATAINICIAL AND :DTDATAFINAL) AND ' +
+          ' LC.STATUS <> ''EXCLUIDO'' ' +
+          ' ORDER BY LC.LOTE ' ;
+
+
+  if dmConexao.conectarBanco then
+  begin
+
+    qryObterTodosLoteContabil.Close;
+    if not qryObterTodosLoteContabil.Connection.Connected then
+    begin
+      qryObterTodosLoteContabil.Connection := dmConexao.Conn;
+    end;
+    qryObterTodosLoteContabil.SQL.Clear;
+    qryObterTodosLoteContabil.SQL.Add(cmd);
+    qryObterTodosLoteContabil.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+    qryObterTodosLoteContabil.ParamByName('DTDATAINICIAL').AsDate := pDataInicial;
+    qryObterTodosLoteContabil.ParamByName('DTDATAFINAL').AsDate := dataServer;
+    qryObterTodosLoteContabil.Open;
+
+    Result := not qryObterTodosLoteContabil.IsEmpty;
+  end;
 end;
 
 end.

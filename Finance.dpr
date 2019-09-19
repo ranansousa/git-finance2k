@@ -84,14 +84,15 @@ uses
   uFrameCidade in 'frames\uFrameCidade.pas' {frmCidade: TFrame},
   uFrameEstado in 'frames\uFrameEstado.pas' {frmEstado: TFrame},
   uFrameBairro in 'frames\uFrameBairro.pas' {frmBairro: TFrame},
-  uFrameProgressBar in 'frames\uFrameProgressBar.pas' {framePB: TFrame};
+  uFrameProgressBar in 'frames\uFrameProgressBar.pas' {framePB: TFrame},
+  uFrmDeletaLoteContabil in 'uFrmDeletaLoteContabil.pas' {frmDeletaLoteContabil};
 
 {$R *.res}
 
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
-  TStyleManager.TrySetStyle('Luna');
+  TStyleManager.TrySetStyle('Iceberg Classico');
   Application.Title := 'Enterprise Pempec Finance';
   Application.CreateForm(TFrmPrincipal, FrmPrincipal);
   Application.CreateForm(TdmConexao, dmConexao);

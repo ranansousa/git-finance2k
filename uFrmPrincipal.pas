@@ -6,7 +6,7 @@ uses
   Winapi.Windows, uMD5, Winapi.Messages, System.SysUtils, System.UITypes, System.Variants, System.Classes, Vcl.Graphics, uUtil, uVarGlobais, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, FireDAC.Phys.ADSWrapper, FireDAC.UI.Intf, FireDAC.VCLUI.Error, FireDAC.VCLUI.Wait, FireDAC.Phys, FireDAC.stan.Def, Registry, FireDAC.Phys.IBBase, FireDAC.Phys.FB, FireDAC.Comp.UI, FireDAC.stan.Intf, uFrmRegistraBaseDados, FireDAC.Phys.ADS, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Buttons, FireDAC.Phys.IBWrapper, Vcl.Samples.Gauges, Vcl.ComCtrls,
   Vcl.Samples.Spin, wininet, Winsock, IdSSL, IdSSLOpenSSL, IdMessage, Organizacao, IdAttachmentFile, IdTCPClient, IdExplicitTLSClientServerBase, IdMessageClient, IdSMTPBase, uLogin, IdTCPConnection, IdSMTP, jpeg, IdBaseComponent, IdComponent, IdHTTP, FireDAC.stan.Option, FireDAC.stan.Error, FireDAC.Phys.Intf, FireDAC.stan.Pool, FireDAC.stan.Async, FireDAC.stan.Param, FireDAC.DatS, FireDAC.DApt.Intf, FireDAC.DApt, FireDAC.Comp.Client, Data.DB, FireDAC.Comp.DataSet, Vcl.Mask, VCLUnZip, VCLZip, FireDAC.Phys.FBDef,
   IdAntiFreezeBase, Vcl.IdAntiFreeze, frxClass, udmConexao, uDMOrganizacao, udmMegaContabil, uDMUsuarioConsulta, ACBrBase, uDmExportaFinance, uDMContasPagar, Vcl.Imaging.pngimage, Vcl.Grids, Vcl.DBGrids, frxDBSet, uFrmManutencao, Vcl.Menus, uFrmBackup, uFrmRegistro, uFrmServidorEmail, uDMServerMail, System.ImageList, Vcl.ImgList, uFrmImportacao, uFrmRelatorios, uFrmExportacao, uFrmSincronizaMega, uFrmTeste, uFrmUpdate, udmCombos, RxDBCtrl, frxCrypt, UMostraErros,uFrmAlteraTituloPagar,uFrmAlteraTituloReceber,
-  uFrameBDTables, udmManutencao, uFrameOrganizacoes, uFrameEstado,
+  uFrameBDTables, udmManutencao, uFrameOrganizacoes, uFrameEstado, uFrmDeletaLoteContabil,
   uFrameGeneric, uFrameCidade, uFrameEndereco, uFrameBairro;
 
 type
@@ -21,7 +21,6 @@ type
     Utilitarios1: TMenuItem;
     Sobre1: TMenuItem;
     Backup1: TMenuItem;
-    Exportao1: TMenuItem;
     Registro1: TMenuItem;
     Info1: TMenuItem;
     Atualizar1: TMenuItem;
@@ -49,6 +48,10 @@ type
     img1: TImage;
     mmoMain: TMemo;
     pnlMain: TPanel;
+    mniSair1: TMenuItem;
+    mniExportar1: TMenuItem;
+    mniMegaContabil: TMenuItem;
+    mniDelExport: TMenuItem;
 
     procedure Backup1Click(Sender: TObject);
     procedure Registro1Click(Sender: TObject);
@@ -75,6 +78,8 @@ type
     procedure btn1Click(Sender: TObject);
     procedure alignPanelLogin(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure mniMegaContabilClick(Sender: TObject);
+    procedure mniDelExportClick(Sender: TObject);
 
 
 
@@ -473,7 +478,7 @@ begin
 
 
 
-
+     acessoMenu(True);
 //  frmEstado1.createComboAll('ESTADO','DESCRICAO',frmEstado1.cbbcombo, FsListaIdEstados);
 
 end;
@@ -750,6 +755,34 @@ begin
 
 
 
+end;
+
+procedure TFrmPrincipal.mniDelExportClick(Sender: TObject);
+begin
+  numberError := '1046';
+  try
+    frmDeletaLoteContabil := TfrmDeletaLoteContabil.Create(Self);
+    frmDeletaLoteContabil.ShowModal;
+    FreeAndNil(frmDeletaLoteContabil);
+
+  except
+    on e: Exception do
+      ShowMessage(e.Message + sLineBreak + 'Contate o suporte. Informe erro: ' + numberError);
+  end;
+end;
+
+procedure TFrmPrincipal.mniMegaContabilClick(Sender: TObject);
+begin
+  numberError := '1032';
+  try
+    frmExportacao := TfrmExportacao.Create(Self);
+    frmExportacao.ShowModal;
+    FreeAndNil(frmExportacao);
+
+  except
+    on e: Exception do
+      ShowMessage(e.Message + sLineBreak + 'Contate o suporte. Informe erro: ' + numberError);
+  end;
 end;
 
 procedure TFrmPrincipal.mniTRAltDocClick(Sender: TObject);

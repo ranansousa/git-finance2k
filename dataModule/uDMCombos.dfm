@@ -18,4 +18,8 @@ object dmCombos: TdmCombos
     Left = 376
     Top = 88
   end
+  object dsLoteContabil: TDataSource
+    Left = 160
+    Top = 152
+  end
 end

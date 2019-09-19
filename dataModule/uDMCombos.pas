@@ -3,13 +3,15 @@ unit uDMCombos;
 interface
 
 uses
-  System.SysUtils, System.Classes, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, Vcl.StdCtrls, udmConexao, uDMOrganizacao, uDMCedenteConsulta, uDMUsuarioConsulta, uUtil, Data.DB;
+  System.SysUtils, System.Classes, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls,
+  Vcl.StdCtrls, udmConexao, uDMOrganizacao,uDMExportaFinance, uDMCedenteConsulta, uDMUsuarioConsulta, uUtil, Data.DB;
 
 type
   TdmCombos = class(TDataModule)
     DTSCedente: TDataSource;
     DTSOrganizacao: TDataSource;
     DTSUsuario: TDataSource;
+    dsLoteContabil: TDataSource;
     procedure DataModuleDestroy(Sender: TObject);
   private
     procedure inicializarDM(Sender: TObject);
@@ -19,6 +21,9 @@ type
     procedure listaFornecedor(var combo: TComboBox; var listaID: TStringList);
     procedure listaOrganizacao(var combo: TComboBox; var listaID: TStringList);
     procedure listaUsuario(var combo: TComboBox; var listaID: TStringList);
+    procedure listaLoteContabil(var combo: TComboBox; var listaID: TStringList);
+
+
   end;
 
 var
@@ -97,6 +102,33 @@ begin
   dmCedenteConsulta.qryPreencheCombo.Close;
   combo.ItemIndex := 0;
   FreeAndNil(dmCedenteConsulta);
+end;
+
+procedure TdmCombos.listaLoteContabil(var combo: TComboBox;
+  var listaID: TStringList);
+begin
+//lote
+   if not (Assigned(dmExportaFinance)) then
+  begin
+    dmExportaFinance := TdmExportaFinance.Create(Self);
+  end;
+
+  listaID := TStringList.Create;
+  listaID.Clear;
+  listaID.Add('Sem ID');
+  combo.Clear;
+  combo.Items.Add('<<< Selecione um lote   >>>');
+  dmExportaFinance.preencheComboLoteContabil(uUtil.TOrgAtual.getId);
+  dmExportaFinance.qryObterTodosLoteContabil.First;
+  while not dmExportaFinance.qryObterTodosLoteContabil.Eof do
+  begin
+    combo.Items.Add(dmExportaFinance.qryObterTodosLoteContabil.FieldByName('LOTE').AsString);
+    listaID.Add(dmExportaFinance.qryObterTodosLoteContabil.FieldByName('ID_LOTE_CONTABIL').AsString);
+    dmExportaFinance.qryObterTodosLoteContabil.Next;
+  end;
+  dmExportaFinance.qryObterTodosLoteContabil.Close;
+  combo.ItemIndex := 0;
+
 end;
 
 procedure TdmCombos.listaOrganizacao(var combo: TComboBox; var listaID: TStringList);

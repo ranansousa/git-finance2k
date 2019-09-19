@@ -5277,10 +5277,6 @@ object FrmPrincipal: TFrmPrincipal
         Caption = 'Backup'
         OnClick = Backup1Click
       end
-      object Exportao1: TMenuItem
-        Caption = 'Exporta'#231#227'o'
-        OnClick = Exportao1Click
-      end
       object Registro1: TMenuItem
         Caption = 'Registro'
         OnClick = Registro1Click
@@ -5302,11 +5298,25 @@ object FrmPrincipal: TFrmPrincipal
         OnClick = menuItemSincMegaClick
       end
     end
+    object mniExportar1: TMenuItem
+      Caption = 'Exportar'
+      object mniMegaContabil: TMenuItem
+        Caption = 'MegaContabil'
+        OnClick = mniMegaContabilClick
+      end
+      object mniDelExport: TMenuItem
+        Caption = 'Deletar Exporta'#231#227'o'
+        OnClick = mniDelExportClick
+      end
+    end
     object Sobre1: TMenuItem
       Caption = 'Sobre'
       object Info1: TMenuItem
         Caption = 'Info'
       end
+    end
+    object mniSair1: TMenuItem
+      Caption = 'Sair'
     end
   end
   object IdAntiFreeze1: TIdAntiFreeze

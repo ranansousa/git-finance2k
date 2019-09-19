@@ -363,7 +363,7 @@ object dmExportaFinance: TdmExportaFinance
       ''
       ' FROM lanc_export_pend LC'
       ' WHERE LC.id_organizacao = :PIDORGANIZACAO ')
-    Left = 32
+    Left = 36
     Top = 568
     ParamData = <
       item
@@ -385,7 +385,7 @@ object dmExportaFinance: TdmExportaFinance
       
         'AND lc.data_registro between '#39'01.01.1900'#39' AND ( Select (current_' +
         'date -1) from RDB$DATABASE)')
-    Left = 40
+    Left = 36
     Top = 440
     ParamData = <
       item
@@ -425,7 +425,7 @@ object dmExportaFinance: TdmExportaFinance
   end
   object qryUpdateGeneric: TFDQuery
     Connection = dmConexao.Conn
-    Left = 32
+    Left = 36
     Top = 496
   end
   object qryHstSemCC: TFDQuery
@@ -802,7 +802,7 @@ object dmExportaFinance: TdmExportaFinance
       ''
       ''
       '')
-    Left = 1048
+    Left = 1024
     Top = 352
     ParamData = <
       item
@@ -856,8 +856,8 @@ object dmExportaFinance: TdmExportaFinance
       ''
       'ORDER BY DATA_EMISSAO ASC, VALOR_NOMINAL DESC;'
       '')
-    Left = 264
-    Top = 232
+    Left = 272
+    Top = 216
     ParamData = <
       item
         Name = 'PIDORGANIZACAO'
@@ -923,7 +923,7 @@ object dmExportaFinance: TdmExportaFinance
         '      (TP.DATA_PAGAMENTO BETWEEN :pDataInicial AND :pDataFinal) ' +
         'AND'
       '      (TP.REGISTRO_PROVISAO IS NOT NULL) AND'
-      '      (TP.ID_TIPO_STATUS = '#39'QUITADO'#39')'
+      '      (TP.ID_TIPO_STATUS in ('#39'QUITADO'#39', '#39'PARCIAL'#39'))'
       '')
     Left = 616
     Top = 40
@@ -978,7 +978,7 @@ object dmExportaFinance: TdmExportaFinance
       'WHERE   (TRBAC.ID_ORGANIZACAO = :PIDORGANIZACAO) AND'
       '        (TRBAC.ID_TITULO_RECEBER_BAIXA =:PIDTITULORECEBERBAIXA);'
       '')
-    Left = 1048
+    Left = 1024
     Top = 424
     ParamData = <
       item
@@ -1238,6 +1238,78 @@ object dmExportaFinance: TdmExportaFinance
       end
       item
         Name = 'PIDTITULOPAGARBAIXA'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+  object qryObterTodosLoteContabil: TFDQuery
+    Connection = dmConexao.Conn
+    FetchOptions.AssignedValues = [evRowsetSize]
+    FetchOptions.RowsetSize = 500
+    SQL.Strings = (
+      'SELECT  LC.ID_LOTE_CONTABIL,'
+      '        LC.ID_ORGANIZACAO,'
+      '        LC.LOTE,'
+      '        LC.STATUS,'
+      '        LC.DATA_REGISTRO,'
+      '        LC.DATA_ATUALIZACAO,'
+      '        LC.PERIODO_INICIAL,'
+      '        LC.PERIODO_FINAL,'
+      '        LC.TIPO_TABLE,'
+      '        LC.QTD_REGISTROS'
+      ''
+      ' FROM LOTE_CONTABIL LC'
+      ''
+      'WHERE (LC.ID_ORGANIZACAO = :PIDORGANIZACAO) AND'
+      
+        '      (LC.DATA_REGISTRO BETWEEN :DTDATAINICIAL AND :DTDATAFINAL)' +
+        ' AND'
+      '      LC.STATUS <> '#39'EXCLUIDO'#39
+      ''
+      'ORDER BY LC.DATA_REGISTRO, LC.LOTE'
+      '')
+    Left = 36
+    Top = 232
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'DTDATAINICIAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end
+      item
+        Name = 'DTDATAFINAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end>
+  end
+  object qryDeletaLoteContabil: TFDQuery
+    Connection = dmConexao.Conn
+    FetchOptions.AssignedValues = [evRowsetSize]
+    FetchOptions.RowsetSize = 500
+    SQL.Strings = (
+      'UPDATE LOTE_CONTABIL LC SET LC.STATUS = '#39'EXCLUIDO'#39
+      ''
+      'WHERE (LC.ID_ORGANIZACAO = :PIDORGANIZACAO) AND '
+      '      (LC.ID_LOTE_CONTABIL = :PIDLOTE);'
+      '')
+    Left = 36
+    Top = 296
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'PIDLOTE'
         DataType = ftString
         ParamType = ptInput
         Size = 36

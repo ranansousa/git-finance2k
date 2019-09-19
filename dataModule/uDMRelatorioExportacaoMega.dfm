@@ -567,9 +567,10 @@ object dmRelExportacaoMega: TdmRelExportacaoMega
     Connection = dmConexao.Conn
     SQL.Strings = (
       '   SELECT distinct'
-      '              SUM(TP.VALOR_NOMINAL) AS VALOR_NOMINAL,'
+      '              SUM(TP.VALOR_NOMINAL) AS VALOR_NOMINAL, '
       '              max(TP.descricao) as descricao, '
-      '              MAX(position('#39'/'#39' in TP.parcela)) AS PARCELA,'
+      '             -- MAX(position('#39'/'#39' in TP.parcela)) AS PARCELA,'
+      '              COUNT(TP.REGISTRO_PROVISAO) AS PARCELA,'
       '              TP.REGISTRO_PROVISAO, '
       '              MAX(TP.ID_ORGANIZACAO) AS ID_ORGANIZACAO,'
       '              max(tp.id_titulo_pagar) as id_titulo_pagar,'
