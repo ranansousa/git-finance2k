@@ -4350,6 +4350,7 @@ object frmManutencao: TfrmManutencao
     end
   end
   object ds1: TDataSource
+    AutoEdit = False
     DataSet = qryTodosTP
     Left = 172
     Top = 264
@@ -4424,5 +4425,70 @@ object frmManutencao: TfrmManutencao
     Connection = dmConexao.Conn
     Left = 548
     Top = 384
+  end
+  object FDSDeletaTP: TFDStoredProc
+    Connection = dmConexao.Conn
+    StoredProcName = 'SP_DEL_TP'
+    Left = 388
+    Top = 392
+    ParamData = <
+      item
+        Position = 1
+        Name = 'ID_ORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Position = 2
+        Name = 'ID_TITULO_PAGAR'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+  object qryObterFilhosTP: TFDQuery
+    Connection = dmConexao.Conn
+    SQL.Strings = (
+      'SELECT * FROM TITULO_PAGAR TP'
+      'WHERE TP.ID_TITULO_GERADOR = :PIDGERADOR AND '
+      '      TP.ID_ORGANIZACAO = :PIDORGANIZACAO')
+    Left = 208
+    Top = 16
+    ParamData = <
+      item
+        Name = 'PIDGERADOR'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+  object qryRemoveFilhoTP: TFDQuery
+    Connection = dmConexao.Conn
+    SQL.Strings = (
+      'UPDATE TITULO_PAGAR TP SET TP.ID_TITULO_GERADOR = NULL'
+      'WHERE (TP.ID_ORGANIZACAO =:PIDORGANIZACAO) AND'
+      '      (TP.ID_TITULO_PAGAR = :PIDTPFILHO)')
+    Left = 88
+    Top = 16
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'PIDTPFILHO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
   end
 end

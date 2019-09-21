@@ -34,6 +34,9 @@ type
     qryAjustaDataEmissao: TFDQuery;
     framePB1: TframePB;
     qryDeletaTP: TFDQuery;
+    FDSDeletaTP: TFDStoredProc;
+    qryObterFilhosTP: TFDQuery;
+    qryRemoveFilhoTP: TFDQuery;
     procedure btnDeletarExcluidosClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure btnAlterNumDocClick(Sender: TObject);
@@ -47,6 +50,10 @@ type
     procedure inicializarDM(Sender: TObject);
     procedure ObterQtdRegistro(pTable : string);
     function ObterTodosTitulosPagar(pIdOrganizacao :string): TFDQuery;
+    function obterFilhosPorTP(pIdOrganizacao,pIdTP :string): boolean;
+    function removeFilhosTP(pIdOrganizacao,pIdTPFilho :string): boolean;
+
+
     function AjustarDataEmissaoTP(query :TFDQuery):boolean;
     function deletaTP(pIdOrganizacao,pID :string) :boolean;
 
@@ -90,43 +97,72 @@ end;
 
 procedure TfrmManutencao.btnDeletarExcluidosClick(Sender: TObject);
 var
- idTP, tipoStatus: String;
- qtd :Integer;
+ gerador, idTP, tipoStatus: String;
+aux, qtd :Integer;
 begin
   idOrganizacao := TOrgAtual.getId;
   tipoStatus := 'EXCLUIDO';
-  try
-    framePB1.Visible :=True;
-    framePB1.progressBar(1,qtd);
-    ObterTodosTitulosPagar(idOrganizacao);
-    qryTodosTP.First;
-    qtd := qryTodosTP.RecordCount;
+  framePB1.Visible :=True;
 
+
+  //ATUALIZA A QRYTODOS COM APENAS OS LANCAMENTOS EXCLUIDOS QUE NAO TENHAM TITULO_GERADOR
+
+    if not (Assigned(dmConexao)) then
+      begin
+        dmConexao := TdmConexao.Create(Self);
+        dmConexao.conectarBanco;
+      end ;
+
+    qryTodosTP.Close;
+    qryTodosTP.Connection := dmConexao.Conn;
+    qryTodosTP.SQL.Clear;
+    qryTodosTP.SQL.Add(' SELECT * FROM TITULO_PAGAR TP ' +
+                       ' WHERE (TP.ID_ORGANIZACAO =:PIDORGANIZACAO) AND ' +
+                       ' (TP.ID_TIPO_STATUS = ''EXCLUIDO'') AND '+
+                       ' (TP.ID_TITULO_GERADOR IS NULL) ' );
+    qryTodosTP.ParamByName('PIDORGANIZACAO').AsString := idOrganizacao;
+    qryTodosTP.Open;
+
+  qryTodosTP.First;
+  qtd := qryTodosTP.RecordCount;
+
+
+  try
     if (qtd >0 ) then begin
+      try
        while not qryTodosTP.Eof do begin
          tipoStatus := qryTodosTP.FieldByName('ID_TIPO_STATUS').AsString;
-         idTP       :=  qryTodosTP.FieldByName('ID_TITULO_PAGAR').AsString;
+         idTP       := qryTodosTP.FieldByName('ID_TITULO_PAGAR').AsString;
+        // gerador    := qryTodosTP.FieldByName('ID_TITULO_GERADOR').AsString;
 
-         if tipoStatus.Equals('EXCLUIDO') then begin
-          if (deletaTP(idOrganizacao,idTP)) then begin
+           if obterFilhosPorTP(idOrganizacao, idTP) then  begin
+               qryObterFilhosTP.First;
+                 while not qryObterFilhosTP.Eof do begin
+                  removeFilhosTP(idOrganizacao,qryObterFilhosTP.FieldByName('ID_TITULO_PAGAR').AsString);
+                  qryObterFilhosTP.Next;
+                 end;
+           end;
+
+          deletaTP(idOrganizacao,idTP);
           framePB1.progressBar(1,qtd);
           Application.ProcessMessages;
-          end;
-         end;
-
-         qryTodosTP.Next;
+          qryTodosTP.Next;
        end;
-        dmConexao.Conn.CommitRetaining;
-    end;
-      ObterTodosTitulosPagar(idOrganizacao);
-      dbgrd1.DataSource := ds1;
-      dbgrd1.DataSource.DataSet := qryTodosTP;
-      ShowMessage('Processo concluído... ');
-  Except
-     framePB1.Visible :=false;
-    raise Exception.Create
-      ('Problemas ao tentar deletar titulos a pagar. ERRO: FRM_DEL_TP - 1');
+      Except
+          raise Exception.Create
+            ('Problemas ao tentar DELETAR_TP ');
+        end;
 
+    end;
+
+      ObterTodosTitulosPagar(idOrganizacao);
+      qtd := qryTodosTP.RecordCount;
+      Application.ProcessMessages;
+      framePB1.Visible :=false;
+      ShowMessage('   Processo concluído...   ');
+  Except
+     raise Exception.Create
+      ('Problemas ao tentar deletar alguns lançamentos . ERRO: FRM_DEL_TP-1 TP DOC >>  ' + qryTodosTP.FieldByName('NUMERO_DOCUMENTO').AsString);
   end;
 
 end;
@@ -134,27 +170,27 @@ end;
 function TfrmManutencao.deletaTP(pIdOrganizacao, pID: string): boolean;
 begin
 
+
  if not (Assigned(dmConexao)) then
-  begin
-    dmConexao := TdmConexao.Create(Self);
-    dmConexao.conectarBanco;
-  end ;
+    begin
+      dmConexao := TdmConexao.Create(Self);
+      dmConexao.conectarBanco;
+    end ;
 
-  qryDeletaTP.Close;
-  qryDeletaTP.Connection := dmConexao.Conn;
-  qryDeletaTP.SQL.Clear;
-  qryDeletaTP.SQL.Add('execute procedure sp_del_tp(:PID,:PIDORGANIZACAO)');
-  qryDeletaTP.ParamByName('PID').AsString := pID;
-  qryDeletaTP.ParamByName('PIDORGANIZACAO').AsString := pidOrganizacao;
+     try
+         FDSDeletaTP.StoredProcName :='sp_del_tp';
+         FDSDeletaTP.Prepare;
+         FDSDeletaTP.ParamByName('ID_ORGANIZACAO').AsString := pIdOrganizacao;
+         FDSDeletaTP.ParamByName('ID_TITULO_PAGAR').AsString := pID;
+         FDSDeletaTP.ExecProc;
 
-  try
-    qryDeletaTP.ExecSQL;
-  Except
-    raise Exception.Create
-      ('Problemas ao tentar deletar registros. Erro : DELTP-2');
-  end;
+         dmConexao.Conn.CommitRetaining;
 
-  dmConexao.Conn.CommitRetaining;
+     except
+          dmConexao.Conn.RollbackRetaining;
+          raise Exception.Create('Erro ao tentar Deletar Titulos (SP_DEL_TP)');
+
+     end;
 
    Result := System.True;
 end;
@@ -164,7 +200,8 @@ begin
 inicializarDM(Self);
 framePB1.Visible := False;
 framePB1.lblProgressBar.Visible :=False;
-ObterTodosTitulosPagar(TOrgAtual.getId);
+idOrganizacao := TOrgAtual.getId;
+ObterTodosTitulosPagar(idOrganizacao);
 
 end;
 
@@ -198,6 +235,19 @@ begin
 end;
 
 
+function TfrmManutencao.obterFilhosPorTP(pIdOrganizacao,  pIdTP: string): boolean;
+begin
+           qryObterFilhosTP.Close;
+           qryObterFilhosTP.Connection := dmConexao.Conn;
+           qryObterFilhosTP.ParamByName('PIDORGANIZACAO').AsString :=pIdOrganizacao;
+           qryObterFilhosTP.ParamByName('PIDGERADOR').AsString     :=pIdTP;
+           qryObterFilhosTP.Open();
+
+
+      Result := not qryObterFilhosTP.IsEmpty; //se encotrar filhos retorna true
+//fim
+end;
+
 procedure TfrmManutencao.tsTabelasShow(Sender: TObject);
 begin
 frameOrgs.listar(Self);
@@ -215,8 +265,7 @@ begin
     Application.ProcessMessages;
     Sleep(2000);
 
- if dmConexao.conectarBanco then
-    begin
+
       try
       query.Open();
       query.First;
@@ -243,10 +292,9 @@ begin
         raise Exception.Create('Erro ao tentar ajustar datas dos Titulos ');
 
       end;
+
        dmConexao.Conn.CommitRetaining;
        ShowMessage('Processo concluído...');
-
-    end;
 
     Result :=System.True;
 
@@ -257,15 +305,10 @@ end;
 
 function TfrmManutencao.ObterTodosTitulosPagar(pIdOrganizacao :string): TFDQuery;
 begin
-
-if not (Assigned(dmConexao)) then
-  begin
-    dmConexao := TdmConexao.Create(Self);
-    dmConexao.conectarBanco;
-  end ;
-
     qryTodosTP.Close;
     qryTodosTP.Connection := dmConexao.Conn;
+    qryTodosTP.SQL.Clear;
+    qryTodosTP.SQL.Add(' SELECT * FROM TITULO_PAGAR TP WHERE TP.ID_ORGANIZACAO = :PIDORGANIZACAO ' ) ;
     qryTodosTP.ParamByName('PIDORGANIZACAO').AsString := PIDORGANIZACAO;
     qryTodosTP.Open;
 
@@ -273,6 +316,22 @@ if not (Assigned(dmConexao)) then
 end;
 
 
+
+function TfrmManutencao.removeFilhosTP(pIdOrganizacao, pIdTPFilho: string): boolean;
+begin
+
+  qryRemoveFilhoTP.Close;
+  qryRemoveFilhoTP.Connection := dmConexao.Conn;
+  qryRemoveFilhoTP.ParamByName('PIDORGANIZACAO').AsString := PIDORGANIZACAO;
+  qryRemoveFilhoTP.ParamByName('PIDTPFILHO').AsString := pIdTPFilho; //campo id do titulo a ser alterador
+
+  qryRemoveFilhoTP.ExecSQL;
+
+  dmConexao.Conn.CommitRetaining;
+
+  Result := System.True;
+
+end;
 
 procedure TfrmManutencao.ObterQtdRegistro(pTable :string);
 var
@@ -282,21 +341,12 @@ begin
         '  FROM  ' +  pTable +
         '  WHERE 1=1 ;' ;
 
-
-  if dmConexao.conectarBanco then
-  begin
-
     qryQtdRegistros.Close;
-    if not qryQtdRegistros.Connection.Connected then
-    begin
-      qryQtdRegistros.Connection := dmConexao.Conn;
-    end;
+    qryQtdRegistros.Connection := dmConexao.Conn;
     qryQtdRegistros.SQL.Clear;
     qryQtdRegistros.SQL.Add(cmd);
     qryQtdRegistros.Open;
 
-
-  end;
 end;
 
 

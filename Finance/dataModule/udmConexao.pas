@@ -55,16 +55,18 @@ var  Arquivo: TIniFile { uses IniFiles };
 databaseFinance:String;
 begin
 //      teste := uUtil.GetPathConfigIni;
+  if not(Conn.Connected) then
+   begin
 
-Result := False;
+    Result := False;
 
-Arquivo := TIniFile.Create(uUtil.GetPathConfigIni);
+    Arquivo := TIniFile.Create(uUtil.GetPathConfigIni);
 
 
-if not uUtil.ArquivoExist(Arquivo.FileName) then
-begin
-      raise Exception.Create('Não foi possível conectar ao banco de dados!');
-end ;
+    if not uUtil.ArquivoExist(Arquivo.FileName) then
+    begin
+          raise Exception.Create('Não foi possível conectar ao banco de dados!');
+    end ;
 
 databaseFinance :=  Arquivo.ReadString('DADOSFINANCE','DATABASE', '');
 uUtil.TOrgAtual.setPathSGBD(databaseFinance);
@@ -93,9 +95,10 @@ uUtil.TOrgAtual.setPathSGBD(databaseFinance);
      // Exception.Create('O Caminho do banco de dados parece estar incorreto.');
 
     end;
+ end;
 
   Arquivo.Free;
-  Result := System.True;
+  Result := Conn.Connected;
 end;
 
 function TdmConexao.conectarMega: boolean;
@@ -107,7 +110,7 @@ Arquivo := TIniFile.Create(uUtil.GetPathConfigIni);
 databaseMega :=  Arquivo.ReadString('DADOSMEGA','DATABASE', '');
 
   if not(ConnMega.Connected) then
-  begin
+   begin
 
     try
       begin
@@ -128,7 +131,6 @@ databaseMega :=  Arquivo.ReadString('DADOSMEGA','DATABASE', '');
       end;
       if not ConnMega.Ping then
       begin
-
 
         raise Exception.Create('Não foi possível conectar ao Sistema Contábil! '   + databaseMega);
       end;
