@@ -4225,13 +4225,6 @@ object frmServidorEmail: TfrmServidorEmail
     ParentColor = False
     ParentFont = False
   end
-  object lblPID: TLabel
-    Left = 32
-    Top = 483
-    Width = 360
-    Height = 13
-    Caption = 'id'
-  end
   object btnSalvar: TBitBtn
     Left = 32
     Top = 406

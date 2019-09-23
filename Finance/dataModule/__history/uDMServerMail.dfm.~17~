@@ -30,9 +30,4 @@ object dmServerMail: TdmServerMail
     Left = 248
     Top = 56
   end
-  object qrySalvar: TFDQuery
-    Connection = dmConexao.Conn
-    Left = 88
-    Top = 165
-  end
 end

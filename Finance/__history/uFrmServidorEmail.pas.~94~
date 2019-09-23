@@ -8,7 +8,7 @@ uses
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.Controls, Vcl.Grids,
-  Vcl.DBGrids, Vcl.StdCtrls, Vcl.Buttons, Vcl.Forms, Vcl.Dialogs, uVarGlobais,StrUtils , uUtil,
+  Vcl.DBGrids, Vcl.StdCtrls, Vcl.Buttons, Vcl.Forms, Vcl.Dialogs,  uUtil,
   uDMServerMail;
 type
   TfrmServidorEmail = class(TForm)
@@ -75,8 +75,7 @@ begin
       senha     := edtSenha.Text;
       host      := edtHost.Text;
       porta     := edtPorta.Text;
-      autentica := IfThen(chAutentica.Checked, '1', '0');
-      
+      autentica := '0';
       id := lblPID.Caption;
                 
 
@@ -113,9 +112,7 @@ begin
        
        end;
        
-   // inicializa as variaveis do host do email a ser enviado.
-    uVarGlobais.IniHostEmail(conta, senha, host, porta, autentica);
-         
+
   ShowMessage('Dados gravados com sucesso.');
 
 

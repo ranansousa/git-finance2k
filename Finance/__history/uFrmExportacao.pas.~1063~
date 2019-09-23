@@ -1510,6 +1510,8 @@ begin
     ShowMessage('Não existem dados para imprimir.');
   end
 
+  btnGeraLote.Click;
+
 end;
 
 procedure TfrmExportacao.btnLimparClick(Sender: TObject);

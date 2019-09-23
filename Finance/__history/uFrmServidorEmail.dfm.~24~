@@ -4225,13 +4225,6 @@ object frmServidorEmail: TfrmServidorEmail
     ParentColor = False
     ParentFont = False
   end
-  object lblPID: TLabel
-    Left = 32
-    Top = 483
-    Width = 360
-    Height = 13
-    Caption = 'id'
-  end
   object btnSalvar: TBitBtn
     Left = 32
     Top = 406
@@ -4328,5 +4321,10 @@ object frmServidorEmail: TfrmServidorEmail
     DataSet = dmServerMail.qryObterDadosMail
     Left = 584
     Top = 224
+  end
+  object qrySalvar: TFDQuery
+    Connection = dmConexao.Conn
+    Left = 184
+    Top = 408
   end
 end

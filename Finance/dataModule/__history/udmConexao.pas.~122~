@@ -171,22 +171,26 @@ var id:string;
 begin
 //fornece um novo id.
 //o banco precisa ter instalado a UDF createguid
-  id := '0';
+   id := '0';
+Result := id;
+
+ if not qryObterGUID.Connection.Connected then
+  begin
+    qryObterGUID.Connection := dmConexao.Conn;
+  end;
 
   qryObterGUID.Close;
-  qryObterGUID.Connection := dmConexao.Conn;
   qryObterGUID.Open;
 
 
-    if  not qryObterGUID.IsEmpty then
-      begin
-       id := qryObterGUID.FieldByName('NEWID').AsString;
-       qryObterGUID.Free;
-     end;
+if  not qryObterGUID.IsEmpty then begin id := qryObterGUID.FieldByName('NEWID').AsString;
+ qryObterGUID.Free;
+ end;
 
  Result := id;
+
+
+
 end;
-
-
 
 end.

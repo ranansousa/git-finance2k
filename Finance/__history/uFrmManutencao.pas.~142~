@@ -154,6 +154,21 @@ begin
    end;
 
 
+
+  //ATUALIZA A QRYTODOS COM APENAS OS LANCAMENTOS EXCLUIDOS QUE NAO TENHAM TITULO_GERADOR
+   {
+    qryTodosTP.Close;
+    qryTodosTP.Connection := dmConexao.Conn;
+    qryTodosTP.SQL.Clear;
+    qryTodosTP.SQL.Add(' SELECT * FROM TITULO_PAGAR TP ' +
+                       ' WHERE (TP.ID_ORGANIZACAO =:PIDORGANIZACAO) AND ' +
+                       ' (TP.ID_TIPO_STATUS = ''EXCLUIDO'') AND '+
+                       ' (TP.ID_TITULO_GERADOR IS NULL) ' );
+    qryTodosTP.ParamByName('PIDORGANIZACAO').AsString := idOrganizacao;
+    qryTodosTP.Open;
+
+  qryTodosTP.First;   }
+
   ObterTodosTitulosPagar(idOrganizacao);
 
   qtd := qryTodosTP.RecordCount;

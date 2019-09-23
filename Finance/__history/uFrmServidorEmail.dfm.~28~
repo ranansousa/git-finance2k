@@ -4329,4 +4329,9 @@ object frmServidorEmail: TfrmServidorEmail
     Left = 584
     Top = 224
   end
+  object qrySalvar: TFDQuery
+    Connection = dmConexao.Conn
+    Left = 192
+    Top = 400
+  end
 end

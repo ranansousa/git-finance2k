@@ -98,20 +98,33 @@ end;
 procedure TfrmManutencao.btnDeletarExcluidosClick(Sender: TObject);
 var
  gerador, idTP, tipoStatus: String;
-I, aux, qtd :Integer;
+aux, qtd :Integer;
 listaExcluidos :TStringList;
 
 begin
   idOrganizacao := TOrgAtual.getId;
   tipoStatus := 'EXCLUIDO';
   framePB1.Visible :=True;
-
-  listaExcluidos := TStringList.Create;
-
   aux := 0;
-  qtd := qryTodosTP.RecordCount;
+
 
   //preecnhe a lista de excluidos
+   qryTodosTP.First;
+   while not qryTodosTP.Eof do begin
+
+    if(( qryTodosTP.FieldByName('ID_TIPO_STATUS').AsString).Equals('EXCLUIDO')) then begin
+
+      listaExcluidos.Add(qryTodosTP.FieldByName('ID_TITULO_PAGAR').AsString);
+      Inc(aux);
+
+    end;
+
+
+   end;
+
+
+  //ATUALIZA A QRYTODOS COM APENAS OS LANCAMENTOS EXCLUIDOS QUE NAO TENHAM TITULO_GERADOR
+   {
     qryTodosTP.Close;
     qryTodosTP.Connection := dmConexao.Conn;
     qryTodosTP.SQL.Clear;
@@ -121,40 +134,9 @@ begin
                        ' (TP.ID_TITULO_GERADOR IS NULL) ' );
     qryTodosTP.ParamByName('PIDORGANIZACAO').AsString := idOrganizacao;
     qryTodosTP.Open;
-    qtd := qryTodosTP.RecordCount;
 
-   qryTodosTP.First;
-   while not qryTodosTP.Eof do begin
-
-    if(( qryTodosTP.FieldByName('ID_TIPO_STATUS').AsString).Equals(tipoStatus)) then begin
-
-      listaExcluidos.Add(qryTodosTP.FieldByName('ID_TITULO_PAGAR').AsString);
-      Inc(aux);
-
-    end;
-
-    qryTodosTP.Next;
-
-   end;
-
-   //tirando as relações de pai e filho dos titulos excluidos
-
-   if listaExcluidos.Count >0  then begin
-
-     for I := 0 to listaExcluidos.Count -1 do begin
-           idTP  := listaExcluidos[I];
-          if obterFilhosPorTP(idOrganizacao, idTP) then  begin
-               qryObterFilhosTP.First;
-                 while not qryObterFilhosTP.Eof do begin
-                  removeFilhosTP(idOrganizacao,qryObterFilhosTP.FieldByName('ID_TITULO_PAGAR').AsString);
-                  qryObterFilhosTP.Next;
-                 end;
-           end;
-     end;
-   end;
-
-
-  ObterTodosTitulosPagar(idOrganizacao);
+  qryTodosTP.First;   }
+   qtd := aux;
 
   qtd := qryTodosTP.RecordCount;
 
@@ -165,6 +147,15 @@ begin
        while not qryTodosTP.Eof do begin
          tipoStatus := qryTodosTP.FieldByName('ID_TIPO_STATUS').AsString;
          idTP       := qryTodosTP.FieldByName('ID_TITULO_PAGAR').AsString;
+        // gerador    := qryTodosTP.FieldByName('ID_TITULO_GERADOR').AsString;
+
+           if obterFilhosPorTP(idOrganizacao, idTP) then  begin
+               qryObterFilhosTP.First;
+                 while not qryObterFilhosTP.Eof do begin
+                  removeFilhosTP(idOrganizacao,qryObterFilhosTP.FieldByName('ID_TITULO_PAGAR').AsString);
+                  qryObterFilhosTP.Next;
+                 end;
+           end;
 
           deletaTP(idOrganizacao,idTP);
           framePB1.progressBar(1,qtd);

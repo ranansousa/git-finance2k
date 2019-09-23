@@ -677,11 +677,7 @@ begin
     dmUsuarioConsulta := TdmUsuarioConsulta.Create(Self);
   end;
 
-  if not (Assigned(dmServerMail)) then
-  begin
-    dmServerMail := TdmServerMail.Create(Self);
-  end;
-
+  
 
 end;
 

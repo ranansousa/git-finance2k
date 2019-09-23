@@ -5,9 +5,9 @@ interface
 uses
   Winapi.Windows, uMD5, Winapi.Messages, System.SysUtils, System.UITypes, System.Variants, System.Classes, Vcl.Graphics, uUtil, uVarGlobais, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, FireDAC.Phys.ADSWrapper, FireDAC.UI.Intf, FireDAC.VCLUI.Error, FireDAC.VCLUI.Wait, FireDAC.Phys, FireDAC.stan.Def, Registry, FireDAC.Phys.IBBase, FireDAC.Phys.FB, FireDAC.Comp.UI, FireDAC.stan.Intf, uFrmRegistraBaseDados, FireDAC.Phys.ADS, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Buttons, FireDAC.Phys.IBWrapper, Vcl.Samples.Gauges, Vcl.ComCtrls,
   Vcl.Samples.Spin, wininet, Winsock, IdSSL, IdSSLOpenSSL, IdMessage, Organizacao, IdAttachmentFile, IdTCPClient, IdExplicitTLSClientServerBase, IdMessageClient, IdSMTPBase, uLogin, IdTCPConnection, IdSMTP, jpeg, IdBaseComponent, IdComponent, IdHTTP, FireDAC.stan.Option, FireDAC.stan.Error, FireDAC.Phys.Intf, FireDAC.stan.Pool, FireDAC.stan.Async, FireDAC.stan.Param, FireDAC.DatS, FireDAC.DApt.Intf, FireDAC.DApt, FireDAC.Comp.Client, Data.DB, FireDAC.Comp.DataSet, Vcl.Mask, VCLUnZip, VCLZip, FireDAC.Phys.FBDef,
-  IdAntiFreezeBase, Vcl.IdAntiFreeze, frxClass, udmConexao, uDMOrganizacao, udmMegaContabil, uDMUsuarioConsulta, ACBrBase, uDmExportaFinance, uDMContasPagar, Vcl.Imaging.pngimage, Vcl.Grids, Vcl.DBGrids, frxDBSet, uFrmManutencao, Vcl.Menus, uFrmBackup, uFrmRegistro, uFrmServidorEmail, System.ImageList, Vcl.ImgList, uFrmImportacao, uFrmRelatorios, uFrmExportacao, uFrmSincronizaMega, uFrmTeste, uFrmUpdate, udmCombos, RxDBCtrl, frxCrypt, UMostraErros,uFrmAlteraTituloPagar,uFrmAlteraTituloReceber,
+  IdAntiFreezeBase, Vcl.IdAntiFreeze, frxClass, udmConexao, uDMOrganizacao, udmMegaContabil, uDMUsuarioConsulta, ACBrBase, uDmExportaFinance, uDMContasPagar, Vcl.Imaging.pngimage, Vcl.Grids, Vcl.DBGrids, frxDBSet, uFrmManutencao, Vcl.Menus, uFrmBackup, uFrmRegistro, uFrmServidorEmail, uDMServerMail, System.ImageList, Vcl.ImgList, uFrmImportacao, uFrmRelatorios, uFrmExportacao, uFrmSincronizaMega, uFrmTeste, uFrmUpdate, udmCombos, RxDBCtrl, frxCrypt, UMostraErros,uFrmAlteraTituloPagar,uFrmAlteraTituloReceber,
   uFrameBDTables, udmManutencao, uFrameOrganizacoes, uFrameEstado, uFrmDeletaLoteContabil,
-  uFrameGeneric, uFrameCidade, uFrameEndereco, uFrameBairro, uDMServerMail;
+  uFrameGeneric, uFrameCidade, uFrameEndereco, uFrameBairro;
 
 type
   TFrmPrincipal = class(TForm)
@@ -52,6 +52,7 @@ type
     mniExportar1: TMenuItem;
     mniMegaContabil: TMenuItem;
     mniDelExport: TMenuItem;
+    qryServerMail: TFDQuery;
 
     procedure Backup1Click(Sender: TObject);
     procedure Registro1Click(Sender: TObject);
@@ -294,8 +295,6 @@ begin
         uUtil.TOrgAtual.setRazaoSocial(dmOrganizacao.qryDadosEmpresa.FieldByName('RAZAO_SOCIAL').AsString);
         uUtil.TOrgAtual.setSistemaContabil(dmOrganizacao.qryDadosEmpresa.FieldByName('SISTEMA_CONTABIL').AsString);
 
-        //setando os dados para envio de email
-         serverMail(uUtil.TOrgAtual.getId);
 
         //esconde o login
               pnlMain.Visible := true;
@@ -588,15 +587,19 @@ conta, senha, host, porta, autentica :string;
 
 begin
 // Added by adm 23/09/2019 11:51:54
-    dmServerMail.obterDadosServidorEmail(pIdOrganizacao);
 
-    if not dmServerMail.qryObterDadosMail.IsEmpty then begin
+    qryServerMail.Close;
+    qryServerMail.Connection := dmConexao.Conn;
+    qryServerMail.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+    qryServerMail.Open();
 
-      conta     := dmServerMail.qryObterDadosMail.FieldByName('LOGIN').AsString;
-      senha     := dmServerMail.qryObterDadosMail.FieldByName('SENHA').AsString;
-      host      := dmServerMail.qryObterDadosMail.FieldByName('HOST').AsString;
-      porta     := dmServerMail.qryObterDadosMail.FieldByName('PORTA').AsString;
-      autentica := IntToStr(dmServerMail.qryObterDadosMail.FieldByName('REQUER_AUTENTICACAO').AsInteger);
+    if not qryServerMail.IsEmpty then begin
+
+      conta     := qryServerMail.FieldByName('LOGIN').AsString;
+      senha     := qryServerMail.FieldByName('SENHA').AsString;
+      host      := qryServerMail.FieldByName('HOST').AsString;
+      porta     := qryServerMail.FieldByName('PORTA').AsString;
+      autentica := IntToStr(qryServerMail.FieldByName('REQUER_AUTENTICACAO').AsInteger);
 
       // inicializa as variaveis do host do email a ser enviado.
          uVarGlobais.IniHostEmail(conta, senha, host, porta, autentica);
@@ -677,10 +680,10 @@ begin
     dmUsuarioConsulta := TdmUsuarioConsulta.Create(Self);
   end;
 
-  if not (Assigned(dmServerMail)) then
-  begin
-    dmServerMail := TdmServerMail.Create(Self);
-  end;
+
+  //setando os dados para envio de email
+
+  uVarGlobais.IniHostEmail(conta, senha, host, porta, autentica);
 
 
 end;

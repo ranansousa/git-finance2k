@@ -38,9 +38,13 @@ function TdmServerMail.salvarServerMail(pId, pIdOrganizacao, pConta, pSenha, pHo
 var
 idNovo, cmd : string;
 begin
-   cmd := ' UPDATE OR INSERT INTO SERVIDOR_EMAIL ( ID_SERVIDOR_EMAIL,ID_ORGANIZACAO,LOGIN, REMETENTE, SENHA,HOST,PORTA,REQUER_AUTENTICACAO  ) ' +
+   cmd := ' UPDATE OR INSERT INTO SERVIDOR_EMAIL ( ID_SERVIDOR_EMAIL,ID_ORGANIZACAO,LOGIN, REMETENTE, SENHA,HOST,PORTA,REQUER_AUTENTICACAO,  ) ' +
           ' VALUES ( :pID, :pIdOrganizacao, :pConta,:pRemetente, :pSenha, :pHost, :pPorta, :pAutentica ) ' +
           ' MATCHING (ID_SERVIDOR_EMAIL) ' ;
+
+
+
+
 
 
   try

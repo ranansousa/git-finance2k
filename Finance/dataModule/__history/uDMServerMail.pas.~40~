@@ -12,7 +12,6 @@ type
   TdmServerMail = class(TDataModule)
     qryObterDadosMail: TFDQuery;
     dtsDadosServerMail: TDataSource;
-    qrySalvar: TFDQuery;
   private
     { Private declarations }
 
@@ -20,7 +19,6 @@ type
     { Public declarations }
     function verificaConectarBanco(): Boolean;
     function obterDadosServidorEmail(pIdOrganizacao: String): Boolean;
-    function salvarServerMail(pId, pIdOrganizacao, pConta, pSenha, pHost, pPorta, pAutentica :string) : boolean;
   end;
 
 var
@@ -32,47 +30,6 @@ implementation
 
 {$R *.dfm}
 { TdmServerMail }
-
-function TdmServerMail.salvarServerMail(pId, pIdOrganizacao, pConta, pSenha, pHost,
-  pPorta, pAutentica: string): boolean;
-var
-idNovo, cmd : string;
-begin
-   cmd := ' UPDATE OR INSERT INTO SERVIDOR_EMAIL ( ID_SERVIDOR_EMAIL,ID_ORGANIZACAO,LOGIN, REMETENTE, SENHA,HOST,PORTA,REQUER_AUTENTICACAO  ) ' +
-          ' VALUES ( :pID, :pIdOrganizacao, :pConta,:pRemetente, :pSenha, :pHost, :pPorta, :pAutentica ) ' +
-          ' MATCHING (ID_SERVIDOR_EMAIL) ' ;
-
-
-  try
-
-    if pId = String.Empty then begin
-       pId := dmConexao.obterNewID;
-    end;
-
-
-    qrySalvar.Close;
-    qrySalvar.Connection :=dmConexao.Conn;
-    qrySalvar.SQL.Clear;
-    qrySalvar.SQL.Add(cmd);
-    qrySalvar.ParamByName('pID').AsString             := pId;
-    qrySalvar.ParamByName('pIdOrganizacao').AsString  :=pIdOrganizacao;
-    qrySalvar.ParamByName('pConta').AsString          := pConta;
-    qrySalvar.ParamByName('pRemetente').AsString      := pConta;
-    qrySalvar.ParamByName('pSenha').AsString          := pSenha;
-    qrySalvar.ParamByName('pHost').AsString           := pHost;
-    qrySalvar.ParamByName('pPorta').AsString          :=pPorta;
-    qrySalvar.ParamByName('pAutentica').AsInteger     := StrToInt(pAutentica) ;
-
-    qrySalvar.ExecSQL;
-    dmConexao.Conn.CommitRetaining;
-  except
-     raise Exception.Create('Erro ao tentar salvar dados do servidor de email .');
-  end;
-
-
- Result := System.True;
-
-end;
 
 function TdmServerMail.verificaConectarBanco(): Boolean;
 var
@@ -109,11 +66,14 @@ function TdmServerMail.obterDadosServidorEmail(pIdOrganizacao: String): Boolean;
 begin
   Result := false;
 
-
+  if verificaConectarBanco then
+  begin
     qryObterDadosMail.Close;
     qryObterDadosMail.Connection := dmConexao.Conn;
     qryObterDadosMail.ParamByName('pIdOrganizacao').AsString := pIdOrganizacao;
     qryObterDadosMail.Open;
+
+  end;
 
   Result := not qryObterDadosMail.IsEmpty;
 end;

@@ -8,7 +8,7 @@ uses
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.Controls, Vcl.Grids,
-  Vcl.DBGrids, Vcl.StdCtrls, Vcl.Buttons, Vcl.Forms, Vcl.Dialogs, uVarGlobais,StrUtils , uUtil,
+  Vcl.DBGrids, Vcl.StdCtrls, Vcl.Buttons, Vcl.Forms, Vcl.Dialogs, uVarGlobais,SysUtils, uUtil,
   uDMServerMail;
 type
   TfrmServidorEmail = class(TForm)
@@ -75,7 +75,9 @@ begin
       senha     := edtSenha.Text;
       host      := edtHost.Text;
       porta     := edtPorta.Text;
-      autentica := IfThen(chAutentica.Checked, '1', '0');
+      autentica := '0';
+     
+      IfThen(chAutentica.Checked, '1', '0');
       
       id := lblPID.Caption;
                 

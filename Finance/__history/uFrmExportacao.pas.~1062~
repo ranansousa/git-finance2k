@@ -1509,7 +1509,6 @@ begin
     limpaPainelExportacao;
     ShowMessage('Não existem dados para imprimir.');
   end
-
 end;
 
 procedure TfrmExportacao.btnLimparClick(Sender: TObject);

@@ -20,7 +20,7 @@ type
     { Public declarations }
     function verificaConectarBanco(): Boolean;
     function obterDadosServidorEmail(pIdOrganizacao: String): Boolean;
-    function salvarServerMail(pId, pIdOrganizacao, pConta, pSenha, pHost, pPorta, pAutentica :string) : boolean;
+    function salvarServerMail(pIdOrganizacao, pConta, pSenha, pHost, pPorta, pAutentica :string) : boolean;
   end;
 
 var
@@ -33,38 +33,29 @@ implementation
 {$R *.dfm}
 { TdmServerMail }
 
-function TdmServerMail.salvarServerMail(pId, pIdOrganizacao, pConta, pSenha, pHost,
+function TdmServerMail.salvarServerMail(pIdOrganizacao, pConta, pSenha, pHost,
   pPorta, pAutentica: string): boolean;
 var
-idNovo, cmd : string;
+cmd : string;
 begin
-   cmd := ' UPDATE OR INSERT INTO SERVIDOR_EMAIL ( ID_SERVIDOR_EMAIL,ID_ORGANIZACAO,LOGIN, REMETENTE, SENHA,HOST,PORTA,REQUER_AUTENTICACAO  ) ' +
-          ' VALUES ( :pID, :pIdOrganizacao, :pConta,:pRemetente, :pSenha, :pHost, :pPorta, :pAutentica ) ' +
-          ' MATCHING (ID_SERVIDOR_EMAIL) ' ;
-
+   cmd := ' INSERT INTO SERVIDOR_EMAIL ( ID_SERVIDOR_EMAIL,ID_ORGANIZACAO,LOGIN,SENHA,HOST,PORTA,REQUER_AUTENTICACAO ) ' +
+          ' VALUES ( :pID, :pIdOrganizacao, :pConta, :pSenha, :pHost, :pPorta, :pAutentica )';
 
   try
+  qrySalvar.Close;
+  qrySalvar.Connection :=dmConexao.Conn;
+  qrySalvar.SQL.Clear;
+  qrySalvar.SQL.Add(cmd);
+  qrySalvar.ParamByName('pID').AsString := dmConexao.obterNewID; ;
+  qrySalvar.ParamByName('pIdOrganizacao').AsString  :=pIdOrganizacao;
+  qrySalvar.ParamByName('pConta').AsString  := pConta;
+  qrySalvar.ParamByName('pSenha').AsString  := pSenha;
+  qrySalvar.ParamByName('pHost').AsString   := pHost;
+  qrySalvar.ParamByName('pPorta').AsString  :=pPorta;
+  qrySalvar.ParamByName('pAutentica').AsInteger  := StrToInt(pAutentica) ;
 
-    if pId = String.Empty then begin
-       pId := dmConexao.obterNewID;
-    end;
-
-
-    qrySalvar.Close;
-    qrySalvar.Connection :=dmConexao.Conn;
-    qrySalvar.SQL.Clear;
-    qrySalvar.SQL.Add(cmd);
-    qrySalvar.ParamByName('pID').AsString             := pId;
-    qrySalvar.ParamByName('pIdOrganizacao').AsString  :=pIdOrganizacao;
-    qrySalvar.ParamByName('pConta').AsString          := pConta;
-    qrySalvar.ParamByName('pRemetente').AsString      := pConta;
-    qrySalvar.ParamByName('pSenha').AsString          := pSenha;
-    qrySalvar.ParamByName('pHost').AsString           := pHost;
-    qrySalvar.ParamByName('pPorta').AsString          :=pPorta;
-    qrySalvar.ParamByName('pAutentica').AsInteger     := StrToInt(pAutentica) ;
-
-    qrySalvar.ExecSQL;
-    dmConexao.Conn.CommitRetaining;
+  qrySalvar.ExecSQL;
+  dmConexao.Conn.CommitRetaining;
   except
      raise Exception.Create('Erro ao tentar salvar dados do servidor de email .');
   end;
