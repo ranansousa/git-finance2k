@@ -342,11 +342,20 @@ object dmContasPagar: TdmContasPagar
   object qryObterTodos: TFDQuery
     Connection = dmConexao.Conn
     SQL.Strings = (
-      'SELECT *'
+      
+        'SELECT TP.ID_TITULO_PAGAR, TP.ID_ORGANIZACAO, TP.NUMERO_DOCUMENT' +
+        'O, TP.VALOR_NOMINAL, TP.DESCRICAO, TP.DATA_EMISSAO, TP.DATA_VENC' +
+        'IMENTO, TP.DATA_PAGAMENTO, TP.DATA_PROTOCOLO, TP.PARCELA, C.NOME' +
+        ' AS FORNECEDOR'
       'FROM  TITULO_PAGAR TP'
-      'WHERE (TP.ID_TIPO_STATUS in ('#39'ABERTO'#39','#39'QUITADO'#39')) AND'
+      
+        'LEFT OUTER JOIN CEDENTE C ON (C.ID_CEDENTE = TP.ID_CEDENTE) AND ' +
+        '(C.ID_ORGANIZACAO = TP.ID_ORGANIZACAO)'
+      ''
+      'WHERE (TP.ID_TIPO_STATUS in ('#39'ABERTO'#39','#39'QUITADO'#39','#39'PARCIAL'#39')) AND'
       '      (TP.ID_ORGANIZACAO = :PIDORGANIZACAO)'
-      'ORDER BY TP.DATA_EMISSAO, TP.VALOR_NOMINAL'
+      ''
+      'ORDER BY TP.DATA_VENCIMENTO DESC, TP.VALOR_NOMINAL'
       '')
     Left = 64
     Top = 40
@@ -372,11 +381,13 @@ object dmContasPagar: TdmContasPagar
         Name = 'PNUMDOC'
         DataType = ftString
         ParamType = ptInput
+        Size = 50
       end
       item
         Name = 'PIDORGANIZACAO'
         DataType = ftString
         ParamType = ptInput
+        Size = 36
       end>
   end
   object qryTitulosExcel: TFDQuery

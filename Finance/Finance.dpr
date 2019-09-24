@@ -85,7 +85,8 @@ uses
   uFrameEstado in 'frames\uFrameEstado.pas' {frmEstado: TFrame},
   uFrameBairro in 'frames\uFrameBairro.pas' {frmBairro: TFrame},
   uFrameProgressBar in 'frames\uFrameProgressBar.pas' {framePB: TFrame},
-  uFrmDeletaLoteContabil in 'uFrmDeletaLoteContabil.pas' {frmDeletaLoteContabil};
+  uFrmDeletaLoteContabil in 'uFrmDeletaLoteContabil.pas' {frmDeletaLoteContabil},
+  uDMEspelhoTP in 'dataModule\uDMEspelhoTP.pas' {dmEspelhoTP: TDataModule};
 
 {$R *.res}
 
@@ -98,5 +99,6 @@ begin
   Application.CreateForm(TdmConexao, dmConexao);
   Application.CreateForm(TdmUsuarioConsulta, dmUsuarioConsulta);
   Application.CreateForm(TFMostraErros, FMostraErros);
+  Application.CreateForm(TdmEspelhoTP, dmEspelhoTP);
   Application.Run;
 end.

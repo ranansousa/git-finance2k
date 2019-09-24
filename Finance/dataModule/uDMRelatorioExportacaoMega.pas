@@ -98,7 +98,7 @@ type
     procedure inicializarVariaveisRelatorio(dtInicial, dtFinal: TDate);
 //    procedure exibirRelatorioExportacao;
     procedure exibirRelatorioExportacao(dtInicial, dtFinal: TDate);
-//TR PRovisionado
+//TP PRovisionado
     function obterTPProBase(pIdOrganizacao : string; pDataInicial, pDataFinal: TDate ): Boolean;
     function obterTPProvCR(pIdOrganizacao,pRegistroProvisao : string ): Boolean;
     function obterTPProvDB(pIdOrganizacao,pRegistroProvisao : string ): Boolean;
@@ -539,12 +539,8 @@ begin
 
  // inicializarDM(Self);
 
-  if not qryTPPROVBASE.Connection.Connected then
-  begin
-    qryTPPROVBASE.Connection := dmConexao.Conn;
-  end;
-
   qryTPPROVBASE.Close;
+  qryTPPROVBASE.Connection := dmConexao.Conn;
 
   qryTPPROVBASE.ParamByName('pIdOrganizacao').AsString := pIdOrganizacao;
   qryTPPROVBASE.ParamByName('pDataInicial').AsDate := pDataInicial;
@@ -565,19 +561,10 @@ var auxSql :string;
 begin
   Result := false;
 
-  //inicializarDM(Self);
-
-  if not qryTPQuitados.Connection.Connected then
-  begin
-    qryTPQuitados.Connection := dmConexao.Conn;
-  end;
-
   qryTPQuitados.Close;
-
+  qryTPQuitados.Connection := dmConexao.Conn;
   qryTPQuitados.ParamByName('pIdOrganizacao').AsString := pIdOrganizacao;
-   qryTPQuitados.ParamByName('pIdStatus').AsString := pIdStatus;
-
-
+  qryTPQuitados.ParamByName('pIdStatus').AsString := pIdStatus;
   qryTPQuitados.ParamByName('pDataInicial').AsDate := pDataInicial;
   qryTPQuitados.ParamByName('pDataFinal').AsDate := pDataFinal;
 //  auxSql := QuotedStr(qry1.SQL.Text); SÓ PARA TESTE

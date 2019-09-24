@@ -591,8 +591,8 @@ object dmRelExportacaoMega: TdmRelExportacaoMega
         'D'
       '      (TP.REGISTRO_PROVISAO IS NOT NULL ) AND'
       '      (TP.ID_TIPO_STATUS <> '#39'EXCLUIDO'#39') AND '
-      '      (TP.ID_LOTE_CONTABIL IS NULL) '
-      '    -- AND (TP.DATA_PAGAMENTO IS NULL)'
+      '      (TP.ID_LOTE_CONTABIL IS NULL) AND'
+      '      (TP.ID_LOTE_TPB IS NULL)'
       ''
       ''
       ' GROUP BY TP.REGISTRO_PROVISAO'
@@ -830,7 +830,7 @@ object dmRelExportacaoMega: TdmRelExportacaoMega
       
         '       AND (TP.DATA_PAGAMENTO BETWEEN :pDataInicial AND :pDataFi' +
         'nal) '
-      '       AND (TP.ID_TIPO_STATUS = :pIdStatus ) '
+      '       AND (TP.ID_TIPO_STATUS = :pIdStatus )'
       '       AND (TP.ID_LOTE_CONTABIL IS NULL) '
       ''
       'ORDER BY TP.DATA_PAGAMENTO ASC, TP.VALOR_NOMINAL DESC;')
@@ -1302,7 +1302,7 @@ object dmRelExportacaoMega: TdmRelExportacaoMega
       '      (TPB.ID_LOTE_CONTABIL IS NULL)'
       ''
       'ORDER BY TP.DATA_PAGAMENTO ASC, TP.VALOR_NOMINAL DESC;')
-    Left = 608
+    Left = 576
     Top = 16
     ParamData = <
       item

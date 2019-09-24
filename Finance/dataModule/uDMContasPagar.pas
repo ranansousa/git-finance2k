@@ -41,6 +41,23 @@ type
     function obterTitulosExcel(pIdOrganizacao: string; dtDataInicial, dtDataFinal: TDateTime): Boolean;
     function obterTotalPorStatus(pIdOrganizacao, pIdStatus: string; dtDataInicial, dtDataFinal: TDateTime): Currency;
 
+
+    //TP PRovisionado
+    function obterTPProBase(pIdOrganizacao : string; pDataInicial, pDataFinal: TDate ): Boolean;
+    function obterTPProvCR(pIdOrganizacao,pRegistroProvisao : string ): Boolean;
+    function obterTPProvDB(pIdOrganizacao,pRegistroProvisao : string ): Boolean;
+//TP BAIXA
+    function obterTPQuitados(pIdOrganizacao, pIdStatus: string; pDataInicial, pDataFinal: TDate): Boolean;
+    function obterTPBaixaPorTitulo(pIdOrganizacao, pIdtituloPagar: String): Boolean;
+    function obterTPBCaixa(pIdOrganizacao, pIdTPB: String): Boolean;
+    function obterTPBCheque(pIdOrganizacao, pIdTPB  : String): Boolean;
+    function obterTPBBanco(pIdOrganizacao, pIdTPB  : String): Boolean;
+    function obterTPBAC(pIdOrganizacao, pIdTPB : String): Boolean;
+    function obterTPBDE(pIdOrganizacao, pIdTPB : String): Boolean;
+    function obterTPBHistorico(pIdorganizacao, tituloPagarQuitado : string): Boolean;
+
+
+
   end;
 
 var
@@ -190,15 +207,72 @@ begin
 end;
 
 
+function TdmContasPagar.obterTPBAC(pIdOrganizacao, pIdTPB: String): Boolean;
+begin
+
+end;
+
+function TdmContasPagar.obterTPBaixaPorTitulo(pIdOrganizacao,
+  pIdtituloPagar: String): Boolean;
+begin
+
+end;
+
+function TdmContasPagar.obterTPBBanco(pIdOrganizacao, pIdTPB: String): Boolean;
+begin
+
+end;
+
+function TdmContasPagar.obterTPBCaixa(pIdOrganizacao, pIdTPB: String): Boolean;
+begin
+
+end;
+
+function TdmContasPagar.obterTPBCheque(pIdOrganizacao, pIdTPB: String): Boolean;
+begin
+
+end;
+
+function TdmContasPagar.obterTPBDE(pIdOrganizacao, pIdTPB: String): Boolean;
+begin
+
+end;
+
+function TdmContasPagar.obterTPBHistorico(pIdorganizacao,
+  tituloPagarQuitado: string): Boolean;
+begin
+
+end;
+
+function TdmContasPagar.obterTPProBase(pIdOrganizacao: string; pDataInicial,
+  pDataFinal: TDate): Boolean;
+begin
+
+end;
+
+function TdmContasPagar.obterTPProvCR(pIdOrganizacao,
+  pRegistroProvisao: string): Boolean;
+begin
+
+end;
+
+function TdmContasPagar.obterTPProvDB(pIdOrganizacao,
+  pRegistroProvisao: string): Boolean;
+begin
+
+end;
+
+function TdmContasPagar.obterTPQuitados(pIdOrganizacao, pIdStatus: string;
+  pDataInicial, pDataFinal: TDate): Boolean;
+begin
+
+end;
+
 function TdmContasPagar.obterTodos(pIdOrganizacao: string): Boolean;
 begin
 
-  if not qryObterTodos.Connection.Connected then
-  begin
-    qryObterTodos.Connection := dmConexao.Conn;
-  end;
-
   qryObterTodos.Close;
+  qryObterTodos.Connection := dmConexao.Conn;
   qryObterTodos.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
   //qryObterTodos.ParamByName('DTDATAINICIAL').AsString := FormatDateTime('mm/dd/yyyy', dtDataInicial);
   //qryObterTodos.ParamByName('DTDATAFINAL').AsString :=  FormatDateTime('mm/dd/yyyy', dtDataFinal);

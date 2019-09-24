@@ -136,6 +136,7 @@ Function getDataServer(): TDateTime;
 
 Function qtdDiasPeriodo(pDataInicial, pDataFinal: TDate): Integer;
 
+function convertStrToInt(pValue :string): Integer;
 
 
 implementation
@@ -1273,6 +1274,22 @@ end;
 //  end;
 //end;
 
+
+
+
+function convertStrToInt(pValue :string): Integer;
+var
+value :Integer;
+begin
+ if ( pValue = string.Empty ) then begin
+
+    value := 0;
+
+   end;
+
+   Result := value;
+
+end;
 
 
 end.

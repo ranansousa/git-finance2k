@@ -5239,7 +5239,7 @@ object FrmPrincipal: TFrmPrincipal
     object Pagar1: TMenuItem
       Caption = 'Pagar'
       object menuItemTPNovo: TMenuItem
-        Caption = 'Novo'
+        Caption = 'Manuten'#231#227'o de T'#237'tulos a Pagar'
         OnClick = menuItemTPNovoClick
       end
       object menuItemTPAltDoc: TMenuItem

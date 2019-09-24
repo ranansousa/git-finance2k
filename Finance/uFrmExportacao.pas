@@ -100,6 +100,7 @@ type
     pDataFinal: TDate;
     valorCredito, valorDebito :Currency;
 
+
     procedure inicializarDM(Sender: TObject);
     procedure freeAndNilDM();
     procedure statusExportar(sinal: Integer);
@@ -1026,7 +1027,8 @@ begin
                 Sleep(5000);
 
                 //REALIZAR A EXPORTAÇÃO
-                qtdReg := exportarLancamentosMega(pTable,lista);
+                  qtdReg := exportarLancamentosMega(pTable,lista);
+
 
                 if qtdReg > 0 then
                 begin
@@ -1412,7 +1414,7 @@ begin
             end;
       end;
 
-        //titulos a PAGAR provisionados
+        //titulos a PAGAR provisionados   //DECIDIR SER O RELATORIO IRÁ TRAZER TITULOS QUE JA FORAM EXPORTADOS
            vDebito :=0;
            tipoLancamento := 'ABERTO/QUITADO';
            vDebito := dmExportaFinance.obterValorDebitoTitulo(idOrganizacao, 'TITULO_PAGAR', 'VALOR_NOMINAL', 'DATA_EMISSAO',pDataInicial, pDataFinal, 1);
@@ -1876,12 +1878,12 @@ function TfrmExportacao.exportarLancamentosMega(pTable :string; lista :TListaLan
  tamLista, listaDB,listaCR, lancamentoDB, lancamentoCR,  aux: Integer;
   vDEB, vCRE :Currency;
 begin
-
-  if (lista <> nil) then
-  begin
      linha :=0;
      valorDebito:=0; valorCredito :=0;
      tamLista :=0; listaDB :=0; listaCR :=0; lancamentoDB :=0; lancamentoCR :=0;  aux :=0;
+
+  if (lista <> nil) then
+  begin
 
      tamLista := TListaLancamentoDebito(lista).Count ;   //usado só na barra de progresso
 
@@ -1982,27 +1984,31 @@ begin
         ); }
 
         {
-          CREATE TABLE LOTE_CONTABIL (
-              ID_LOTE_CONTABIL  VARCHAR(36) NOT NULL,
-              ID_ORGANIZACAO    VARCHAR(36) NOT NULL,
-              LOTE              VARCHAR(30),
-              STATUS            VARCHAR(30),
-              ID_USUARIO        NUMERIC(5,0),
-              DATA_REGISTRO     DATE,
-              DATA_ATUALIZACAO  DATE NOT NULL,
-              QTD_TIT_PAG       NUMERIC(5,0),
-              QTD_TIT_REC       NUMERIC(5,0),
-              QTD_TIT_PAG_BX    NUMERIC(5,0),
-              QTD_TIT_REC_BX    NUMERIC(5,0),
-              QTD_TES_CRED      NUMERIC(5,0),
-              QTD_CTA_DEB       NUMERIC(5,0),
-              QTD_CTA_TRA       NUMERIC(5,0),
-              QTD_CTA_CRE       NUMERIC(5,0),
-              QTD_TES_DEB       NUMERIC(5,0),
-              PERIODO_INICIAL   DATE,
-              PERIODO_FINAL     DATE,
-              TIPO_TABLE        VARCHAR(200) CHARACTER SET ISO8859_1
-          );
+
+CREATE TABLE LOTE_CONTABIL (
+    ID_LOTE_CONTABIL  VARCHAR(36) NOT NULL,
+    ID_ORGANIZACAO    VARCHAR(36) NOT NULL,
+    LOTE              VARCHAR(30),
+    STATUS            VARCHAR(30),
+    ID_USUARIO        NUMERIC(5,0),
+    DATA_REGISTRO     DATE,
+    DATA_ATUALIZACAO  DATE NOT NULL,
+    QTD_TIT_PAG       NUMERIC(5,0),
+    QTD_TIT_REC       NUMERIC(5,0),
+    QTD_TIT_PAG_BX    NUMERIC(5,0),
+    QTD_TIT_REC_BX    NUMERIC(5,0),
+    QTD_TES_CRED      NUMERIC(5,0),
+    QTD_CTA_DEB       NUMERIC(5,0),
+    QTD_CTA_TRA       NUMERIC(5,0),
+    QTD_CTA_CRE       NUMERIC(5,0),
+    QTD_TES_DEB       NUMERIC(5,0),
+    PERIODO_INICIAL   DATE,
+    PERIODO_FINAL     DATE,
+    TIPO_TABLE        VARCHAR(200) CHARACTER SET ISO8859_1,
+    QTD_REGISTROS     SMALLINT,
+    VALOR_DB          NUMERIC(10,2),
+    VALOR_CR          NUMERIC(10,2)
+);
 
            }
 
@@ -2079,6 +2085,7 @@ conexaoMega := 'BASE DE DADOS DO SISTEMA CONTÁBIL CONECTADA';
 
 Result := aux;
 end;
+
 
 
 

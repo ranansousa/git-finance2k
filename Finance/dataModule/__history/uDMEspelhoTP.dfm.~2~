@@ -1,0 +1,5 @@
+object dmEspelhoTP: TdmEspelhoTP
+  OldCreateOrder = False
+  Height = 516
+  Width = 1022
+end
