@@ -39,6 +39,7 @@ type
     frxCSVExport1: TfrxCSVExport;
     qryTitulosPorFornecedor: TFDQuery;
     ds1: TDataSource;
+    lbl1: TLabel;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure cbxComboFornecedorChange(Sender: TObject);
@@ -114,7 +115,7 @@ begin
 
   if validarFormulario then
   begin
-    inicializarDM(Self);
+
     dmOrganizacao.carregarDadosEmpresa(TOrgAtual.getId);
     { dmContasPagar.obterTitulosPorFornecedor(TOrgAtual.getId, idCedente,
       dtDataInicial.DateTime, dtDataFinal.DateTime); }
@@ -123,13 +124,13 @@ begin
     begin
       dmCedenteConsulta.dtsCedentePorID.DataSet :=dmCedenteConsulta.qryObterCedentePorID;
 
-      if dmContasPagar.obterTitulosPorFornecedor(TOrgAtual.getId, idCedente,
+      if obterTitulosPorFornecedor(TOrgAtual.getId, idCedente,
         retornarCampoOrdenacao,pDataInicial,pDataFinal)
       then
       begin
 
-        dmContasPagar.dtsTitulosPagarAll.DataSet := dmContasPagar.qryTitulosPorFornecedor;
-        if not(dmContasPagar.dataSourceIsEmpty(dmContasPagar.dtsTitulosPagarAll))
+        dmContasPagar.dtsTitulosPagarAll.DataSet := qryTitulosPorFornecedor;
+        if not(dmContasPagar.dataSourceIsEmpty(ds1))
         then
         begin
           //tipo 1 = relTitulosPorCedenteDetalhado.fr3
@@ -330,19 +331,20 @@ function TfrmCTPHistorico.obterTitulosPorFornecedor(pIdOrganizacao, pIdCedente,
   campoOrdem: string; dtDataInicial, dtDataFinal: TDateTime): Boolean;
   var cmd :string;
 begin
-cmd := ' SELECT * FROM  TITULO_PAGAR TP ' +
+cmd := ' SELECT TP.ID_TITULO_PAGAR, TP.ID_ORGANIZACAO, TP.VALOR_NOMINAL, TP.NUMERO_DOCUMENTO, TP.DATA_EMISSAO, '+
+       ' TP.DATA_VENCIMENTO, TP.DATA_PAGAMENTO, TP.DESCRICAO, TP.PARCELA, TP.ID_TIPO_STATUS, H.descricao AS HISTORICO, CC.descricao AS CENTRO_C ' +
+       ' FROM  TITULO_PAGAR TP ' +
+       ' LEFT OUTER JOIN HISTORICO H ON (H.ID_HISTORICO = TP.ID_HISTORICO) AND (H.id_organizacao = TP.id_organizacao) ' +
+       ' LEFT OUTER JOIN centro_custo CC ON (CC.ID_CENTRO_CUSTO = TP.id_centro_custo) AND ( CC.id_organizacao = TP.id_organizacao) ' +
        ' WHERE (TP.ID_CEDENTE = :PIDCEDENTE) AND ' +
        ' (TP.ID_TIPO_STATUS in ' + '(''ABERTO'',''QUITADO'',''PARCIAL'')) AND ' +
        ' (TP.ID_ORGANIZACAO = :PIDORGANIZACAO) AND ' +
        ' (TP.DATA_EMISSAO BETWEEN :DTDATAINICIAL AND :DTDATAFINAL) ' +
        ' ORDER BY ' + campoOrdem;
 
-  if not qryTitulosPorFornecedor.Connection.Connected then
-  begin
-    qryTitulosPorFornecedor.Connection := dmConexao.Conn;
-  end;
 
   qryTitulosPorFornecedor.Close;
+  qryTitulosPorFornecedor.Connection := dmConexao.Conn;
   qryTitulosPorFornecedor.SQL.Clear;
   qryTitulosPorFornecedor.SQL.Add(cmd);
 
@@ -352,6 +354,8 @@ cmd := ' SELECT * FROM  TITULO_PAGAR TP ' +
   qryTitulosPorFornecedor.ParamByName('DTDATAFINAL').AsString := FormatDateTime('mm/dd/yyyy', dtDataFinal);
 
   qryTitulosPorFornecedor.Open;
+
+     cmd := qryTitulosPorFornecedor.FieldByName('HISTORICO').AsString;
 
   Result := not qryTitulosPorFornecedor.IsEmpty;
 end;

@@ -3,7 +3,7 @@ object frmCTPHistorico: TfrmCTPHistorico
   Top = 0
   Caption = 'Contas a Pagar Historico'
   ClientHeight = 626
-  ClientWidth = 785
+  ClientWidth = 958
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -4211,6 +4211,13 @@ object frmCTPHistorico: TfrmCTPHistorico
     Frame.Color = clBlack
     Layout = tlBottom
   end
+  object lbl1: TLabel
+    Left = 32
+    Top = 32
+    Width = 55
+    Height = 13
+    Caption = 'Fornecedor'
+  end
   object cbxComboFornecedor: TComboBox
     Left = 32
     Top = 56
@@ -4268,10 +4275,10 @@ object frmCTPHistorico: TfrmCTPHistorico
     OnClick = btnImprimirClick
   end
   object dbgTitulos: TDBGrid
-    Left = 8
-    Top = 240
-    Width = 718
-    Height = 201
+    Left = 32
+    Top = 200
+    Width = 801
+    Height = 297
     DataSource = ds1
     TabOrder = 6
     TitleFont.Charset = DEFAULT_CHARSET
@@ -4282,10 +4289,31 @@ object frmCTPHistorico: TfrmCTPHistorico
     Columns = <
       item
         Expanded = False
+        FieldName = 'DATA_EMISSAO'
+        Title.Caption = 'EMISS'#195'O'
+        Width = 70
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'VALOR_NOMINAL'
+        Title.Caption = 'VALOR'
+        Width = 70
+        Visible = True
+      end
+      item
+        Expanded = False
         FieldName = 'NUMERO_DOCUMENTO'
         ReadOnly = True
         Title.Caption = 'DOCUMENTO'
         Width = 70
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'PARCELA'
+        Title.Caption = 'PARC'
+        Width = 25
         Visible = True
       end
       item
@@ -4304,22 +4332,21 @@ object frmCTPHistorico: TfrmCTPHistorico
       end
       item
         Expanded = False
-        FieldName = 'VALOR_NOMINAL'
-        Title.Caption = 'VALOR'
-        Width = 70
+        FieldName = 'HISTORICO'
+        Title.Caption = 'HISTORICO PRINCIPAL'
+        Width = 150
         Visible = True
       end
       item
         Expanded = False
         FieldName = 'DESCRICAO'
-        Width = 300
+        Width = 120
         Visible = True
       end
       item
         Expanded = False
-        FieldName = 'PARCELA'
-        Title.Caption = 'PARC'
-        Width = 25
+        FieldName = 'CENTRO_C'
+        Title.Caption = 'CENTRO CUSTOS PRINCIPAL'
         Visible = True
       end
       item
@@ -4364,7 +4391,7 @@ object frmCTPHistorico: TfrmCTPHistorico
     PrintOptions.Printer = 'Default'
     PrintOptions.PrintOnSheet = 0
     ReportOptions.CreateDate = 42573.413464710600000000
-    ReportOptions.LastChange = 43720.455711296300000000
+    ReportOptions.LastChange = 43733.417611550920000000
     ScriptLanguage = 'PascalScript'
     ScriptText.Strings = (
       'begin'
@@ -4635,9 +4662,9 @@ object frmCTPHistorico: TfrmCTPHistorico
         Condition = '1=1'
         ReprintOnNewPage = True
         object Memo13: TfrxMemoView
-          Left = 150.653609210000000000
+          Left = 133.653609210000000000
           Top = 1.338590000000011000
-          Width = 204.094620000000000000
+          Width = 128.504020000000000000
           Height = 11.338590000000000000
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clBlack
@@ -4645,12 +4672,12 @@ object frmCTPHistorico: TfrmCTPHistorico
           Font.Name = 'tahoma'
           Font.Style = [fsBold]
           Memo.UTF8W = (
-            'DESCRI'#199#195'O')
+            'HIST'#211'RICO')
           ParentFont = False
           VAlign = vaBottom
         end
         object Memo12: TfrxMemoView
-          Left = 63.031540000000000000
+          Left = 55.031540000000000000
           Top = 1.338590000000011000
           Width = 75.590600000000000000
           Height = 11.338590000000000000
@@ -4659,23 +4686,23 @@ object frmCTPHistorico: TfrmCTPHistorico
           Font.Height = -8
           Font.Name = 'tahoma'
           Font.Style = [fsBold]
-          HAlign = haCenter
+          HAlign = haRight
           Memo.UTF8W = (
             'DOCUMENTO')
           ParentFont = False
           VAlign = vaBottom
         end
         object Memo14: TfrxMemoView
-          Left = 372.953000000000000000
+          Left = 369.953000000000000000
           Top = 1.338590000000011000
-          Width = 79.370130000000000000
+          Width = 52.913420000000000000
           Height = 11.338590000000000000
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clBlack
           Font.Height = -8
           Font.Name = 'tahoma'
           Font.Style = [fsBold]
-          HAlign = haRight
+          HAlign = haCenter
           Memo.UTF8W = (
             'DATA PAGTO')
           ParentFont = False
@@ -4698,23 +4725,23 @@ object frmCTPHistorico: TfrmCTPHistorico
           VAlign = vaBottom
         end
         object Memo8: TfrxMemoView
-          Left = 492.661720000000000000
+          Left = 484.882190000000000000
           Top = 1.338590000000011000
-          Width = 56.692950000000000000
+          Width = 41.574830000000000000
           Height = 11.338590000000000000
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clBlack
           Font.Height = -8
           Font.Name = 'tahoma'
           Font.Style = [fsBold]
-          HAlign = haRight
+          HAlign = haCenter
           Memo.UTF8W = (
             'PARCELA')
           ParentFont = False
           VAlign = vaBottom
         end
         object Memo9: TfrxMemoView
-          Left = 593.386210000000000000
+          Left = 531.252320000000000000
           Top = 1.338590000000011000
           Width = 68.031540000000000000
           Height = 11.338590000000000000
@@ -4723,16 +4750,15 @@ object frmCTPHistorico: TfrmCTPHistorico
           Font.Height = -8
           Font.Name = 'tahoma'
           Font.Style = [fsBold]
-          HAlign = haRight
+          HAlign = haCenter
           Memo.UTF8W = (
             'STATUS')
           ParentFont = False
           VAlign = vaBottom
         end
         object Memo7: TfrxMemoView
-          Left = -0.220470000000000000
           Top = 1.338590000000011000
-          Width = 64.252010000000000000
+          Width = 52.913420000000000000
           Height = 11.338590000000000000
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clBlack
@@ -4741,6 +4767,53 @@ object frmCTPHistorico: TfrmCTPHistorico
           Font.Style = [fsBold]
           Memo.UTF8W = (
             'EMISS'#195'O')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo19: TfrxMemoView
+          Left = 265.126160000000000000
+          Top = 1.338590000000011000
+          Width = 102.047310000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'DESCRI'#199#195'O')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo20: TfrxMemoView
+          Left = 427.323130000000000000
+          Top = 1.338590000000011000
+          Width = 52.913420000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          HAlign = haCenter
+          Memo.UTF8W = (
+            'VCTO')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo21: TfrxMemoView
+          Left = 616.063390000000000000
+          Top = 1.338590000000011000
+          Width = 136.063080000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          HAlign = haCenter
+          Memo.UTF8W = (
+            'CENTRO DE CUSTOS ')
           ParentFont = False
           VAlign = vaBottom
         end
@@ -4788,18 +4861,18 @@ object frmCTPHistorico: TfrmCTPHistorico
       end
       object DT_TITULOS: TfrxDetailData
         FillType = ftBrush
-        Height = 15.118110236220500000
+        Height = 15.118110240000000000
         Top = 370.393940000000000000
         Width = 1046.929810000000000000
         DataSet = frxDBTitulosPorCedente
         DataSetName = 'Titulos'
         RowCount = 0
         object TitulosID_TIPO_STATUS: TfrxMemoView
-          Left = 593.386210000000000000
+          Left = 484.882190000000000000
           Top = 1.000000000000000000
-          Width = 68.031540000000000000
+          Width = 41.574830000000000000
           Height = 11.338590000000000000
-          DataField = 'ID_TIPO_STATUS'
+          DataField = 'PARCELA'
           DataSet = frxDBTitulosPorCedente
           DataSetName = 'Titulos'
           Font.Charset = DEFAULT_CHARSET
@@ -4807,13 +4880,13 @@ object frmCTPHistorico: TfrmCTPHistorico
           Font.Height = -8
           Font.Name = 'Arial'
           Font.Style = []
-          HAlign = haRight
+          HAlign = haCenter
           Memo.UTF8W = (
-            '[Titulos."ID_TIPO_STATUS"]')
+            '[Titulos."PARCELA"]')
           ParentFont = False
         end
         object TitulosNUMERO_DOCUMENTO: TfrxMemoView
-          Left = 63.031540000000000000
+          Left = 55.031540000000000000
           Top = 1.000000000000000000
           Width = 75.590600000000000000
           Height = 11.338590000000000000
@@ -4851,9 +4924,8 @@ object frmCTPHistorico: TfrmCTPHistorico
           ParentFont = False
         end
         object TitulosDATA_EMISSAO: TfrxMemoView
-          Left = -0.220470000000000000
           Top = 1.000000000000000000
-          Width = 64.252010000000000000
+          Width = 52.913420000000000000
           Height = 11.338590000000000000
           DataField = 'DATA_EMISSAO'
           DataSet = frxDBTitulosPorCedente
@@ -4868,9 +4940,62 @@ object frmCTPHistorico: TfrmCTPHistorico
           ParentFont = False
         end
         object TitulosDESCRICAO: TfrxMemoView
-          Left = 150.653609210000000000
+          Left = 133.653609210000000000
           Top = 1.000000000000000000
-          Width = 204.094620000000000000
+          Width = 128.504020000000000000
+          Height = 11.338590000000000000
+          DataField = 'HISTORICO'
+          DataSet = frxDBTitulosPorCedente
+          DataSetName = 'Titulos'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Arial'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[Titulos."HISTORICO"]')
+          ParentFont = False
+        end
+        object TitulosPARCELA: TfrxMemoView
+          Left = 427.323130000000000000
+          Top = 1.000000000000000000
+          Width = 52.913420000000000000
+          Height = 11.338590000000000000
+          DataField = 'DATA_VENCIMENTO'
+          DataSet = frxDBTitulosPorCedente
+          DataSetName = 'Titulos'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Arial'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[Titulos."DATA_VENCIMENTO"]')
+          ParentFont = False
+        end
+        object TitulosDATA_PAGAMENTO: TfrxMemoView
+          Left = 369.953000000000000000
+          Top = 1.000000000000000000
+          Width = 52.913420000000000000
+          Height = 11.338590000000000000
+          DataField = 'DATA_PAGAMENTO'
+          DataSet = frxDBTitulosPorCedente
+          DataSetName = 'Titulos'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Arial'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[Titulos."DATA_PAGAMENTO"]')
+          ParentFont = False
+        end
+        object Memo16: TfrxMemoView
+          Left = 265.126160000000000000
+          Top = 1.000000000000000000
+          Width = 102.047310000000000000
           Height = 11.338590000000000000
           DataField = 'DESCRICAO'
           DataSet = frxDBTitulosPorCedente
@@ -4884,12 +5009,11 @@ object frmCTPHistorico: TfrmCTPHistorico
             '[Titulos."DESCRICAO"]')
           ParentFont = False
         end
-        object TitulosPARCELA: TfrxMemoView
-          Left = 492.661720000000000000
-          Top = 1.000000000000000000
-          Width = 56.692950000000000000
+        object Memo17: TfrxMemoView
+          Left = 531.252320000000000000
+          Width = 68.031540000000000000
           Height = 11.338590000000000000
-          DataField = 'PARCELA'
+          DataField = 'ID_TIPO_STATUS'
           DataSet = frxDBTitulosPorCedente
           DataSetName = 'Titulos'
           Font.Charset = DEFAULT_CHARSET
@@ -4897,17 +5021,16 @@ object frmCTPHistorico: TfrmCTPHistorico
           Font.Height = -8
           Font.Name = 'Arial'
           Font.Style = []
-          HAlign = haRight
+          HAlign = haCenter
           Memo.UTF8W = (
-            '[Titulos."PARCELA"]')
+            '[Titulos."ID_TIPO_STATUS"]')
           ParentFont = False
         end
-        object TitulosDATA_PAGAMENTO: TfrxMemoView
-          Left = 372.953000000000000000
-          Top = 1.000000000000000000
-          Width = 79.370130000000000000
+        object Memo23: TfrxMemoView
+          Left = 616.063390000000000000
+          Width = 136.063080000000000000
           Height = 11.338590000000000000
-          DataField = 'DATA_PAGAMENTO'
+          DataField = 'CENTRO_C'
           DataSet = frxDBTitulosPorCedente
           DataSetName = 'Titulos'
           Font.Charset = DEFAULT_CHARSET
@@ -4917,7 +5040,7 @@ object frmCTPHistorico: TfrmCTPHistorico
           Font.Style = []
           HAlign = haRight
           Memo.UTF8W = (
-            '[Titulos."DATA_PAGAMENTO"]')
+            '[Titulos."CENTRO_C"]')
           ParentFont = False
         end
       end
@@ -4996,7 +5119,7 @@ object frmCTPHistorico: TfrmCTPHistorico
       end
       object GroupHeader1: TfrxGroupHeader
         FillType = ftBrush
-        Height = 3.779527559055120000
+        Height = 3.779527560000000000
         Top = 343.937230000000000000
         Width = 1046.929810000000000000
         Condition = 'Cedente."ID_TIPO_CEDENTE"'
@@ -5142,47 +5265,19 @@ object frmCTPHistorico: TfrmCTPHistorico
     FieldAliases.Strings = (
       'ID_TITULO_PAGAR=ID_TITULO_PAGAR'
       'ID_ORGANIZACAO=ID_ORGANIZACAO'
-      'ID_HISTORICO=ID_HISTORICO'
-      'ID_CEDENTE=ID_CEDENTE'
-      'ID_TIPO_COBRANCA=ID_TIPO_COBRANCA'
-      'ID_RESPONSAVEL=ID_RESPONSAVEL'
-      'ID_LOCAL_PAGAMENTO=ID_LOCAL_PAGAMENTO'
-      'ID_TIPO_STATUS=ID_TIPO_STATUS'
-      'ID_CENTRO_CUSTO=ID_CENTRO_CUSTO'
-      'ID_TITULO_GERADOR=ID_TITULO_GERADOR'
-      'ID_NOTA_FISCAL_ENTRADA=ID_NOTA_FISCAL_ENTRADA'
+      'VALOR_NOMINAL=VALOR_NOMINAL'
       'NUMERO_DOCUMENTO=NUMERO_DOCUMENTO'
-      'DESCRICAO=DESCRICAO'
-      'DATA_REGISTRO=DATA_REGISTRO'
       'DATA_EMISSAO=DATA_EMISSAO'
-      'DATA_PROTOCOLO=DATA_PROTOCOLO'
       'DATA_VENCIMENTO=DATA_VENCIMENTO'
       'DATA_PAGAMENTO=DATA_PAGAMENTO'
-      'PREVISAO_CARTORIO=PREVISAO_CARTORIO'
-      'VALOR_NOMINAL=VALOR_NOMINAL'
-      'MOEDA=MOEDA'
-      'CARTEIRA=CARTEIRA'
-      'CODIGO_BARRAS=CODIGO_BARRAS'
-      'CONTRATO=CONTRATO'
+      'DESCRICAO=DESCRICAO'
       'PARCELA=PARCELA'
-      'OBSERVACAO=OBSERVACAO'
-      'VALOR_ANTECIPADO=VALOR_ANTECIPADO'
-      'ID_USUARIO=ID_USUARIO'
-      'CONTA_CONTABIL_DEBITO=CONTA_CONTABIL_DEBITO'
-      'DIGITO_CONTA_CONTABIL_CREDITO=DIGITO_CONTA_CONTABIL_CREDITO'
-      'CONTA_CONTABIL_CREDITO=CONTA_CONTABIL_CREDITO'
-      'DIGITO_CONTA_CONTABIL_DEBITO=DIGITO_CONTA_CONTABIL_DEBITO'
-      'ID_LOTE_PAGAMENTO=ID_LOTE_PAGAMENTO'
-      'DATA_ULTIMA_ATUALIZACAO=DATA_ULTIMA_ATUALIZACAO'
-      'ID_LOTE_CONTABIL=ID_LOTE_CONTABIL'
-      'ID_CONTA_CONTABIL_CREDITO=ID_CONTA_CONTABIL_CREDITO'
-      'ID_CONTA_CONTABIL_DEBITO=ID_CONTA_CONTABIL_DEBITO'
-      'IS_PROVISAO=IS_PROVISAO'
-      'REGISTRO_PROVISAO=REGISTRO_PROVISAO'
-      'ID_CONTA_BANCARIA_CHEQUE=ID_CONTA_BANCARIA_CHEQUE')
-    DataSource = dmContasPagar.dtsTitulosPagarAll
+      'ID_TIPO_STATUS=ID_TIPO_STATUS'
+      'HISTORICO=HISTORICO'
+      'CENTRO_C=CENTRO_C')
+    DataSource = ds1
     BCDToCurrency = False
-    Left = 256
+    Left = 280
     Top = 512
   end
   object frxPDFExport1: TfrxPDFExport
@@ -5206,8 +5301,8 @@ object frmCTPHistorico: TfrmCTPHistorico
     CenterWindow = False
     PrintScaling = False
     PdfA = False
-    Left = 640
-    Top = 176
+    Left = 688
+    Top = 552
   end
   object frxCSVExport1: TfrxCSVExport
     UseFileCache = True
@@ -5219,8 +5314,8 @@ object frmCTPHistorico: TfrmCTPHistorico
     UTF8 = False
     NoSysSymbols = True
     ForcedQuotes = False
-    Left = 552
-    Top = 176
+    Left = 544
+    Top = 528
   end
   object qryTitulosPorFornecedor: TFDQuery
     Connection = dmConexao.Conn
@@ -5229,8 +5324,20 @@ object frmCTPHistorico: TfrmCTPHistorico
     FormatOptions.FmtDisplayNumeric = '###,##0.00'
     FormatOptions.FmtEditNumeric = '###,##0.00'
     SQL.Strings = (
-      'SELECT *'
+      
+        'SELECT TP.ID_TITULO_PAGAR, TP.ID_ORGANIZACAO, TP.VALOR_NOMINAL, ' +
+        'TP.NUMERO_DOCUMENTO, TP.DATA_EMISSAO, '
+      
+        '       TP.DATA_VENCIMENTO, TP.DATA_PAGAMENTO, TP.DESCRICAO, TP.P' +
+        'ARCELA, TP.ID_TIPO_STATUS, H.descricao AS HISTORICO, CC.descrica' +
+        'o AS CENTRO_C '
       'FROM  TITULO_PAGAR TP'
+      
+        'LEFT OUTER JOIN HISTORICO H ON (H.ID_HISTORICO = TP.ID_HISTORICO' +
+        ') AND (H.id_organizacao = TP.id_organizacao) '
+      
+        'LEFT OUTER JOIN centro_custo CC ON (CC.ID_CENTRO_CUSTO = TP.id_c' +
+        'entro_custo) AND ( CC.id_organizacao = TP.id_organizacao) '
       'WHERE (TP.ID_CEDENTE = :PIDCEDENTE) AND'
       '      (TP.ID_TIPO_STATUS in ('#39'ABERTO'#39','#39'QUITADO'#39', '#39'PARCIAL'#39')) AND'
       '      (TP.ID_ORGANIZACAO = :PIDORGANIZACAO)AND'
@@ -5265,7 +5372,7 @@ object frmCTPHistorico: TfrmCTPHistorico
   end
   object ds1: TDataSource
     DataSet = qryTitulosPorFornecedor
-    Left = 512
-    Top = 352
+    Left = 392
+    Top = 344
   end
 end

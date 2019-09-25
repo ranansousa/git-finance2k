@@ -270,7 +270,7 @@ end;
 
 function TdmContasPagar.obterTodos(pIdOrganizacao: string): Boolean;
 begin
-
+   try
   qryObterTodos.Close;
   qryObterTodos.Connection := dmConexao.Conn;
   qryObterTodos.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
@@ -278,23 +278,32 @@ begin
   //qryObterTodos.ParamByName('DTDATAFINAL').AsString :=  FormatDateTime('mm/dd/yyyy', dtDataFinal);
 
   qryObterTodos.Open;
+  except
 
+  raise(Exception).Create('Erro ao tentar Obter todos os TPs '  );
+
+
+  end;
   Result := not qryObterTodos.IsEmpty;
 end;
 
 function TdmContasPagar.obterPorNumeroDocumento(pIdOrganizacao, pNumDoc: string): Boolean;
 begin
+  try
 
-  if not qryObterPorNumeroDocumento.Connection.Connected then
-  begin
-    qryObterPorNumeroDocumento.Connection := dmConexao.Conn;
+      qryObterPorNumeroDocumento.Close;
+      qryObterPorNumeroDocumento.Connection := dmConexao.Conn;
+      qryObterPorNumeroDocumento.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+      qryObterPorNumeroDocumento.ParamByName('PNUMDOC').AsString := pNumDoc;
+
+      qryObterPorNumeroDocumento.Open;
+
+  except
+
+  raise(Exception).Create('Erro ao tentar consultar o TP DOC ' + pNumDoc );
+
+
   end;
-
-  qryObterPorNumeroDocumento.Close;
-  qryObterPorNumeroDocumento.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
-  qryObterPorNumeroDocumento.ParamByName('PNUMDOC').AsString := pNumDoc;
-
-  qryObterPorNumeroDocumento.Open;
 
   Result := not qryObterPorNumeroDocumento.IsEmpty;
 end;

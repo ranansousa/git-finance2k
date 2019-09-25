@@ -7,7 +7,7 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.DBCtrls, Data.DB,
   Vcl.Grids, Vcl.DBGrids,uDMContasPagar,uDMContasPagarManter,uDMContasPagarDTS,udmConexao,
   Vcl.ComCtrls, Vcl.StdCtrls, uUtil, FireDAC.Stan.Intf, FireDAC.Stan.Option,
-  FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
+  FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, uDMEspelhoTP,
   FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet,
   FireDAC.Comp.Client;
 
@@ -37,6 +37,7 @@ type
     { Private declarations }
     procedure inicializarDM(Sender: TObject);
     procedure freeAndNilDM();
+    function liberaExibirRelatorio: Integer;
   public
     { Public declarations }
   end;
@@ -81,9 +82,20 @@ end;
 procedure TfrmContasPagar.btnImprimirClick(Sender: TObject);
 begin
 
- if ( dmContasPagar.obterPorNumeroDocumento(TOrgAtual.getId, edtConsulta.Text)) then begin
-      ShowMessage('ACEHIEIIIIII');
- end;
+ if (dmEspelhoTP.obterPorNumeroDocumento(TOrgAtual.getId, edtConsulta.Text)) then begin
+
+
+      if (liberaExibirRelatorio > 0) then        begin
+
+         dmEspelhoTP.exibirRelatorio(uutil.getDataServer, uutil.getDataServer);
+      end
+      else
+      begin
+        btnImprimir.Enabled := false;
+        ShowMessage('Não existem dados para imprimir.');
+      end
+
+  end;
 
     btnTodosClick(Self); //carrega o dbgrid novamente
 
@@ -180,7 +192,6 @@ begin
     dmConexao := TdmConexao.Create(Self);
   end ;
 
-
   if not(Assigned(dmContasPagarManter)) then
   begin
     dmContasPagarManter := TdmContasPagarManter.Create(Self);
@@ -197,7 +208,20 @@ begin
     dmContasPagarDTS := TdmContasPagarDTS.Create(Self);
   end  ;
 
+  if not(Assigned(dmEspelhoTP)) then
+  begin
+    dmEspelhoTP := TdmEspelhoTP.Create(Self);
+  end  ;
+
+
+
+
 end;
 
+
+function TfrmContasPagar.liberaExibirRelatorio: Integer;
+begin
+Result :=1;
+end;
 
 end.

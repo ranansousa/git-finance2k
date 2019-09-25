@@ -4258,7 +4258,7 @@ object frmContasPagar: TfrmContasPagar
         Left = 304
         Top = 48
         Width = 186
-        Height = 25
+        Height = 21
         TabOrder = 3
         OnChange = edtConsultaChange
       end
@@ -4273,7 +4273,7 @@ object frmContasPagar: TfrmContasPagar
       end
       object btnImprimir: TButton
         Left = 694
-        Top = 48
+        Top = 46
         Width = 75
         Height = 25
         Caption = 'Imprimir'

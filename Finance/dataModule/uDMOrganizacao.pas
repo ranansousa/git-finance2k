@@ -62,7 +62,7 @@ end;
 
 function TdmOrganizacao.carregarOrganizacoes: Boolean;
 begin
-   inicializarDM(Self);
+  // inicializarDM(Self);
   if not(qryOrganizacoes.Connection.Connected) then
   begin
     qryOrganizacoes.Connection := dmConexao.Conn;

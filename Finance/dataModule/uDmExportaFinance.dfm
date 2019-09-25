@@ -30,7 +30,7 @@ object dmExportaFinance: TdmExportaFinance
       ''
       '       '
       '')
-    Left = 36
+    Left = 132
     Top = 384
     ParamData = <
       item

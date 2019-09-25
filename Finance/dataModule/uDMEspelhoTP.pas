@@ -12,7 +12,6 @@ type
   TdmEspelhoTP = class(TDataModule)
     frxDBTitulos: TfrxDBDataset;
     frxTPROVDB: TfrxDBDataset;
-    qryTPPROVBASE: TFDQuery;
     frxTPPROVCR: TfrxDBDataset;
     qryTPPROVCR: TFDQuery;
     qryTPPROVDB: TFDQuery;
@@ -34,6 +33,12 @@ type
     frxTPBHistorico: TfrxDBDataset;
     frxEspelhoTP: TfrxReport;
     qryObterTPBBanco: TFDQuery;
+    qryCedente: TFDQuery;
+    qryObterPorNumeroDocumento: TFDQuery;
+    frxCedente: TfrxDBDataset;
+    qryRateioCentroCustos: TFDQuery;
+    frxCentroCustos: TfrxDBDataset;
+    procedure dsDetalhesTPDataChange(Sender: TObject; Field: TField);
   private
     { Private declarations }
 
@@ -45,9 +50,10 @@ type
     procedure exibirRelatorio(dtInicial, dtFinal: TDate);
 
     //TP PRovisionado
-    function obterTPProBase(pIdOrganizacao : string; pDataInicial, pDataFinal: TDate ): Boolean;
-    function obterTPProvCR(pIdOrganizacao,pRegistroProvisao : string ): Boolean;
-    function obterTPProvDB(pIdOrganizacao,pRegistroProvisao : string ): Boolean;
+    function obterPorNumeroDocumento(pIdOrganizacao, pNumDoc: string): Boolean;
+    function obterTPProvCR(pIdOrganizacao,pIdTituloPagar : string ): Boolean;
+    function obterTPProvDB(pIdOrganizacao,pIdTituloPagar : string ): Boolean;
+    function obterRateioCentroCusto(pIdOrganizacao,pIdTituloPagar : string ): Boolean;
 
     //TP BAIXA
     function obterTPQuitados(pIdOrganizacao, pIdStatus: string; pDataInicial, pDataFinal: TDate): Boolean;
@@ -58,6 +64,7 @@ type
     function obterTPBAC(pIdOrganizacao, pIdTPB : String): Boolean;
     function obterTPBDE(pIdOrganizacao, pIdTPB : String): Boolean;
     function obterTPBHistorico(pIdorganizacao, tituloPagarQuitado : string): Boolean;
+    function obterCdentePorID(pIdorganizacao, idCedente : string): Boolean;
 
   end;
 
@@ -127,13 +134,29 @@ begin
 end;
 
 
+procedure TdmEspelhoTP.dsDetalhesTPDataChange(Sender: TObject; Field: TField);
+var
+idOrganizacao, idCedente, idTituloPagar :string;
+begin
+//pegar os dados dos detalhe
+ idOrganizacao := qryObterPorNumeroDocumento.FieldByName('ID_ORGANIZACAO').AsString;
+ idCedente     := qryObterPorNumeroDocumento.FieldByName('ID_CEDENTE').AsString;
+ idTituloPagar := qryObterPorNumeroDocumento.FieldByName('ID_TITULO_PAGAR').AsString;
+
+ obterCdentePorID(idOrganizacao, idCedente);
+ obterTPProvDB(idOrganizacao,idTituloPagar);
+ obterRateioCentroCusto(idOrganizacao,idTituloPagar);
+
+
+end;
+
 Procedure TdmEspelhoTP.exibirRelatorio ( dtInicial, dtFinal: TDate);
 begin
 
          frxEspelhoTP.Clear;
   if not(frxEspelhoTP.LoadFromFile(retornarCaminhoRelatorio)) then
   begin
-    // Mensagem não encontrou o arquivo do relatorio. Fazer try p levantar erros
+    ///dasa
   end
   else
   begin
@@ -146,14 +169,14 @@ begin
 end;
 
 
-function  TdmEspelhoTP.obterTPProvCR(pIdOrganizacao,pRegistroProvisao : string ): Boolean;
+function  TdmEspelhoTP.obterTPProvCR(pIdOrganizacao,pIdTituloPagar : string ): Boolean;
 begin
   Result := false;
 
   qryTPPROVCR.Close;
   qryTPPROVCR.Connection := dmConexao.Conn;
-  qryTPPROVCR.ParamByName('pIdOrganizacao').AsString := pIdOrganizacao;
-  qryTPPROVCR.ParamByName('pregistro').AsString := pRegistroProvisao;
+  qryTPPROVCR.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+  qryTPPROVCR.ParamByName('PIDTITULOPAGAR').AsString := pIdTituloPagar;
   qryTPPROVCR.Open;
 
   Result := not qryTPPROVCR.IsEmpty;
@@ -162,39 +185,21 @@ end;
 
 
 
-function TdmEspelhoTP.obterTPProvDB(pIdOrganizacao,pRegistroProvisao : string ): Boolean;
+function TdmEspelhoTP.obterTPProvDB(pIdOrganizacao,pIdTituloPagar : string ): Boolean;
 begin
   Result := false;
 
   qryTPPROVDB.Close;
   qryTPPROVDB.Connection := dmConexao.Conn;
-  qryTPPROVDB.ParamByName('pIdOrganizacao').AsString := pIdOrganizacao;
-  qryTPPROVDB.ParamByName('pregistro').AsString := pRegistroProvisao;
+  qryTPPROVDB.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+  qryTPPROVDB.ParamByName('PIDTITULOPAGAR').AsString := pIdTituloPagar;
   qryTPPROVDB.Open;
+
 
   Result := not qryTPPROVDB.IsEmpty;
 
 end;
 
-
-function TdmEspelhoTP.obterTPProBase(pIdOrganizacao : string; pDataInicial, pDataFinal: TDate ): Boolean;
-var
-aux :Integer;
-begin
-  Result := false;
-
-  qryTPPROVBASE.Close;
-  qryTPPROVBASE.Connection := dmConexao.Conn;
-
-  qryTPPROVBASE.ParamByName('pIdOrganizacao').AsString := pIdOrganizacao;
-  qryTPPROVBASE.ParamByName('pDataInicial').AsDate := pDataInicial;
-  qryTPPROVBASE.ParamByName('pDataFinal').AsDate := pDataFinal;
-  qryTPPROVBASE.Open;
-
-
-  Result := not qryTPPROVBASE.IsEmpty;
-
-end;
 
 
 function TdmEspelhoTP.obterTPQuitados(pIdOrganizacao, pIdStatus: string; pDataInicial, pDataFinal: TDate): Boolean;
@@ -262,18 +267,89 @@ begin
 
 end;
 
+function TdmEspelhoTP.obterCdentePorID(pIdorganizacao,
+  idCedente: string): Boolean;
+begin
+try
+
+      qryCedente.Close;
+      qryCedente.Connection := dmConexao.Conn;
+      qryCedente.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+      qryCedente.ParamByName('PIDCEDENTE').AsString := idCedente;
+
+      qryCedente.Open;
+
+  except
+
+  raise(Exception).Create('Erro ao tentar consultar o Fornecedor ' );
+
+
+  end;
+
+  Result := not qryCedente.IsEmpty;
+end;
+
+function TdmEspelhoTP.obterPorNumeroDocumento(pIdOrganizacao,
+  pNumDoc: string): Boolean;
+begin
+ try
+
+      qryObterPorNumeroDocumento.Close;
+      qryObterPorNumeroDocumento.Connection := dmConexao.Conn;
+      qryObterPorNumeroDocumento.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+      qryObterPorNumeroDocumento.ParamByName('PNUMDOC').AsString := pNumDoc;
+
+      qryObterPorNumeroDocumento.Open;
+
+  except
+
+  raise(Exception).Create('Erro ao tentar consultar o TP DOC ' + pNumDoc );
+
+
+  end;
+
+  Result := not qryObterPorNumeroDocumento.IsEmpty;
+end;
+
+function TdmEspelhoTP.obterRateioCentroCusto(pIdOrganizacao,
+  pIdTituloPagar: string): Boolean;
+begin
+ try
+
+      qryRateioCentroCustos.Close;
+      qryRateioCentroCustos.Connection := dmConexao.Conn;
+      qryRateioCentroCustos.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+      qryRateioCentroCustos.ParamByName('PIDTITULOPAGAR').AsString := pIdTituloPagar;
+
+      qryRateioCentroCustos.Open;
+
+  except
+
+  raise(Exception).Create('Erro ao tentar consultar o rateio de custos ....');
+
+
+  end;
+
+  Result := not qryRateioCentroCustos.IsEmpty;
+end;
+
 function TdmEspelhoTP.obterTPBAC(pIdOrganizacao, pIdTPB : String): Boolean;
 begin
 
   Result := false;
-
+  try
   qryTPBAcrescimos.Close;
   qryTPBAcrescimos.Connection := dmConexao.Conn;
   qryTPBAcrescimos.ParamByName('pIdOrganizacao').AsString := pIdOrganizacao;
   qryTPBAcrescimos.ParamByName('pIdTitutloPagarBaixa').AsString :=
     pIdTPB;
   qryTPBAcrescimos.Open;
+  except
 
+  raise(Exception).Create('Erro ao tentar obter os acréscimos ....');
+
+
+  end;
   Result := not qryTPBAcrescimos.IsEmpty;
 end;
 
