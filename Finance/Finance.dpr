@@ -99,6 +99,5 @@ begin
   Application.CreateForm(TdmConexao, dmConexao);
   Application.CreateForm(TdmUsuarioConsulta, dmUsuarioConsulta);
   Application.CreateForm(TFMostraErros, FMostraErros);
-  Application.CreateForm(TdmEspelhoTP, dmEspelhoTP);
   Application.Run;
 end.

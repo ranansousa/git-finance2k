@@ -182,6 +182,12 @@ if  (Assigned(dmContasPagarDTS)) then
     FreeAndNil(dmContasPagar);
   end;
 
+  if  (Assigned(dmEspelhoTP)) then
+  begin
+    FreeAndNil(dmEspelhoTP);
+  end;
+
+
 end;
 
 procedure TfrmContasPagar.inicializarDM(Sender: TObject);

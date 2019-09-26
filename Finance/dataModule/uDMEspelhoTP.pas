@@ -6,7 +6,8 @@ uses
   System.SysUtils, System.Classes, FireDAC.Stan.Intf, FireDAC.Stan.Option,Vcl.Forms,
   FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
   FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB, udmConexao,uDMContasPagar,uDMOrganizacao,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client, frxClass, frxDBSet;
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, frxClass, frxDBSet, frxExportImage,
+  frxExportRTF, frxExportCSV, frxExportPDF;
 
 type
   TdmEspelhoTP = class(TDataModule)
@@ -23,7 +24,6 @@ type
     frxDBTPB: TfrxDBDataset;
     frxTPBCheque: TfrxDBDataset;
     qryTPQuitados: TFDQuery;
-    dsDetalhesTPB: TDataSource;
     qryObterTPBaixaPorTitulo: TFDQuery;
     qryBaixaTPCaixa: TFDQuery;
     qryBaixaTPCheque: TFDQuery;
@@ -38,6 +38,13 @@ type
     frxCedente: TfrxDBDataset;
     qryRateioCentroCustos: TFDQuery;
     frxCentroCustos: TfrxDBDataset;
+    qryLotePagamento: TFDQuery;
+    frxLotePagamento: TfrxDBDataset;
+    frxTPBBanco: TfrxDBDataset;
+    frxPDFExport1: TfrxPDFExport;
+    frxCSVExport1: TfrxCSVExport;
+    frxRTFExport1: TfrxRTFExport;
+    frxJPEGExport1: TfrxJPEGExport;
     procedure dsDetalhesTPDataChange(Sender: TObject; Field: TField);
   private
     { Private declarations }
@@ -58,13 +65,16 @@ type
     //TP BAIXA
     function obterTPQuitados(pIdOrganizacao, pIdStatus: string; pDataInicial, pDataFinal: TDate): Boolean;
     function obterTPBaixaPorTitulo(pIdOrganizacao, pIdtituloPagar: String): Boolean;
+    function obterTPBAC(pIdOrganizacao, pIdTPB : String): Boolean;
+    function obterTPBDE(pIdOrganizacao, pIdTPB : String): Boolean;
+
     function obterTPBCaixa(pIdOrganizacao, pIdTPB: String): Boolean;
     function obterTPBCheque(pIdOrganizacao, pIdTPB  : String): Boolean;
     function obterTPBBanco(pIdOrganizacao, pIdTPB  : String): Boolean;
-    function obterTPBAC(pIdOrganizacao, pIdTPB : String): Boolean;
-    function obterTPBDE(pIdOrganizacao, pIdTPB : String): Boolean;
+
     function obterTPBHistorico(pIdorganizacao, tituloPagarQuitado : string): Boolean;
     function obterCdentePorID(pIdorganizacao, idCedente : string): Boolean;
+    function obterLotePagamento(pIdorganizacao, idLote : string): Boolean;
 
   end;
 
@@ -136,16 +146,29 @@ end;
 
 procedure TdmEspelhoTP.dsDetalhesTPDataChange(Sender: TObject; Field: TField);
 var
-idOrganizacao, idCedente, idTituloPagar :string;
+pIdOrganizacao, pIdCedente, pIdTituloPagar,pIdLote, pIdTPB :string;
 begin
 //pegar os dados dos detalhe
- idOrganizacao := qryObterPorNumeroDocumento.FieldByName('ID_ORGANIZACAO').AsString;
- idCedente     := qryObterPorNumeroDocumento.FieldByName('ID_CEDENTE').AsString;
- idTituloPagar := qryObterPorNumeroDocumento.FieldByName('ID_TITULO_PAGAR').AsString;
+ pIdOrganizacao := qryObterPorNumeroDocumento.FieldByName('ID_ORGANIZACAO').AsString;
+ pIdCedente     := qryObterPorNumeroDocumento.FieldByName('ID_CEDENTE').AsString;
+ pIdTituloPagar := qryObterPorNumeroDocumento.FieldByName('ID_TITULO_PAGAR').AsString;
 
- obterCdentePorID(idOrganizacao, idCedente);
- obterTPProvDB(idOrganizacao,idTituloPagar);
- obterRateioCentroCusto(idOrganizacao,idTituloPagar);
+ obterTPProvDB(pIdOrganizacao,pIdTituloPagar);
+ obterCdentePorID(pIdOrganizacao, pIdCedente);
+ obterRateioCentroCusto(pIdOrganizacao,pIdTituloPagar);
+
+  if obterTPBaixaPorTitulo(pIdOrganizacao,pIdTituloPagar) then begin
+      pIdTPB  := qryObterTPBaixaPorTitulo.FieldByName('ID_TITULO_PAGAR_BAIXA').AsString;
+      pIdLote := qryObterTPBaixaPorTitulo.FieldByName('ID_LOTE_PAGAMENTO').AsString;
+      obterTPBAC(pIdOrganizacao,pIdTPB);
+      obterTPBDE(pIdOrganizacao,pIdTPB);
+      obterLotePagamento(pIdOrganizacao,pIdLote);
+      obterTPBCaixa(pIdOrganizacao,pIdTPB);
+      obterTPBCheque(pIdOrganizacao,pIdTPB);
+      obterTPBBanco(pIdOrganizacao,pIdTPB);
+
+  end;
+
 
 
 end;
@@ -226,12 +249,15 @@ function TdmEspelhoTP.obterTPBCaixa(pIdOrganizacao, pIdTPB: String): Boolean;
 begin
   Result := false;
   //obtem os TP pago pela tesouraria
-
-  qryBaixaTPCaixa.Close;
-  qryBaixaTPCaixa.Connection := dmConexao.Conn;
-  qryBaixaTPCaixa.ParamByName('PIDORGANIZACAO').AsString :=  pIdOrganizacao;
-  qryBaixaTPCaixa.ParamByName('PIDTITULOPAGARBAIXA').AsString := pIdTPB;
-  qryBaixaTPCaixa.Open;
+  try
+    qryBaixaTPCaixa.Close;
+    qryBaixaTPCaixa.Connection := dmConexao.Conn;
+    qryBaixaTPCaixa.ParamByName('PIDORGANIZACAO').AsString :=  pIdOrganizacao;
+    qryBaixaTPCaixa.ParamByName('PIDTPB').AsString := pIdTPB;
+    qryBaixaTPCaixa.Open;
+  except
+  raise(Exception).Create('Erro ao tentar consultar baixa tesouraria ' );
+  end;
 
   Result := not qryBaixaTPCaixa.IsEmpty;
 
@@ -241,12 +267,15 @@ function TdmEspelhoTP.obterTPBCheque(pIdOrganizacao, pIdTPB  : String): Boolean;
 begin
 
   Result := false;
-
-  qryBaixaTPCheque.Close;
-  qryBaixaTPCheque.Connection := dmConexao.Conn;
-  qryBaixaTPCheque.ParamByName('pIdOrganizacao').AsString := pIdOrganizacao;
-  qryBaixaTPCheque.ParamByName('PIDTITULOPAGARBAIXA').AsString :=pIdTPB;
-  qryBaixaTPCheque.Open;
+  try
+    qryBaixaTPCheque.Close;
+    qryBaixaTPCheque.Connection := dmConexao.Conn;
+    qryBaixaTPCheque.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+    qryBaixaTPCheque.ParamByName('PIDTPB').AsString :=pIdTPB;
+    qryBaixaTPCheque.Open;
+  except
+  raise(Exception).Create('Erro ao tentar consultar o Fornecedor ' );
+  end;
 
   Result := not qryBaixaTPCheque.IsEmpty;
 end;
@@ -256,12 +285,15 @@ function TdmEspelhoTP.obterTPBBanco(pIdOrganizacao, pIdTPB  : String): Boolean;
 begin
   Result := false;
 
-  qryObterTPBBanco.Close;
-  qryObterTPBBanco.Connection := dmConexao.Conn;
-  qryObterTPBBanco.ParamByName('pIdOrganizacao').AsString :=   pIdOrganizacao;
-  qryObterTPBBanco.ParamByName('PIDTPB').AsString := pIdTPB;
-
-  qryObterTPBBanco.Open;
+  TRY
+    qryObterTPBBanco.Close;
+    qryObterTPBBanco.Connection := dmConexao.Conn;
+    qryObterTPBBanco.ParamByName('PIDORGANIZACAO').AsString :=   pIdOrganizacao;
+    qryObterTPBBanco.ParamByName('PIDTPB').AsString := pIdTPB;
+    qryObterTPBBanco.Open;
+  except
+  raise(Exception).Create('Erro ao tentar consultar o Fornecedor ' );
+  end;
 
   Result := not qryObterTPBBanco.IsEmpty;
 
@@ -280,20 +312,38 @@ try
       qryCedente.Open;
 
   except
-
   raise(Exception).Create('Erro ao tentar consultar o Fornecedor ' );
-
-
   end;
 
   Result := not qryCedente.IsEmpty;
+end;
+
+function TdmEspelhoTP.obterLotePagamento(pIdorganizacao,
+  idLote: string): Boolean;
+begin
+ try
+      qryLotePagamento.Close;
+      qryLotePagamento.Connection := dmConexao.Conn;
+      qryLotePagamento.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+      qryLotePagamento.ParamByName('PIDLOTE').AsString := idLote;
+
+      qryLotePagamento.Open;
+
+ except
+
+  raise(Exception).Create('Erro ao tentar consultar Lote Pagamento ' );
+
+ end;
+
+  Result := not qryLotePagamento.IsEmpty;
+
+
 end;
 
 function TdmEspelhoTP.obterPorNumeroDocumento(pIdOrganizacao,
   pNumDoc: string): Boolean;
 begin
  try
-
       qryObterPorNumeroDocumento.Close;
       qryObterPorNumeroDocumento.Connection := dmConexao.Conn;
       qryObterPorNumeroDocumento.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
@@ -338,12 +388,11 @@ begin
 
   Result := false;
   try
-  qryTPBAcrescimos.Close;
-  qryTPBAcrescimos.Connection := dmConexao.Conn;
-  qryTPBAcrescimos.ParamByName('pIdOrganizacao').AsString := pIdOrganizacao;
-  qryTPBAcrescimos.ParamByName('pIdTitutloPagarBaixa').AsString :=
-    pIdTPB;
-  qryTPBAcrescimos.Open;
+      qryTPBAcrescimos.Close;
+      qryTPBAcrescimos.Connection := dmConexao.Conn;
+      qryTPBAcrescimos.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+      qryTPBAcrescimos.ParamByName('PIDTPB').AsString := pIdTPB;
+      qryTPBAcrescimos.Open;
   except
 
   raise(Exception).Create('Erro ao tentar obter os acréscimos ....');
@@ -356,33 +405,44 @@ end;
 
 
 
-function TdmEspelhoTP.obterTPBaixaPorTitulo(pIdOrganizacao,
-  pIdtituloPagar: String): Boolean;
+function TdmEspelhoTP.obterTPBaixaPorTitulo(pIdOrganizacao, pIdtituloPagar: String): Boolean;
 begin
  Result := false;
 
+ try
+      qryObterTPBaixaPorTitulo.Close;
+      qryObterTPBaixaPorTitulo.Connection := dmConexao.Conn;
+      qryObterTPBaixaPorTitulo.ParamByName('PIDORGANIZACAO').AsString :=  pIdOrganizacao;
+      qryObterTPBaixaPorTitulo.ParamByName('PIDTITULOPAGAR').AsString :=  pIdtituloPagar;
+      qryObterTPBaixaPorTitulo.Open;
+ except
 
-  qryObterTPBaixaPorTitulo.Close;
-  qryObterTPBaixaPorTitulo.Connection := dmConexao.Conn;
-  qryObterTPBaixaPorTitulo.ParamByName('PIDORGANIZACAO').AsString :=  pIdOrganizacao;
-  qryObterTPBaixaPorTitulo.ParamByName('pIdtituloPagar').AsString :=  pIdtituloPagar;
-  qryObterTPBaixaPorTitulo.Open;
+  raise(Exception).Create('Erro ao tentar obter baixa de titulos  ....');
+
+ end;
 
   Result := not qryObterTPBaixaPorTitulo.IsEmpty;
+
 end;
+
 
 function TdmEspelhoTP.obterTPBDE(pIdOrganizacao, pIdTPB
   : String): Boolean;
 begin
 
   Result := false;
+  try
+      qryTPBDeducao.Close;
+      qryTPBDeducao.Connection := dmConexao.Conn;
+      qryTPBDeducao.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+      qryTPBDeducao.ParamByName('PIDTPB').AsString :=
+        pIdTPB;
+      qryTPBDeducao.Open;
+  except
 
-  qryTPBDeducao.Close;
-  qryTPBDeducao.Connection := dmConexao.Conn;
-  qryTPBDeducao.ParamByName('pIdOrganizacao').AsString := pIdOrganizacao;
-  qryTPBDeducao.ParamByName('pIdTitutloPagarBaixa').AsString :=
-    pIdTPB;
-  qryTPBDeducao.Open;
+  raise(Exception).Create('Erro ao tentar obter deduções  ....');
+
+ end;
 
   Result := not qryTPBDeducao.IsEmpty;
 end;
