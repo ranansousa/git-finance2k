@@ -21,7 +21,6 @@ object dmConexao: TdmConexao
     ResourceOptions.AssignedValues = [rvCmdExecMode, rvAutoReconnect]
     ResourceOptions.AutoReconnect = True
     UpdateOptions.AssignedValues = [uvRefreshMode]
-    Connected = True
     LoginPrompt = False
     Left = 40
     Top = 40

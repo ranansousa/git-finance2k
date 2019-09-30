@@ -941,8 +941,8 @@ object dmExportaFinance: TdmExportaFinance
       '     --(TP.REGISTRO_PROVISAO IS NOT NULL) AND'
       '      (TP.ID_TIPO_STATUS in ('#39'QUITADO'#39', '#39'PARCIAL'#39'))'
       '')
-    Left = 616
-    Top = 40
+    Left = 624
+    Top = 144
     ParamData = <
       item
         Name = 'PIDORGANIZACAO'

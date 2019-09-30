@@ -4228,7 +4228,7 @@ object frmServidorEmail: TfrmServidorEmail
   object lblPID: TLabel
     Left = 32
     Top = 483
-    Width = 360
+    Width = 8
     Height = 13
     Caption = 'id'
   end
@@ -4267,6 +4267,7 @@ object frmServidorEmail: TfrmServidorEmail
     Top = 309
     Width = 190
     Height = 21
+    PasswordChar = '*'
     TabOrder = 4
   end
   object chAutentica: TCheckBox

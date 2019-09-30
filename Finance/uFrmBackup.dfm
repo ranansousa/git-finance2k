@@ -4345,6 +4345,10 @@ object frmBackup: TfrmBackup
     object tbsAgenda: TTabSheet
       Caption = 'Agenda'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label10: TLabel
         Left = 17
         Top = 17
@@ -4516,6 +4520,10 @@ object frmBackup: TfrmBackup
     object tbsRestore: TTabSheet
       Caption = 'Restore'
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       DesignSize = (
         689
         301)

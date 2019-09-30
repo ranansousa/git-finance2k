@@ -4,7 +4,6 @@ uses
   Vcl.Forms,
   uFrmPrincipal in 'uFrmPrincipal.pas' {FrmPrincipal},
   udmConexao in 'dataModule\udmConexao.pas' {dmConexao: TDataModule},
-  uDMContasPagar in 'dataModule\uDMContasPagar.pas' {dmContasPagar: TDataModule},
   uDmExportaFinance in 'dataModule\uDmExportaFinance.pas' {dmExportaFinance: TDataModule},
   uDMMegaContabil in 'dataModule\uDMMegaContabil.pas' {dmMegaContabil: TDataModule},
   uDMOrganizacao in 'dataModule\uDMOrganizacao.pas' {dmOrganizacao: TDataModule},
@@ -32,7 +31,6 @@ uses
   uDMCombos in 'dataModule\uDMCombos.pas' {dmCombos: TDataModule},
   uDmRelTPHistorico in 'dataModule\uDmRelTPHistorico.pas' {dmRelTPHistorico: TDataModule},
   uDMCedenteConsulta in 'dataModule\uDMCedenteConsulta.pas' {dmCedenteConsulta: TDataModule},
-  uDMRelatorioPagamentoHistorico in 'dataModule\uDMRelatorioPagamentoHistorico.pas' {dmRelTPDetalhado: TDataModule},
   uDMExportaFinanceTP in 'dataModule\uDMExportaFinanceTP.pas' {dmExportFinanceTP: TDataModule},
   uDMExportaFinanceTR in 'dataModule\uDMExportaFinanceTR.pas' {dmExportFinanceTR: TDataModule},
   uDMExportaFinanceManter in 'dataModule\uDMExportaFinanceManter.pas' {dmExdportFinanceManter: TDataModule},
@@ -59,7 +57,6 @@ uses
   uDMContasPagarManter in 'dataModule\uDMContasPagarManter.pas' {dmContasPagarManter: TDataModule},
   uFrmManutencao in 'uFrmManutencao.pas' {frmManutencao},
   uFrmContasPagar in 'uFrmContasPagar.pas' {frmContasPagar},
-  uDMContasPagarDTS in 'dataModule\uDMContasPagarDTS.pas' {dmContasPagarDTS: TDataModule},
   uFrmSincronizaMega in 'uFrmSincronizaMega.pas' {frmSincronizaMega},
   uDMContaContabil in 'dataModule\uDMContaContabil.pas' {dmContaContabil: TDataModule},
   uListaLancamentosCredito in 'exportacao\uListaLancamentosCredito.pas',
@@ -86,7 +83,14 @@ uses
   uFrameBairro in 'frames\uFrameBairro.pas' {frmBairro: TFrame},
   uFrameProgressBar in 'frames\uFrameProgressBar.pas' {framePB: TFrame},
   uFrmDeletaLoteContabil in 'uFrmDeletaLoteContabil.pas' {frmDeletaLoteContabil},
-  uDMEspelhoTP in 'dataModule\uDMEspelhoTP.pas' {dmEspelhoTP: TDataModule};
+  uDMEspelhoTP in 'dataModule\uDMEspelhoTP.pas' {dmEspelhoTP: TDataModule},
+  uDMRelatoriosPagamentos in 'dataModule\uDMRelatoriosPagamentos.pas' {dmRelPagamentos: TDataModule},
+  uDMContasPagar in 'dataModule\uDMContasPagar.pas' {dmContasPagar: TDataModule},
+  uDMContasPagarDTS in 'dataModule\uDMContasPagarDTS.pas' {dmContasPagarDTS: TDataModule},
+  uDMRD in 'dataModule\uDMRD.pas' {dmRD: TDataModule},
+  uFrmDemonstrativoRD in 'uFrmDemonstrativoRD.pas' {frmDemonstrativoRD},
+  uFramePeriodo in 'frames\uFramePeriodo.pas' {frmPeriodo: TFrame},
+  uFrmAlteraOrganizacao in 'uFrmAlteraOrganizacao.pas' {frmAlteraOrganizacao};
 
 {$R *.res}
 

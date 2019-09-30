@@ -18,8 +18,8 @@ type
     tbsTP: TTabSheet;
     tbsTR: TTabSheet;
     btnDeletarExcluidos: TBitBtn;
-    dbgrd1: TDBGrid;
-    ds1: TDataSource;
+    dbgrdMain: TDBGrid;
+    dsPreencheGrid: TDataSource;
     tsTabelas: TTabSheet;
     frameOrgs: TframeOrg;
     frameBDTables: TfrmBDTables;
@@ -112,28 +112,30 @@ begin
   qtd := qryTodosTP.RecordCount;
 
   //preecnhe a lista de excluidos
-    qryTodosTP.Close;
-    qryTodosTP.Connection := dmConexao.Conn;
-    qryTodosTP.SQL.Clear;
-    qryTodosTP.SQL.Add(' SELECT * FROM TITULO_PAGAR TP ' +
+    TFDQuery(dbgrdMain.DataSource.DataSet).Close;
+    TFDQuery(dbgrdMain.DataSource.DataSet).Connection := dmConexao.Conn;
+    TFDQuery(dbgrdMain.DataSource.DataSet).SQL.Clear;
+    TFDQuery(dbgrdMain.DataSource.DataSet).SQL.Add(' SELECT * FROM TITULO_PAGAR TP ' +
                        ' WHERE (TP.ID_ORGANIZACAO =:PIDORGANIZACAO) AND ' +
                        ' (TP.ID_TIPO_STATUS = ''EXCLUIDO'') AND '+
                        ' (TP.ID_TITULO_GERADOR IS NULL) ' );
-    qryTodosTP.ParamByName('PIDORGANIZACAO').AsString := idOrganizacao;
-    qryTodosTP.Open;
-    qtd := qryTodosTP.RecordCount;
+    TFDQuery(dbgrdMain.DataSource.DataSet).ParamByName('PIDORGANIZACAO').AsString := idOrganizacao;
+    TFDQuery(dbgrdMain.DataSource.DataSet).Open;
 
-   qryTodosTP.First;
-   while not qryTodosTP.Eof do begin
 
-    if(( qryTodosTP.FieldByName('ID_TIPO_STATUS').AsString).Equals(tipoStatus)) then begin
+    qtd := TFDQuery(dbgrdMain.DataSource.DataSet).RecordCount;
 
-      listaExcluidos.Add(qryTodosTP.FieldByName('ID_TITULO_PAGAR').AsString);
+   TFDQuery(dbgrdMain.DataSource.DataSet).First;
+   while not TFDQuery(dbgrdMain.DataSource.DataSet).Eof do begin
+
+    if(( TFDQuery(dbgrdMain.DataSource.DataSet).FieldByName('ID_TIPO_STATUS').AsString).Equals(tipoStatus)) then begin
+
+      listaExcluidos.Add(TFDQuery(dbgrdMain.DataSource.DataSet).FieldByName('ID_TITULO_PAGAR').AsString);
       Inc(aux);
 
     end;
 
-    qryTodosTP.Next;
+    TFDQuery(dbgrdMain.DataSource.DataSet).Next;
 
    end;
 
@@ -154,22 +156,23 @@ begin
    end;
 
 
-  ObterTodosTitulosPagar(idOrganizacao);
+ // ObterTodosTitulosPagar(idOrganizacao);
 
-  qtd := qryTodosTP.RecordCount;
+  qtd := TFDQuery(dbgrdMain.DataSource.DataSet).RecordCount;
 
 
   try
     if (qtd >0 ) then begin
       try
-       while not qryTodosTP.Eof do begin
-         tipoStatus := qryTodosTP.FieldByName('ID_TIPO_STATUS').AsString;
-         idTP       := qryTodosTP.FieldByName('ID_TITULO_PAGAR').AsString;
+                 TFDQuery(dbgrdMain.DataSource.DataSet).First;
+       while not TFDQuery(dbgrdMain.DataSource.DataSet).Eof do begin
+         tipoStatus := TFDQuery(dbgrdMain.DataSource.DataSet).FieldByName('ID_TIPO_STATUS').AsString;
+         idTP       := TFDQuery(dbgrdMain.DataSource.DataSet).FieldByName('ID_TITULO_PAGAR').AsString;
 
           deletaTP(idOrganizacao,idTP);
           framePB1.progressBar(1,qtd);
           Application.ProcessMessages;
-          qryTodosTP.Next;
+          TFDQuery(dbgrdMain.DataSource.DataSet).Next;
        end;
       Except
           raise Exception.Create
@@ -192,13 +195,6 @@ end;
 
 function TfrmManutencao.deletaTP(pIdOrganizacao, pID: string): boolean;
 begin
-
-
- if not (Assigned(dmConexao)) then
-    begin
-      dmConexao := TdmConexao.Create(Self);
-      dmConexao.conectarBanco;
-    end ;
 
      try
          FDSDeletaTP.StoredProcName :='sp_del_tp';
@@ -242,29 +238,26 @@ end;
 
 procedure TfrmManutencao.inicializarDM(Sender: TObject);
 begin
+//nada
 
- if not (Assigned(dmConexao)) then
-  begin
-    dmConexao := TdmConexao.Create(Self);
-    dmConexao.conectarBanco;
-  end ;
-
-
-  if not(Assigned(dmContasPagarManter)) then
-  begin
-    dmContasPagarManter := TdmContasPagarManter.Create(Self);
-  end  ;
 
 end;
 
 
 function TfrmManutencao.obterFilhosPorTP(pIdOrganizacao,  pIdTP: string): boolean;
 begin
+
+     try
            qryObterFilhosTP.Close;
            qryObterFilhosTP.Connection := dmConexao.Conn;
            qryObterFilhosTP.ParamByName('PIDORGANIZACAO').AsString :=pIdOrganizacao;
            qryObterFilhosTP.ParamByName('PIDGERADOR').AsString     :=pIdTP;
            qryObterFilhosTP.Open();
+
+     except
+      raise Exception.Create('Erro ao tentar Obter Filhos por TP');
+
+     end;
 
 
       Result := not qryObterFilhosTP.IsEmpty; //se encotrar filhos retorna true
@@ -301,7 +294,7 @@ begin
                   qryAjustaDataEmissao.ParamByName('PDATA').AsDate := query.FieldByName('DATA_REGISTRO').AsDateTime;
 
             qryAjustaDataEmissao.ExecSQL;
-            dbgrd1.DataSource.DataSet :=query;
+            dbgrdMain.DataSource.DataSet :=query;
             query.Next;
 
             framePB1.progressBar(1, query.RecordCount);

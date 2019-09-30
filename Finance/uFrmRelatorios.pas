@@ -4,8 +4,8 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
-  Vcl.Graphics,Vcl.Controls, Vcl.Forms, Vcl.Dialogs, udmConexao,uFrmRelatoriosPagamentos,
-  Vcl.StdCtrls, Vcl.ComCtrls, Vcl.Buttons,uFrmRelatorioPagamentosHistorico;
+  Vcl.Graphics,Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
+  Vcl.StdCtrls, Vcl.ComCtrls, Vcl.Buttons,uFrmDemonstrativoRD, uFrmRelatoriosPagamentos,uFrmRelatorioPagamentosHistorico;
 
 type
   TfrmRelatorios = class(TForm)
@@ -17,11 +17,13 @@ type
     btnRelContaPagar: TButton;
     btnCTPHistorico: TBitBtn;
     Label1: TLabel;
+    btnRD: TBitBtn;
     procedure btnRelContaPagarClick(Sender: TObject);
     procedure inicializarDM(Sender: TObject);
     procedure freeAndNilDM(Sender: TObject);
     procedure btnCTPHistoricoClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure btnRDClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -39,16 +41,28 @@ procedure TfrmRelatorios.btnCTPHistoricoClick(Sender: TObject);
 begin
 
   try
-    if dmConexao.conectarBanco then begin
       frmCTPHistorico := TfrmCTPHistorico.Create(Self);
       frmCTPHistorico.ShowModal;
       FreeAndNil(frmCTPHistorico);
-    end else begin
-      ShowMessage('Não foi possível conectar o banco de dados!' + sLineBreak + 'Contate o Administrador!');
-    end;
+
   except on e: Exception do
     ShowMessage(e.Message + sLineBreak + 'Contate o administrador!');
   end;
+
+end;
+
+procedure TfrmRelatorios.btnRDClick(Sender: TObject);
+begin
+
+  try
+      frmDemonstrativoRD := TFrmDemonstrativoRD.Create(Self);
+      frmDemonstrativoRD.ShowModal;
+      FreeAndNil(frmDemonstrativoRD);
+
+  except on e: Exception do
+    ShowMessage(e.Message + sLineBreak + 'Contate o administrador!');
+  end;
+
 
 end;
 
@@ -57,13 +71,10 @@ procedure TfrmRelatorios.btnRelContaPagarClick(Sender: TObject);
 begin
 
   try
-    if dmConexao.conectarBanco then begin
       frmRelatorioPagamentos := TfrmRelatorioPagamentos.Create(Self);
       frmRelatorioPagamentos.ShowModal;
       FreeAndNil(frmRelatorioPagamentos);
-    end else begin
-      ShowMessage('Não foi possível conectar o banco de dados!' + sLineBreak + 'Contate o Administrador!');
-    end;
+
   except on e: Exception do
     ShowMessage(e.Message + sLineBreak + 'Contate o administrador!');
   end;
@@ -79,14 +90,15 @@ end;
 procedure TfrmRelatorios.freeAndNilDM(Sender: TObject);
 begin
 
-  if (Assigned(dmConexao)) then
-  begin
-    FreeAndNil(dmConexao);
-  end;
 
   if (Assigned(frmCTPHistorico)) then
   begin
     FreeAndNil(frmCTPHistorico);
+  end;
+
+  if (Assigned(frmRelatorioPagamentos)) then
+  begin
+    FreeAndNil(frmRelatorioPagamentos);
   end;
 
   
@@ -94,16 +106,18 @@ end;
 
 procedure TfrmRelatorios.inicializarDM(Sender: TObject);
 begin
-  if not(Assigned(dmConexao)) then
-  begin
-    dmConexao := TdmConexao.Create(Self);
-  end;
+
 
   if not(Assigned(frmCTPHistorico)) then
   begin
     frmCTPHistorico := TfrmCTPHistorico.Create(Self);
   end;
 
+
+  if not(Assigned(frmRelatorioPagamentos)) then
+  begin
+    frmRelatorioPagamentos := TfrmRelatorioPagamentos.Create(Self);
+  end;
 
 
 end;

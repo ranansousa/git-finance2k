@@ -5,7 +5,7 @@ interface
 uses
   System.SysUtils, System.Classes, FireDAC.Stan.Intf, FireDAC.Stan.Option,Vcl.Forms,
   FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
-  FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB, udmConexao,uDMContasPagar,uDMOrganizacao,
+  FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB, udmConexao, uDMOrganizacao,
   FireDAC.Comp.DataSet, FireDAC.Comp.Client, frxClass, frxDBSet, frxExportImage,
   frxExportRTF, frxExportCSV, frxExportPDF;
 
@@ -49,12 +49,14 @@ type
   private
     { Private declarations }
 
+   dtInicial, dtFinal : TDate;
+
   public
     { Public declarations }
     procedure inicializarDM(Sender: TObject);
     function retornarCaminhoRelatorio: string;
     procedure inicializarVariaveisRelatorio(dtInicial, dtFinal: TDate);
-    procedure exibirRelatorio(dtInicial, dtFinal: TDate);
+    procedure exibirRelatorio(pDataInicial, pDataFinal: TDate);
 
     //TP PRovisionado
     function obterPorNumeroDocumento(pIdOrganizacao, pNumDoc: string): Boolean;
@@ -96,21 +98,10 @@ end;
 procedure  TdmEspelhoTP.inicializarDM(Sender: TObject);
 begin
 
-  if not(Assigned(dmConexao)) then
-  begin
-    dmConexao := TdmConexao.Create(Self);
-  end ;
-
-   if not(Assigned(dmContasPagar)) then
-  begin
-    dmContasPagar := TdmContasPagar.Create(Self);
-  end  ;
-
-   if not (Assigned(dmOrganizacao)) then
+  if not(Assigned(dmOrganizacao)) then
   begin
     dmOrganizacao := TdmOrganizacao.Create(Self);
-  end;
-
+  end ;
 
 end;
 
@@ -152,6 +143,9 @@ begin
  pIdOrganizacao := qryObterPorNumeroDocumento.FieldByName('ID_ORGANIZACAO').AsString;
  pIdCedente     := qryObterPorNumeroDocumento.FieldByName('ID_CEDENTE').AsString;
  pIdTituloPagar := qryObterPorNumeroDocumento.FieldByName('ID_TITULO_PAGAR').AsString;
+ dtInicial := qryObterPorNumeroDocumento.FieldByName('DATA_EMISSAO').AsDateTime;
+ dtFinal   := dtInicial;
+
 
  obterTPProvDB(pIdOrganizacao,pIdTituloPagar);
  obterCdentePorID(pIdOrganizacao, pIdCedente);
@@ -173,7 +167,7 @@ begin
 
 end;
 
-Procedure TdmEspelhoTP.exibirRelatorio ( dtInicial, dtFinal: TDate);
+Procedure TdmEspelhoTP.exibirRelatorio(pDataInicial, pDataFinal: TDate);
 begin
 
          frxEspelhoTP.Clear;
@@ -350,6 +344,9 @@ begin
       qryObterPorNumeroDocumento.ParamByName('PNUMDOC').AsString := pNumDoc;
 
       qryObterPorNumeroDocumento.Open;
+      dtInicial := qryObterPorNumeroDocumento.FieldByName('DATA_EMISSAO').AsDateTime;
+      dtFinal := dtInicial;
+
 
   except
 

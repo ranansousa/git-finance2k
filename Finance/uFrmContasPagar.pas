@@ -5,9 +5,9 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.DBCtrls, Data.DB,
-  Vcl.Grids, Vcl.DBGrids,uDMContasPagar,uDMContasPagarManter,uDMContasPagarDTS,udmConexao,
+  Vcl.Grids, Vcl.DBGrids,uDMContasPagar,udmConexao,uDMEspelhoTP,
   Vcl.ComCtrls, Vcl.StdCtrls, uUtil, FireDAC.Stan.Intf, FireDAC.Stan.Option,
-  FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, uDMEspelhoTP,
+  FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
   FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet,
   FireDAC.Comp.Client;
 
@@ -25,7 +25,9 @@ type
     lbl1: TLabel;
     lbl2: TLabel;
     btnImprimir: TButton;
-    procedure FormShow(Sender: TObject);
+    dsPreencheGrid: TDataSource;
+    dsTituloPagar: TDataSource;
+
     procedure btnConsultarClick(Sender: TObject);
     procedure dbgTPDblClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -35,9 +37,12 @@ type
     procedure btnImprimirClick(Sender: TObject);
   private
     { Private declarations }
+    idOrganizacao : string;
     procedure inicializarDM(Sender: TObject);
     procedure freeAndNilDM();
     function liberaExibirRelatorio: Integer;
+
+
   public
     { Public declarations }
   end;
@@ -57,23 +62,25 @@ var
   sql,coluna:string;
   i : Integer;
 begin
-  sql := 'SELECT TP.ID_TITULO_PAGAR, TP.ID_ORGANIZACAO, TP.NUMERO_DOCUMENTO, TP.VALOR_NOMINAL, TP.DESCRICAO, TP.DATA_EMISSAO, TP.DATA_VENCIMENTO, TP.DATA_PAGAMENTO, TP.DATA_PROTOCOLO, TP.PARCELA, C.NOME AS FORNECEDOR  FROM  TITULO_PAGAR TP ' +
+  sql := ' SELECT TP.ID_TITULO_PAGAR, TP.ID_ORGANIZACAO, TP.NUMERO_DOCUMENTO, TP.VALOR_NOMINAL, TP.DESCRICAO, TP.DATA_EMISSAO, '+
+         ' TP.DATA_VENCIMENTO, TP.DATA_PAGAMENTO, TP.DATA_PROTOCOLO, TP.PARCELA, C.NOME AS FORNECEDOR  FROM  TITULO_PAGAR TP ' +
          ' LEFT OUTER JOIN CEDENTE C ON (C.ID_CEDENTE = TP.ID_CEDENTE) AND (C.ID_ORGANIZACAO = TP.ID_ORGANIZACAO) ';
   coluna := EmptyStr;
-  for i := 0 to Pred(dmContasPagarDTS.dtsTituloPagar.DataSet.FieldCount) do
+  for i := 0 to Pred(dsTituloPagar.DataSet.FieldCount) do
   begin
-    if dmContasPagarDTS.dtsTituloPagar.DataSet.Fields[i].DisplayLabel = cbbColunas.Text then
-       coluna := dmContasPagarDTS.dtsTituloPagar.DataSet.Fields[i].FieldName;
+    if dsTituloPagar.DataSet.Fields[i].DisplayLabel = cbbColunas.Text then
+       coluna := dsTituloPagar.DataSet.Fields[i].FieldName;
   end;
-  dmContasPagarDTS.dtsTituloPagar.DataSet.Close();
-   (dmContasPagarDTS.dtsTituloPagar.DataSet as TFDQuery).SQL.Clear;
-  (dmContasPagarDTS.dtsTituloPagar.DataSet as TFDQuery).SQL.Text := sql + ' WHERE (TP.ID_ORGANIZACAO  = :PIDORGANIZACAO)'+
-   ' AND ' + coluna+ ' = :valor ';
-  (dmContasPagarDTS.dtsTituloPagar.DataSet as TFDQuery).ParamByName('valor').AsString := edtConsulta.Text;
-    (dmContasPagarDTS.dtsTituloPagar.DataSet as TFDQuery).ParamByName('PIDORGANIZACAO').AsString := TOrgAtual.getId;
-  dmContasPagarDTS.dtsTituloPagar.DataSet.Open();
 
-  if not dmContasPagarDTS.dtsTituloPagar.DataSet.IsEmpty then begin
+    dsTituloPagar.DataSet.Close();
+    (dsTituloPagar.DataSet as TFDQuery).SQL.Clear;
+    (dsTituloPagar.DataSet as TFDQuery).SQL.Text := sql + ' WHERE (TP.ID_ORGANIZACAO  = :PIDORGANIZACAO) '+
+                                                          ' AND ' + coluna+ ' = :valor ';
+    (dsTituloPagar.DataSet as TFDQuery).ParamByName('valor').AsString := edtConsulta.Text;
+    (dsTituloPagar.DataSet as TFDQuery).ParamByName('PIDORGANIZACAO').AsString := TOrgAtual.getId;
+    dsTituloPagar.DataSet.Open();
+
+  if not dsTituloPagar.DataSet.IsEmpty then begin
      btnImprimir.Enabled :=True;
   end;
 
@@ -108,18 +115,20 @@ begin
    sql := 'SELECT TP.ID_TITULO_PAGAR, TP.ID_ORGANIZACAO, TP.NUMERO_DOCUMENTO, TP.VALOR_NOMINAL, TP.DESCRICAO, TP.DATA_EMISSAO, TP.DATA_VENCIMENTO, TP.DATA_PAGAMENTO, TP.DATA_PROTOCOLO, TP.PARCELA, C.NOME AS FORNECEDOR FROM  TITULO_PAGAR TP ' +
          ' LEFT OUTER JOIN CEDENTE C ON (C.ID_CEDENTE = TP.ID_CEDENTE) AND (C.ID_ORGANIZACAO = TP.ID_ORGANIZACAO) ';
 
-   dmContasPagarDTS.dtsTituloPagar.DataSet.Close();
-   (dmContasPagarDTS.dtsTituloPagar.DataSet as TFDQuery).SQL.Clear;
-  (dmContasPagarDTS.dtsTituloPagar.DataSet as TFDQuery).SQL.Text := sql + ' WHERE (TP.ID_ORGANIZACAO  = :PIDORGANIZACAO) '+
-   ' AND  (TP.ID_TIPO_STATUS in (''ABERTO'',''QUITADO'',''PARCIAL'')) ORDER BY TP.DATA_VENCIMENTO DESC, TP.VALOR_NOMINAL ';
-    (dmContasPagarDTS.dtsTituloPagar.DataSet as TFDQuery).ParamByName('PIDORGANIZACAO').AsString := TOrgAtual.getId;
-  dmContasPagarDTS.dtsTituloPagar.DataSet.Open();
+   dsTituloPagar.DataSet.Close();
+  (dsTituloPagar.DataSet as TFDQuery).SQL.Clear;
+  (dsTituloPagar.DataSet as TFDQuery).SQL.Text := sql + ' WHERE (TP.ID_ORGANIZACAO  = :PIDORGANIZACAO) '+
+                                                        ' AND  (TP.ID_TIPO_STATUS in (''ABERTO'',''QUITADO'',''PARCIAL'')) ' +
+                                                        ' ORDER BY TP.DATA_VENCIMENTO DESC, TP.VALOR_NOMINAL ';
+
+   (dsTituloPagar.DataSet as TFDQuery).ParamByName('PIDORGANIZACAO').AsString := idOrganizacao;
+   dsTituloPagar.DataSet.Open();
 
 end;
 
 procedure TfrmContasPagar.dbgTPDblClick(Sender: TObject);
 begin
-pgcTiuloPagar.ActivePageIndex := 1;
+  pgcTiuloPagar.ActivePageIndex := 1;
 end;
 
 procedure TfrmContasPagar.edtConsultaChange(Sender: TObject);
@@ -131,51 +140,31 @@ end;
 procedure TfrmContasPagar.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
  freeAndNilDM();
- Action := caFree; // sempre como ultimo comando
+ Action := caFree;
 
 end;
 
 procedure TfrmContasPagar.FormCreate(Sender: TObject);
+var
+i : Integer;
 begin
 inicializarDM(Self);
 
-btnConsultar.Enabled :=False;
-btnImprimir.Enabled :=False;
-end;
+  dmContasPagar.obterTodos(idOrganizacao);
 
-procedure TfrmContasPagar.FormShow(Sender: TObject);
-var
-  i:Integer;
-begin
-
- dmContasPagar.obterTodos(TOrgAtual.getId);
-
-
-  for i := 0 to Pred(dmContasPagarDTS.dtsTituloPagar.DataSet.FieldCount) do
+  for i := 0 to Pred(dsTituloPagar.DataSet.FieldCount) do
   begin
-    if dmContasPagarDTS.dtsTituloPagar.DataSet.Fields[i].DisplayLabel = 'NUMERO_DOCUMENTO' then
-      cbbColunas.Items.Add(dmContasPagarDTS.dtsTituloPagar.DataSet.Fields[i].DisplayLabel);
-       cbbColunas.ItemIndex :=0;
-
+    if dsTituloPagar.DataSet.Fields[i].DisplayLabel = 'NUMERO_DOCUMENTO' then
+       cbbColunas.Items.Add(dsTituloPagar.DataSet.Fields[i].DisplayLabel);
   end;
-
- // SQL := (dsGeral.DataSet as TADOQuery).SQL.Text;
-
+  cbbColunas.ItemIndex :=0;
+  btnConsultar.Enabled :=False;
+  btnImprimir.Enabled :=False;
 end;
+
 
 procedure TfrmContasPagar.freeAndNilDM;
 begin
-if  (Assigned(dmContasPagarDTS)) then
-  begin
-    FreeAndNil(dmContasPagarDTS);
-  end;
-
-
-  if  (Assigned(dmContasPagarManter)) then
-  begin
-    FreeAndNil(dmContasPagarManter);
-  end;
-
 
   if  (Assigned(dmContasPagar)) then
   begin
@@ -192,34 +181,18 @@ end;
 
 procedure TfrmContasPagar.inicializarDM(Sender: TObject);
 begin
-
-  if not(Assigned(dmConexao)) then
-  begin
-    dmConexao := TdmConexao.Create(Self);
-  end ;
-
-  if not(Assigned(dmContasPagarManter)) then
-  begin
-    dmContasPagarManter := TdmContasPagarManter.Create(Self);
-  end ;
-
-
    if not(Assigned(dmContasPagar)) then
   begin
     dmContasPagar := TdmContasPagar.Create(Self);
   end  ;
 
-  if not(Assigned(dmContasPagarDTS)) then
-  begin
-    dmContasPagarDTS := TdmContasPagarDTS.Create(Self);
-  end  ;
 
   if not(Assigned(dmEspelhoTP)) then
   begin
     dmEspelhoTP := TdmEspelhoTP.Create(Self);
   end  ;
 
-
+  idOrganizacao := TOrgAtual.getId;
 
 
 end;

@@ -4259,12 +4259,12 @@ object frmRelatorioPagamentos: TfrmRelatorioPagamentos
   end
   object DBGridMain: TDBGrid
     Left = 8
-    Top = 128
+    Top = 115
     Width = 1038
-    Height = 545
+    Height = 574
     Cursor = crSQLWait
     Color = clInfoBk
-    DataSource = dmContasPagar.DSPreencheGridMain
+    DataSource = dsPreencheGrid
     Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
     TabOrder = 6
     TitleFont.Charset = DEFAULT_CHARSET
@@ -4413,8 +4413,8 @@ object frmRelatorioPagamentos: TfrmRelatorioPagamentos
     ReportOptions.LastChange = 42656.877856921310000000
     ScriptLanguage = 'PascalScript'
     StoreInDFM = False
-    Left = 512
-    Top = 72
+    Left = 360
+    Top = 408
   end
   object frxDBTitulos: TfrxDBDataset
     UserName = 'Titulos'
@@ -4432,10 +4432,10 @@ object frmRelatorioPagamentos: TfrmRelatorioPagamentos
       'NOME_CEDENTE=NOME_CEDENTE'
       'STATUS=STATUS'
       'CENTRO_DE_CUSTO=CENTRO_DE_CUSTO')
-    DataSet = dmContasPagar.qryRelPagamentos
+    DataSet = dmRelPagamentos.qryRelPagamentos
     BCDToCurrency = False
-    Left = 592
-    Top = 72
+    Left = 456
+    Top = 408
   end
   object frxDBCentroCusto: TfrxDBDataset
     UserName = 'CentroCusto'
@@ -4446,10 +4446,10 @@ object frmRelatorioPagamentos: TfrmRelatorioPagamentos
       'DESCRICAO=DESCRICAO'
       'ID_ORGANIZACAO=ID_ORGANIZACAO'
       'CODIGO=CODIGO')
-    DataSet = dmContasPagar.qryObterCentroCustoPorTitulo
+    DataSet = dmRelPagamentos.qryObterCentroCustoPorTitulo
     BCDToCurrency = False
-    Left = 768
-    Top = 72
+    Left = 608
+    Top = 408
   end
   object frxCSVExport1: TfrxCSVExport
     UseFileCache = True
@@ -4461,8 +4461,8 @@ object frmRelatorioPagamentos: TfrmRelatorioPagamentos
     UTF8 = False
     NoSysSymbols = True
     ForcedQuotes = False
-    Left = 736
-    Top = 256
+    Left = 440
+    Top = 312
   end
   object frxPDFExport1: TfrxPDFExport
     UseFileCache = True
@@ -4485,8 +4485,8 @@ object frmRelatorioPagamentos: TfrmRelatorioPagamentos
     CenterWindow = False
     PrintScaling = False
     PdfA = False
-    Left = 648
-    Top = 256
+    Left = 360
+    Top = 312
   end
   object frxDBHistorico: TfrxDBDataset
     UserName = 'Historico'
@@ -4499,10 +4499,9 @@ object frmRelatorioPagamentos: TfrmRelatorioPagamentos
       'CODIGO=CODIGO'
       'CONTA=CONTA'
       'CODREDUZ=CODREDUZ')
-    DataSet = dmContasPagar.qryObterTPHistoricoPorTitulo
     BCDToCurrency = False
-    Left = 680
-    Top = 72
+    Left = 528
+    Top = 408
   end
   object frxDBTitulosExcel: TfrxDBDataset
     UserName = 'titulosExcel'
@@ -4524,10 +4523,10 @@ object frmRelatorioPagamentos: TfrmRelatorioPagamentos
       'STATUS=STATUS'
       'ID_CST=ID_CST'
       'CENTRO_CST=CENTRO_CST')
-    DataSet = dmContasPagar.qryTitulosExcel
+    DataSet = dmRelPagamentos.qryTitulosExcel
     BCDToCurrency = False
-    Left = 856
-    Top = 72
+    Left = 608
+    Top = 312
   end
   object frxReportExcel: TfrxReport
     Version = '5.3.14'
@@ -4544,8 +4543,8 @@ object frmRelatorioPagamentos: TfrmRelatorioPagamentos
       'begin'
       ''
       'end.')
-    Left = 824
-    Top = 264
+    Left = 520
+    Top = 312
     Datasets = <
       item
         DataSet = frxDBTitulosExcel
@@ -5099,5 +5098,11 @@ object frmRelatorioPagamentos: TfrmRelatorioPagamentos
         end
       end
     end
+  end
+  object dsPreencheGrid: TDataSource
+    DataSet = dmRelPagamentos.qryRelPagamentos
+    OnDataChange = dsPreencheGridDataChange
+    Left = 128
+    Top = 264
   end
 end

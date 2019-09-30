@@ -550,25 +550,6 @@ begin
     FreeAndNil(dmConexao);
   end;
 
- { if (Assigned(dmOrganizacao)) then begin
-      FreeAndNil(dmOrganizacao) ;
-  end;
-
-  if (Assigned(dmMegaContabil)) then begin
-      FreeAndNil(dmMegaContabil) ;
-  end;
-
-  if (Assigned(dmExportaFinance)) then begin
-      FreeAndNil(dmExportaFinance);
-  end;
-
-
-  if (Assigned(dmContasPagar)) then begin
-          FreeAndNil(dmContasPagar);
-  end;
-
-  if (Assigned(dmRelExportacaoMega)) then begin
-         FreeAndNil(dmRelExportacaoMega);    }
   end;
 
 
@@ -579,33 +560,7 @@ procedure TfrmBackup.inicializarDM(Sender: TObject);
       if not(Assigned(dmConexao)) then begin
              dmConexao := TdmConexao.Create(Self);
              dmConexao.conectarBanco;
-             dmConexao.conectarMega;
       end;
-
-    {  if not(Assigned(dmOrganizacao)) then begin
-             dmOrganizacao := TdmOrganizacao.Create(Self);
-      end;
-
-      if not(Assigned(dmMegaContabil)) then begin
-             dmMegaContabil := TdmMegaContabil.Create(Self);
-      end;
-
-
-       if not(Assigned(dmContasPagar)) then begin
-             dmContasPagar := TdmContasPagar.Create(Self);
-      end;
-
-      if not(Assigned(dmRelExportacaoMega)) then begin
-             dmRelExportacaoMega := TdmRelExportacaoMega.Create(Self);
-      end;
-
-      if not(Assigned(dmExportaFinance)) then begin
-            dmExportaFinance := TdmExportaFinance.Create(Self);
-      end;
-
-       if not(Assigned(dmServerMail)) then begin
-            dmServerMail := TdmServerMail.Create(Self);
-      end;  }
 
 end;
 

@@ -3,8 +3,12 @@ unit uFrmRelatoriosPagamentos;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ComCtrls, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet, uDMOrganizacao, FireDAC.Comp.Client, FireDAC.UI.Intf, FireDAC.Comp.ScriptCommands, uDMContasPagar, udmConexao, FireDAC.Stan.Util, FireDAC.Comp.Script,
-  Vcl.Grids, Vcl.DBGrids, frxClass, frxDBSet, frxExportPDF, frxExportCSV, uUtil, Vcl.Buttons, ComObj;
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics, Vcl.Controls,
+  Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ComCtrls, uDMRelatoriosPagamentos,
+  FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
+  FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet, uDMOrganizacao,
+  FireDAC.Comp.Client, FireDAC.UI.Intf, FireDAC.Comp.ScriptCommands,  udmConexao, FireDAC.Stan.Util,
+   FireDAC.Comp.Script, Vcl.Grids, Vcl.DBGrids, frxClass, frxDBSet, frxExportPDF, frxExportCSV, uUtil, Vcl.Buttons, ComObj;
 
   //uDM está aqui temporariamente
 
@@ -35,15 +39,18 @@ type
     frxReportExcel: TfrxReport;
     btnExcel: TBitBtn;
     statusBar2: TStatusBar;
+    dsPreencheGrid: TDataSource;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure btnImprimirClick(Sender: TObject);
     procedure btnConsultarClick(Sender: TObject);
     procedure btnExcelClick(Sender: TObject);
+    procedure dsPreencheGridDataChange(Sender: TObject; Field: TField);
   private
     { Private declarations }
     FsListaIdOrganizacoes: TStringList;
     FsListaIdCentrosCusto: TStringList;
+    idOrgzanizacao: string;
     procedure inicializarDM(Sender: TObject);
     procedure freeAndNilDM(Sender: TObject);
     function carregarCentrosCusto: Boolean;
@@ -59,7 +66,6 @@ type
     procedure exibirValoresPanel;
   public
     { Public declarations }
-    procedure preencherListaOrganizacoes;
     function carregarDadosPagamentos: boolean;
   end;
 
@@ -104,11 +110,10 @@ var
 begin
   //para excel foi informado que seriam todos os titulos. Considerando apenas periodo.
 
-  if (dmContasPagar.obterTitulosExcel(TOrgAtual.getId, dtDataInicial.Date, dtDataFinal.Date)) then
+  if (dmRelPagamentos.obterTitulosExcel(TOrgAtual.getId, dtDataInicial.Date, dtDataFinal.Date)) then
   begin
 
     exibirRelatorioExcel(10); //10 inddica ser EXCEL
-//   dmContasPagar.dtsTitulosExcel.DataSet.IsEmpty
   end
   else
   begin
@@ -125,7 +130,7 @@ begin
     carregarDadosPagamentos;
     if (cbxTipoRelatorio.ItemIndex > (-1)) then
     begin
-      if not (dmContasPagar.DSPreencheGridMain.DataSet.IsEmpty) then
+      if not (dsPreencheGrid.DataSet.IsEmpty) then
       begin
         btnExcel.Visible := true; //libera exporta excel
         exibirRelatorio(cbxTipoRelatorio.ItemIndex);
@@ -141,30 +146,42 @@ end;
 
 function TfrmRelatorioPagamentos.carregarCentrosCusto: Boolean;
 begin
-  dmContasPagar.qryCentroCusto.Close;
-  dmContasPagar.qryCentroCusto.Open;
-  Result := not dmContasPagar.qryCentroCusto.IsEmpty;
+  Result := dmRelPagamentos.obterTodosCentroCustos(idOrgzanizacao);
 end;
 
 procedure TfrmRelatorioPagamentos.carregarDadosEmpresa;
 begin
   dmOrganizacao.qryDadosEmpresa.Close;
-//  dmOrganizacao.qryDadosEmpresa.ParamByName('pIdOrganizacao').AsString := FsListaIdOrganizacoes[cbxOrganizacoes.ItemIndex];
-  dmOrganizacao.qryDadosEmpresa.ParamByName('pIdOrganizacao').AsString := TOrgAtual.getId;
+  dmOrganizacao.qryDadosEmpresa.ParamByName('pIdOrganizacao').AsString := idOrgzanizacao;
   dmOrganizacao.qryDadosEmpresa.Open;
 end;
 
 function TfrmRelatorioPagamentos.carregarDadosPagamentos: Boolean;
 begin
   Result := false;
-
+  {
   if montarSQL then
   begin
-    dmContasPagar.qryRelPagamentos.Close;
-    dmContasPagar.qryRelPagamentos.Open;
+//    dmRelPagamentos.qryRelPagamentos.Close;
+    dmRelPagamentos.qryRelPagamentos.Open;
 
-    Result := not dmContasPagar.qryRelPagamentos.IsEmpty;
-  end;
+    Result := not dmRelPagamentos.qryRelPagamentos.IsEmpty;
+  end;   }
+
+  Result := montarSQL;
+
+end;
+
+procedure TfrmRelatorioPagamentos.dsPreencheGridDataChange(Sender: TObject;
+  Field: TField);
+  var
+  idTituloPagar :string;
+begin
+// carrega os historicos
+    idTituloPagar :=  TFDQuery(DBGridMain.DataSource.DataSet).FieldByName('ID_TITULO_PAGAR').AsString;
+
+    dmRelPagamentos.obterHistoricoPorTP(idOrgzanizacao, idTituloPagar);
+    dmRelPagamentos.obterCentroCustoPorTP(idOrgzanizacao,idTituloPagar);
 
 end;
 
@@ -191,10 +208,8 @@ begin
   if (cbxStatus.ItemIndex > (-1)) then
 
   begin
-
-    statusBar2.Panels[0].Text := 'Total devido : '+ (FormatCurr('R$ ###,##0.00',dmContasPagar.obterTotalPorStatus(TOrgAtual.getId, 'ABERTO', dtDataInicial.Date, dtDataFinal.Date)));
-    statusBar2.Panels[1].Text := 'Total pago :  '  + (FormatCurr('R$ ###,##0.00',dmContasPagar.obterTotalPorStatus(TOrgAtual.getId, 'QUITADO', dtDataInicial.Date, dtDataFinal.Date)));
-
+    statusBar2.Panels[0].Text := 'Total devido : '+ (FormatCurr('R$ ###,##0.00',dmRelPagamentos.obterTotalPorStatus(TOrgAtual.getId, 'ABERTO', dtDataInicial.Date, dtDataFinal.Date)));
+    statusBar2.Panels[1].Text := 'Total pago :  '  + (FormatCurr('R$ ###,##0.00',dmRelPagamentos.obterTotalPorStatus(TOrgAtual.getId, 'QUITADO', dtDataInicial.Date, dtDataFinal.Date)));
   end;
 
 end;
@@ -202,8 +217,7 @@ end;
 procedure TfrmRelatorioPagamentos.exibirRelatorio(tipo: Integer);
 begin
 
-  frxRelContasPagar.Clear;
-
+     frxRelContasPagar.Clear;
   if not (frxRelContasPagar.LoadFromFile(retornarCaminhoRelatorio(tipo))) then
   begin
     //Mensagem não encontrou o arquivo do relatorio. Fazer
@@ -220,18 +234,10 @@ end;
 
 procedure TfrmRelatorioPagamentos.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  if Assigned(FsListaIdOrganizacoes) then
-  begin
-    FsListaIdOrganizacoes := nil;
-  end;
-  if Assigned(FsListaIdCentrosCusto) then
-  begin
-    FsListaIdCentrosCusto := nil;
-  end;
 
-  if Assigned(dmContasPagar) then
+  if Assigned(dmRelPagamentos) then
   begin
-    FreeAndNil(dmContasPagar);
+    FreeAndNil(dmRelPagamentos);
   end;
 
   Action := cafree;
@@ -240,45 +246,38 @@ end;
 
 procedure TfrmRelatorioPagamentos.FormCreate(Sender: TObject);
 begin
+  inicializarDM(Self);
+
   btnExcel.Visible := False;
   btnImprimir.Enabled := false;
-//LimpaTela(Self); ver funcao p limpar alguns componentes apenas
 
-  //Obs.: Me lembre de falar do uses UBackup macoronada e da forma que a conexão está sendo feita
-  //iniciar aplicação com uma tab específica
 
-  if not (Assigned(dmContasPagar)) then
-  begin
-    dmContasPagar := TdmContasPagar.Create(Self);
-  end;
-
-  if dmOrganizacao.carregarOrganizacoes then
-  begin
-    preencherListaOrganizacoes;
-    dtDataInicial.Date := now;
-    dtDataFinal.Date := now;
-
-  end;
-  if carregarCentrosCusto then
-  begin
-    preencherListaCentrosCusto;
-  end;
 end;
 
 procedure TfrmRelatorioPagamentos.freeAndNilDM(Sender: TObject);
 begin
-  if Assigned(dmOrganizacao) then
-  begin
-    FreeAndNil(dmOrganizacao);
-  end;
+  //nada
 end;
 
 procedure TfrmRelatorioPagamentos.inicializarDM(Sender: TObject);
 begin
-  if not (Assigned(dmOrganizacao)) then
+    idOrgzanizacao := TOrgAtual.getId;
+    dtDataInicial.Date := now;
+    dtDataFinal.Date := now;
+
+
+  if not (Assigned(dmRelPagamentos)) then
   begin
-    dmOrganizacao := TdmOrganizacao.Create(self);
+    dmRelPagamentos := TdmRelPagamentos.Create(Self);
   end;
+
+  if carregarCentrosCusto then
+  begin
+    preencherListaCentrosCusto;
+  end;
+
+
+
 
 end;
 
@@ -301,15 +300,16 @@ function TfrmRelatorioPagamentos.montarSQL: Boolean;
 var
   lsSQL: TStringList;
   x: string;
+
 begin
   lsSQL := TStringList.Create;
-  lsSQL.AddStrings(dmContasPagar.sqlScriptContainer.SQLScripts.FindScript('sqlRelPagamentos').SQL);
+  lsSQL.AddStrings(dmRelPagamentos.sqlScriptContainer.SQLScripts.FindScript('sqlRelPagamentos').SQL);
   lsSQL.Add('WHERE');
   lsSQL.Add(Format('  (TP.DATA_VENCIMENTO BETWEEN %s AND %s)', [QuotedStr(FormatDateTime('dd.mm.yyyy', dtDataInicial.Date)), QuotedStr(FormatDateTime('dd.mm.yyyy', dtDataFinal.Date))]));
   lsSQL.Add('AND');
-//  lsSQL.Add(Format('  (TP.ID_ORGANIZACAO = %s)', [QuotedStr(FsListaIdOrganizacoes[cbxOrganizacoes.ItemIndex])]));
 
-  lsSQL.Add(Format('  (TP.ID_ORGANIZACAO = %s)', [QuotedStr(TOrgAtual.getId)]));
+
+  lsSQL.Add(Format('  (TP.ID_ORGANIZACAO = %s)', [QuotedStr(idOrgzanizacao)]));
 
   if (cbxCentrosCusto.ItemIndex > 0) then
   begin
@@ -324,11 +324,12 @@ begin
   lsSQL.Add('ORDER BY');
   lsSQL.Add('  ' + retornarCampoOrdenacao);
 
-  dmContasPagar.qryRelPagamentos.SQL.Clear;
-  dmContasPagar.qryRelPagamentos.SQL.Assign(lsSQL);
-  x := dmContasPagar.qryRelPagamentos.SQL.Text;
+{  dmRelPagamentos.qryRelPagamentos.Close;
+  dmRelPagamentos.qryRelPagamentos.SQL.Clear;
+  dmRelPagamentos.qryRelPagamentos.SQL.Assign(lsSQL); }
 
-  Result := (lsSQL.Count > 0);
+  Result := dmRelPagamentos.obterTodosPagamentos(lsSQL,idOrgzanizacao,dtDataInicial.Date, dtDataFinal.Date );
+  //Result := (lsSQL.Count > 0);
   lsSql := nil;
 end;
 
@@ -339,31 +340,15 @@ begin
   FsListaIdCentrosCusto.Add('Sem ID'); //Linha adicionada somente para combatibilizar com os itens do ComboBox cbxCentrosCusto
   cbxCentrosCusto.Clear;
   cbxCentrosCusto.Items.Add('TODOS');
-  dmContasPagar.qryCentroCusto.First;
-  while not dmContasPagar.qryCentroCusto.Eof do
+  dmRelPagamentos.qryCentroCusto.First;
+  while not dmRelPagamentos.qryCentroCusto.Eof do
   begin
-    cbxCentrosCusto.Items.Add(dmContasPagar.qryCentroCusto.FieldByName('DESCRICAO').AsString);
-    FsListaIdCentrosCusto.Add(dmContasPagar.qryCentroCusto.FieldByName('ID_CENTRO_CUSTO').AsString);
-    dmContasPagar.qryCentroCusto.Next;
+    cbxCentrosCusto.Items.Add(dmRelPagamentos.qryCentroCusto.FieldByName('DESCRICAO').AsString);
+    FsListaIdCentrosCusto.Add(dmRelPagamentos.qryCentroCusto.FieldByName('ID_CENTRO_CUSTO').AsString);
+    dmRelPagamentos.qryCentroCusto.Next;
   end;
-  dmContasPagar.qryCentroCusto.Close;
+  dmRelPagamentos.qryCentroCusto.Close;
   cbxCentrosCusto.ItemIndex := 0;
-end;
-
-procedure TfrmRelatorioPagamentos.preencherListaOrganizacoes;
-begin
-  FsListaIdOrganizacoes := TStringList.Create;
-  FsListaIdOrganizacoes.Clear;
- // cbxOrganizacoes.Clear;
-  dmOrganizacao.qryOrganizacoes.First;
-  while not dmOrganizacao.qryOrganizacoes.Eof do
-  begin
-   // cbxOrganizacoes.Items.Add(dmOrganizacao.qryOrganizacoes.FieldByName('NOME').AsString);
-    FsListaIdOrganizacoes.Add(dmOrganizacao.qryOrganizacoes.FieldByName('ID_ORGANIZACAO').AsString);
-    dmOrganizacao.qryOrganizacoes.Next;
-  end;
-  dmOrganizacao.qryOrganizacoes.Close;
-  //cbxOrganizacoes.ItemIndex := 0;
 end;
 
 function TfrmRelatorioPagamentos.retornarCaminhoRelatorio(tipo: Integer): string;

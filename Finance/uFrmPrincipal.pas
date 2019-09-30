@@ -7,7 +7,8 @@ uses
   Vcl.Samples.Spin, wininet, Winsock, IdSSL, IdSSLOpenSSL, IdMessage, Organizacao, IdAttachmentFile, IdTCPClient, IdExplicitTLSClientServerBase, IdMessageClient, IdSMTPBase, uLogin, IdTCPConnection, IdSMTP, jpeg, IdBaseComponent, IdComponent, IdHTTP, FireDAC.stan.Option, FireDAC.stan.Error, FireDAC.Phys.Intf, FireDAC.stan.Pool, FireDAC.stan.Async, FireDAC.stan.Param, FireDAC.DatS, FireDAC.DApt.Intf, FireDAC.DApt, FireDAC.Comp.Client, Data.DB, FireDAC.Comp.DataSet, Vcl.Mask, VCLUnZip, VCLZip, FireDAC.Phys.FBDef,
   IdAntiFreezeBase, Vcl.IdAntiFreeze, frxClass, udmConexao, uDMOrganizacao, udmMegaContabil, uDMUsuarioConsulta, ACBrBase, uDmExportaFinance, uDMContasPagar, Vcl.Imaging.pngimage, Vcl.Grids, Vcl.DBGrids, frxDBSet, uFrmManutencao, Vcl.Menus, uFrmBackup, uFrmRegistro, uFrmServidorEmail, System.ImageList, Vcl.ImgList, uFrmImportacao, uFrmRelatorios, uFrmExportacao, uFrmSincronizaMega, uFrmTeste, uFrmUpdate, udmCombos, RxDBCtrl, frxCrypt, UMostraErros,uFrmAlteraTituloPagar,uFrmAlteraTituloReceber,
   uFrameBDTables, udmManutencao, uFrameOrganizacoes, uFrameEstado, uFrmDeletaLoteContabil,
-  uFrameGeneric, uFrameCidade, uFrameEndereco, uFrameBairro, uDMServerMail;
+  uFrameGeneric, uFrameCidade, uFrameEndereco, uFrameBairro, uDMServerMail,uFrmAlteraOrganizacao,
+  FireDAC.Comp.ScriptCommands, FireDAC.Stan.Util, FireDAC.Comp.Script;
 
 type
   TFrmPrincipal = class(TForm)
@@ -497,6 +498,18 @@ begin
              FreeAndNil(frmRegistraBaseDados);
           end;
   end;
+
+  if Key = VK_F5 then begin
+   if not (Assigned(frmAlteraOrganizacao)) then
+         begin
+             frmAlteraOrganizacao := TfrmAlteraOrganizacao.Create(Self);
+             frmAlteraOrganizacao.ShowModal;
+             FreeAndNil(frmAlteraOrganizacao);
+          end;
+  end;
+
+
+
 end;
 
 procedure TFrmPrincipal.Importao1Click(Sender: TObject);
@@ -636,7 +649,10 @@ begin
 end;
 
 procedure TFrmPrincipal.inicializarDM(Sender: TObject);
+
 begin
+     freeAndNilDM(Self);
+
 
   if not (Assigned(dmConexao)) then
   begin

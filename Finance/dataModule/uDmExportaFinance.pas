@@ -133,7 +133,9 @@ begin
     qryDeletaLoteContabil.ParamByName('PIDLOTE').AsString := pIdLote;
 
     qryDeletaLoteContabil.ExecSQL;
+    dmConexao.Conn.CommitRetaining;
   except
+  dmConexao.Conn.RollbackRetaining;
     raise(Exception).Create('Problemas ao deletar lote contabil ');
 
   end;
@@ -165,11 +167,7 @@ begin
 
     FsListaLancamentos := TListaLancamentos.Create;
 
-    if not qryObterCBTPERIODO.Connection.Connected then
-    begin
-      qryObterCBTPERIODO.Connection := dmConexao.Conn;
-    end;
-
+        qryObterCBTPERIODO.Connection := dmConexao.Conn;
         qryObterCBTPERIODO.Close;
         qryObterCBTPERIODO.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
         qryObterCBTPERIODO.ParamByName('DTDATAINICIAL').AsString := FormatDateTime('mm/dd/yyyy', pDataInicial);
@@ -205,11 +203,8 @@ end;
 function TdmExportaFinance.obterCBCPorPeriodo(pIdOrganizacao: string; pDataInicial, pDataFinal: TDate): TListaLancamentos;
 begin
   FsListaLancamentos := TListaLancamentos.Create;
-  if not qryObterCBCPERIODO.Connection.Connected then
-  begin
-    qryObterCBCPERIODO.Connection := dmConexao.Conn;
-  end;
 
+  qryObterCBCPERIODO.Connection := dmConexao.Conn;
   qryObterCBCPERIODO.Close;
   qryObterCBCPERIODO.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
   qryObterCBCPERIODO.ParamByName('DTDATAINICIAL').AsString := FormatDateTime('mm/dd/yyyy', pDataInicial);
@@ -606,14 +601,21 @@ end;
 
 procedure TdmExportaFinance.inicializarDM(Sender: TObject);
 begin
-  if not (Assigned(dmConexao)) then
+ { if not (Assigned(dmConexao)) then
   begin
     dmConexao := TdmConexao.Create(Self);
   end
   else
   begin
     dmConexao.conectarBanco;
+  end;   }
+
+
+  if not (Assigned(dmMegaContabil)) then
+  begin
+    dmMegaContabil := TdmMegaContabil.Create(Self);
   end;
+
 end;
 
 function TdmExportaFinance.convertTFDQueryToLancamentoMega(pIdOrganizacao, pAno: string; pCodEmpresa, pLote: Integer; query: TFDQuery): TListaLancamentos;

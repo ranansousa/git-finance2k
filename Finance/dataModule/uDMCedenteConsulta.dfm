@@ -58,7 +58,7 @@ object dmCedenteConsulta: TdmCedenteConsulta
   end
   object dtsCedentePorID: TDataSource
     DataSet = qryObterCedentePorID
-    Left = 208
-    Top = 216
+    Left = 320
+    Top = 224
   end
 end

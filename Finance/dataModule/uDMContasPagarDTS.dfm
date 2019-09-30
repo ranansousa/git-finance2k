@@ -7,7 +7,6 @@ object dmContasPagarDTS: TdmContasPagarDTS
     Top = 192
   end
   object dtsTituloPagar: TDataSource
-    DataSet = dmContasPagar.qryObterTodos
     Left = 592
     Top = 192
   end
@@ -26,10 +25,5 @@ object dmContasPagarDTS: TdmContasPagarDTS
   object dtsHistorico: TDataSource
     Left = 592
     Top = 304
-  end
-  object dtsTituloPagarExcel: TDataSource
-    DataSet = dmContasPagar.qryTitulosExcel
-    Left = 592
-    Top = 128
   end
 end

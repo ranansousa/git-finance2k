@@ -4,18 +4,25 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.Grids, Vcl.DBGrids,uDMContasPagar,uDMContasPagarManter,uDMContasPagarDTS,
-  Vcl.StdCtrls;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.Grids, Vcl.DBGrids,uUtil,
+  Vcl.StdCtrls, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, udmConexao,
+  FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
+  FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client;
 
 type
   TfrmAlteraNumDocTP = class(TForm)
     btnConsulta: TButton;
     dbgrdTP: TDBGrid;
+    dsPreencheGrid: TDataSource;
+    qryObterTodos: TFDQuery;
     procedure FormCreate(Sender: TObject);
     procedure btnConsultaClick(Sender: TObject);
   private
     { Private declarations }
+    idOrganizacao : string;
+    codigoErro :string;
     procedure inicializarDM(Sender: TObject);
+    function obterTodos(pIdOrganizacao: string): Boolean;
   public
     { Public declarations }
   end;
@@ -26,6 +33,24 @@ var
 implementation
 
 {$R *.dfm}
+
+
+function TfrmAlteraNumDocTP.obterTodos(pIdOrganizacao: string): Boolean;
+begin
+codigoErro := 'AlteraTP-01';
+   try
+      qryObterTodos.Close;
+      qryObterTodos.Connection := dmConexao.Conn;
+      qryObterTodos.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+      qryObterTodos.Open;
+  except
+
+  raise(Exception).Create('Erro ao tentar Obter todos os TPs ' + codigoErro );
+
+  end;
+  Result := not qryObterTodos.IsEmpty;
+end;
+
 
 
 procedure TfrmAlteraNumDocTP.btnConsultaClick(Sender: TObject);
@@ -44,25 +69,11 @@ end;
 
 procedure TfrmAlteraNumDocTP.inicializarDM(Sender: TObject);
 begin
-  if not(Assigned(dmContasPagarManter)) then
-  begin
-    dmContasPagarManter := TdmContasPagarManter.Create(Self);
-  end ;
 
-   if not(Assigned(dmContasPagar)) then
-  begin
-    dmContasPagar := TdmContasPagar.Create(Self);
-  end ;
+idOrganizacao := TOrgAtual.getId;
+obterTodos(idOrganizacao);
 
-   if not(Assigned(dmContasPagar)) then
-  begin
-    dmContasPagar := TdmContasPagar.Create(Self);
-  end  ;
-
-  if not(Assigned(dmContasPagarDTS)) then
-  begin
-    dmContasPagarDTS := TdmContasPagarDTS.Create(Self);
-  end  ;
+//
 
 end;
 

@@ -3,7 +3,7 @@ unit uDMContasPagarDTS;
 interface
 
 uses
-  System.SysUtils, System.Classes, Data.DB,uDMContasPagar;
+  System.SysUtils, System.Classes, Data.DB;
 
 type
   TdmContasPagarDTS = class(TDataModule)
@@ -13,7 +13,6 @@ type
     dtsHistoricoTR: TDataSource;
     dtsCentroCustoTR: TDataSource;
     dtsHistorico: TDataSource;
-    dtsTituloPagarExcel: TDataSource;
   private
     { Private declarations }
         procedure inicializarDM(Sender: TObject);
@@ -37,12 +36,7 @@ implementation
 procedure TdmContasPagarDTS.inicializarDM(Sender: TObject);
 begin
 
-   if not(Assigned(dmContasPagar)) then
-  begin
-    dmContasPagar := TdmContasPagar.Create(Self);
-  end ;
-
-
+  //nada
 
 end;
 

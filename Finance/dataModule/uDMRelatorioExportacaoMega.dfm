@@ -249,7 +249,7 @@ object dmRelExportacaoMega: TdmRelExportacaoMega
     DataSet = qryTRQuitados
     BCDToCurrency = False
     Left = 464
-    Top = 419
+    Top = 459
   end
   object frxDBTRBaixa: TfrxDBDataset
     UserName = 'TRBaixa'
@@ -268,7 +268,7 @@ object dmRelExportacaoMega: TdmRelExportacaoMega
     DataSet = qryObterTRBaixaPorTitulo
     BCDToCurrency = False
     Left = 571
-    Top = 419
+    Top = 459
   end
   object frxDBTRQuitadoBanco: TfrxDBDataset
     UserName = 'TRBBanco'
@@ -302,7 +302,7 @@ object dmRelExportacaoMega: TdmRelExportacaoMega
     DataSet = qryBaixaTRCheque
     BCDToCurrency = False
     Left = 1027
-    Top = 419
+    Top = 459
   end
   object frxDBTRBCaixa: TfrxDBDataset
     UserName = 'TRBCaixa'
@@ -322,7 +322,7 @@ object dmRelExportacaoMega: TdmRelExportacaoMega
     DataSet = qryBaixaTRCaixa
     BCDToCurrency = False
     Left = 920
-    Top = 419
+    Top = 459
   end
   object frxDBTPB: TfrxDBDataset
     UserName = 'TPBaixa'
@@ -388,7 +388,7 @@ object dmRelExportacaoMega: TdmRelExportacaoMega
     DataSet = qryTRBDeducao
     BCDToCurrency = False
     Left = 804
-    Top = 419
+    Top = 459
   end
   object frxDBTRBAcrescimo: TfrxDBDataset
     UserName = 'TRBAcrescimo'
@@ -408,7 +408,7 @@ object dmRelExportacaoMega: TdmRelExportacaoMega
     DataSet = qryTRBAcrescimos
     BCDToCurrency = False
     Left = 680
-    Top = 419
+    Top = 459
   end
   object frxDBCBT: TfrxDBDataset
     UserName = 'CBTBASE'
@@ -1595,7 +1595,7 @@ object dmRelExportacaoMega: TdmRelExportacaoMega
       ''
       'ORDER BY TRB.VALOR_PAGO DESC')
     Left = 568
-    Top = 336
+    Top = 376
     ParamData = <
       item
         Name = 'PIDORGANIZACAO'
@@ -1652,7 +1652,7 @@ object dmRelExportacaoMega: TdmRelExportacaoMega
       ''
       'ORDER BY TR.DATA_PAGAMENTO ASC, TR.VALOR_NOMINAL DESC;')
     Left = 464
-    Top = 336
+    Top = 376
     ParamData = <
       item
         Name = 'PIDORGANIZACAO'
@@ -1708,7 +1708,7 @@ object dmRelExportacaoMega: TdmRelExportacaoMega
       '        (TRBAC.ID_TITULO_RECEBER_BAIXA =:PIDTITULORECEBERBAIXA);'
       '')
     Left = 680
-    Top = 336
+    Top = 376
     ParamData = <
       item
         Name = 'PIDORGANIZACAO'
@@ -1752,7 +1752,7 @@ object dmRelExportacaoMega: TdmRelExportacaoMega
       '        (TRBDE.ID_TITULO_RECEBER_BAIXA =:PIDTITULORECEBERBAIXA);'
       '')
     Left = 792
-    Top = 336
+    Top = 376
     ParamData = <
       item
         Name = 'PIDORGANIZACAO'
@@ -1794,7 +1794,7 @@ object dmRelExportacaoMega: TdmRelExportacaoMega
       'WHERE (TC.ID_ORGANIZACAO = :PIDORGANIZACAO) AND      '
       '      (TC.ID_TITULO_RECEBER_BAIXA = :PIDTITULORECEBERBAIXA)')
     Left = 912
-    Top = 336
+    Top = 376
     ParamData = <
       item
         Name = 'PIDORGANIZACAO'
@@ -1839,7 +1839,7 @@ object dmRelExportacaoMega: TdmRelExportacaoMega
       ''
       '')
     Left = 1024
-    Top = 336
+    Top = 376
     ParamData = <
       item
         Name = 'PIDORGANIZACAO'
@@ -1902,7 +1902,7 @@ object dmRelExportacaoMega: TdmRelExportacaoMega
     DataSet = qryTRQuitados
     OnDataChange = dsDetalhesTRBDataChange
     Left = 616
-    Top = 296
+    Top = 336
   end
   object qryTRFCAIXABANCO: TFDQuery
     Connection = dmConexao.Conn

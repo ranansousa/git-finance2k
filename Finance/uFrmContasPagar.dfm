@@ -2,7 +2,7 @@ object frmContasPagar: TfrmContasPagar
   Left = 0
   Top = 0
   BorderStyle = bsDialog
-  Caption = 'frmContasPagar'
+  Caption = 'Manuten'#231#227'o de Titulos '#224' Pagar'
   ClientHeight = 740
   ClientWidth = 1018
   Color = clBtnFace
@@ -4144,7 +4144,6 @@ object frmContasPagar: TfrmContasPagar
   Position = poDesktopCenter
   OnClose = FormClose
   OnCreate = FormCreate
-  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object pgcTiuloPagar: TPageControl
@@ -4175,7 +4174,7 @@ object frmContasPagar: TfrmContasPagar
         Top = 136
         Width = 729
         Height = 241
-        DataSource = dmContasPagarDTS.dtsTituloPagar
+        DataSource = dsPreencheGrid
         TabOrder = 0
         TitleFont.Charset = DEFAULT_CHARSET
         TitleFont.Color = clWindowText
@@ -4233,7 +4232,8 @@ object frmContasPagar: TfrmContasPagar
           end
           item
             Expanded = False
-            FieldName = 'FORNECEDOR'
+            FieldName = 'NOME_CEDENTE'
+            Title.Caption = 'FORNECEDOR'
             Width = 120
             Visible = True
           end>
@@ -4298,5 +4298,15 @@ object frmContasPagar: TfrmContasPagar
         TabOrder = 0
       end
     end
+  end
+  object dsPreencheGrid: TDataSource
+    DataSet = dmContasPagar.qryObterTodos
+    Left = 76
+    Top = 16
+  end
+  object dsTituloPagar: TDataSource
+    DataSet = dmContasPagar.qryObterTodos
+    Left = 320
+    Top = 16
   end
 end

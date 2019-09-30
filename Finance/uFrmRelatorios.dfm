@@ -4160,6 +4160,10 @@ object frmRelatorios: TfrmRelatorios
     TabOrder = 0
     object tbsContasPagar: TTabSheet
       Caption = 'Contas a Pagar'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object btnRelContaPagar: TButton
         Left = 19
         Top = 24
@@ -4178,18 +4182,39 @@ object frmRelatorios: TfrmRelatorios
         TabOrder = 1
         OnClick = btnCTPHistoricoClick
       end
+      object btnRD: TBitBtn
+        Left = 19
+        Top = 120
+        Width = 273
+        Height = 25
+        Caption = 'Demonstrativo Por Centro de Custos'
+        TabOrder = 2
+        OnClick = btnRDClick
+      end
     end
     object TabSheet2: TTabSheet
       Caption = 'Contas a Receber'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
     end
     object TabSheet1: TTabSheet
       Caption = 'Tesouraria'
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
     end
     object TabSheet3: TTabSheet
       Caption = 'Conta Banc'#225'ria'
       ImageIndex = 3
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
     end
   end
 end

@@ -89,7 +89,7 @@ end;
 function TdmCedenteConsulta.preencheCombo(pIdOrganizacao: String): Boolean;
 
 begin
-inicializarDM(Self);
+
   Result := false;
   cmd := 'SELECT C.NOME,C.ID_CEDENTE FROM CEDENTE C ' +
     ' WHERE ( C.ID_ORGANIZACAO = :pIdOrganizacao ) ' + ' ORDER BY C.NOME;';

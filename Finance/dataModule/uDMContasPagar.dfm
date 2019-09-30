@@ -1,14 +1,7 @@
 object dmContasPagar: TdmContasPagar
   OldCreateOrder = False
-  OnCreate = DataModuleCreate
-  Height = 649
-  Width = 1040
-  object DSPreencheGridMain: TDataSource
-    DataSet = qryRelPagamentos
-    OnDataChange = DSPreencheGridMainDataChange
-    Left = 447
-    Top = 104
-  end
+  Height = 656
+  Width = 1247
   object qryRelPagamentos: TFDQuery
     Connection = dmConexao.Conn
     FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
@@ -45,11 +38,22 @@ object dmContasPagar: TdmContasPagar
         '  LEFT OUTER JOIN CEDENTE C ON (C.ID_CEDENTE = TP.ID_CEDENTE AND' +
         ' C.ID_ORGANIZACAO = TP.ID_ORGANIZACAO)'
       ''
-      'WHERE TP.ID_TIPO_STATUS <> '#39'EXCLUIDO'#39
       ''
-      'ORDER BY TP.VALOR_NOMINAL asc')
+      ''
+      ''
+      'WHERE (TP.ID_TIPO_STATUS in ('#39'ABERTO'#39','#39'QUITADO'#39','#39'PARCIAL'#39')) AND'
+      '      (TP.ID_ORGANIZACAO = :PIDORGANIZACAO)'
+      ''
+      'ORDER BY TP.DATA_VENCIMENTO DESC, TP.VALOR_NOMINAL')
     Left = 440
     Top = 32
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
   end
   object qryCentroCusto: TFDQuery
     Connection = dmConexao.Conn
@@ -148,13 +152,13 @@ object dmContasPagar: TdmContasPagar
         'LEFT OUTER JOIN conta_contabil CD ON (CD.id_conta_contabil = H.i' +
         'd_conta_contabil)'
       ''
-      'WHERE (TPH.ID_ORGANIZACAO = :pIdOrganizacao)AND'
-      '      (TPH.ID_TITULO_PAGAR = :PID_TITULO_PAGAR)'
+      'WHERE (TPH.ID_ORGANIZACAO = :PIDORGANIZACAO) AND'
+      '      (TPH.ID_TITULO_PAGAR = :PIDTITULOPAGAR)'
       ''
       'ORDER BY TPH.VALOR;'
       '')
-    Left = 758
-    Top = 152
+    Left = 686
+    Top = 32
     ParamData = <
       item
         Name = 'PIDORGANIZACAO'
@@ -163,7 +167,7 @@ object dmContasPagar: TdmContasPagar
         Size = 36
       end
       item
-        Name = 'PID_TITULO_PAGAR'
+        Name = 'PIDTITULOPAGAR'
         DataType = ftString
         ParamType = ptInput
         Size = 36
@@ -186,8 +190,8 @@ object dmContasPagar: TdmContasPagar
         'LEFT OUTER JOIN CENTRO_CUSTO CC ON (CC.ID_CENTRO_CUSTO = TPC.ID_' +
         'CENTRO_CUSTO)'
       ''
-      'WHERE    (TPC.ID_ORGANIZACAO = :pIdOrganizacao) AND'
-      '         (TPC.ID_TITULO_PAGAR = :pId_TITULO_PAGAR) '
+      'WHERE    (TPC.ID_ORGANIZACAO = :PIDORGANIZACAO) AND'
+      '         (TPC.ID_TITULO_PAGAR = :PIDTITULOPAGAR) '
       'ORDER BY TPC.VALOR'
       ''
       ''
@@ -203,7 +207,7 @@ object dmContasPagar: TdmContasPagar
         Size = 36
       end
       item
-        Name = 'PID_TITULO_PAGAR'
+        Name = 'PIDTITULOPAGAR'
         DataType = ftString
         ParamType = ptInput
         Size = 36
@@ -295,8 +299,8 @@ object dmContasPagar: TdmContasPagar
   end
   object dtsTitulosPagarAll: TDataSource
     DataSet = qryTitulosPorFornecedor
-    Left = 912
-    Top = 533
+    Left = 440
+    Top = 357
   end
   object qryTitulosPorFornecedor: TFDQuery
     Connection = dmConexao.Conn
@@ -342,20 +346,43 @@ object dmContasPagar: TdmContasPagar
   object qryObterTodos: TFDQuery
     Connection = dmConexao.Conn
     SQL.Strings = (
+      'SELECT TP.ID_TITULO_PAGAR, '
+      '       TP.ID_ORGANIZACAO, '
+      '       TP.NUMERO_DOCUMENTO, '
+      '       TP.VALOR_NOMINAL, '
+      '       TP.DESCRICAO, '
+      '       TP.DATA_EMISSAO, '
+      '       TP.DATA_VENCIMENTO AS DATA_VENCIMENTO,'
+      '       TP.DATA_PAGAMENTO AS DATA_PAGAMENTO,'
+      '       TP.DATA_PROTOCOLO, '
+      '       TP.PARCELA,       '
+      '       H.DESCRICAO AS DESC_HISTORICO,'
+      '       C.NOME AS NOME_CEDENTE,'
+      '       T.DESCRICAO AS STATUS,'
+      '       CC.DESCRICAO AS CENTRO_DE_CUSTO '
+      ''
+      'FROM'
+      '  TITULO_PAGAR TP'
       
-        'SELECT TP.ID_TITULO_PAGAR, TP.ID_ORGANIZACAO, TP.NUMERO_DOCUMENT' +
-        'O, TP.VALOR_NOMINAL, TP.DESCRICAO, TP.DATA_EMISSAO, TP.DATA_VENC' +
-        'IMENTO, TP.DATA_PAGAMENTO, TP.DATA_PROTOCOLO, TP.PARCELA, C.NOME' +
-        ' AS FORNECEDOR'
-      'FROM  TITULO_PAGAR TP'
+        '  LEFT OUTER JOIN TIPO_STATUS T ON (T.ID_TIPO_STATUS = TP.ID_TIP' +
+        'O_STATUS AND T.ID_ORGANIZACAO = TP.ID_ORGANIZACAO)'
       
-        'LEFT OUTER JOIN CEDENTE C ON (C.ID_CEDENTE = TP.ID_CEDENTE) AND ' +
-        '(C.ID_ORGANIZACAO = TP.ID_ORGANIZACAO)'
+        '  LEFT OUTER JOIN CENTRO_CUSTO CC ON (CC.ID_CENTRO_CUSTO = TP.ID' +
+        '_CENTRO_CUSTO AND T.ID_ORGANIZACAO = TP.ID_ORGANIZACAO)'
+      
+        '  LEFT OUTER JOIN HISTORICO H ON (H.ID_HISTORICO = TP.ID_HISTORI' +
+        'CO AND H.ID_ORGANIZACAO = TP.ID_ORGANIZACAO)'
+      
+        '  LEFT OUTER JOIN CEDENTE C ON (C.ID_CEDENTE = TP.ID_CEDENTE AND' +
+        ' C.ID_ORGANIZACAO = TP.ID_ORGANIZACAO)'
+      ''
       ''
       'WHERE (TP.ID_TIPO_STATUS in ('#39'ABERTO'#39','#39'QUITADO'#39','#39'PARCIAL'#39')) AND'
       '      (TP.ID_ORGANIZACAO = :PIDORGANIZACAO)'
       ''
       'ORDER BY TP.DATA_VENCIMENTO DESC, TP.VALOR_NOMINAL'
+      ''
+      ''
       '')
     Left = 64
     Top = 40
@@ -364,6 +391,7 @@ object dmContasPagar: TdmContasPagar
         Name = 'PIDORGANIZACAO'
         DataType = ftString
         ParamType = ptInput
+        Size = 36
       end>
   end
   object qryObterPorNumeroDocumento: TFDQuery
@@ -436,7 +464,7 @@ object dmContasPagar: TdmContasPagar
       '        ORDER BY TP.DATA_VENCIMENTO DESC;'
       '')
     Left = 56
-    Top = 512
+    Top = 264
     ParamData = <
       item
         Name = 'PIDORGANIZACAO'
@@ -457,13 +485,13 @@ object dmContasPagar: TdmContasPagar
   end
   object dtsTitulosExcel: TDataSource
     DataSet = qryTitulosExcel
-    Left = 56
-    Top = 448
+    Left = 440
+    Top = 272
   end
   object dtsTituloPagarExcel: TDataSource
     DataSet = qryRelPagamentos
     Left = 440
-    Top = 176
+    Top = 192
   end
   object qryObterTotalPorStatus: TFDQuery
     Connection = dmConexao.Conn
@@ -501,5 +529,34 @@ object dmContasPagar: TdmContasPagar
         DataType = ftDate
         ParamType = ptInput
       end>
+  end
+  object qryDeletaExcluidos: TFDQuery
+    Connection = dmConexao.Conn
+    SQL.Strings = (
+      'DELETE '
+      'FROM TITULO_PAGAR TP '
+      'WHERE (TP.ID_TIPO_STATUS = :PIDSTATUS) AND'
+      '      (TP.ID_ORGANIZACAO = :PIDORGANIZACAO) AND'
+      '      (tp.ID_TITULO_GERADOR is null) ;'
+      '')
+    Left = 920
+    Top = 312
+    ParamData = <
+      item
+        Name = 'PIDSTATUS'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+  object qryAlteraNumDoc: TFDQuery
+    Left = 896
+    Top = 424
   end
 end
