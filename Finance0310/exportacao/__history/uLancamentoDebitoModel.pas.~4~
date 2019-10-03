@@ -1,0 +1,38 @@
+unit uLancamentoDebitoModel;
+
+interface
+
+uses
+  Windows, Messages, Classes, SysUtils;
+
+type
+  TLancamentoDebitoModel = class(TObject)
+
+
+private
+    property FCodReduzDeb: Integer;
+    property FValor: Currency;
+    property FIdLancamento: Integer;
+    property FDgContaDebito: string;
+    property FDgCodReduzDeb: string;
+    property FContaDebito: string;
+    property FCodHistorico: Integer;
+    property FTipo: string;
+    property FData: TDateTime;
+    property FComplemento: string;
+    property FIdEmpresa: Integer;
+    property FAno: string;
+    property FLote: Integer;
+    property FLinha: Integer;
+    property FCentroCusto: Integer;
+    property FFilial: Integer;
+    property FExecTrigger: string;
+
+  public
+    destructor Destroy; override;
+  end;
+
+
+implementation
+
+end.
