@@ -13,6 +13,7 @@ type
     dtsUsuarioPorID: TDataSource;
     qryUsuarios: TFDQuery;
     qryValidarUsuario: TFDQuery;
+    procedure DataModuleCreate(Sender: TObject);
   private
     { Private declarations }
     procedure inicializarDM(Sender: TObject);
@@ -40,31 +41,30 @@ implementation
 
 function TdmUsuarioConsulta.carregarUsuarios: Boolean;
 begin
-  if not (qryUsuarios.Connection.Connected) then
-  begin
-    qryUsuarios.Connection := dmConexao.Conn;
+  try
+        qryUsuarios.Connection := dmConexao.Conn;
+        qryUsuarios.Close;
+        qryUsuarios.Open;
+  except
+    raise(Exception).Create('Problemas ao obter lista de usuários... ');
   end;
-
-  qryUsuarios.Close;
-  qryUsuarios.Open;
 
   Result := not qryUsuarios.IsEmpty;
 end;
 
+procedure TdmUsuarioConsulta.DataModuleCreate(Sender: TObject);
+begin
+ dmConexao.conectarBanco ;
+end;
+
 procedure TdmUsuarioConsulta.freeAndNilDM(Sender: TObject);
 begin
-  if (Assigned(dmConexao)) then
-  begin
-    FreeAndNil(dmConexao);
-  end;
+  //nada
 end;
 
 procedure TdmUsuarioConsulta.inicializarDM(Sender: TObject);
 begin
-  if not (Assigned(dmConexao)) then
-  begin
-    dmConexao := TdmConexao.Create(Self);
-  end;
+  //nada
 
 end;
 
@@ -77,15 +77,10 @@ function TdmUsuarioConsulta.obterUsuarioPorID(idUsuario: Integer): Boolean;
 begin
   try
     if (idUsuario > 0) then
-    begin
-
-      inicializarDM(Self);
-      if not qryObterUsuarioPorID.Connection.Connected then
-      begin
-        qryObterUsuarioPorID.Connection := dmConexao.Conn;
-      end;
+     begin
 
       qryObterUsuarioPorID.Close;
+      qryObterUsuarioPorID.Connection := dmConexao.Conn;
       qryObterUsuarioPorID.ParamByName('pIdUsuario').AsInteger := idUsuario;
       qryObterUsuarioPorID.Open;
 
@@ -99,13 +94,14 @@ begin
         uUtil.TUserAtual.setNameUser(qryObterUsuarioPorID.FieldByName('nome').AsString);
 
       end;
-
     end;
 
-  except
-    raise
 
+
+  except
+    raise(Exception).Create('Problemas ao consultar dados do usuário... ');
   end;
+
 
    Result := not qryObterUsuarioPorID.IsEmpty;
 
@@ -115,42 +111,36 @@ function TdmUsuarioConsulta.preencheCombo(): Boolean;
 begin
 
   Result := false;
-//  cmd := 'SELECT C.NOME,C.ID_CEDENTE FROM CEDENTE C ' +
-//    ' WHERE ( C.ID_ORGANIZACAO = :pIdOrganizacao ) ' + ' ORDER BY C.NOME;';
-
-  if dmConexao.conectarBanco then
-  begin
-
-    qryPreencheCombo.Close;
-    if not qryPreencheCombo.Connection.Connected then
-    begin
+  try
+      qryPreencheCombo.Close;
       qryPreencheCombo.Connection := dmConexao.Conn;
-    end;
-   // qryPreencheCombo.ParamByName('pIdOrganizacao').AsString := pIdOrganizacao;
-    qryPreencheCombo.Open;
+      qryPreencheCombo.Open;
+   except
+    raise(Exception).Create('Problemas ao consultar dados do usuário para preencher o Combo... ');
+  end;
 
     Result := not qryPreencheCombo.IsEmpty;
-  end;
+
 end;
 
 function TdmUsuarioConsulta.validarLogin(idUsuario: Integer; login, senha: string): Boolean;
 begin
-   inicializarDM(Self);
 
-      if not qryValidarUsuario.Connection.Connected then
-      begin
-        qryValidarUsuario.Connection := dmConexao.Conn;
-      end;
+      try
+          qryValidarUsuario.Close;
+          qryValidarUsuario.Connection := dmConexao.Conn;
+          qryValidarUsuario.ParamByName('pIdUsuario').AsInteger := idUsuario;
+          qryValidarUsuario.ParamByName('pLogin').AsString := login.ToLower;
+          qryValidarUsuario.ParamByName('pSenha').AsString := MD5String(senha);
+          qryValidarUsuario.Open;
 
-      qryValidarUsuario.Close;
-      qryValidarUsuario.ParamByName('pIdUsuario').AsInteger := idUsuario;
-      qryValidarUsuario.ParamByName('pLogin').AsString := login.ToLower;
-      qryValidarUsuario.ParamByName('pSenha').AsString := MD5String(senha);
-      qryValidarUsuario.Open;
+      except
+    raise(Exception).Create('Problemas ao consultar dados do usuário para validar... ');
+  end;
 
 
- Result := not qryValidarUsuario.IsEmpty;;
-    // Result := True;
+ Result := not qryValidarUsuario.IsEmpty;
+
 end;
 
 end.

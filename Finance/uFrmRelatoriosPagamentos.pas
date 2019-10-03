@@ -60,7 +60,6 @@ type
     procedure exibirRelatorio(tipo: Integer);
     procedure inicializarVariaveisRelatorio;
     function validarFormulario: boolean;
-    procedure carregarDadosEmpresa;
     function retornarCaminhoRelatorio(tipo: Integer): string;
     procedure exibirRelatorioExcel(tipo: Integer);
     procedure exibirValoresPanel;
@@ -82,7 +81,7 @@ begin
 //  idStatus := QuotedStr(cbxStatus.Items[cbxStatus.ItemIndex]);
 
   begin
-    carregarDadosEmpresa;
+    dmOrganizacao.carregarDadosEmpresa(idOrgzanizacao);
     if not (carregarDadosPagamentos) then
     begin
       btnExcel.Visible := false;
@@ -126,8 +125,7 @@ procedure TfrmRelatorioPagamentos.btnImprimirClick(Sender: TObject);
 begin
   if validarFormulario then
   begin
-    carregarDadosEmpresa;
-    carregarDadosPagamentos;
+
     if (cbxTipoRelatorio.ItemIndex > (-1)) then
     begin
       if not (dsPreencheGrid.DataSet.IsEmpty) then
@@ -149,12 +147,6 @@ begin
   Result := dmRelPagamentos.obterTodosCentroCustos(idOrgzanizacao);
 end;
 
-procedure TfrmRelatorioPagamentos.carregarDadosEmpresa;
-begin
-  dmOrganizacao.qryDadosEmpresa.Close;
-  dmOrganizacao.qryDadosEmpresa.ParamByName('pIdOrganizacao').AsString := idOrgzanizacao;
-  dmOrganizacao.qryDadosEmpresa.Open;
-end;
 
 function TfrmRelatorioPagamentos.carregarDadosPagamentos: Boolean;
 begin
@@ -257,10 +249,13 @@ end;
 procedure TfrmRelatorioPagamentos.freeAndNilDM(Sender: TObject);
 begin
   //nada
+
 end;
 
 procedure TfrmRelatorioPagamentos.inicializarDM(Sender: TObject);
 begin
+     dmConexao.conectarBanco;
+
     idOrgzanizacao := TOrgAtual.getId;
     dtDataInicial.Date := now;
     dtDataFinal.Date := now;
@@ -302,6 +297,8 @@ var
   x: string;
 
 begin
+  dmConexao.conectarBanco;
+
   lsSQL := TStringList.Create;
   lsSQL.AddStrings(dmRelPagamentos.sqlScriptContainer.SQLScripts.FindScript('sqlRelPagamentos').SQL);
   lsSQL.Add('WHERE');

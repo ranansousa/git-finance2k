@@ -7,7 +7,7 @@ uses
   Vcl.Samples.Spin, wininet, Winsock, IdSSL, IdSSLOpenSSL, IdMessage, Organizacao, IdAttachmentFile, IdTCPClient, IdExplicitTLSClientServerBase, IdMessageClient, IdSMTPBase, uLogin, IdTCPConnection, IdSMTP, jpeg, IdBaseComponent, IdComponent, IdHTTP, FireDAC.stan.Option, FireDAC.stan.Error, FireDAC.Phys.Intf, FireDAC.stan.Pool, FireDAC.stan.Async, FireDAC.stan.Param, FireDAC.DatS, FireDAC.DApt.Intf, FireDAC.DApt, FireDAC.Comp.Client, Data.DB, FireDAC.Comp.DataSet, Vcl.Mask, VCLUnZip, VCLZip, FireDAC.Phys.FBDef,
   IdAntiFreezeBase, Vcl.IdAntiFreeze, frxClass, udmConexao, uDMOrganizacao, udmMegaContabil, uDMUsuarioConsulta, ACBrBase, uDmExportaFinance, uDMContasPagar, Vcl.Imaging.pngimage, Vcl.Grids, Vcl.DBGrids, frxDBSet, uFrmManutencao, Vcl.Menus, uFrmBackup, uFrmRegistro, uFrmServidorEmail, System.ImageList, Vcl.ImgList, uFrmImportacao, uFrmRelatorios, uFrmExportacao, uFrmSincronizaMega, uFrmTeste, uFrmUpdate, udmCombos, RxDBCtrl, frxCrypt, UMostraErros,uFrmAlteraTituloPagar,uFrmAlteraTituloReceber,
   uFrameBDTables, udmManutencao, uFrameOrganizacoes, uFrameEstado, uFrmDeletaLoteContabil,
-  uFrameGeneric, uFrameCidade, uFrameEndereco, uFrameBairro, uDMServerMail,uFrmAlteraOrganizacao,
+  uFrameGeneric, uFrameCidade, uFrameEndereco, uFrameBairro, uDMServerMail,uFrmAlteraOrganizacao,uFrmSelecionaOrganizacao,
   FireDAC.Comp.ScriptCommands, FireDAC.Stan.Util, FireDAC.Comp.Script;
 
 type
@@ -29,7 +29,6 @@ type
     IdAntiFreeze1: TIdAntiFreeze;
     Importao1: TMenuItem;
     menuitemRelFinancas: TMenuItem;
-    cbxOrganizacoes: TComboBox;
     menuItemManutencao: TMenuItem;
     stat1: TStatusBar;
     menuItemTPNovo: TMenuItem;
@@ -43,7 +42,6 @@ type
     btnLogin: TBitBtn;
     cbxUsuario: TComboBox;
     btnZoom: TButton;
-    lblBoasVindas: TLabel;
     menuItemTPAltDoc: TMenuItem;
     mniTRAltDoc: TMenuItem;
     img1: TImage;
@@ -61,9 +59,7 @@ type
     procedure menuitemRelFinancasClick(Sender: TObject);
     procedure Exportao1Click(Sender: TObject);
     procedure btnTesteClick(Sender: TObject);
-    procedure btnSelectOrgClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure cbxOrganizacoesChange(Sender: TObject);
     procedure Atualizar1Click(Sender: TObject);
     procedure acessoMenu(value: Boolean);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -100,6 +96,7 @@ type
     procedure freeAndNilDM(Sender: TObject);
     procedure AjustaForm;
     procedure serverMail(pIdOrganizacao :string);
+    procedure preenchePanelMain;
   public
     { Public declarations }
     orgAtual: TOrganizacao;
@@ -154,73 +151,64 @@ procedure TFrmPrincipal.btnLoginClick(Sender: TObject);
 var
   loMostraErros: TFMostraErros;
 begin
-  loMostraErros := TFMostraErros.Create(Self);
-  try
-
-//    loMostraErros.caption := 'Aviso';
-//
-//    loMostraErros.Add('vá pra porra');
-//    loMostraErros.Add('vá pra porra 1');
-//    loMostraErros.Add('vá pra porra 2');
-//    loMostraErros.Add('vá pra porra 3');
-//    loMostraErros.Add('vá pra porra 4');
-//    loMostraErros.Add('vá pra porra 5');
-//
-//
-//    if loMostraErros.Count > 0 then begin
-//      loMostraErros.ShowModal;
-//    end;
-  finally
-    FreeAndNil(loMostraErros);
-  end;
-
-  userValidado := False;
+    userValidado := False;
 
   if dmUsuarioConsulta.validarLogin(StrToInt(pid), edtLogin.Text, edtPassword.Text) then
   begin
+
+     try
+
+        frmSelectOrganizacao := TfrmSelectOrganizacao.Create(Self);
+        frmSelectOrganizacao.ShowModal;
+        FreeAndNil(frmSelectOrganizacao);
+
+    except
+    on e: Exception do
+      ShowMessage(e.Message + sLineBreak + 'Contate o administrador!');
+    end;
+
+
     dmOrganizacao.obterDataServidor;  // seta a data atual originada do server de banco de dados
+
     edtLogin.Enabled := False;
     edtPassword.Enabled := False;
     edtLogin.Text := '';
     edtPassword.Text := '';
 
-    lblBoasVindas.Visible := True;
+   { lblBoasVindas.Visible := True;
     lblBoasVindas.Caption := 'Seja bem vindo(a). Selecione uma organização para trabalhar.';
     cbxOrganizacoes.Visible := True;
-    cbxOrganizacoes.Enabled := True;
-        //cbxOrganizacoes.Focused := True;
+    cbxOrganizacoes.Enabled := True;    }
+      //cbxOrganizacoes.Focused := True;
 //    lblSelectOrg.Visible := True; //  lblSelectOrg.Caption := 'Selecione uma organização.';
+
+      //setando os dados para envio de email
+        serverMail(uUtil.TOrgAtual.getId);
+
+        //esconde o login
+              pnlMain.Visible := true;
+              img1.Visible := False;
+              lbl1.Visible := False;
+              lbl2.Visible := False;
+              lbl3.Visible := False;
+
+              preenchePanelMain;
+
+
 
     pnlMain.Align := alClient;
   end
   else
   begin
-    cbxOrganizacoes.Enabled := False;
+   // cbxOrganizacoes.Enabled := False;
     //lblSelectOrg.Visible := False;
-    lblBoasVindas.Visible := False;
+   // lblBoasVindas.Visible := False;
     edtPassword.Text := '';
     ShowMessage('Login/Senha incorretos.');
   end;
 
 end;
 
-procedure TFrmPrincipal.btnSelectOrgClick(Sender: TObject);
-var
-  pid: string;
-  indice: Integer;
-begin
-  if (cbxOrganizacoes.ItemIndex > (-1)) then
-  begin
-    indice := (cbxOrganizacoes.ItemIndex - 1);
-    pid := FsListaIdOrganizacoes[indice];
-  end;
-  if (dmConexao.Conn.Connected) then
-  begin
-    dmOrganizacao.carregarDadosEmpresa(pid);
-    pid := dmOrganizacao.qryDadosEmpresa.FieldByName('ID_ORGANIZACAO').AsString;
-    uUtil.TOrgAtual.setId(pid);
-  end;
-end;
 
 procedure TFrmPrincipal.btnTesteClick(Sender: TObject);
 begin
@@ -237,7 +225,7 @@ begin
     begin
       acessoMenu(false);
       MessageDlg('Impossível apresentar dados da Organização...', mtWarning, [mbOK], 0);
-      cbxOrganizacoes.SetFocus;
+
     end;
 
   except
@@ -263,90 +251,6 @@ begin
   end;
 end;
 
-procedure TFrmPrincipal.cbxOrganizacoesChange(Sender: TObject);
-var
-  cnpj, pid: string;
-  indice: Integer;
-begin
-
-  try
-    acessoMenu(false);
-
-    if (cbxOrganizacoes.ItemIndex > (-1)) then
-    begin
-
-      indice := (cbxOrganizacoes.ItemIndex);
-      pid := FsListaIdOrganizacoes[indice];
-
-      if not (dmConexao.Conn.Connected) then
-      begin
-        dmConexao.conectarBanco;
-      end;
-
-      if (dmConexao.Conn.Connected) then
-      begin
-        dmOrganizacao.carregarDadosEmpresa(pid);
-        pid := dmOrganizacao.qryDadosEmpresa.FieldByName('ID_ORGANIZACAO').AsString;
-        cnpj := Trim(dmOrganizacao.qryDadosEmpresa.FieldByName('CNPJ').AsString);
-    //setando dados da organizacao selecionada
-        uUtil.TOrgAtual.setId(pid);
-        uUtil.TOrgAtual.setCNPJ(cnpj);
-        uUtil.TOrgAtual.setFantasia(dmOrganizacao.qryDadosEmpresa.FieldByName('FANTASIA').AsString);
-        uUtil.TOrgAtual.setRazaoSocial(dmOrganizacao.qryDadosEmpresa.FieldByName('RAZAO_SOCIAL').AsString);
-        uUtil.TOrgAtual.setSistemaContabil(dmOrganizacao.qryDadosEmpresa.FieldByName('SISTEMA_CONTABIL').AsString);
-
-        //setando os dados para envio de email
-         serverMail(uUtil.TOrgAtual.getId);
-
-        //esconde o login
-              pnlMain.Visible := true;
-              lblBoasVindas.Visible := False;
-              img1.Visible := False;
-              lbl1.Visible := False;
-              lbl2.Visible := False;
-              lbl3.Visible := False;
-
-
-//    lblPathSGBD.Caption := 'PATH BANCO ' + uUtil.TOrgAtual.getPathSGBD;
-        stat1.Panels[1].Text := 'USER : > ' + TUserAtual.getNameUser;
-        stat1.Panels[2].Text := 'ORG  : > ' + uUtil.TOrgAtual.getFantasia ;
-        stat1.Panels[3].Text := 'DATA : > ' + FormatDateTime('dd/mm/yyyy', uUtil.getDataServer);
-        stat1.Panels[4].Text := 'BANCO DE DADOS : > ' + uUtil.TOrgAtual.getPathSGBD ;
-        stat1.Panels[5].Text := '';
-
-        if not (uUtil.TOrgAtual.getSistemaContabil = '') then begin
-            stat1.Panels[5].Text := 'SISTEMA CONTÁBIL : > ' + uUtil.TOrgAtual.getSistemaContabil;
-        end;
-
-
-        if not (pid = '') then
-        begin
-          acessoMenu(true); // libera o menu principal
-        end
-        else
-        begin
-          acessoMenu(false);
-          stat1.Panels[1].Text := '';
-          stat1.Panels[2].Text := ' ';
-          stat1.Panels[3].Text := 'DATA : > ' + FormatDateTime('dd/mm/yyyy', dmOrganizacao.obterDataServidor);
-          stat1.Panels[5].Text := '';
-
-        end;
-
-      end;
-
-    end
-    else
-    begin
-      acessoMenu(false);
-      MessageDlg('Dados incorretos...', mtWarning, [mbOK], 0);
-    end;
-  except
-    on e: Exception do
-      MessageDlg('Problemas ao selecionar uma empresa...', mtWarning, [mbOK], 0);
-  end;
-
-end;
 
 procedure TFrmPrincipal.cbxUsuarioChange(Sender: TObject);
 var
@@ -355,7 +259,6 @@ var
 begin
     //desenvolver
   acessoMenu(false);
-  cbxOrganizacoes.Enabled := False;
   uUtil.TUserAtual.setId('');
   userValidado := False;
   btnLogin.Enabled := False;
@@ -430,37 +333,10 @@ begin
   lbl2.Caption := 'Usuário';
   lbl1.Caption := 'Login';
   lbl3.Caption := 'Senha';
-  lblBoasVindas.Visible := False;
   acessoMenu(false);
   btnZoom.Visible := False;
-  cbxOrganizacoes.Visible := False;
   pnlMain.Visible := false;
   alignPanelLogin(Self);
-
-//  cbxOrganizacoes.Enabled := False;
-   if not BDConectado then begin
-      if not (Assigned(frmRegistraBaseDados)) then
-         begin
-             frmRegistraBaseDados := TfrmRegistraBaseDados.Create(Self);
-             frmRegistraBaseDados.ShowModal;
-             FreeAndNil(frmRegistraBaseDados);
-         end;
-
-   end;
-
-
-  if BDConectado then
-  begin
-    if dmOrganizacao.carregarOrganizacoes then
-    begin
-      dmCombos.listaOrganizacao(cbxOrganizacoes, FsListaIdOrganizacoes);
-    end;
-
-    if dmUsuarioConsulta.carregarUsuarios then
-    begin
-      dmCombos.listaUsuario(cbxUsuario, FsListaIdUsuarios);
-    end;
-  end ;
 
 
 
@@ -478,11 +354,10 @@ begin
      Application.ProcessMessages;
 
     end;
+
   end;
 
 
-
-     acessoMenu(True);
 //  frmEstado1.createComboAll('ESTADO','DESCRICAO',frmEstado1.cbbcombo, FsListaIdEstados);
 
 end;
@@ -500,12 +375,19 @@ begin
   end;
 
   if Key = VK_F5 then begin
-   if not (Assigned(frmAlteraOrganizacao)) then
-         begin
-             frmAlteraOrganizacao := TfrmAlteraOrganizacao.Create(Self);
-             frmAlteraOrganizacao.ShowModal;
-             FreeAndNil(frmAlteraOrganizacao);
-          end;
+     try
+
+        frmSelectOrganizacao := TfrmSelectOrganizacao.Create(Self);
+        frmSelectOrganizacao.ShowModal;
+        FreeAndNil(frmSelectOrganizacao);
+
+        preenchePanelMain;
+
+    except
+    on e: Exception do
+      ShowMessage(e.Message + sLineBreak + 'Contate o administrador!');
+    end;
+
   end;
 
 
@@ -649,10 +531,7 @@ begin
 end;
 
 procedure TFrmPrincipal.inicializarDM(Sender: TObject);
-
 begin
-     freeAndNilDM(Self);
-
 
   if not (Assigned(dmConexao)) then
   begin
@@ -668,14 +547,24 @@ begin
      end;
   end;
 
+
+   if not BDConectado then begin
+      if not (Assigned(frmRegistraBaseDados)) then
+         begin
+             frmRegistraBaseDados := TfrmRegistraBaseDados.Create(Self);
+             frmRegistraBaseDados.ShowModal;
+             FreeAndNil(frmRegistraBaseDados);
+         end;
+
+   end;
+
+   if not (Assigned(dmOrganizacao)) then
+  begin
+    dmOrganizacao := TdmOrganizacao.Create(Self);
+  end;
   if not (Assigned(dmManutencao)) then
   begin
     dmManutencao := TdmManutencao.Create(Self);
-  end;
-
-  if not (Assigned(dmOrganizacao)) then
-  begin
-    dmOrganizacao := TdmOrganizacao.Create(Self);
   end;
 
   if not (Assigned(dmCombos)) then
@@ -697,6 +586,23 @@ begin
   begin
     dmServerMail := TdmServerMail.Create(Self);
   end;
+
+
+  if BDConectado then
+  begin
+
+    if dmUsuarioConsulta.carregarUsuarios then
+    begin
+      dmCombos.listaUsuario(cbxUsuario, FsListaIdUsuarios);
+    end;
+  end ;
+
+
+
+
+  //fim
+
+
 
 
 end;
@@ -799,11 +705,6 @@ begin
    edtLogin.Top     := lbl1.Top;
    edtPassword.Top  := lbl3.Top;
 
-   cbxOrganizacoes.Top := alignTop + (img1.Height - 40) ;
-   lblBoasVindas.Top   :=cbxOrganizacoes.Top - 25;
-   btnZoom.Top         :=cbxOrganizacoes.Top + 20;
-
-
 
 end;
 
@@ -866,6 +767,38 @@ numberError := 'ALT-TP-1045';
   end;
 
 end;
+
+procedure TFrmPrincipal.preenchePanelMain();
+begin
+
+//    lblPathSGBD.Caption := 'PATH BANCO ' + uUtil.TOrgAtual.getPathSGBD;
+        stat1.Panels[1].Text := 'USER : > ' + TUserAtual.getNameUser;
+        stat1.Panels[2].Text := ' ORG  : > ' + uUtil.TOrgAtual.getFantasia ;
+        stat1.Panels[3].Text := 'DATA : > ' + FormatDateTime('dd/mm/yyyy', uUtil.getDataServer);
+        stat1.Panels[4].Text := 'BANCO DE DADOS : > ' + uUtil.TOrgAtual.getPathSGBD ;
+        stat1.Panels[5].Text := '';
+
+        if not (uUtil.TOrgAtual.getSistemaContabil = '') then begin
+            stat1.Panels[5].Text := 'SISTEMA CONTÁBIL : > ' + uUtil.TOrgAtual.getSistemaContabil;
+        end;
+
+
+        if not (uUtil.TOrgAtual.getId = '') then
+        begin
+          acessoMenu(true); // libera o menu principal
+        end
+        else
+        begin
+          acessoMenu(false);
+          stat1.Panels[1].Text := '';
+          stat1.Panels[2].Text := ' ';
+          stat1.Panels[3].Text := 'DATA : > ' + FormatDateTime('dd/mm/yyyy', dmOrganizacao.obterDataServidor);
+          stat1.Panels[5].Text := '';
+
+        end;
+
+end;
+
 
 end.
 

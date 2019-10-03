@@ -18,6 +18,7 @@ type
     qryReceitas: TFDQuery;
     frxDespesas: TfrxDBDataset;
     frxReceitas: TfrxDBDataset;
+    procedure DataModuleCreate(Sender: TObject);
   private
     { Private declarations }
   public
@@ -40,6 +41,11 @@ implementation
 {$R *.dfm}
 
 { TdmRD }
+
+procedure TdmRD.DataModuleCreate(Sender: TObject);
+begin
+ dmConexao.conectarBanco ;
+end;
 
 function TdmRD.obterDespesas(pIdOrganizacao: string; pDataInicial,
   pDataFinal: TDate): Boolean;

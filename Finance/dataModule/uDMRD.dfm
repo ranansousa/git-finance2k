@@ -1,9 +1,10 @@
 object dmRD: TdmRD
   OldCreateOrder = False
+  OnCreate = DataModuleCreate
   Height = 343
   Width = 878
   object qryDespesas: TFDQuery
-    Connection = dmConexao.Conn
+    Connection = dmConexao.conn
     FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
     FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
     FormatOptions.FmtDisplayNumeric = '###,##0.00'
@@ -801,7 +802,7 @@ object dmRD: TdmRD
     end
   end
   object qryReceitas: TFDQuery
-    Connection = dmConexao.Conn
+    Connection = dmConexao.conn
     FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
     FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
     FormatOptions.FmtDisplayNumeric = '###,##0.00'

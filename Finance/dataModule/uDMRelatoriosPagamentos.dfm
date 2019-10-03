@@ -4,7 +4,7 @@ object dmRelPagamentos: TdmRelPagamentos
   Height = 665
   Width = 1183
   object qryTitulosExcel: TFDQuery
-    Connection = dmConexao.Conn
+    Connection = dmConexao.conn
     SQL.Strings = (
       'SELECT'
       'CE.ID_CEDENTE AS IDENT_CEDENTE,'
@@ -69,7 +69,7 @@ object dmRelPagamentos: TdmRelPagamentos
       end>
   end
   object qryCentroCusto: TFDQuery
-    Connection = dmConexao.Conn
+    Connection = dmConexao.conn
     FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
     FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
     FormatOptions.FmtDisplayNumeric = '###,##0.00'
@@ -139,7 +139,7 @@ object dmRelPagamentos: TdmRelPagamentos
             '  LEFT OUTER JOIN CEDENTE C ON (C.ID_CEDENTE = TP.ID_CEDENTE AND' +
             ' C.ID_ORGANIZACAO = TP.ID_ORGANIZACAO)')
       end>
-    Connection = dmConexao.Conn
+    Connection = dmConexao.conn
     Params = <>
     Macros = <>
     FetchOptions.AssignedValues = [evItems, evAutoClose, evAutoFetchAll]
@@ -152,7 +152,7 @@ object dmRelPagamentos: TdmRelPagamentos
     Top = 32
   end
   object qryObterCentroCustoPorTitulo: TFDQuery
-    Connection = dmConexao.Conn
+    Connection = dmConexao.conn
     FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
     FormatOptions.FmtDisplayDate = 'DD/MM/YYY'
     FormatOptions.FmtDisplayNumeric = '###,##0.00'
@@ -190,7 +190,7 @@ object dmRelPagamentos: TdmRelPagamentos
       end>
   end
   object qryTotalDebitoPorFornecedor: TFDQuery
-    Connection = dmConexao.Conn
+    Connection = dmConexao.conn
     FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
     FormatOptions.FmtDisplayDate = 'DD/MM/YY'
     FormatOptions.FmtDisplayNumeric = '###,##0.00'
@@ -232,7 +232,7 @@ object dmRelPagamentos: TdmRelPagamentos
       end>
   end
   object qryTotalQuitadoPorFornecedor: TFDQuery
-    Connection = dmConexao.Conn
+    Connection = dmConexao.conn
     FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
     FormatOptions.FmtDisplayDate = 'DD/MM/YY'
     FormatOptions.FmtDisplayNumeric = '###,##0.00'
@@ -279,7 +279,7 @@ object dmRelPagamentos: TdmRelPagamentos
     Top = 328
   end
   object qryTitulosPorFornecedor: TFDQuery
-    Connection = dmConexao.Conn
+    Connection = dmConexao.conn
     FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
     FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
     FormatOptions.FmtDisplayNumeric = '###,##0.00'
@@ -320,7 +320,7 @@ object dmRelPagamentos: TdmRelPagamentos
       end>
   end
   object qryRelPagamentos: TFDQuery
-    Connection = dmConexao.Conn
+    Connection = dmConexao.conn
     FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
     FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
     FormatOptions.FmtDisplayNumeric = '###,##0.00'
@@ -367,7 +367,7 @@ object dmRelPagamentos: TdmRelPagamentos
     Top = 328
   end
   object qryObterTodos: TFDQuery
-    Connection = dmConexao.Conn
+    Connection = dmConexao.conn
     SQL.Strings = (
       
         'SELECT TP.ID_TITULO_PAGAR, TP.ID_ORGANIZACAO, TP.NUMERO_DOCUMENT' +
@@ -394,7 +394,7 @@ object dmRelPagamentos: TdmRelPagamentos
       end>
   end
   object qryObterPorNumeroDocumento: TFDQuery
-    Connection = dmConexao.Conn
+    Connection = dmConexao.conn
     SQL.Strings = (
       'SELECT *'
       'FROM  TITULO_PAGAR TP'
@@ -418,7 +418,7 @@ object dmRelPagamentos: TdmRelPagamentos
       end>
   end
   object qryObterTotalPorStatus: TFDQuery
-    Connection = dmConexao.Conn
+    Connection = dmConexao.conn
     FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
     FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
     FormatOptions.FmtDisplayNumeric = '###,##0.00'
@@ -460,7 +460,7 @@ object dmRelPagamentos: TdmRelPagamentos
     Top = 328
   end
   object qryObterTPHistoricoPorTitulo: TFDQuery
-    Connection = dmConexao.Conn
+    Connection = dmConexao.conn
     SQL.Strings = (
       'SELECT TPH.ID_TITULO_PAGAR, '
       '       TPH.VALOR, H.DESCRICAO,TPH.ID_ORGANIZACAO,  '

@@ -270,6 +270,8 @@ end;
 
 procedure TfrmCTPHistorico.freeAndNilDM(Sender: TObject);
 begin
+     dmConexao.conectarBanco;
+
   if (Assigned(dmRelTPHistorico)) then
   begin
     FreeAndNil(dmRelTPHistorico);

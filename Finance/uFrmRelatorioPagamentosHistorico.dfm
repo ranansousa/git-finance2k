@@ -5318,7 +5318,7 @@ object frmCTPHistorico: TfrmCTPHistorico
     Top = 520
   end
   object qryTitulosPorFornecedor: TFDQuery
-    Connection = dmConexao.Conn
+    Connection = dmConexao.conn
     FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
     FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
     FormatOptions.FmtDisplayNumeric = '###,##0.00'
@@ -5376,7 +5376,7 @@ object frmCTPHistorico: TfrmCTPHistorico
     Top = 312
   end
   object qryObterCedentePorID: TFDQuery
-    Connection = dmConexao.Conn
+    Connection = dmConexao.conn
     SQL.Strings = (
       'SELECT C.ID_CEDENTE,c.NOME,c.CPFCNPJ AS CNPJ,'
       '       C.ID_TIPO_CEDENTE,c.ID_CONTATO,c.PERSONALIDADE,'
@@ -5409,7 +5409,7 @@ object frmCTPHistorico: TfrmCTPHistorico
       end>
   end
   object qryComboFornecedor: TFDQuery
-    Connection = dmConexao.Conn
+    Connection = dmConexao.conn
     SQL.Strings = (
       'SELECT C.NOME, C.ID_CEDENTE FROM CEDENTE C'
       'WHERE (C.ID_ORGANIZACAO = :PIDORGANIZACAO)'

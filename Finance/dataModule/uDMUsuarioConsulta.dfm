@@ -1,9 +1,10 @@
 object dmUsuarioConsulta: TdmUsuarioConsulta
   OldCreateOrder = False
+  OnCreate = DataModuleCreate
   Height = 389
   Width = 772
   object qryPreencheCombo: TFDQuery
-    Connection = dmConexao.Conn
+    Connection = dmConexao.conn
     SQL.Strings = (
       'SELECT Upper(us.nome)  as NOME, '
       '       us.id_usuario as ID'
@@ -14,7 +15,7 @@ object dmUsuarioConsulta: TdmUsuarioConsulta
     Top = 96
   end
   object qryObterUsuarioPorID: TFDQuery
-    Connection = dmConexao.Conn
+    Connection = dmConexao.conn
     SQL.Strings = (
       'SELECT us.login as login, '
       'us.nome as nome, '
@@ -45,7 +46,7 @@ object dmUsuarioConsulta: TdmUsuarioConsulta
     Top = 24
   end
   object qryUsuarios: TFDQuery
-    Connection = dmConexao.Conn
+    Connection = dmConexao.conn
     SQL.Strings = (
       'SELECT us.login as login,'
       '       us.nome, '
@@ -59,7 +60,7 @@ object dmUsuarioConsulta: TdmUsuarioConsulta
     Top = 184
   end
   object qryValidarUsuario: TFDQuery
-    Connection = dmConexao.Conn
+    Connection = dmConexao.conn
     SQL.Strings = (
       'SELECT us.login as login,'
       '       us.nome, '

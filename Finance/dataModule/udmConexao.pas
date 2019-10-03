@@ -9,22 +9,25 @@ uses
   FireDAC.Stan.Pool, FireDAC.Stan.Async, FireDAC.Phys, FireDAC.VCLUI.Error,
   FireDAC.VCLUI.Wait, FireDAC.Phys.FBDef, FireDAC.Phys.IBBase, FireDAC.Phys.FB,
   FireDAC.Comp.UI, Data.DB, FireDAC.Comp.Client, FireDAC.Stan.Param, uUtil,
-  FireDAC.DatS, FireDAC.DApt.Intf, FireDAC.DApt, FireDAC.Comp.DataSet;
+  FireDAC.DatS, FireDAC.DApt.Intf, FireDAC.DApt, FireDAC.Comp.DataSet,
+  FireDAC.Phys.Oracle, FireDAC.Phys.OracleDef;
 
 type
   TdmConexao = class(TDataModule)
-    Conn: TFDConnection;
     FDGUIxErrorDialog1: TFDGUIxErrorDialog;
     FDGUIxWaitCursor1: TFDGUIxWaitCursor;
     FDPhysFBDriverLink1: TFDPhysFBDriverLink;
     ConnMega: TFDConnection;
     qryEstacoesConectadas: TFDQuery;
     qryObterGUID: TFDQuery;
+    conn: TFDConnection;
+    procedure DataModuleCreate(Sender: TObject);
   private
     { Private declarations }
   public
     { Public declarations }
     database: string;
+    databaseFinance:String;
     databaseMega: string;
     pathMega: string;
     host: string;
@@ -52,43 +55,28 @@ implementation
 
 function TdmConexao.conectarBanco: boolean;
 var  Arquivo: TIniFile { uses IniFiles };
-databaseFinance:String;
 begin
-//      teste := uUtil.GetPathConfigIni;
+
   if not(Conn.Connected) then
    begin
-
     Result := False;
-
-    Arquivo := TIniFile.Create(uUtil.GetPathConfigIni);
-
-
-    if not uUtil.ArquivoExist(Arquivo.FileName) then
-    begin
-          raise Exception.Create('Não foi possível conectar ao banco de dados!');
-    end ;
-
-      databaseFinance :=  Arquivo.ReadString('DADOSFINANCE','DATABASE', '');
       uUtil.TOrgAtual.setPathSGBD(databaseFinance);
       try
-            begin
-              Conn.Params.Clear;
-              Conn.LoginPrompt := false;
-              Conn.DriverName := 'FB';
-              Conn.Params.Add('database=' + databaseFinance);
-              // Conn.Params.Add('drivername=' + Conn.DriverName);
-             // Conn.Params.Add('hostname=' + '192.168.25.101');
 
-              Conn.Params.Add('user_name=' + 'SYSDBA');
-              Conn.Params.Add('password=' + 'masterkey');
-              //Conn.Params.Add('port=' + '3050');
-              Conn.Params.Add('blobsize=-1');
-              Conn.Params.Add('SQLDialect=3');
-              Conn.Params.Add('CharacterSet = iso8859_1');
-              Conn.Params.Add('PageSize=4096');
-              Conn.ConnectionString;
-              Conn.Open;
-            end;
+      //  databaseFinance := '192.168.15.15/3050:D:\Clientes\imap\FINANCE.FDB';
+
+        conn.Params.Clear;
+        conn.LoginPrompt := false;
+        conn.DriverName := 'FB';
+        conn.Params.Add('database=' + databaseFinance);
+        conn.Params.Add('user_name=' + 'SYSDBA');
+        conn.Params.Add('password=' + 'masterkey');//
+        conn.Params.Add('blobsize=-1');
+        conn.Params.Add('SQLDialect=3');
+        conn.Params.Add('CharacterSet = iso8859_1');
+        conn.Params.Add('PageSize=4096');
+        conn.Open;
+
 
     except
       raise Exception.Create('Não foi possível conectar ao banco de dados!  ' + databaseFinance);
@@ -97,7 +85,6 @@ begin
     end;
  end;
 
-  Arquivo.Free;
   Result := Conn.Connected;
 end;
 
@@ -146,15 +133,31 @@ databaseMega :=  Arquivo.ReadString('DADOSMEGA','DATABASE', '');
 end;
 
 
+procedure TdmConexao.DataModuleCreate(Sender: TObject);
+var  Arquivo: TIniFile { uses IniFiles };
+
+begin
+   //      teste := uUtil.GetPathConfigIni;
+   Arquivo := TIniFile.Create(uUtil.GetPathConfigIni);
+
+    if not uUtil.ArquivoExist(Arquivo.FileName) then
+    begin
+          raise Exception.Create('Não foi possível acesso ao Config!');
+    end ;
+
+   databaseFinance :=  Arquivo.ReadString('DADOSFINANCE','DATABASE', '');
+
+   FreeAndNil(Arquivo);
+
+   Conn.Connected :=False;
+   ConnMega.Connected :=False;
+end;
+
 function TdmConexao.obterHostONLINE: boolean;
 begin
  //verifica as estacoes que estao ativas no momento
 
-  if not qryEstacoesConectadas.Connection.Connected then
-  begin
-    qryEstacoesConectadas.Connection := dmConexao.Conn;
-  end;
-
+  qryEstacoesConectadas.Connection := dmConexao.Conn;
   qryEstacoesConectadas.Close;
   qryEstacoesConectadas.Open;
 

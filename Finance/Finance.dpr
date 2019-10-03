@@ -90,7 +90,7 @@ uses
   uDMRD in 'dataModule\uDMRD.pas' {dmRD: TDataModule},
   uFrmDemonstrativoRD in 'uFrmDemonstrativoRD.pas' {frmDemonstrativoRD},
   uFramePeriodo in 'frames\uFramePeriodo.pas' {frmPeriodo: TFrame},
-  uFrmAlteraOrganizacao in 'uFrmAlteraOrganizacao.pas' {frmAlteraOrganizacao};
+  uFrmSelecionaOrganizacao in 'uFrmSelecionaOrganizacao.pas' {frmSelectOrganizacao};
 
 {$R *.res}
 

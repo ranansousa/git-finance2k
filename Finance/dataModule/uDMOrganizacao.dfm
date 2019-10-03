@@ -1,9 +1,9 @@
 object dmOrganizacao: TdmOrganizacao
   OldCreateOrder = False
+  OnCreate = DataModuleCreate
   Height = 392
   Width = 699
   object qryDadosEmpresa: TFDQuery
-    Connection = dmConexao.Conn
     FetchOptions.AssignedValues = [evCursorKind]
     FetchOptions.CursorKind = ckDynamic
     SQL.Strings = (
@@ -39,10 +39,10 @@ object dmOrganizacao: TdmOrganizacao
         Name = 'PIDORGANIZACAO'
         DataType = ftString
         ParamType = ptInput
+        Size = 36
       end>
   end
   object qryLoadOrgs: TFDQuery
-    Connection = dmConexao.Conn
     SQL.Strings = (
       'SELECT * FROM ORGANIZACAO WHERE ATIVA = 1'
       'ORDER BY SIGLA DESC')
@@ -50,7 +50,6 @@ object dmOrganizacao: TdmOrganizacao
     Top = 72
   end
   object qryOrganizacoes: TFDQuery
-    Connection = dmConexao.Conn
     FetchOptions.AssignedValues = [evCursorKind]
     FetchOptions.CursorKind = ckDynamic
     SQL.Strings = (
@@ -71,7 +70,6 @@ object dmOrganizacao: TdmOrganizacao
     Top = 72
   end
   object qryValidaLogin: TFDQuery
-    Connection = dmConexao.Conn
     SQL.Strings = (
       ''
       'SELECT U.nome,U.id_organizacao'
@@ -100,7 +98,6 @@ object dmOrganizacao: TdmOrganizacao
     Top = 80
   end
   object qryPreencheCombo: TFDQuery
-    Connection = dmConexao.Conn
     SQL.Strings = (
       'SELECT  O.razao_social, '
       '        O.id_organizacao'
@@ -111,9 +108,9 @@ object dmOrganizacao: TdmOrganizacao
     Top = 240
   end
   object qryDataServer: TFDQuery
-    Connection = dmConexao.Conn
     SQL.Strings = (
-      'select current_timestamp from rdb$database')
+      'SELECT current_timestamp'
+      'FROM rdb$database')
     Left = 288
     Top = 240
   end

@@ -3,7 +3,7 @@ object dmRelTPHistorico: TdmRelTPHistorico
   Height = 439
   Width = 689
   object qryTotalDebitoPorFornecedor: TFDQuery
-    Connection = dmConexao.Conn
+    Connection = dmConexao.conn
     FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
     FormatOptions.FmtDisplayDate = 'DD/MM/YY'
     FormatOptions.FmtDisplayNumeric = '###,##0.00'
@@ -45,7 +45,7 @@ object dmRelTPHistorico: TdmRelTPHistorico
       end>
   end
   object qryTotalQuitadoPorFornecedor: TFDQuery
-    Connection = dmConexao.Conn
+    Connection = dmConexao.conn
     FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
     FormatOptions.FmtDisplayDate = 'DD/MM/YY'
     FormatOptions.FmtDisplayNumeric = '###,##0.00'
@@ -87,7 +87,7 @@ object dmRelTPHistorico: TdmRelTPHistorico
       end>
   end
   object qryTitulosPorFornecedor: TFDQuery
-    Connection = dmConexao.Conn
+    Connection = dmConexao.conn
     FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
     FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
     FormatOptions.FmtDisplayNumeric = '###,##0.00'
@@ -128,7 +128,7 @@ object dmRelTPHistorico: TdmRelTPHistorico
       end>
   end
   object qryObterTotalPorStatus: TFDQuery
-    Connection = dmConexao.Conn
+    Connection = dmConexao.conn
     FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
     FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
     FormatOptions.FmtDisplayNumeric = '###,##0.00'

@@ -19,6 +19,7 @@ type
     dtsOrganizacao: TDataSource;
     qryPreencheCombo: TFDQuery;
     qryDataServer: TFDQuery;
+    procedure DataModuleCreate(Sender: TObject);
   private
     { Private declarations }
     procedure inicializarDM(Sender: TObject);
@@ -44,14 +45,30 @@ implementation
 {$R *.dfm}
 
 function TdmOrganizacao.carregarDadosEmpresa(pIdOrganizacao: string): Boolean;
+var
+cmd :string;
 begin
   try
-      qryDadosEmpresa.Connection := dmConexao.Conn;
-      qryDadosEmpresa.Close;
-      qryDadosEmpresa.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
-      qryDadosEmpresa.Open;
+     dmConexao.conectarBanco;
+
+     cmd := ' SELECT O.RAZAO_SOCIAL,  O.FANTASIA,  O.CNPJ, E.SIGLA AS UF, '+
+            ' O.CEP,  C.CIDADE, O.ID_ORGANIZACAO, O.CODINOME, O.LICENCA, O.SERIAL_CLIENTE, O.SISTEMA_CONTABIL, O.CODIGO_WEB, O.IPSERVERBD ' +
+            ' FROM ORGANIZACAO O ' +
+            ' LEFT OUTER JOIN BAIRRO B ON (O.ID_BAIRRO = B.ID_BAIRRO) ' +
+            ' LEFT OUTER JOIN CIDADE C ON (B.ID_CIDADE = C.ID_CIDADE) ' +
+            ' LEFT OUTER JOIN ESTADO E ON (C.ID_ESTADO = E.ID_ESTADO) ' +
+            ' WHERE (O.ID_ORGANIZACAO = :PIDORGANIZACAO) ' ;
+            cmd := ' SELECT *  FROM ORGANIZACAO O  WHERE (O.ID_ORGANIZACAO = :PIDORGANIZACAO) ' ;
+
+
+       qryDadosEmpresa.Close;
+       qryDadosEmpresa.Connection := dmConexao.Conn;
+       //qryDadosEmpresa.SQL.Clear;
+      // qryDadosEmpresa.SQL.Add(cmd);
+       qryDadosEmpresa.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+       qryDadosEmpresa.Open;
   except
-    raise(Exception).Create('Problemas ao carregar organizações.. ');
+    raise(Exception).Create('Problemas ao carregar dados da organização.. ');
   end;
 
   Result := not qryDadosEmpresa.IsEmpty;
@@ -60,6 +77,7 @@ end;
 function TdmOrganizacao.carregarOrganizacoes: Boolean;
 begin
  try
+    dmConexao.conectarBanco;
     qryOrganizacoes.Connection := dmConexao.Conn;
     qryOrganizacoes.Close;
     qryOrganizacoes.Open;
@@ -70,6 +88,11 @@ begin
 
 
   Result := not qryOrganizacoes.IsEmpty;
+end;
+
+procedure TdmOrganizacao.DataModuleCreate(Sender: TObject);
+begin
+ dmConexao.conectarBanco ;
 end;
 
 procedure TdmOrganizacao.freeAndNilDM(Sender: TObject);
@@ -94,6 +117,7 @@ data : TDateTime;
 begin
   data := Now;
   try
+       dmConexao.conectarBanco;
       qryDataServer.Close;
       qryDataServer.Connection := dmConexao.Conn;
       qryDataServer.Open;

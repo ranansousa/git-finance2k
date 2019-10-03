@@ -4160,10 +4160,6 @@ object frmRelatorios: TfrmRelatorios
     TabOrder = 0
     object tbsContasPagar: TTabSheet
       Caption = 'Contas a Pagar'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object btnRelContaPagar: TButton
         Left = 19
         Top = 24

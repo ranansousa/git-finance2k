@@ -19,9 +19,6 @@ type
   private
     { Private declarations }
     codigoErro :string;
-    procedure DataModuleCreate(Sender: TObject);
-    procedure inicializarDM(Sender: TObject);
-
 
   public
     { Public declarations }
@@ -42,19 +39,12 @@ implementation
 {%CLASSGROUP 'Vcl.Controls.TControl'}
 
 {$R *.dfm}
-procedure TdmRelTPHistorico.inicializarDM(Sender: TObject);
-begin
-
- codigoErro := 'dmRelTPHISTORICO ';
-
-end;
-
-
 
 function TdmRelTPHistorico.obterTotalPorFornecedor(pIdOrganizacao, pIdCedente: string; dtDataInicial, dtDataFinal: TDateTime): Currency;
 begin
     codigoErro := 'TP-06';
   try
+  dmConexao.conectarBanco;
       qryTotalDebitoPorFornecedor.Connection := dmConexao.Conn;
       qryTotalDebitoPorFornecedor.Close;
 
@@ -78,6 +68,7 @@ begin
 codigoErro := 'TP-07';
 
   try
+    dmConexao.conectarBanco;
       qryObterTotalPorStatus.Connection := dmConexao.Conn;
       qryObterTotalPorStatus.Close;
 
@@ -100,6 +91,7 @@ begin
 codigoErro := 'TP-08';
 
   try
+    dmConexao.conectarBanco;
       qryTotalQuitadoPorFornecedor.Connection := dmConexao.Conn;
       qryTotalQuitadoPorFornecedor.Close;
 
@@ -121,12 +113,6 @@ codigoErro := 'TP-08';
 end;
 
 
-
-procedure TdmRelTPHistorico.DataModuleCreate(Sender: TObject);
-begin
-inicializarDM(Self);
-end;
-
 function TdmRelTPHistorico.dataSourceIsEmpty(var dts: TDataSource): Boolean;
 begin
   Result := dts.DataSet.IsEmpty;
@@ -142,7 +128,7 @@ begin
   cmd := 'SELECT * FROM  TITULO_PAGAR TP ' + ' WHERE (TP.ID_CEDENTE = :PIDCEDENTE) AND ' + '(TP.ID_TIPO_STATUS in ' + '(''ABERTO'',''QUITADO'',''PARCIAL'')) AND ' + '(TP.ID_ORGANIZACAO = :PIDORGANIZACAO) AND ' + '(TP.DATA_EMISSAO BETWEEN :DTDATAINICIAL AND :DTDATAFINAL) ' + ' ORDER BY ' + campoOrdem;
 
   try
-
+    dmConexao.conectarBanco;
     qryTitulosPorFornecedor.Connection := dmConexao.Conn;
     qryTitulosPorFornecedor.Close;
     qryTitulosPorFornecedor.SQL.Clear;

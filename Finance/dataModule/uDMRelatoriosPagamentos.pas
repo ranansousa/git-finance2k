@@ -129,6 +129,8 @@ procedure TdmRelPagamentos.DataModuleCreate(Sender: TObject);
 var
 aux : string;
 begin
+  dmConexao.conectarBanco;
+
   aux := '';
   idOrgzanizacao := TOrgAtual.getId;
 //  qryRelPagamentos.Open();

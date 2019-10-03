@@ -4499,6 +4499,7 @@ object frmRelatorioPagamentos: TfrmRelatorioPagamentos
       'CODIGO=CODIGO'
       'CONTA=CONTA'
       'CODREDUZ=CODREDUZ')
+    DataSet = dmRelPagamentos.qryObterTPHistoricoPorTitulo
     BCDToCurrency = False
     Left = 528
     Top = 408
