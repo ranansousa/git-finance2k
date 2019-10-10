@@ -1,0 +1,1072 @@
+unit uDMRelatorioExportacaoMega;
+
+interface
+
+uses
+  System.SysUtils, ShellApi, System.Classes, frxClass, frxDBSet,
+  Winapi.Windows, Winapi.Messages, Vcl.Forms, System.Variants,
+  uDMTituloPagarHistoricoConsulta, uDMTituloReceberHistoricoConsulta,
+  udmConexao, uDMOrganizacao, FireDAC.Stan.Intf, uDMContaBancariaDebitoConsulta,
+  uDMExportaFinanceTR, uDMTituloReceberCentroCustoConsulta, uDMExportaFinanceTP,
+  uDMTituloPagarCentroCustoConsulta, uDMTesourariaDebitoConsulta,
+  uDMTitulorReceberBaixaCheque,
+  FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
+  FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
+  Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, frxExportCSV,
+  uDMExportaFinanceTPB,
+  frxExportPDF, uDMTituloPagarBaixaDeducao, UDMTituloPagarBaixaAcrescimo,UDMTituloReceberBaixaAcrescimo,
+  UDMTituloReceberBaixaDeducao;
+
+type
+  TdmRelExportacaoMega = class(TDataModule)
+    frxRelatorioExportacaoMega: TfrxReport;
+    frxDBTitulos: TfrxDBDataset;
+    frxTPROVDB: TfrxDBDataset;
+    frxDBTRProv: TfrxDBDataset;
+    frxTRPROVDB: TfrxDBDataset;
+    frxPDFExport1: TfrxPDFExport;
+    frxCSVExport1: TfrxCSVExport;
+    frxDBTPQuitados: TfrxDBDataset;
+    frxTPBBanco: TfrxDBDataset;
+    frxDBTPBCaixa: TfrxDBDataset;
+    frxTPBAcrescimo: TfrxDBDataset;
+    frxTPBDeducao: TfrxDBDataset;
+    frxDBTRQuitados: TfrxDBDataset;
+    frxDBTRBaixa: TfrxDBDataset;
+    frxDBTRQuitadoBanco: TfrxDBDataset;
+    frxDBTRBCheque: TfrxDBDataset;
+    frxDBTRBCaixa: TfrxDBDataset;
+    frxDBTPB: TfrxDBDataset;
+    frxTPBCheque: TfrxDBDataset;
+    frxTRBDeducao: TfrxDBDataset;
+    frxDBTRBAcrescimo: TfrxDBDataset;
+    frxDBCBT: TfrxDBDataset;
+    frxDBCBTC: TfrxDBDataset;
+    frxDBCBTD: TfrxDBDataset;
+    frxBCOCAIXA: TfrxDBDataset;
+    frxdbdtstDBTRF_DO_Banco: TfrxDBDataset;
+    frxTRFCaixaBanco: TfrxDBDataset;
+    frxdbdtstDBTRF_TESBanco: TfrxDBDataset;
+    qryTPPROVBASE: TFDQuery;
+    frxTPPROVCR: TfrxDBDataset;
+    qryTPPROVCR: TFDQuery;
+    qryTPPROVDB: TFDQuery;
+    dsDetalhesTP: TDataSource;
+    qryTPQuitados: TFDQuery;
+    dsDetalhesTPB: TDataSource;
+    qryObterTPBaixaPorTitulo: TFDQuery;
+    qryBaixaTPCaixa: TFDQuery;
+    qryBaixaTPCheque: TFDQuery;
+    qryObterTPBBancoOLD: TFDQuery;
+    qryTPBAcrescimos: TFDQuery;
+    qryTPBDeducao: TFDQuery;
+    qryTPBHistorico: TFDQuery;
+    frxTPBHistorico: TfrxDBDataset;
+    qryObterTPBBanco: TFDQuery;
+    qry1: TFDQuery;
+    qryTRPROVBASE: TFDQuery;
+    qryTRPROVCR: TFDQuery;
+    qryTRPROVDB: TFDQuery;
+    dsDetalhesTR: TDataSource;
+    frxTRPROVCR: TfrxDBDataset;
+    qryObterTRBaixaPorTitulo: TFDQuery;
+    qryTRQuitados: TFDQuery;
+    qryTRBAcrescimos: TFDQuery;
+    qryTRBDeducao: TFDQuery;
+    qryBaixaTRCaixa: TFDQuery;
+    qryBaixaTRCheque: TFDQuery;
+    qryBaixaTRBanco: TFDQuery;
+    dsDetalhesTRB: TDataSource;
+    qryTRFCAIXABANCO: TFDQuery;
+    qryCBTBASE: TFDQuery;
+    qryCBTCR: TFDQuery;
+    qryCBTDB: TFDQuery;
+    dsDetalhesCBT: TDataSource;
+    qryBancoCaixa: TFDQuery;
+    procedure dsTPPROVCRDataChange(Sender: TObject; Field: TField);
+    procedure dsDetalhesTPDataChange(Sender: TObject; Field: TField);
+    procedure dsDetalhesTPBDataChange(Sender: TObject; Field: TField);
+    procedure dsDetalhesTRDataChange(Sender: TObject; Field: TField);
+    procedure dsDetalhesTRBDataChange(Sender: TObject; Field: TField);
+    procedure dsDetalhesCBTDataChange(Sender: TObject; Field: TField);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+    procedure inicializarDM(Sender: TObject);
+    function retornarCaminhoRelatorio: string;
+    procedure inicializarVariaveisRelatorio(dtInicial, dtFinal: TDate);
+//    procedure exibirRelatorioExportacao;
+    procedure exibirRelatorioExportacao(dtInicial, dtFinal: TDate);
+//TR PRovisionado
+    function obterTPProBase(pIdOrganizacao : string; pDataInicial, pDataFinal: TDate ): Boolean;
+    function obterTPProvCR(pIdOrganizacao,pRegistroProvisao : string ): Boolean;
+    function obterTPProvDB(pIdOrganizacao,pRegistroProvisao : string ): Boolean;
+//TP BAIXA
+    function obterTPQuitados(pIdOrganizacao, pIdStatus: string; pDataInicial, pDataFinal: TDate): Boolean;
+    function obterTPBaixaPorTitulo(pIdOrganizacao, pIdtituloPagar: String): Boolean;
+    function obterTPBCaixa(pIdOrganizacao, pIdTPB: String): Boolean;
+    function obterTPBCheque(pIdOrganizacao, pIdTPB  : String): Boolean;
+    function obterTPBBanco(pIdOrganizacao, pIdTPB  : String): Boolean;
+    function obterTPBAC(pIdOrganizacao, pIdTPB : String): Boolean;
+    function obterTPBDE(pIdOrganizacao, pIdTPB : String): Boolean;
+    function obterTPBHistorico(pIdorganizacao, tituloPagarQuitado : string): Boolean;
+
+//TR Provisionado
+
+function obterTRProBase(pIdOrganizacao : string; pDataInicial, pDataFinal: TDate ): Boolean;
+function obterTRProvCR(pIdOrganizacao,pRegistroProvisao : string ): Boolean;
+function obterTRProvDB(pIdOrganizacao,pRegistroProvisao : string ): Boolean;
+
+ //TR BAIXA
+
+       function obterTRQuitados(pIdOrganizacao, pIdStatus: String; pDataInicial, pDataFinal: TDateTime): Boolean;
+       function obterTRPBaixaPorTitulo(pIdOrganizacao, pIdtituloReceber : String): Boolean;
+       function obterTRBAC(pIdOrganizacao, pIdTRB: String): Boolean;
+       function obterTRBDE(pIdOrganizacao, pIdTRB: String): Boolean;
+       function obterTRBCaixa(pIdOrganizacao,pIdTRB: String): Boolean;
+       function obterTRBCheque(pIdOrganizacao, pIdTRB : String): Boolean;
+       function obterTRBBanco(pIdOrganizacao, pIdTituloReceber: String): Boolean;
+
+
+
+//Trasnferencias da tesouraria para o banco
+    function obterTRFCaixaBanco(pIdOrganizacao: String; dataInicial, dataFinal: TDate): Boolean;
+// Transferencia do banco para a tesouraria
+function obterTRFBancoCaixa(pIdOrganizacao: String;  dtDataInicial, dtDataFinal: TDate): Boolean;
+//transferencias entre contas da mesma titularidade
+function obterCBT(pIdOrganizacao: String;  dtDataInicial, dtDataFinal: TDate): Boolean;
+function obterCBTCR(pIdOrganizacao, PIDCONTABANCARIACREDITO  : String): Boolean;
+function obterCBTDB(pIdOrganizacao, PIDCONTABANCARIADEBITO  : String): Boolean;
+
+
+
+
+  end;
+
+var
+  dmRelExportacaoMega: TdmRelExportacaoMega;
+
+implementation
+
+{ %CLASSGROUP 'Vcl.Controls.TControl' }
+
+uses uDMExportaFinanceTRB, uDMTesourariaCreditoConsulta,
+  uDMContaBancariaCreditoConsulta, uDMTituloPagarBaixaCheque,
+  uDMTituloReceberBaixaFP, uDMContaBancariaTransferencia;
+
+{$R *.dfm}
+
+function TdmRelExportacaoMega.retornarCaminhoRelatorio: string;
+begin
+    Result := ExtractFilePath(Application.ExeName) + '\relExportacaoV5.fr3';
+ // Result := ExtractFilePath(Application.ExeName) + '\relExportacaoMegaContabil.fr3';
+end;
+
+procedure TdmRelExportacaoMega.inicializarDM(Sender: TObject);
+begin
+
+
+
+  if not(Assigned(dmConexao)) then
+  begin
+    dmConexao := TdmConexao.Create(Self);
+  end
+  else
+  begin
+    dmConexao.conectarBanco;
+  end;
+
+
+   if not (Assigned(dmOrganizacao)) then
+  begin
+    dmOrganizacao := TdmOrganizacao.Create(Self);
+  end;
+
+  {
+
+
+  if not(Assigned(dmExportFinanceTP)) then
+  begin
+    dmExportFinanceTP := TdmExportFinanceTP.Create(Self);
+  end;
+
+  if not(Assigned(dmTPCentroCustoConsulta)) then
+  begin
+    dmTPCentroCustoConsulta := TdmTPCentroCustoConsulta.Create(Self);
+  end;
+
+  if not(Assigned(dmTPHistoricoConsulta)) then
+  begin
+    dmTPHistoricoConsulta := TdmTPHistoricoConsulta.Create(Self);
+  end;
+
+  if not(Assigned(dmExportFinanceTR)) then
+  begin
+    dmExportFinanceTR := TdmExportFinanceTR.Create(Self);
+  end;
+
+  if not(Assigned(dmTRHistoricoConsulta)) then
+  begin
+    dmTRHistoricoConsulta := TdmTRHistoricoConsulta.Create(Self);
+  end;
+
+  if not(Assigned(dmTRCentroCustoConsulta)) then
+  begin
+    dmTRCentroCustoConsulta := TdmTRCentroCustoConsulta.Create(Self);
+  end;
+
+  if not(Assigned(dmTDConsulta)) then
+  begin
+    dmTDConsulta := TdmTDConsulta.Create(Self);
+  end;
+
+  if not(Assigned(dmCBDConsulta)) then
+  begin
+    dmCBDConsulta := TdmCBDConsulta.Create(Self);
+  end;
+
+  // TPB por cheque
+  if not(Assigned(dmTPBCheque)) then
+  begin
+    dmTPBCheque := TdmTPBCheque.Create(Self);
+  end;
+
+  if not(Assigned(dmTPBAcrescimo)) then
+  begin
+    dmTPBAcrescimo := TdmTPBAcrescimo.Create(Self);
+  end;
+
+  if not(Assigned(dmTPBDeducao)) then
+  begin
+    dmTPBDeducao := TdmTPBDeducao.Create(Self);
+  end;
+
+  if not(Assigned(dmExportFinanceTPB)) then
+  begin
+    dmExportFinanceTPB := TdmExportFinanceTPB.Create(Self);
+  end;
+
+  // trb
+  if not(Assigned(dmExportFinanceTRB)) then
+  begin
+    dmExportFinanceTRB := TdmExportFinanceTRB.Create(Self);
+  end;
+
+   // trb baixa Forma Pagamento
+  if not(Assigned(dmTRBFP)) then
+  begin
+    dmTRBFP := TdmTRBFP.Create(Self);
+  end;
+
+  // trb baixa tesouraria credito
+
+  if not(Assigned(dmTCConsulta)) then
+  begin
+    dmTCConsulta := TdmTCConsulta.Create(Self);
+  end;
+
+
+  // trb baixa ContaBancaria credito
+
+  if not(Assigned(dmCBCConsulta)) then
+  begin
+    dmCBCConsulta := TdmCBCConsulta.Create(Self);
+  end;
+
+
+  // conta bancaria transferencia
+  if not(Assigned(dmCBT)) then
+  begin
+    dmCBT := TdmCBT.Create(Self);
+  end;
+
+  // TRB baixa por cheque
+  if not(Assigned(dmTRBCheque)) then
+  begin
+    dmTRBCheque := TdmTRBCheque.Create(Self);
+  end;
+
+
+  // trb baixa Deducao
+  if not(Assigned(dmTRBDeducao)) then
+  begin
+    dmTRBDeducao := TdmTRBDeducao.Create(Self);
+  end;
+
+  // trb baixa Acrescimo
+  if not(Assigned(dmTRBAcrescimo)) then
+  begin
+    dmTRBAcrescimo := TdmTRBAcrescimo.Create(Self);
+  end;
+
+           }
+end;
+
+procedure TdmRelExportacaoMega.inicializarVariaveisRelatorio(dtInicial, dtFinal: TDate);
+begin
+
+  with frxRelatorioExportacaoMega.Variables do
+  begin
+
+    Variables['strRazaoSocial'] :=
+      QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('RAZAO_SOCIAL')
+      .AsString);
+    Variables['strCNPJ'] :=
+      QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('CNPJ').AsString);
+    Variables['strEndereco'] :=
+      QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('ENDERECO').AsString);
+    Variables['strCEP'] :=
+      QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('CEP').AsString);
+    Variables['strCidade'] :=
+      QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('CIDADE').AsString);
+    Variables['strUF'] :=
+      QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('UF').AsString);
+    Variables['strPeriodo'] :=QuotedStr( ' de  ' + DateToStr(dtInicial) + '  até  ' + DateToStr(dtFinal));
+
+
+
+    // Variables['strTipo'] := QuotedStr(tipo); // muda a depender do lancamento
+
+  end;
+
+end;
+
+procedure TdmRelExportacaoMega.dsDetalhesCBTDataChange(Sender: TObject;
+  Field: TField);
+  var
+  cbtCR, idOrganizacao, cbtDB: String;
+begin
+idOrganizacao := qryCBTBASE.FieldByName('ID_ORGANIZACAO').AsString;
+ cbtCR        := qryCBTBASE.FieldByName('ID_CONTA_BANCARIA_CREDITO').AsString;
+ cbtDB        := qryCBTBASE.FieldByName('ID_CONTA_BANCARIA_DEBITO').AsString;
+
+ //obter a conta bancaria credito
+ obterCBTCR(idOrganizacao, cbtCR);
+ //obter a conta bancaria debito
+ obterCBTDB(idOrganizacao, cbtDB);
+
+end;
+
+procedure TdmRelExportacaoMega.dsDetalhesTPBDataChange(Sender: TObject;
+  Field: TField);
+var
+  tituloPagarQuitado, idOrganizacao, tituloTPB: String;
+begin
+  tituloPagarQuitado := qryTPQuitados.FieldByName('ID_TITULO_PAGAR').AsString;
+  idOrganizacao := qryTPQuitados.FieldByName('ID_ORGANIZACAO').AsString;
+
+  // obter a baixa
+  obterTPBaixaPorTitulo(idOrganizacao, tituloPagarQuitado);
+  tituloTPB := qryObterTPBaixaPorTitulo.FieldByName('ID_TITULO_PAGAR_BAIXA').AsString;
+  // dts do historico
+  obterTPBHistorico(idOrganizacao,tituloPagarQuitado);
+  // baixa POR TEsouraria
+  obterTPBCaixa(idOrganizacao, tituloTPB);
+  //obter por Cheque
+  obterTPBCheque(idOrganizacao, tituloTPB);
+  // obter baixa por Banco
+  obterTPBBanco(idOrganizacao, tituloTPB);
+  // dts acrescimo
+  obterTPBAC(idOrganizacao, tituloTPB);
+  // dts deducao
+  obterTPBDE(idOrganizacao, tituloTPB);
+
+end;
+
+  function TdmRelExportacaoMega.obterTPBaixaPorTitulo(pIdOrganizacao, pIdtituloPagar: String): Boolean;
+begin
+  Result := false;
+
+ // inicializarDM(Self);
+
+  if not qryObterTPBaixaPorTitulo.Connection.Connected then
+  begin
+    qryObterTPBaixaPorTitulo.Connection := dmConexao.Conn;
+  end;
+
+  qryObterTPBaixaPorTitulo.Close;
+  qryObterTPBaixaPorTitulo.ParamByName('PIDORGANIZACAO').AsString :=  pIdOrganizacao;
+  qryObterTPBaixaPorTitulo.ParamByName('pIdtituloPagar').AsString :=  pIdtituloPagar;
+  qryObterTPBaixaPorTitulo.Open;
+
+  Result := not qryObterTPBaixaPorTitulo.IsEmpty;
+
+end;
+
+
+
+
+procedure TdmRelExportacaoMega.dsDetalhesTRBDataChange(Sender: TObject;
+  Field: TField);
+var
+  tituloReceberQuitado, idOrganizacao, tituloTRPB: String;
+begin
+  tituloReceberQuitado := qryTRQuitados.FieldByName('ID_TITULO_RECEBER').AsString;
+  idOrganizacao := qryTRQuitados.FieldByName('ID_ORGANIZACAO').AsString;
+
+   // obter a baixa
+  obterTRPBaixaPorTitulo(idOrganizacao, tituloReceberQuitado);
+  tituloTRPB := qryObterTRBaixaPorTitulo.FieldByName('ID_TITULO_RECEBER_BAIXA').AsString;
+  // dts do historico
+//  obterTPBHistorico(idOrganizacao,tituloPagarQuitado);
+  // baixa POR TEsouraria
+  obterTRBCaixa(idOrganizacao, tituloTRPB);
+  //obter por Cheque
+  obterTRBCheque(idOrganizacao, tituloTRPB);
+  // obter baixa por Banco
+  obterTRBBanco(idOrganizacao, tituloReceberQuitado);
+  // dts acrescimo
+  obterTRBAC(idOrganizacao, tituloTRPB);
+  // dts deducao
+  obterTRBDE(idOrganizacao, tituloTRPB);
+end;
+
+procedure TdmRelExportacaoMega.dsDetalhesTRDataChange(Sender: TObject;
+  Field: TField);
+ var
+  registroProvisao,idTitulo, idOrg: String;
+
+begin
+
+//detalhes do TITULO RECEBER PROV
+
+    registroProvisao := qryTRPROVBASE.FieldByName('REGISTRO_PROVISAO').AsString;
+    idOrg := qryTRPROVBASE.FieldByName('ID_ORGANIZACAO').AsString;
+   //Obtendo os dados da conta debito
+    obterTRProvDB(idOrg,registroProvisao);
+    //Obtendo os dados da conta credito
+    obterTRProvCR(idOrg,registroProvisao);
+
+end;
+
+procedure TdmRelExportacaoMega.dsTPPROVCRDataChange(Sender: TObject;
+  Field: TField);
+var
+  registroProvisao, idOrg: String;
+begin
+
+//detalhes do TITULO A PAGAR PROV
+   registroProvisao := qryTPPROVBASE.FieldByName('REGISTRO_PROVISAO').AsString;
+   idOrg := qryTPPROVBASE.FieldByName('ID_ORGANIZACAO').AsString;
+   //Obtendo os dados da conta credito
+    obterTPProvCR(idOrg,registroProvisao);
+    //Obtendo os dados da conta debito
+    obterTPProvDB(idOrg,registroProvisao);
+
+end;
+
+procedure TdmRelExportacaoMega.dsDetalhesTPDataChange(Sender: TObject;
+  Field: TField);
+  var
+  registroProvisao,idTitulo, idOrg: String;
+
+begin
+    registroProvisao := qryTPPROVBASE.FieldByName('REGISTRO_PROVISAO').AsString;
+    idOrg := qryTPPROVBASE.FieldByName('ID_ORGANIZACAO').AsString;
+   //Obtendo os dados da conta debito
+    obterTPProvDB(idOrg,registroProvisao);
+    //Obtendo os dados da conta CREDITO
+    obterTPProvCR(idOrg,registroProvisao);
+
+
+end;
+
+procedure TdmRelExportacaoMega.exibirRelatorioExportacao ( dtInicial, dtFinal: TDate);
+begin
+
+  frxRelatorioExportacaoMega.Clear;
+  if not(frxRelatorioExportacaoMega.LoadFromFile(retornarCaminhoRelatorio)) then
+  begin
+    // Mensagem não encontrou o arquivo do relatorio. Fazer try p levantar erros
+  end
+  else
+  begin
+    inicializarVariaveisRelatorio(dtInicial, dtFinal);
+    frxRelatorioExportacaoMega.OldStyleProgress := True;
+    frxRelatorioExportacaoMega.ShowProgress := True;
+    frxRelatorioExportacaoMega.ShowReport;
+  end;
+end;
+
+
+function TdmRelExportacaoMega.obterTPProvCR(pIdOrganizacao,pRegistroProvisao : string ): Boolean;
+begin
+  Result := false;
+
+
+  if not qryTPPROVCR.Connection.Connected then
+  begin
+    qryTPPROVCR.Connection := dmConexao.Conn;
+  end;
+
+  qryTPPROVCR.Close;
+  qryTPPROVCR.ParamByName('pIdOrganizacao').AsString := pIdOrganizacao;
+  qryTPPROVCR.ParamByName('pregistro').AsString := pRegistroProvisao;
+  qryTPPROVCR.Open;
+
+  Result := not qryTPPROVCR.IsEmpty;
+
+end;
+
+
+
+function TdmRelExportacaoMega.obterTPProvDB(pIdOrganizacao,pRegistroProvisao : string ): Boolean;
+begin
+  Result := false;
+
+
+  if not qryTPPROVDB.Connection.Connected then
+  begin
+    qryTPPROVDB.Connection := dmConexao.Conn;
+  end;
+
+  qryTPPROVDB.Close;
+  qryTPPROVDB.ParamByName('pIdOrganizacao').AsString := pIdOrganizacao;
+  qryTPPROVDB.ParamByName('pregistro').AsString := pRegistroProvisao;
+  qryTPPROVDB.Open;
+
+  Result := not qryTPPROVDB.IsEmpty;
+
+end;
+
+
+function TdmRelExportacaoMega.obterTPProBase(pIdOrganizacao : string; pDataInicial, pDataFinal: TDate ): Boolean;
+var
+aux :Integer;
+begin
+  Result := false;
+
+ // inicializarDM(Self);
+
+  if not qryTPPROVBASE.Connection.Connected then
+  begin
+    qryTPPROVBASE.Connection := dmConexao.Conn;
+  end;
+
+  qryTPPROVBASE.Close;
+
+  qryTPPROVBASE.ParamByName('pIdOrganizacao').AsString := pIdOrganizacao;
+  qryTPPROVBASE.ParamByName('pDataInicial').AsDate := pDataInicial;
+  qryTPPROVBASE.ParamByName('pDataFinal').AsDate := pDataFinal;
+  qryTPPROVBASE.Open;
+
+
+  Result := not qryTPPROVBASE.IsEmpty;
+
+end;
+
+
+
+
+
+function TdmRelExportacaoMega.obterTPQuitados(pIdOrganizacao, pIdStatus: string; pDataInicial, pDataFinal: TDate): Boolean;
+var auxSql :string;
+begin
+  Result := false;
+
+  //inicializarDM(Self);
+
+  if not qryTPQuitados.Connection.Connected then
+  begin
+    qryTPQuitados.Connection := dmConexao.Conn;
+  end;
+
+  qryTPQuitados.Close;
+
+  qryTPQuitados.ParamByName('pIdOrganizacao').AsString := pIdOrganizacao;
+   qryTPQuitados.ParamByName('pIdStatus').AsString := pIdStatus;
+
+
+  qryTPQuitados.ParamByName('pDataInicial').AsDate := pDataInicial;
+  qryTPQuitados.ParamByName('pDataFinal').AsDate := pDataFinal;
+//  auxSql := QuotedStr(qry1.SQL.Text); SÓ PARA TESTE
+  qryTPQuitados.Open;
+
+
+
+  Result := not qryTPQuitados.IsEmpty;
+
+end;
+
+function TdmRelExportacaoMega.obterTPBCaixa(pIdOrganizacao, pIdTPB: String): Boolean;
+begin
+  Result := false;
+  //obtem os TP pago pela tesouraria
+
+ // inicializarDM(Self);
+
+  if not qryBaixaTPCaixa.Connection.Connected then
+  begin
+    qryBaixaTPCaixa.Connection := dmConexao.Conn;
+  end;
+
+  qryBaixaTPCaixa.Close;
+
+  qryBaixaTPCaixa.ParamByName('PIDORGANIZACAO').AsString :=
+    pIdOrganizacao;
+  qryBaixaTPCaixa.ParamByName('PIDTITULOPAGARBAIXA').AsString :=
+    pIdTPB;
+  qryBaixaTPCaixa.Open;
+
+  Result := not qryBaixaTPCaixa.IsEmpty;
+
+end;
+
+function TdmRelExportacaoMega.obterTPBCheque(pIdOrganizacao, pIdTPB  : String): Boolean;
+begin
+
+  Result := false;
+
+ // inicializarDM(Self);
+
+  if not qryBaixaTPCheque.Connection.Connected then
+  begin
+    qryBaixaTPCheque.Connection := dmConexao.Conn;
+  end;
+
+  qryBaixaTPCheque.Close;
+
+  qryBaixaTPCheque.ParamByName('pIdOrganizacao').AsString := pIdOrganizacao;
+  qryBaixaTPCheque.ParamByName('PIDTITULOPAGARBAIXA').AsString :=pIdTPB;
+  qryBaixaTPCheque.Open;
+
+  Result := not qryBaixaTPCheque.IsEmpty;
+end;
+
+function TdmRelExportacaoMega.obterTPBBanco(pIdOrganizacao, pIdTPB  : String): Boolean;
+
+begin
+  Result := false;
+
+  inicializarDM(Self);
+
+  if not qryObterTPBBanco.Connection.Connected then
+  begin
+    qryObterTPBBanco.Connection := dmConexao.Conn;
+  end;
+
+  qryObterTPBBanco.Close;
+
+  qryObterTPBBanco.ParamByName('pIdOrganizacao').AsString :=   pIdOrganizacao;
+  qryObterTPBBanco.ParamByName('PIDTPB').AsString := pIdTPB;
+
+  qryObterTPBBanco.Open;
+
+  Result := not qryObterTPBBanco.IsEmpty;
+
+end;
+
+function TdmRelExportacaoMega.obterTPBAC(pIdOrganizacao, pIdTPB : String): Boolean;
+begin
+
+  Result := false;
+
+  //inicializarDM(Self);
+
+  if not qryTPBAcrescimos.Connection.Connected then
+  begin
+    qryTPBAcrescimos.Connection := dmConexao.Conn;
+  end;
+
+  qryTPBAcrescimos.Close;
+
+  qryTPBAcrescimos.ParamByName('pIdOrganizacao').AsString := pIdOrganizacao;
+  qryTPBAcrescimos.ParamByName('pIdTitutloPagarBaixa').AsString :=
+    pIdTPB;
+  qryTPBAcrescimos.Open;
+
+  Result := not qryTPBAcrescimos.IsEmpty;
+end;
+
+
+
+
+function TdmRelExportacaoMega.obterTPBDE(pIdOrganizacao, pIdTPB
+  : String): Boolean;
+begin
+
+  Result := false;
+
+ // inicializarDM(Self);
+
+  if not qryTPBDeducao.Connection.Connected then
+  begin
+    qryTPBDeducao.Connection := dmConexao.Conn;
+  end;
+
+  qryTPBDeducao.Close;
+
+  qryTPBDeducao.ParamByName('pIdOrganizacao').AsString := pIdOrganizacao;
+  qryTPBDeducao.ParamByName('pIdTitutloPagarBaixa').AsString :=
+    pIdTPB;
+  qryTPBDeducao.Open;
+
+  Result := not qryTPBDeducao.IsEmpty;
+end;
+
+
+function TdmRelExportacaoMega.obterTPBHistorico(pIdorganizacao, tituloPagarQuitado :string): Boolean;
+begin
+  Result := false;
+
+  if not qryTPBHistorico.Connection.Connected then
+  begin
+    qryTPBHistorico.Connection := dmConexao.Conn;
+  end;
+
+  qryTPBHistorico.Close;
+  qryTPBHistorico.ParamByName('PIDTP').AsString := tituloPagarQuitado;
+  qryTPBHistorico.ParamByName('pIdOrganizacao').AsString := pIdorganizacao;
+
+  qryTPBHistorico.Open();
+
+  Result := not qryTPBHistorico.IsEmpty;
+
+end;
+
+
+
+//TITULOS A RECEBER PROVISIONADOS
+
+function TdmRelExportacaoMega.obterTRProvCR(pIdOrganizacao,pRegistroProvisao : string ): Boolean;
+begin
+  Result := false;
+
+
+  if not qryTRPROVCR.Connection.Connected then
+  begin
+    qryTRPROVCR.Connection := dmConexao.Conn;
+  end;
+
+  qryTRPROVCR.Close;
+  qryTRPROVCR.ParamByName('pIdOrganizacao').AsString := pIdOrganizacao;
+  qryTRPROVCR.ParamByName('pregistro').AsString := pRegistroProvisao;
+  qryTRPROVCR.Open;
+
+  Result := not qryTRPROVCR.IsEmpty;
+
+end;
+
+
+
+function TdmRelExportacaoMega.obterTRProvDB(pIdOrganizacao,pRegistroProvisao : string ): Boolean;
+begin
+  Result := false;
+
+
+  if not qryTRPROVDB.Connection.Connected then
+  begin
+    qryTRPROVDB.Connection := dmConexao.Conn;
+  end;
+
+  qryTRPROVDB.Close;
+  qryTRPROVDB.ParamByName('pIdOrganizacao').AsString := pIdOrganizacao;
+  qryTRPROVDB.ParamByName('pregistro').AsString := pRegistroProvisao;
+  qryTRPROVDB.Open;
+
+  Result := not qryTRPROVDB.IsEmpty;
+
+end;
+
+
+function TdmRelExportacaoMega.obterTRProBase(pIdOrganizacao : string; pDataInicial, pDataFinal: TDate ): Boolean;
+var
+aux :Integer;
+begin
+  Result := false;
+
+ // inicializarDM(Self);
+
+  if not qryTRPROVBASE.Connection.Connected then
+  begin
+    qryTRPROVBASE.Connection := dmConexao.Conn;
+  end;
+
+  qryTRPROVBASE.Close;
+
+  qryTRPROVBASE.ParamByName('pIdOrganizacao').AsString := pIdOrganizacao;
+  qryTRPROVBASE.ParamByName('pDataInicial').AsDate := pDataInicial;
+  qryTRPROVBASE.ParamByName('pDataFinal').AsDate := pDataFinal;
+  qryTRPROVBASE.Open;
+
+
+  Result := not qryTRPROVBASE.IsEmpty;
+
+end;
+
+
+//TITULOS A RECEBER QUITADOS
+
+function TdmRelExportacaoMega.obterTRQuitados(pIdOrganizacao, pIdStatus: String; pDataInicial, pDataFinal: TDateTime): Boolean;
+begin
+ // inicializarDM(Self);
+  Result := false;
+
+  qryTRQuitados.Close;
+  if not qryTRQuitados.Connection.Connected then
+  begin
+    qryTRQuitados.Connection := dmConexao.Conn;
+  end;
+  qryTRQuitados.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+  qryTRQuitados.ParamByName('pIdStatus').AsString := pIdStatus;
+  qryTRQuitados.ParamByName('pDataInicial').AsDate := pDataInicial;
+  qryTRQuitados.ParamByName('pDataFinal').AsDate := pDataFinal;
+  qryTRQuitados.Open;
+
+  Result := not qryTRQuitados.IsEmpty;
+end;
+
+
+function TdmRelExportacaoMega.obterTRPBaixaPorTitulo(pIdOrganizacao, pIdtituloReceber : String): Boolean;
+begin
+  Result := false;
+
+//  inicializarDM(Self);
+
+  if not qryObterTRBaixaPorTitulo.Connection.Connected then
+  begin
+    qryObterTRBaixaPorTitulo.Connection := dmConexao.Conn;
+  end;
+
+  qryObterTRBaixaPorTitulo.Close;
+  qryObterTRBaixaPorTitulo.ParamByName('PIDORGANIZACAO').AsString :=
+    pIdOrganizacao;
+  qryObterTRBaixaPorTitulo.ParamByName('pIdtituloReceber').AsString :=
+    pIdtituloReceber;
+  qryObterTRBaixaPorTitulo.Open;
+
+  Result := not qryObterTRBaixaPorTitulo.IsEmpty;
+
+end;
+
+
+function TdmRelExportacaoMega.obterTRBAC(pIdOrganizacao, pIdTRB : String): Boolean;
+begin
+
+  Result := false;
+
+  //inicializarDM(Self);
+
+  if not qryTRBAcrescimos.Connection.Connected then
+  begin
+    qryTRBAcrescimos.Connection := dmConexao.Conn;
+  end;
+
+  qryTRBAcrescimos.Close;
+
+  qryTRBAcrescimos.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+  qryTRBAcrescimos.ParamByName('PIDTITULORECEBERBAIXA').AsString :=pIdTRB;
+  qryTRBAcrescimos.Open;
+
+  Result := not qryTRBAcrescimos.IsEmpty;
+end;
+
+
+
+function TdmRelExportacaoMega.obterTRBDE(pIdOrganizacao, pIdTRB: String): Boolean;
+begin
+
+  Result := false;
+
+  //inicializarDM(Self);
+
+  if not qryTRBDeducao.Connection.Connected then
+  begin
+    qryTRBDeducao.Connection := dmConexao.Conn;
+  end;
+
+  qryTRBDeducao.Close;
+
+  qryTRBDeducao.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+  qryTRBDeducao.ParamByName('PIDTITULORECEBERBAIXA').AsString :=pIdTRB;
+  qryTRBDeducao.Open;
+
+  Result := not qryTRBDeducao.IsEmpty;
+end;
+
+
+function TdmRelExportacaoMega.obterTRBCaixa(pIdOrganizacao,pIdTRB: String): Boolean;
+begin
+  Result := false;
+
+  inicializarDM(Self);
+
+  if not qryBaixaTRCaixa.Connection.Connected then
+  begin
+    qryBaixaTRCaixa.Connection := dmConexao.Conn;
+  end;
+
+  qryBaixaTRCaixa.Close;
+
+  qryBaixaTRCaixa.ParamByName('PIDORGANIZACAO').AsString :=pIdOrganizacao;
+  qryBaixaTRCaixa.ParamByName('PIDTITULORECEBERBAIXA').AsString :=pIdTRB;
+  qryBaixaTRCaixa.Open;
+
+  Result := not qryBaixaTRCaixa.IsEmpty;
+
+end;
+
+
+function TdmRelExportacaoMega.obterTRBCheque(pIdOrganizacao, pIdTRB : String): Boolean;
+begin
+
+  Result := false;
+  //inicializarDM(Self);
+  if not qryBaixaTRCheque.Connection.Connected then
+  begin
+    qryBaixaTRCheque.Connection := dmConexao.Conn;
+  end;
+
+  qryBaixaTRCheque.Close;
+  qryBaixaTRCheque.ParamByName('pIdOrganizacao').AsString := pIdOrganizacao;
+  qryBaixaTRCheque.ParamByName('PIDTITULORECEBERBAIXA').AsString :=pIdTRB;
+  qryBaixaTRCheque.Open;
+
+  Result := not qryBaixaTRCheque.IsEmpty;
+end;
+
+
+function TdmRelExportacaoMega.obterTRBBanco(pIdOrganizacao, pIdTituloReceber: String): Boolean;
+
+begin
+  Result := false;
+
+  //inicializarDM(Self);
+
+  if not qryBaixaTRBanco.Connection.Connected then
+  begin
+    qryBaixaTRBanco.Connection := dmConexao.Conn;
+  end;
+
+  qryBaixaTRBanco.Close;
+
+  qryBaixaTRBanco.ParamByName('pIdOrganizacao').AsString :=  pIdOrganizacao;
+  qryBaixaTRBanco.ParamByName('PIDTITULORECEBER').AsString := pIdTituloReceber;
+  qryBaixaTRBanco.Open;
+
+  Result := not qryBaixaTRBanco.IsEmpty;
+
+end;
+
+function TdmRelExportacaoMega.obterTRFCaixaBanco(pIdOrganizacao: String; dataInicial, dataFinal: TDate): Boolean;
+
+begin
+  Result := false;
+
+ // inicializarDM(Self);
+
+  if not qryTRFCAIXABANCO.Connection.Connected then
+  begin
+    qryTRFCAIXABANCO.Connection := dmConexao.Conn;
+  end;
+
+  qryTRFCAIXABANCO.Close;
+
+  qryTRFCAIXABANCO.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+  qryTRFCAIXABANCO.ParamByName('DTDATAINICIAL').AsDate    := dataInicial;
+  qryTRFCAIXABANCO.ParamByName('DTDATAFINAL').AsDate      := dataFinal;
+  qryTRFCAIXABANCO.Open;
+
+
+  Result := not qryTRFCAIXABANCO.IsEmpty;
+
+end;
+
+//parte das transferencias entre contas
+
+function TdmRelExportacaoMega.obterCBT(pIdOrganizacao: String;  dtDataInicial, dtDataFinal: TDate): Boolean;
+begin
+
+  Result := false;
+
+//  inicializarDM(Self);
+
+  if not qryCBTBASE.Connection.Connected then
+  begin
+    qryCBTBASE.Connection := dmConexao.Conn;
+  end;
+
+  qryCBTBASE.Close;
+
+  qryCBTBASE.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+  qryCBTBASE.ParamByName('DTDATAINICIAL').AsDateTime := dtDataInicial;
+  qryCBTBASE.ParamByName('DTDATAFINAL').AsDateTime := dtDataFinal;
+  qryCBTBASE.Open;
+
+  Result := not qryCBTBASE.IsEmpty;
+
+end;
+
+
+function TdmRelExportacaoMega.obterCBTCR(pIdOrganizacao, PIDCONTABANCARIACREDITO  : String): Boolean;
+
+begin
+  Result := false;
+  //inicializarDM(Self);
+  if not qryCBTCR.Connection.Connected then
+  begin
+    qryCBTCR.Connection := dmConexao.Conn;
+  end;
+
+  qryCBTCR.Close;
+
+  qryCBTCR.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+  qryCBTCR.ParamByName('PIDCONTABANCARIACREDITO').AsString := PIDCONTABANCARIACREDITO;
+  qryCBTCR.Open;
+
+  Result := not qryCBTCR.IsEmpty;
+
+end;
+
+
+function TdmRelExportacaoMega.obterCBTDB(pIdOrganizacao, PIDCONTABANCARIADEBITO : String): Boolean;
+
+begin
+  Result := false;
+
+ // inicializarDM(Self);
+
+  if not qryCBTDB.Connection.Connected then
+  begin
+    qryCBTDB.Connection := dmConexao.Conn;
+  end;
+
+  qryCBTDB.Close;
+
+  qryCBTDB.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+  qryCBTDB.ParamByName('PIDCONTABANCARIADEBITO').AsString := PIDCONTABANCARIADEBITO;
+  qryCBTDB.Open;
+
+  Result := not qryCBTDB.IsEmpty;
+
+end;
+
+//Transferencia do banco para a tesouraria
+function TdmRelExportacaoMega.obterTRFBancoCaixa(pIdOrganizacao: String;  dtDataInicial, dtDataFinal: TDate): Boolean;
+     var
+     aux :string;
+begin
+  Result := false;
+
+  if not qryBancoCaixa.Connection.Connected then
+  begin
+    qryBancoCaixa.Connection := dmConexao.Conn;
+  end;
+
+  qryBancoCaixa.Close;
+
+  qryBancoCaixa.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+  qryBancoCaixa.ParamByName('DTDATAINICIAL').AsDate    := dtDataInicial;
+  qryBancoCaixa.ParamByName('DTDATAFINAL').AsDate      := dtDataFinal;
+  qryBancoCaixa.Open;
+
+  Result := not qryBancoCaixa.IsEmpty;
+
+end;
+
+
+
+
+
+end.

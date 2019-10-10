@@ -1,0 +1,10 @@
+object dmTRBCheque: TdmTRBCheque
+  OldCreateOrder = False
+  Height = 489
+  Width = 615
+  object qryObterPorTRB: TFDQuery
+    Connection = dmConexao.Conn
+    Left = 280
+    Top = 224
+  end
+end

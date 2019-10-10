@@ -1,0 +1,353 @@
+unit uDMExportaFinanceDTS;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, Data.DB, FireDAC.Stan.Intf,
+  FireDAC.Stan.Option, FireDAC.Stan.Param, uDMTituloPagarBaixaCheque,
+  FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, uUTil,
+  FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client,
+  uDMRelatorioExportacaoMega, uDMTituloReceberHistoricoConsulta,
+  uDMTesourariaCreditoConsulta, uDMTitulorReceberBaixaCheque,
+  uDMExportaFinanceTP, uDMTituloPagarCentroCustoConsulta,
+  uDMContaBancariaCreditoConsulta, uDMContaBancariaTransferencia,
+  uDMTituloPagarHistoricoConsulta, udmConexao, uDMExportaFinanceTR,
+  uDMExportaFinanceTRB,  uDMTesourariaDebitoConsulta, uDMContaBancariaDebitoConsulta,
+  uDMTituloReceberCentroCustoConsulta, uDMExportaFinanceTPB,
+  UDMTituloPagarBaixaAcrescimo, uDMTituloPagarBaixaDeducao,
+  UDMTituloReceberBaixaAcrescimo, UDMTituloReceberBaixaDeducao;
+
+type
+  TdmTPDTS = class(TDataModule)
+    dtsTituloReceber: TDataSource;
+    dtsTituloPagar: TDataSource;
+    dtsCentroCusto: TDataSource;
+    dtsHistoricoTR: TDataSource;
+    dtsCentroCustoTR: TDataSource;
+    dtsHistorico: TDataSource;
+    dtsTituloPagarBaixa: TDataSource;
+    dtsTitulosQuitados: TDataSource;
+    dtsTesourariaPorTPB: TDataSource;
+    dtsBancoPorTPB: TDataSource;
+    dtsHistoricoTPB: TDataSource;
+    dtsTPBAcrescimo: TDataSource;
+    dtsTPBDeducao: TDataSource;
+    dtsTRQuitados: TDataSource;
+    dtsTituloReceberBaixa: TDataSource;
+    dtsBancoPorTRB: TDataSource;
+    dtsTesourariaPorTRB: TDataSource;
+    dtsChequePorTPB: TDataSource;
+    dtsChequePorTRB: TDataSource;
+    dtsTRBFormaPagto: TDataSource;
+    dtsTRBAcrescimo: TDataSource;
+    dtsTRBDeducao: TDataSource;
+    dtsCBTCredito: TDataSource;
+    dtsCBTDebito: TDataSource;
+    dtsCBT: TDataSource;
+    dtsTransfBancoTesourariaDebito: TDataSource;
+    dtsCreditoTesourariaPorTransferencia: TDataSource;
+    dtsTransfTesourariaBancoCredito: TDataSource;
+    dtsDebitoTesourariaPorTransferencia: TDataSource;
+    procedure dtsTituloPagarDataChange(Sender: TObject; Field: TField);
+    procedure dtsTituloReceberDataChange(Sender: TObject; Field: TField);
+    procedure dtsTitulosQuitadosDataChange(Sender: TObject; Field: TField);
+    procedure dtsTRQuitadosDataChange(Sender: TObject; Field: TField);
+    procedure dtsCBTDataChange(Sender: TObject; Field: TField);
+    procedure dtsTransfBancoTesourariaDebitoDataChange(Sender: TObject;
+      Field: TField);
+    procedure dtsTransfTesourariaBancoCreditoDataChange(Sender: TObject;
+      Field: TField);
+
+  private
+    { Private declarations }
+    idOrganizacao: String;
+    procedure inicializarDM(Sender: TObject);
+
+  public
+    { Public declarations }
+  end;
+
+var
+  dmTPDTS: TdmTPDTS;
+
+implementation
+
+{ %CLASSGROUP 'Vcl.Controls.TControl' }
+
+{$R *.dfm}
+
+procedure TdmTPDTS.dtsCBTDataChange(Sender: TObject; Field: TField);
+var
+  idCBT, idCBC, idCBD: String;
+begin
+  idCBT := dmCBT.qryObterPorPeriodo.FieldByName
+    ('ID_CONTA_BANCARIA_TRANSFERENCIA').AsString;
+  idCBC := dmCBT.qryObterPorPeriodo.FieldByName
+    ('ID_CONTA_BANCARIA_CREDITO').AsString;
+  idCBD := dmCBT.qryObterPorPeriodo.FieldByName
+    ('ID_CONTA_BANCARIA_DEBITO').AsString;
+
+  // carrega o lancamento credito
+  dmCBCConsulta.obterPorId(idOrganizacao, idCBC);
+  if dmTPDTS.dtsCBTCredito.DataSet.IsEmpty then
+  begin
+    idCBT := ''
+  end;
+
+  // carrega o lancemnto debito
+  dmCBDConsulta.obterPorId(idOrganizacao, idCBD);
+
+  if dmTPDTS.dtsCBTDebito.DataSet.IsEmpty then
+  begin
+    idCBT := ''
+  end;
+
+end;
+
+procedure TdmTPDTS.dtsTituloPagarDataChange(Sender: TObject; Field: TField);
+var
+  tituloPagar: String;
+begin
+  inicializarDM(Self);
+  tituloPagar := dmExportFinanceTP.qryTitulosProvisionados.FieldByName
+    ('ID_TITULO_PAGAR').AsString;
+  // carrega o rateio contabil por titulo
+  dmTPHistoricoConsulta.obterListaTituloPagarHistoricoPorTitulo(idOrganizacao,
+    tituloPagar);
+  // carrega o rateio de custos por titulo
+  dmTPCentroCustoConsulta.obterRateioCentroCustoPorTitulo(idOrganizacao,
+    tituloPagar);
+
+end;
+
+procedure TdmTPDTS.dtsTituloReceberDataChange(Sender: TObject; Field: TField);
+var
+  tituloReceber: String;
+begin
+
+  tituloReceber := dmExportFinanceTR.qryTRProvisionados.FieldByName
+    ('ID_TITULO_RECEBER').AsString;
+  // carrega os historicos
+  dmTRHistoricoConsulta.obterRateioHIstoricoPorTitulo(idOrganizacao,
+    tituloReceber);
+
+  // carrega os centro de custos
+  dmTRCentroCustoConsulta.obterRateioCentroCustoPorTitulo(idOrganizacao,
+    tituloReceber);
+
+end;
+
+procedure TdmTPDTS.dtsTitulosQuitadosDataChange(Sender: TObject; Field: TField);
+var
+  tituloTPB, tituloPagarQuitado: String;
+begin
+  tituloPagarQuitado := dmExportFinanceTP.qryTitulosQuitados.FieldByName
+    ('ID_TITULO_PAGAR').AsString;
+
+  // preencher DTS  da baixa
+  dmExportFinanceTPB.obterBaixaPorTitulo(idOrganizacao, tituloPagarQuitado);
+  tituloTPB := dmExportFinanceTPB.qryObterBaixaPorTitulo.FieldByName
+    ('ID_TITULO_PAGAR_BAIXA').AsString;
+
+  // preecnher TDS da baixa POR TEsouraria
+  dmTDConsulta.obterPorTituloPagarBaixa(idOrganizacao, tituloTPB);
+
+  // preecnher TDS da baixa POR Cheque
+  dmTPBCheque.obterPorTPB(idOrganizacao, tituloTPB);
+
+  // preecnher TDS da baixa por Banco
+  dmCBDConsulta.obterPorTituloPagar(idOrganizacao, tituloPagarQuitado);
+
+  // dts do historico para a conta credito
+  dmTPHistoricoConsulta.obterListaTituloPagarHistoricoPorTitulo(idOrganizacao,
+    tituloPagarQuitado);
+
+  // dts acrescimo
+  dmTPBAcrescimo.obterPorTPB(idOrganizacao, tituloTPB);
+  // dts deducao
+  dmTPBDeducao.obterPorTPB(idOrganizacao, tituloTPB);
+
+end;
+
+procedure TdmTPDTS.dtsTransfBancoTesourariaDebitoDataChange(Sender: TObject;
+  Field: TField);
+var
+  idCBD: String;
+begin
+
+  idCBD := dmCBDConsulta.qryObterTransfBancoTesourariaPeriodo.FieldByName
+    ('ID_CONTA_BANCARIA_DEBITO').AsString;
+  // preecnher DTS da TEsouraria credito POR Transferencia
+  dmTCConsulta.obterPorContaBancariaDebito(idOrganizacao, idCBD);
+end;
+
+procedure TdmTPDTS.dtsTransfTesourariaBancoCreditoDataChange(Sender: TObject;
+  Field: TField);
+  var idCBC: String;
+begin
+
+   idCBC := dmCBCConsulta.qryObterTransfTesourariaBancoPeriodo.FieldByName
+    ('ID_CONTA_BANCARIA_CREDITO').AsString;
+
+     // preecnher DTS da TEsouraria debito POR Transferencia
+  dmTDConsulta.obterPorContaBancariaCredito(idOrganizacao, idCBC);
+
+end;
+
+procedure TdmTPDTS.dtsTRQuitadosDataChange(Sender: TObject; Field: TField);
+var
+  tituloReceberQuitado, tituloTRB: String;
+begin
+  tituloReceberQuitado := dmExportFinanceTR.qryTitulosQuitados.FieldByName
+    ('ID_TITULO_RECEBER').AsString;
+
+  // preencher DTS  da baixa
+  dmExportFinanceTRB.obterBaixaPorTitulo(idOrganizacao, tituloReceberQuitado);
+  tituloTRB := dmExportFinanceTRB.qryObterBaixaPorTitulo.FieldByName
+    ('ID_TITULO_RECEBER_BAIXA').AsString;
+
+  // preecnher DTS da baixa POR TEsouraria
+  dmTCConsulta.obterPorTRB(idOrganizacao, tituloTRB);
+
+  // preemncher DTS da baixa com TPR por Cheque
+  dmTRBCheque.obterPorTRB(idOrganizacao, tituloTRB); // testando
+
+  // preecnher TDS da baixa por Banco
+  dmCBCConsulta.obterPorTRB(idOrganizacao, tituloReceberQuitado);
+  // nao é por aqui que pega
+
+  // dts acrescimo
+  dmTRBAcrescimo.obterPorTRB(idOrganizacao, tituloTRB);
+
+  // dts deducao
+  dmTRBDeducao.obterPorTRB(idOrganizacao, tituloTRB);
+
+end;
+
+procedure TdmTPDTS.inicializarDM(Sender: TObject);
+begin
+
+  idOrganizacao := TOrgAtual.getId;
+
+  if not(Assigned(dmConexao)) then
+  begin
+    dmConexao := TdmConexao.Create(Self);
+  end
+  else
+  begin
+    dmConexao.conectarBanco;
+    dmConexao.conectarMega;
+  end;
+
+  // Titulo pagar provisionado
+  if not(Assigned(dmExportFinanceTP)) then
+  begin
+    dmExportFinanceTP := TdmExportFinanceTP.Create(Self);
+  end;
+
+  if not(Assigned(dmTPHistoricoConsulta)) then
+  begin
+    dmTPHistoricoConsulta := TdmTPHistoricoConsulta.Create(Self);
+  end;
+
+  if not(Assigned(dmTPCentroCustoConsulta)) then
+  begin
+    dmTPCentroCustoConsulta := TdmTPCentroCustoConsulta.Create(Self);
+  end;
+
+  // Titulo Receber provisionado
+
+  if not(Assigned(dmExportFinanceTR)) then
+  begin
+    dmExportFinanceTR := TdmExportFinanceTR.Create(Self);
+  end;
+
+  if not(Assigned(dmTRCentroCustoConsulta)) then
+  begin
+    dmTRCentroCustoConsulta := TdmTRCentroCustoConsulta.Create(Self);
+  end;
+
+  if not(Assigned(dmTRHistoricoConsulta)) then
+  begin
+    dmTRHistoricoConsulta := TdmTRHistoricoConsulta.Create(Self);
+  end;
+
+  if not(Assigned(dmExportFinanceTPB)) then
+  begin
+    dmExportFinanceTPB := TdmExportFinanceTPB.Create(Self);
+  end;
+
+  // tesouraria debito consulta
+  if not(Assigned(dmTDConsulta)) then
+  begin
+    dmTDConsulta := TdmTDConsulta.Create(Self);
+  end;
+  // conta bancaria debito
+  if not(Assigned(dmCBDConsulta)) then
+  begin
+    dmCBDConsulta := TdmCBDConsulta.Create(Self);
+  end;
+
+  // TPB por cheque
+  if not(Assigned(dmTPBCheque)) then
+  begin
+    dmTPBCheque := TdmTPBCheque.Create(Self);
+  end;
+
+  // tpb acrescimo
+  if not(Assigned(dmTPBAcrescimo)) then
+  begin
+    dmTPBAcrescimo := TdmTPBAcrescimo.Create(Self);
+  end;
+  // tpb deducaoo
+  if not(Assigned(dmTPBDeducao)) then
+  begin
+    dmTPBDeducao := TdmTPBDeducao.Create(Self);
+  end;
+
+  // trb
+  if not(Assigned(dmExportFinanceTRB)) then
+  begin
+    dmExportFinanceTRB := TdmExportFinanceTRB.Create(Self);
+  end;
+
+  // trb baixa tesouraria credito
+  if not(Assigned(dmTCConsulta)) then
+  begin
+    dmTCConsulta := TdmTCConsulta.Create(Self);
+  end;
+
+
+  // TRB baixa por cheque
+  if not(Assigned(dmTRBCheque)) then
+  begin
+    dmTRBCheque := TdmTRBCheque.Create(Self);
+  end;
+
+  // trb baixa ContaBancaria credito
+  if not(Assigned(dmCBCConsulta)) then
+  begin
+    dmCBCConsulta := TdmCBCConsulta.Create(Self);
+  end;
+
+  // conta bancaria transferencia
+  if not(Assigned(dmCBT)) then
+  begin
+    dmCBT := TdmCBT.Create(Self);
+  end;
+
+  // trb baixa Deducao
+  if not(Assigned(dmTRBDeducao)) then
+  begin
+    dmTRBDeducao := TdmTRBDeducao.Create(Self);
+  end;
+
+  // trb baixa Acrescimo
+  if not(Assigned(dmTRBAcrescimo)) then
+  begin
+    dmTRBAcrescimo := TdmTRBAcrescimo.Create(Self);
+  end;
+
+end;
+
+end.
