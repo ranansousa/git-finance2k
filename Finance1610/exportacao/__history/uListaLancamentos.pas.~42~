@@ -1,0 +1,99 @@
+unit uListaLancamentos;
+
+interface
+
+uses
+  Windows, Dialogs, Messages, Classes, SysUtils, uLancamentoCreditoModel, uLancamentoDebitoModel, uListaLancamentosCredito, uListaLancamentosDebito;
+
+type
+  TListaLancamentos = class(TObject)
+  private
+
+  public
+    listaDebito: TList;
+    listaCredito: TList;
+    { public declarations }
+      constructor Create;
+      procedure AdicionarCredito(pLista: TListaLancamentoCredito);
+      procedure AdicionarDebito(pLista: TListaLancamentoDebito);
+      procedure listaDebitoRemover(Index: Integer);
+      function listaDebitoCount: Integer;
+      function listaDebitoSum: Currency;
+      procedure listaCreditoRemover(Index: Integer);
+      function listaCreditoCount: Integer;
+      function listaCreditoSum: Currency;
+
+  end;
+
+implementation
+{ TListaLancamentos }
+
+procedure TListaLancamentos.AdicionarCredito(pLista: TListaLancamentoCredito);
+begin
+  listaCredito.Add(pLista);
+end;
+
+procedure TListaLancamentos.AdicionarDebito(pLista: TListaLancamentoDebito);
+begin
+  listaDebito.Add(pLista);
+end;
+
+constructor TListaLancamentos.Create;
+begin
+  inherited Create;
+  listaDebito := TList.Create;
+  listaCredito := TList.Create;
+
+end;
+
+function TListaLancamentos.listaCreditoCount: Integer;
+begin
+  Result := listaCredito.Count;
+end;
+
+procedure TListaLancamentos.listaCreditoRemover(Index: Integer);
+begin
+
+  if Index < listaCreditoCount then
+    listaCredito.Delete(Index)
+  else
+    ShowMessage('Lancaçmento não encontrado!');
+
+end;
+
+function TListaLancamentos.listaCreditoSum: Currency;
+var soma : Currency;
+begin
+//  auiu
+    soma :=0;
+with listaCredito do begin
+ soma := soma +  ( listaCredito )
+
+end;
+
+
+
+end;
+
+function TListaLancamentos.listaDebitoCount: Integer;
+begin
+  Result := listaDebito.Count;
+end;
+
+procedure TListaLancamentos.listaDebitoRemover(Index: Integer);
+begin
+  if Index < listaDebitoCount then
+    listaDebito.Delete(Index)
+  else
+    ShowMessage('Lancaçmento não encontrado!');
+
+end;
+
+function TListaLancamentos.listaDebitoSum: Currency;
+begin
+
+end;
+
+end.
+
+

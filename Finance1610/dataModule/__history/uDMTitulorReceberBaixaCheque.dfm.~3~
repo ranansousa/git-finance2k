@@ -1,0 +1,5 @@
+object dmTRBCheque: TdmTRBCheque
+  OldCreateOrder = False
+  Height = 489
+  Width = 615
+end
