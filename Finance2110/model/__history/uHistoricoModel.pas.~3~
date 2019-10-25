@@ -1,0 +1,20 @@
+unit uHistoricoModel;
+
+interface
+
+uses
+  Windows, Messages, Classes, SysUtils, uContaContabilModel;
+
+type
+  THistoricoModel = class(TObject)
+  private
+    property FIdHistorico: string;
+    property FDescricao: string;
+    property FContaContabil: TContaContabilModel;
+  end;
+
+implementation
+
+end.
+
+

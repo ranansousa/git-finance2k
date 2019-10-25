@@ -1,0 +1,57 @@
+unit uFrmAlteraTituloReceber;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  udmConexao,  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.Grids, Vcl.DBGrids;
+
+type
+  TfrmAlteraNumDocTR = class(TForm)
+    dbgrdTP: TDBGrid;
+    procedure FormCreate(Sender: TObject);
+  private
+    { Private declarations }
+     procedure inicializarDM(Sender: TObject);
+  public
+    { Public declarations }
+  end;
+
+var
+  frmAlteraNumDocTR: TfrmAlteraNumDocTR;
+
+implementation
+
+{$R *.dfm}
+
+procedure TfrmAlteraNumDocTR.FormCreate(Sender: TObject);
+begin
+  inicializarDM(Self);
+end;
+
+
+procedure TfrmATfrmAlteraNumDocTRlteraNumDocTP.inicializarDM(Sender: TObject);
+begin
+  if not(Assigned(dmContasPagarManter)) then
+  begin
+    dmContasPagarManter := TdmContasPagarManter.Create(Self);
+  end ;
+
+   if not(Assigned(dmContasPagar)) then
+  begin
+    dmContasPagar := TdmContasPagar.Create(Self);
+  end ;
+
+   if not(Assigned(dmContasPagar)) then
+  begin
+    dmContasPagar := TdmContasPagar.Create(Self);
+  end  ;
+
+  if not(Assigned(dmContasPagarDTS)) then
+  begin
+    dmContasPagarDTS := TdmContasPagarDTS.Create(Self);
+  end  ;
+
+end;
+
+end.

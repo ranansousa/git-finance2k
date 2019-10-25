@@ -1,0 +1,34 @@
+unit uFrameBDTables;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, udmConexao, udmManutencao,
+  Data.DB, Vcl.Grids, Vcl.DBGrids, Vcl.StdCtrls;
+
+type
+  TfrmBDTables = class(TFrame)
+    cbb1: TComboBox;
+    dbgrd1: TDBGrid;
+    ds1: TDataSource;
+  private
+    { Private declarations }
+  public
+  procedure obterTabelas();
+
+    { Public declarations }
+  end;
+
+implementation
+
+{$R *.dfm}
+
+{ TfrmBDTables }
+
+procedure TfrmBDTables.obterTabelas;
+begin
+dmManutencao.listaTables;
+end;
+
+end.

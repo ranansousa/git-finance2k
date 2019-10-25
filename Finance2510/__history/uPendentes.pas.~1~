@@ -1,0 +1,90 @@
+unit uPendentes;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Data.DB, Vcl.Grids, Vcl.DBGrids, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
+  FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async,
+  FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client,udmConexao,
+  Vcl.Buttons;
+
+type
+  TFPendentes = class(TForm)
+    DBGrid1: TDBGrid;
+    DS1: TDataSource;
+    BitBtn1: TBitBtn;
+    QryPreenche: TFDQuery;
+    BitBtn2: TBitBtn;
+    procedure FoTOrmShow(Sender: TObject);
+    procedure BitBtn2Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  FPendentes: TFPendentes;
+
+implementation
+uses
+uBackup;
+
+{$R *.dfm}
+
+procedure TFPendentes.BitBtn2Click(Sender: TObject);
+var
+QryPreenche : TFDQuery;
+  comando: String;
+begin
+
+comando := 'select t.cnpj,t.valor,t.valor_pago, t.data_vcto, t.data_pagto, t.data_protocolo, t.produto, t.conta, t.sacado, t.historico,'+
+' t.centro_custo, t.conta_bancaria  from titulo_receber_pendente t  where 1=1 order by t.valor_pago ' ;
+    QryPreenche := TFDQuery.Create(Self);
+    QryPreenche.Connection :=  udmConexao.dmConexao.Conn;
+    QryPreenche.Connection.Connected;
+    QryPreenche.Close;
+    QryPreenche.SQL.Add(comando);
+    QryPreenche.Open();
+
+    DS1.DataSet := QryPreenche;
+    DBGrid1.DataSource :=DS1;
+
+
+end;
+
+procedure TFPendentes.FoTOrmShow(Sender: TObject);
+var
+QryPreenche : TFDQuery;
+  comando: String;
+
+begin
+Top := 0;
+Left := 0;
+Width := Screen.Width;
+Height := Screen.Height;
+
+
+
+
+    comando := 'SELECT * FROM TITULO_RECEBER_PENDENTE WHERE 1=1' ;
+    QryPreenche := TFDQuery.Create(Self);
+    QryPreenche.Connection := udmConexao.dmConexao.Conn;
+    QryPreenche.Connection.Connected;
+    QryPreenche.Close;
+    QryPreenche.SQL.Add(comando);
+    QryPreenche.Open();
+
+    DS1.DataSet := QryPreenche;
+    DBGrid1.DataSource :=DS1;
+
+
+
+
+
+
+
+end;
+
+end.
