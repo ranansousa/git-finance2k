@@ -1,0 +1,280 @@
+unit uDMExportaFinanceTP;
+
+interface
+
+uses
+  uDMTituloPagarHistoricoConsulta,
+  uLancamentoCreditoModel, uLancamentoDebitoModel,
+  uListaLancamentosCredito, uListaLancamentosDebito, uListaLancamentos,
+  uUtil, System.SysUtils, System.Classes, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, udmConexao;
+
+type
+  TdmExportFinanceTP = class(TDataModule)
+    qryTitulosProvisionados: TFDQuery;
+    qryTitulosQuitados: TFDQuery;
+    qryTPPROVBASE: TFDQuery;
+    qryProvCR: TFDQuery;
+    dsObterCreditos: TDataSource;
+    procedure DataModuleCreate(Sender: TObject);
+    procedure dsObterCreditosDataChange(Sender: TObject; Field: TField);
+
+  private
+    { Private declarations }
+    FsListaDebito: TListaLancamentoDebito;
+    FsListaCredito: TListaLancamentoCredito;
+    FsListaLancamentos: TListaLancamentos;
+    procedure inicializarDM(Sender: TObject);
+  public
+    { Public declarations }
+    function obterTPProvisionados(pIdOrganizacao, pIdStatus: string; pDataInicial, pDataFinal: TDateTime; pProvisao: Integer): Boolean;
+    function obterTPProBase(pIdOrganizacao : string; pDataInicial, pDataFinal: TDateTime ): Boolean;
+    function obterTPProvCR(pIdOrganizacao,pRegistroProvisao : string ): Boolean;
+   // function obterTPProvDB(pIdTituloPagar : string ): Boolean;
+
+    function obterTPQuitados(pIdOrganizacao, pIdStatus: string; pDataInicial, pDataFinal: TDateTime): Boolean;
+    function obterIdTituloProvisionado: string;
+    function obterIdTituloQuitado: string;
+    function obterListaProvisionados(pAno: string; pCodEmpresa, pLote: Integer): TListaLancamentos;
+  //  function obterListaQuitados(pAno: string; pCodEmpresa, pLote: Integer): TListaLancamento;
+  end;
+
+var
+  dmExportFinanceTP: TdmExportFinanceTP;
+
+implementation
+
+{ %CLASSGROUP 'Vcl.Controls.TControl' }
+
+
+{$R *.dfm}
+
+function TdmExportFinanceTP.obterTPQuitados(pIdOrganizacao, pIdStatus: string; pDataInicial, pDataFinal: TDateTime): Boolean;
+begin
+  Result := false;
+
+  inicializarDM(Self);
+
+  if not qryTitulosQuitados.Connection.Connected then
+  begin
+    qryTitulosQuitados.Connection := dmConexao.Conn;
+  end;
+
+  qryTitulosQuitados.Close;
+
+  qryTitulosQuitados.ParamByName('pIdOrganizacao').AsString := pIdOrganizacao;
+  qryTitulosQuitados.ParamByName('pIdStatus').AsString := pIdStatus;
+  qryTitulosQuitados.ParamByName('pDataInicial').AsDate := pDataInicial;
+  qryTitulosQuitados.ParamByName('pDataFinal').AsDate := pDataFinal;
+  qryTitulosQuitados.Open;
+
+  Result := not qryTitulosQuitados.IsEmpty;
+
+end;
+
+function TdmExportFinanceTP.obterIdTituloProvisionado: string;
+begin
+  Result := qryTitulosProvisionados.FieldByName('ID_TITULO_PAGAR').AsString;
+end;
+
+function TdmExportFinanceTP.obterIdTituloQuitado: string;
+begin
+  Result := qryTitulosQuitados.FieldByName('ID_TITULO_PAGAR').AsString;
+end;
+
+function TdmExportFinanceTP.obterListaProvisionados(pAno: string; pCodEmpresa, pLote: Integer): TListaLancamentos;
+var
+  tempLancamentoCR: TLancamentoCreditoModel;
+  tempLancamentoDB: TLancamentoDebitoModel;
+  pIdTituloPagar: string;
+begin
+
+//obtendo lancamentos de lista de creditos
+
+  while (not qryTitulosProvisionados.Eof) do
+  begin
+
+    tempLancamentoCR.Create;
+
+    pIdTituloPagar := qryTitulosProvisionados.FieldByName('ID_TITULO_PAGAR').AsString;
+
+    //tempLancamento.SetIdLancamento(); //ver como fazer
+    //tempLancamentoCR.SetDataLanc(); //data registro no FINANCE ou da exportacao ?
+
+    tempLancamentoCR.SetAno(pAno);
+    tempLancamentoCR.SetLote(pLote);
+    tempLancamentoCR.SetIdEmpresa(pCodEmpresa);
+    tempLancamentoCR.SetFilial(0);
+    tempLancamentoCR.SetCentroCusto(0);
+
+    tempLancamentoCR.SetValor(qryTitulosProvisionados.FieldByName('VALOR_NOMINAL').AsCurrency);
+    tempLancamentoCR.SetData(qryTitulosProvisionados.FieldByName('DATA_EMISSAO').AsDateTime);
+    tempLancamentoCR.SetDgContaCredito(qryTitulosProvisionados.FieldByName('DGVER').AsString);
+    tempLancamentoCR.SetContaCredito(qryTitulosProvisionados.FieldByName('CONTA_CREDITO').AsString);
+    tempLancamentoCR.SetCodReduzCre(qryTitulosProvisionados.FieldByName('CODREDUZ').AsInteger);
+    tempLancamentoCR.SetDgCodReduzCre(qryTitulosProvisionados.FieldByName('DGREDUZ').AsString);
+    tempLancamentoCR.SetCodHistorico(qryTitulosProvisionados.FieldByName('COD_HIST').AsInteger);
+    tempLancamentoCR.SetComplemento(qryTitulosProvisionados.FieldByName('DSC_CONTA').AsString);
+
+    tempLancamentoCR.SetExecTrigger('S'); //S sempre
+    FsListaCredito.Adicionar(tempLancamentoCR);
+
+    //preecnher a lista com as contas debitos
+    //se o proximo condicional nao for satisfeito, nao pode continuar
+    if dmTPHistoricoConsulta.obterListaTituloPagarHistoricoPorTitulo(TOrgAtual.getId, pIdTituloPagar) then
+    begin
+
+      while (not dmTPHistoricoConsulta.qryObterTPHistoricoPorTP.Eof) do
+      begin
+
+        tempLancamentoDB.Create;
+        tempLancamentoDB.SetAno(pAno);
+        tempLancamentoDB.SetLote(pLote);
+        tempLancamentoDB.SetIdEmpresa(pCodEmpresa);
+        tempLancamentoDB.SetFilial(0);
+        tempLancamentoDB.SetCentroCusto(0);
+        tempLancamentoDB.SetData(qryTitulosProvisionados.FieldByName('DATA_EMISSAO').AsDateTime);
+
+        tempLancamentoDB.SetValor(dmTPHistoricoConsulta.qryObterTPHistoricoPorTP.FieldByName('VALOR').AsCurrency);
+        tempLancamentoDB.SetContaDebito(dmTPHistoricoConsulta.qryObterTPHistoricoPorTP.FieldByName('CONTA').AsString);
+        tempLancamentoDB.SetCodReduzDeb(dmTPHistoricoConsulta.qryObterTPHistoricoPorTP.FieldByName('CODREDUZ').AsInteger);
+        tempLancamentoDB.SetDgContaDebito(dmTPHistoricoConsulta.qryObterTPHistoricoPorTP.FieldByName('DGVER').AsString);
+        tempLancamentoDB.SetDgCodReduzDeb(dmTPHistoricoConsulta.qryObterTPHistoricoPorTP.FieldByName('DGREDUZ').AsString);
+        tempLancamentoDB.SetCodHistorico(dmTPHistoricoConsulta.qryObterTPHistoricoPorTP.FieldByName('CODIGO').AsInteger);
+        tempLancamentoDB.SetComplemento(dmTPHistoricoConsulta.qryObterTPHistoricoPorTP.FieldByName('DESCRICAO').AsString);
+        tempLancamentoDB.SetExecTrigger('S'); //S sempre
+
+        //seria o caso de verificar aqui se o valor total dos debitos = credito?
+        //se nao for, como faz?
+
+        FsListaDebito.Adicionar(tempLancamentoDB);
+
+      end;
+    end;
+
+  end;
+
+  //setando as listas
+
+  FsListaLancamentos.AdicionarCredito(FsListaCredito);
+  FsListaLancamentos.AdicionarDebito(FsListaDebito);
+
+  Result := FsListaLancamentos;
+
+end;
+
+{function TdmExportFinanceTP.obterListaQuitados(pAno: string; pCodEmpresa, pLote: Integer): TListaLancamento;
+begin
+
+end;}
+
+
+function TdmExportFinanceTP.obterTPProBase(pIdOrganizacao : string; pDataInicial, pDataFinal: TDateTime ): Boolean;
+begin
+  Result := false;
+
+  inicializarDM(Self);
+
+  if not qryTPPROVBASE.Connection.Connected then
+  begin
+    qryTPPROVBASE.Connection := dmConexao.Conn;
+  end;
+
+  qryTPPROVBASE.Close;
+
+  qryTPPROVBASE.ParamByName('pIdOrganizacao').AsString := pIdOrganizacao;
+  qryTPPROVBASE.ParamByName('pDataInicial').AsDate := pDataInicial;
+  qryTPPROVBASE.ParamByName('pDataFinal').AsDate := pDataFinal;
+  qryTPPROVBASE.Open;
+
+  Result := not qryTPPROVBASE.IsEmpty;
+
+end;
+
+
+function TdmExportFinanceTP.obterTPProvCR(pIdOrganizacao,pRegistroProvisao : string ): Boolean;
+begin
+  Result := false;
+
+  inicializarDM(Self);
+
+  if not qryProvCR.Connection.Connected then
+  begin
+    qryProvCR.Connection := dmConexao.Conn;
+  end;
+
+  qryProvCR.Close;
+
+  qryProvCR.ParamByName('pIdOrganizacao').AsString := pIdOrganizacao;
+  qryProvCR.ParamByName('pregistro').AsString := pRegistroProvisao;
+
+  qryProvCR.Open;
+
+  Result := not qryProvCR.IsEmpty;
+
+end;
+
+
+
+
+
+function TdmExportFinanceTP.obterTPProvisionados(pIdOrganizacao, pIdStatus: string; pDataInicial, pDataFinal: TDateTime; pProvisao: Integer): Boolean;
+begin
+  Result := false;
+
+  inicializarDM(Self);
+
+  if not qryTitulosProvisionados.Connection.Connected then
+  begin
+    qryTitulosProvisionados.Connection := dmConexao.Conn;
+  end;
+
+  qryTitulosProvisionados.Close;
+
+  qryTitulosProvisionados.ParamByName('pIdOrganizacao').AsString := pIdOrganizacao;
+  qryTitulosProvisionados.ParamByName('pIdStatus').AsString := pIdStatus;
+  qryTitulosProvisionados.ParamByName('pDataInicial').AsDate := pDataInicial;
+  qryTitulosProvisionados.ParamByName('pDataFinal').AsDate := pDataFinal;
+  qryTitulosProvisionados.ParamByName('pProvisao').AsInteger := pProvisao;
+  qryTitulosProvisionados.Open;
+
+  Result := not qryTitulosProvisionados.IsEmpty;
+
+end;
+
+procedure TdmExportFinanceTP.DataModuleCreate(Sender: TObject);
+begin
+inicializarDM(Self);
+end;
+
+
+procedure TdmExportFinanceTP.dsObterCreditosDataChange(Sender: TObject; Field: TField);
+var
+  registroProvisao, idOrg: String;
+begin
+  inicializarDM(Self);
+  registroProvisao := dmExportFinanceTP.qryTPPROVBASE.FieldByName
+    ('REGISTRO_PROVISAO').AsString;
+   idOrg := dmExportFinanceTP.qryTPPROVBASE.FieldByName
+    ('ID_ORGANIZACAO').AsString;
+
+   //AGORA PEGA EXECUTA ESSA QRY
+    dmExportFinanceTP.obterTPProvCR(idOrg,registroProvisao);
+
+end;
+
+procedure TdmExportFinanceTP.inicializarDM(Sender: TObject);
+begin
+  if not (Assigned(dmConexao)) then
+  begin
+    dmConexao := TdmConexao.Create(Self);
+  end
+  else
+  begin
+    dmConexao.conectarBanco;
+  end;
+end;
+
+
+end.
+
+
