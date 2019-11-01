@@ -1,0 +1,22 @@
+       unit uContaContabilModel;
+interface
+
+uses
+  Windows, Messages, Classes, SysUtils;
+
+type
+  TContaContabilModel = class(TObject)
+  private
+
+    property  FDescricao: string;
+    property     FCodigoReduzido: string;
+    property     FDgVer: string;
+    property     FConta: string;
+    property     FDgReduz: string;
+    property FIdContaContabil :string;
+
+  end;
+
+implementation
+
+end.
