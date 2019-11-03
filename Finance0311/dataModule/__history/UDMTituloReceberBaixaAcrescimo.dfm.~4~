@@ -1,0 +1,41 @@
+object dmTRBAcrescimo: TdmTRBAcrescimo
+  OldCreateOrder = False
+  Height = 615
+  Width = 755
+  object qryObterPorTRB: TFDQuery
+    Connection = dmConexao.Conn
+    SQL.Strings = (
+      'SELECT TPBA.id_titulo_pagar_baixa, TPBA.valor, TA.descricao,'
+      
+        '       TA.id_historico, H.descricao as dsc_hist, H.id_conta_cont' +
+        'abil,H.Codigo,'
+      '       CC.conta, CC.codreduz'
+      'FROM titulo_pagar_baixa_ac TPBA'
+      ''
+      
+        'JOIN tipo_acrescimo TA ON (TA.id_tipo_acrescimo = TPBA.id_tipo_a' +
+        'crescimo)'
+      'JOIN HISTORICO H ON (H.id_historico = TA.id_historico)'
+      
+        'JOIN conta_contabil CC ON (CC.id_conta_contabil = H.id_conta_con' +
+        'tabil)'
+      ''
+      'WHERE (TPBA.ID_ORGANIZACAO = :pIdOrganizacao) AND'
+      '      (TPBA.id_titulo_pagar_baixa = :pIdTitutloPagarBaixa)')
+    Left = 112
+    Top = 96
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'PIDTITUTLOPAGARBAIXA'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+end

@@ -1,0 +1,5 @@
+object dmTPBCheque: TdmTPBCheque
+  OldCreateOrder = False
+  Height = 403
+  Width = 614
+end
