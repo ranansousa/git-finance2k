@@ -1,0 +1,9 @@
+object dmTPBAC: TdmTPBAC
+  OldCreateOrder = False
+  Height = 150
+  Width = 215
+  object FDQuery1: TFDQuery
+    Left = 64
+    Top = 72
+  end
+end
