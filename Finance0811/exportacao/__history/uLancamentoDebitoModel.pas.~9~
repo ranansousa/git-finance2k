@@ -1,0 +1,191 @@
+unit uLancamentoDebitoModel;
+
+interface
+
+uses
+  Windows, Messages, Classes, SysUtils;
+
+type
+  TLancamentoDebitoModel = class(TObject)
+  private
+    FIdEmpresa: Integer;
+    FFilial: Integer;
+    FValor: Currency;
+    FIdRegistroFinance: string;
+    FExecTrigger: string;
+    FIdLancamento: Integer;
+    FCentroCusto: Integer;
+    FAno: string;
+    FDgCodReduzDeb: string;
+    FDgContaDebito: string;
+    FLote: Integer;
+    FIdOrganizacao: string;
+    FLinha: Integer;
+    FComplemento: string;
+    FCodReduzDeb: Integer;
+    FCodHistorico: Integer;
+    FContaDebito: string;
+    FTipo: string;
+    FData: TDateTime;
+    FDataLanc: TDateTime;
+    FHistorico: string;
+
+    public
+     procedure SetHistorico(const Value: string);
+    procedure SetAno(const Value: string);
+    procedure SetCentroCusto(const Value: Integer);
+    procedure SetCodHistorico(const Value: Integer);
+    procedure SetCodReduzDeb(const Value: Integer);
+    procedure SetComplemento(const Value: string);
+    procedure SetContaDebito(const Value: string);
+    procedure SetData(const Value: TDateTime);
+    procedure SetDataLanc(const Value: TDateTime);
+
+    procedure SetDgCodReduzDeb(const Value: string);
+    procedure SetDgContaDebito(const Value: string);
+    procedure SetExecTrigger(const Value: string);
+    procedure SetFilial(const Value: Integer);
+    procedure SetIdEmpresa(const Value: Integer);
+    procedure SetIdLancamento(const Value: Integer);
+    procedure SetIdOrganizacao(const Value: string);
+    procedure SetIdRegistroFinance(const Value: string);
+    procedure SetLinha(const Value: Integer);
+    procedure SetLote(const Value: Integer);
+    procedure SetTipo(const Value: string);
+    procedure SetValor(const Value: Currency);
+     property Historico: string read FHistorico write SetHistorico;
+    property IdOrganizacao: string read FIdOrganizacao write SetIdOrganizacao;
+    property IdRegistroFinance: string read FIdRegistroFinance write SetIdRegistroFinance;
+    property Linha: Integer read FLinha write SetLinha;
+    property Complemento: string read FComplemento write SetComplemento;
+    property CodHistorico: Integer read FCodHistorico write SetCodHistorico;
+    property CodReduzDeb: Integer read FCodReduzDeb write SetCodReduzDeb;
+    property ContaDebito: string read FContaDebito write SetContaDebito;
+    property Tipo: string read FTipo write SetTipo;
+    property DataLanc: TDateTime read FDataLanc write SetDataLanc;
+    property Data: TDateTime read FData write SetData;
+
+
+    property Filial: Integer read FFilial write SetFilial;
+    property IdEmpresa: Integer read FIdEmpresa write SetIdEmpresa;
+    property Valor: Currency read FValor write SetValor;
+    property ExecTrigger: string read FExecTrigger write SetExecTrigger;
+    property IdLancamento: Integer read FIdLancamento write SetIdLancamento;
+    property CentroCusto: Integer read FCentroCusto write SetCentroCusto;
+    property Ano: string read FAno write SetAno;
+    property DgCodReduzDeb: string read FDgCodReduzDeb write SetDgCodReduzDeb;
+    property Lote: Integer read FLote write SetLote;
+    property DgContaDebito: string read FDgContaDebito write SetDgContaDebito;
+
+    destructor Destroy; override;
+
+  end;
+
+implementation
+
+{ TLancamentoDebitoModel }
+
+destructor TLancamentoDebitoModel.Destroy;
+begin
+
+  inherited;
+end;
+
+procedure TLancamentoDebitoModel.SetAno(const Value: string);
+begin
+  FAno := Value;
+end;
+
+procedure TLancamentoDebitoModel.SetCentroCusto(const Value: Integer);
+begin
+  FCentroCusto := Value;
+end;
+
+procedure TLancamentoDebitoModel.SetCodHistorico(const Value: Integer);
+begin
+  FCodHistorico := Value;
+end;
+
+procedure TLancamentoDebitoModel.SetCodReduzDeb(const Value: Integer);
+begin
+  FCodReduzDeb := Value;
+end;
+
+procedure TLancamentoDebitoModel.SetComplemento(const Value: string);
+begin
+  FComplemento := Value;
+end;
+
+procedure TLancamentoDebitoModel.SetContaDebito(const Value: string);
+begin
+  FContaDebito := Value;
+end;
+
+procedure TLancamentoDebitoModel.SetData(const Value: TDateTime);
+begin
+  FData := Value;
+end;
+
+procedure TLancamentoDebitoModel.SetDgCodReduzDeb(const Value: string);
+begin
+  FDgCodReduzDeb := Value;
+end;
+
+procedure TLancamentoDebitoModel.SetDgContaDebito(const Value: string);
+begin
+  FDgContaDebito := Value;
+end;
+
+procedure TLancamentoDebitoModel.SetExecTrigger(const Value: string);
+begin
+  FExecTrigger := Value;
+end;
+
+procedure TLancamentoDebitoModel.SetFilial(const Value: Integer);
+begin
+  FFilial := Value;
+end;
+
+procedure TLancamentoDebitoModel.SetIdEmpresa(const Value: Integer);
+begin
+  FIdEmpresa := Value;
+end;
+
+procedure TLancamentoDebitoModel.SetIdLancamento(const Value: Integer);
+begin
+  FIdLancamento := Value;
+end;
+
+procedure TLancamentoDebitoModel.SetIdOrganizacao(const Value: string);
+begin
+  FIdOrganizacao := Value;
+end;
+
+procedure TLancamentoDebitoModel.SetIdRegistroFinance(const Value: string);
+begin
+  FIdRegistroFinance := Value;
+end;
+
+procedure TLancamentoDebitoModel.SetLinha(const Value: Integer);
+begin
+  FLinha := Value;
+end;
+
+procedure TLancamentoDebitoModel.SetLote(const Value: Integer);
+begin
+  FLote := Value;
+end;
+
+procedure TLancamentoDebitoModel.SetTipo(const Value: string);
+begin
+  FTipo := Value;
+end;
+
+procedure TLancamentoDebitoModel.SetValor(const Value: Currency);
+begin
+  FValor := Value;
+end;
+
+end.
+
+
