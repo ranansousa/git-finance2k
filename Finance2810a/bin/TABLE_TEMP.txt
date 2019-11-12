@@ -1,8 +1,0 @@
-
-
-CREATE TABLE TEMP_EXTRATO (
-    DATA          TIMESTAMP,
-    DETALHAMENTO  VARCHAR(500),
-    TIPO          VARCHAR(1),
-    VALOR         NUMERIC(18,2)
-);
