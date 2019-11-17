@@ -1,0 +1,143 @@
+unit uFrameEndereco;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, FireDAC.Stan.Intf,
+  FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
+  FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
+  Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, udmConexao, Vcl.StdCtrls,
+  uFrameEstado, uFrameGeneric, uFrameCidade, uFrameBairro;
+
+type
+  TfrmEnd = class(TFrame)
+    qryObterEndPorID: TFDQuery;
+    edtLogradouro: TEdit;
+    edtNumero: TEdit;
+    edtComplemento: TEdit;
+    edtCep: TEdit;
+    edt6: TEdit;
+    lbl1: TLabel;
+    lbl2: TLabel;
+    lbl3: TLabel;
+    lbl4: TLabel;
+    lbl5: TLabel;
+    frmEstado1: TfrmEstado;
+    frmCidade1: TfrmCidade;
+    frmBairro1: TfrmBairro;
+    lbl6: TLabel;
+
+
+  private
+    { Private declarations }
+     FsListaIdEstados: TStringList;
+     FsListaIdBairros: TStringList;
+     FsListaIdCidades: TStringList;
+
+    idEndereco : string; //guarda o id do endereco
+    function obterPorID(pID,pIdOrganizacao:string): Boolean;
+    procedure preenche;
+    procedure limpa;
+    function obterEnderecoPorID(pID, pIdOrganizacao: string): Boolean;
+    procedure preencheCombos;
+
+
+  public
+    { Public declarations }
+
+    procedure createEndereco(pID, pIdOrganizacao:string);
+  end;
+
+implementation
+
+{$R *.dfm}
+
+{ TFrame1 }
+
+
+
+procedure TfrmEnd.createEndereco(pID,pIdOrganizacao: string);
+begin
+//quando for chamada precisar passar o ID do endereco, caso nao tenha precisa passart o valor 0 (zero)
+//com o valor 0 (zero), o sistema irá criar uma nova ID para o endereco
+//pegar o id e fazer a consulta para preencher os dados
+//caso não exista deve limpar os campos
+ //
+
+ {
+ if pID = '0'  then begin
+  pID := dmConexao.obterNewID;
+ end;
+
+ if not pID = '0' then begin
+   idEndereco := pID; //setando o id do endereco na variavel global
+
+   if obterPorID(idEndereco) then begin
+   preenche; //chamada da funcão para preencher os campos
+   end;
+
+ end;
+          }
+end;
+
+
+procedure TfrmEnd.limpa;
+begin
+//limpa os campos
+end;
+
+function TfrmEnd.obterEnderecoPorID(pID, pIdOrganizacao: string): Boolean;
+begin
+
+
+Result := false;
+
+  if not (Assigned(dmConexao)) then
+  begin
+    dmConexao := TdmConexao.Create(Self);
+    dmConexao.conectarBanco;
+  end;
+
+
+  if not qryObterEndPorID.Connection.Connected then
+  begin
+    qryObterEndPorID.Connection := dmConexao.Conn;
+  end;
+
+  qryObterEndPorID.Close;
+  qryObterEndPorID.ParamByName('PIDORGANIZACAO').AsString :=  pIdOrganizacao;
+  qryObterEndPorID.ParamByName('PID').AsString :=  pID;
+  qryObterEndPorID.Open;
+
+  Result := not qryObterEndPorID.IsEmpty;
+
+
+end;
+
+function TfrmEnd.obterPorID(pID, pIdOrganizacao: string): Boolean;
+begin
+//asadsas
+end;
+
+procedure TfrmEnd.preenche;
+begin
+//preecnher os campos do endereo
+
+
+
+end;
+
+procedure TfrmEnd.preencheCombos;
+begin
+// preenche os combos com todos os dados possiveis
+  frmBairro1.createComboAll('BAIRRO','BAIRRO', frmBairro1.cbbcombo, FsListaIdBairros);
+  frmCidade1.createComboAll('CIDADE', 'CIDADE', frmCidade1.cbbcombo, FsListaIdCidades);
+  frmEstado1.createComboAll('ESTADO','DESCRICAO', frmEstado1.cbbcombo, FsListaIdEstados);
+
+end;
+
+{ TfrmEnd }
+
+
+end.

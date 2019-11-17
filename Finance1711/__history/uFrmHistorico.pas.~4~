@@ -1,0 +1,46 @@
+unit uFrmHistorico;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, uFrameGeneric, uFrameHistorico, udmConexao, uUtil;
+
+type
+  TfrmHistorico = class(TForm)
+    frameHistorico1: TframeHistorico;
+    procedure FormCreate(Sender: TObject);
+  private
+  pIdOrganizacao :string;
+    procedure inicializarDM(Sender: TObject);
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmHistorico: TfrmHistorico;
+
+implementation
+
+{$R *.dfm}
+
+procedure TfrmHistorico.FormCreate(Sender: TObject);
+begin
+
+  frameHistorico1.
+
+
+end;
+end;
+
+
+procedure TfrmHistorico.inicializarDM(Sender: TObject);
+begin
+
+pIdOrganizacao := uUtil.TOrgAtual.getId;
+
+
+end;
+
+end.

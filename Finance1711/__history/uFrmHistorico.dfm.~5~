@@ -1,0 +1,34 @@
+object frmHistorico: TfrmHistorico
+  Left = 0
+  Top = 0
+  Caption = 'Manuten'#231#227'o de Hist'#243'ricos'
+  ClientHeight = 591
+  ClientWidth = 635
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  PixelsPerInch = 96
+  TextHeight = 13
+  inline frameHistorico1: TframeHistorico
+    Left = 8
+    Top = 32
+    Width = 452
+    Height = 89
+    TabOrder = 0
+    ExplicitLeft = 8
+    ExplicitTop = 32
+    ExplicitHeight = 89
+    inherited qryObterPorID: TFDQuery
+      Left = 32
+      Top = 32
+    end
+    inherited qryObterTodos: TFDQuery
+      Left = 120
+      Top = 32
+    end
+  end
+end

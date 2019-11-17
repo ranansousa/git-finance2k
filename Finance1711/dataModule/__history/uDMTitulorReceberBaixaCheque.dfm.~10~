@@ -1,0 +1,43 @@
+object dmTRBCheque: TdmTRBCheque
+  OldCreateOrder = False
+  Height = 489
+  Width = 615
+  object qryObterPorTRB: TFDQuery
+    Connection = dmConexao.Conn
+    SQL.Strings = (
+      'SELECT TRBC.ID_TITULO_RECEBER_BAIXA_CHEQUE,'
+      '        TRBC.ID_TITULO_RECEBER_BAIXA,'
+      '        TRBC.VALOR,'
+      '        H.DESCRICAO AS DSC_HIST,'
+      '        CC.CONTA,'
+      '        CC.DESCRICAO AS DSC_CC,'
+      '        CC.CODREDUZ'
+      ''
+      'FROM TITULO_RECEBER_BAIXA_CHEQUE TRBC'
+      
+        'JOIN tesouraria_credito tc on (tc.id_titulo_receber_baixa_cheque' +
+        ' = TRBC.ID_TITULO_RECEBER_BAIXA_CHEQUE)'
+      'JOIN HISTORICO H ON (H.ID_HISTORICO = TC.ID_HISTORICO)'
+      
+        'JOIN CONTA_CONTABIL CC ON (CC.ID_CONTA_CONTABIL = H.ID_CONTA_CON' +
+        'TABIL)'
+      ''
+      'WHERE (TRBC.id_organizacao = :PIDORGANIZACAO) AND'
+      '      (TRBC.ID_TITULO_RECEBER_BAIXA = :PIDTITULORECEBERBAIXA);')
+    Left = 280
+    Top = 224
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'PIDTITULORECEBERBAIXA'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+end
