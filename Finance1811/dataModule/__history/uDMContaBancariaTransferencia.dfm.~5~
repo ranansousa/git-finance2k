@@ -1,0 +1,57 @@
+object DataModule1: TDataModule1
+  OldCreateOrder = False
+  Height = 388
+  Width = 562
+  object qryObterPorPeriodo: TFDQuery
+    Connection = dmConexao.Conn
+    SQL.Strings = (
+      'SELECT CBD.ID_CONTA_BANCARIA,'
+      '       CBD.ID_TIPO_OPERACAO_BANCARIA,'
+      '       CBD.VALOR, CBD.DESCRICAO,'
+      '       CBD.DATA_MOVIMENTO,'
+      '       CBD.IDENTIFICACAO,'
+      '       CONTA.CONTA AS CONTA_CORRENTE_DEBITO,'
+      '       CC.CONTA AS CONTA_CONTABIL_DEBITO,'
+      '       CC.CODREDUZ AS COD_REDUZ_DEBITO,'
+      '       '#39'CBT'#39' AS TIPO'
+      ''
+      ''
+      'FROM CONTA_BANCARIA_DEBITO CBD'
+      
+        'LEFT OUTER JOIN CONTA_BANCARIA CONTA ON (CONTA.ID_CONTA_BANCARIA' +
+        ' = CBD.ID_CONTA_BANCARIA)'
+      
+        'LEFT OUTER JOIN CONTA_CONTABIL CC ON (CC.ID_CONTA_CONTABIL = CON' +
+        'TA.ID_CONTA_CONTABIL)'
+      ''
+      'WHERE (CBD.ID_LOTE_CONTABIL IS NULL) AND'
+      '(CBD.ID_ORGANIZACAO = :PIDORGANIZACAO) AND'
+      '(CBD.DATA_MOVIMENTO BETWEEN :DTDATAINICIAL AND :DTDATAFINAL) AND'
+      '(CBD.ID_TIPO_OPERACAO_BANCARIA = :PIDTIPOOPERACAO)')
+    Left = 96
+    Top = 96
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'DTDATAINICIAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end
+      item
+        Name = 'DTDATAFINAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end
+      item
+        Name = 'PIDTIPOOPERACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+end

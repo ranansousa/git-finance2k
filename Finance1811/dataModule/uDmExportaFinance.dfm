@@ -1,0 +1,1954 @@
+object dmExportaFinance: TdmExportaFinance
+  OldCreateOrder = False
+  OnCreate = DataModuleCreate
+  Height = 681
+  Width = 1265
+  object qryGravarLoteContabil: TFDQuery
+    Connection = dmConexao.conn
+    Left = 128
+    Top = 24
+  end
+  object qryObterCentroCustoPorTitulo2: TFDQuery
+    Connection = dmConexao.conn
+    FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.FmtDisplayDate = 'DD/MM/YYY'
+    FormatOptions.FmtDisplayNumeric = '###,##0.00'
+    FormatOptions.FmtEditNumeric = '###,##0.00'
+    SQL.Strings = (
+      'SELECT TPC.VALOR,       '
+      '       TPC.ID_TITULO_PAGAR,'
+      '       CC.DESCRICAO,'
+      '       CC.CODIGO'
+      '        '
+      'FROM TITULO_PAGAR_RATEIO_CC TPC'
+      
+        'LEFT OUTER  JOIN CENTRO_CUSTO CC ON (CC.ID_CENTRO_CUSTO = TPC.ID' +
+        '_CENTRO_CUSTO)'
+      ''
+      'WHERE    (TPC.ID_ORGANIZACAO = :pIdOrganizacao) AND'
+      '         (TPC.ID_TITULO_PAGAR = :pId_TITULO_PAGAR) ;'
+      ''
+      '       '
+      '')
+    Left = 212
+    Top = 328
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'PID_TITULO_PAGAR'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+  object qryObterCBTPERIODO: TFDQuery
+    Connection = dmConexao.conn
+    SQL.Strings = (
+      'SELECT CBT.DATA_MOVIMENTO AS DATA,'
+      '       CBT.VALOR AS VALOR,'
+      '       CBT.ID_TIPO_OPERACAO_BANCARIA AS IDOPER,'
+      '       CBT.ID_CONTA_BANCARIA_TRANSFERENCIA AS ID, '
+      '       CBT.ID_ORGANIZACAO AS IDORG, '
+      '       CBT.IDENTIFICACAO AS IDENTIFCRE,'
+      '       CBT.IDENTIFICACAO AS IDENTIFDEB,'
+      '       CBT.ID_CONTA_BANCARIA_CREDITO AS IDCRE,'
+      '       CBT.ID_CONTA_BANCARIA_DEBITO AS IDDEB,'
+      '       CCCBD.CONTA AS CONTA_DEB,'
+      '       CCCBD.DGVER AS DGDEB,'
+      '       CCCBD.CODREDUZ AS CDREDUZDEB,'
+      '       CCCBD.DGREDUZ AS DGREDUZDEB,'
+      '       CCCBD.DESCRICAO AS DESCTADEBITO,'
+      '       CCCBC.CONTA AS CONTA_CRE,'
+      '       CCCBC.DGVER AS DGCRE,'
+      '       CCCBC.CODREDUZ AS CDREDUZCRE,'
+      '       CCCBC.DGREDUZ AS DGREDUZCRE,'
+      '       CCCBC.DESCRICAO AS DESCTACREDITO,'
+      '       TOPB.TIPO AS TIPOOPERACAO,'
+      '       TOPB.TIPO AS COMPL,       '
+      '       TOPB.CODIGO AS CDHIST,'
+      '       TOPB.DESCRICAO AS HISTORICO,       '
+      '       BANCOD.CONTA AS CTAORIGEM,'
+      '       BANCOC.CONTA AS CTADESTINO'
+      ''
+      'FROM CONTA_BANCARIA_TRANSFERENCIA CBT'
+      ''
+      
+        'LEFT OUTER JOIN CONTA_BANCARIA_CREDITO CBC ON (CBC.ID_CONTA_BANC' +
+        'ARIA_CREDITO = CBT.ID_CONTA_BANCARIA_CREDITO) AND (CBC.ID_ORGANI' +
+        'ZACAO=CBT.ID_ORGANIZACAO)'
+      
+        'LEFT OUTER JOIN  CONTA_BANCARIA BANCOC ON (BANCOC.ID_CONTA_BANCA' +
+        'RIA = CBC.ID_CONTA_BANCARIA) AND (BANCOC.ID_ORGANIZACAO=CBT.ID_O' +
+        'RGANIZACAO)'
+      
+        'LEFT OUTER JOIN  CONTA_BANCARIA_DEBITO CBD ON (CBD.ID_CONTA_BANC' +
+        'ARIA_DEBITO = CBT.ID_CONTA_BANCARIA_DEBITO) AND (CBD.ID_ORGANIZA' +
+        'CAO=CBT.ID_ORGANIZACAO)'
+      
+        'LEFT OUTER JOIN  CONTA_BANCARIA BANCOD ON (BANCOD.ID_CONTA_BANCA' +
+        'RIA = CBD.ID_CONTA_BANCARIA) AND (BANCOD.ID_ORGANIZACAO=CBT.ID_O' +
+        'RGANIZACAO)'
+      
+        'LEFT OUTER JOIN  CONTA_CONTABIL CCCBC ON(CCCBC.ID_CONTA_CONTABIL' +
+        ' =BANCOD.ID_CONTA_CONTABIL) AND (CCCBC.ID_ORGANIZACAO=CBT.ID_ORG' +
+        'ANIZACAO)'
+      
+        'LEFT OUTER JOIN  CONTA_CONTABIL CCCBD ON(CCCBD.ID_CONTA_CONTABIL' +
+        ' =BANCOC.ID_CONTA_CONTABIL) AND (CCCBD.ID_ORGANIZACAO=CBT.ID_ORG' +
+        'ANIZACAO)'
+      
+        'LEFT OUTER JOIN TIPO_OPERACAO_BANCARIA TOPB ON (TOPB.ID_TIPO_OPE' +
+        'RACAO_BANCARIA=CBT.ID_TIPO_OPERACAO_BANCARIA AND TOPB.ID_ORGANIZ' +
+        'ACAO=CBT.ID_ORGANIZACAO)'
+      ''
+      
+        'WHERE (CBT.DATA_MOVIMENTO BETWEEN :DTDATAINICIAL AND :DTDATAFINA' +
+        'L)  AND'
+      '      (CBT.ID_ORGANIZACAO= :PIDORGANIZACAO)  AND'
+      '      (CBT.ID_LOTE_CONTABIL IS NULL)'
+      ''
+      'ORDER BY CBT.DATA_MOVIMENTO, CBT.VALOR')
+    Left = 40
+    Top = 112
+    ParamData = <
+      item
+        Name = 'DTDATAINICIAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end
+      item
+        Name = 'DTDATAFINAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+      end>
+  end
+  object qryObterCBCPERIODO: TFDQuery
+    Connection = dmConexao.conn
+    SQL.Strings = (
+      'SELECT CBC.ID_CONTA_BANCARIA_CREDITO AS IDCBC,'
+      'CBC.TIPO_LANCAMENTO AS TIPOLANCAMENTO,'
+      'CBC.DATA_MOVIMENTO AS DATALANCAMENTO,'
+      'CBC.VALOR AS VALORLANCAMENTO,'
+      'CBC.DESCRICAO AS DESCLANCAMENTO,'
+      'CBC.IDENTIFICACAO AS IDENTIFICACAO,'
+      'TOPB.DESCRICAO AS OPERACAO,'
+      'TOPB.CODIGO AS CODHISTORICOPADRAO,'
+      'TOPB.DESCRICAO AS HISTORICOPADRAO,'
+      'TOPB.TIPO AS TIPOOPERACAO,'
+      'CCD.CONTA AS CONTADEBITO,'
+      'CCD.DESCRICAO AS CCDDESC,'
+      'CCD.CODREDUZ AS CCDCODREDUZ,'
+      'CCC.CONTA AS CONTACREDITO,'
+      'CCC.DESCRICAO AS CCCDESC,'
+      'CCC.CODREDUZ AS CCCCODREDUZ,'
+      'CB.CONTA AS CONTABANCARIA,'
+      'CB.CONTA AS CTAORIGEM,'
+      'CB.CONTA AS CTADESTINO'
+      ''
+      'FROM CONTA_BANCARIA_CREDITO CBC'
+      
+        'LEFT OUTER JOIN CONTA_BANCARIA CB ON CBC.ID_CONTA_BANCARIA=CB.ID' +
+        '_CONTA_BANCARIA AND CBC.ID_ORGANIZACAO=CB.ID_ORGANIZACAO'
+      
+        'LEFT OUTER JOIN TIPO_OPERACAO_BANCARIA TOPB ON CBC.ID_TIPO_OPERA' +
+        'CAO_BANCARIA=TOPB.ID_TIPO_OPERACAO_BANCARIA AND CBC.ID_ORGANIZAC' +
+        'AO=TOPB.ID_ORGANIZACAO'
+      
+        'LEFT OUTER JOIN CONTA_CONTABIL CCC ON TOPB.ID_CONTA_CONTABIL=CCC' +
+        '.ID_CONTA_CONTABIL AND TOPB.ID_ORGANIZACAO=CCC.ID_ORGANIZACAO'
+      
+        'LEFT OUTER JOIN CONTA_CONTABIL CCD ON CB.ID_CONTA_CONTABIL=CCD.I' +
+        'D_CONTA_CONTABIL AND TOPB.ID_ORGANIZACAO=CCD.ID_ORGANIZACAO'
+      'WHERE CBC.ID_ORGANIZACAO=:PIDORGANIZACAO'
+      'AND CBC.ID_TITULO_RECEBER IS NULL'
+      
+        'AND CBC.ID_TIPO_OPERACAO_BANCARIA <> '#39'TRANSFERENCIA ENTRE CONTAS' +
+        #39
+      'AND CBC.DATA_MOVIMENTO BETWEEN :DTDATAINICIAL AND :DTDATAFINAL'
+      'ORDER BY CBC.DATA_MOVIMENTO DESC')
+    Left = 480
+    Top = 552
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+      end
+      item
+        Name = 'DTDATAINICIAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end
+      item
+        Name = 'DTDATAFINAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end>
+  end
+  object qryObterCBDPERIODO: TFDQuery
+    Connection = dmConexao.conn
+    SQL.Strings = (
+      'SELECT CBD.ID_CONTA_BANCARIA_DEBITO AS IDCBD,'
+      'CBD.DATA_MOVIMENTO AS DATALANCAMENTO,'
+      'CBD.VALOR AS VALORLANCAMENTO,'
+      'CBD.DESCRICAO AS DESCLANCAMENTO,'
+      'CBD.IDENTIFICACAO AS IDENTIFICACAO,'
+      'TOPB.CODIGO AS CODHISTORICOPADRAO,'
+      'TOPB.DESCRICAO AS HISTORICOPADRAO,'
+      'TOPB.TIPO AS TIPOOPERACAO,'
+      'CCD.CONTA AS CONTADEBITO,'
+      'CCD.DESCRICAO AS CCDDESC,'
+      'CCD.CODREDUZ AS CCDCODREDUZ,'
+      'CCC.CONTA AS CONTACREDITO,'
+      'CCC.DESCRICAO AS CCCDESC,'
+      'CCC.CODREDUZ AS CCCCODREDUZ,'
+      'CB.CONTA AS CONTABANCARIA,'
+      'CB.CONTA AS CTAORIGEM,'
+      'CB.CONTA AS CTADESTINO'
+      ''
+      ''
+      'FROM CONTA_BANCARIA_DEBITO CBD'
+      
+        'LEFT OUTER JOIN CONTA_BANCARIA CB ON (CB.ID_CONTA_BANCARIA=CBD.I' +
+        'D_CONTA_BANCARIA AND CB.ID_ORGANIZACAO=CBD.ID_ORGANIZACAO)'
+      
+        'LEFT OUTER JOIN TIPO_OPERACAO_BANCARIA TOPB ON (TOPB.ID_TIPO_OPE' +
+        'RACAO_BANCARIA=CBD.ID_TIPO_OPERACAO_BANCARIA AND TOPB.ID_ORGANIZ' +
+        'ACAO=CBD.ID_ORGANIZACAO)'
+      
+        'LEFT OUTER JOIN CONTA_CONTABIL CCD ON (TOPB.ID_CONTA_CONTABIL=CC' +
+        'D.ID_CONTA_CONTABIL AND CCD.ID_ORGANIZACAO=TOPB.ID_ORGANIZACAO)'
+      
+        'LEFT OUTER JOIN CONTA_CONTABIL CCC ON (CB.ID_CONTA_CONTABIL=CCC.' +
+        'ID_CONTA_CONTABIL AND CCC.ID_ORGANIZACAO=TOPB.ID_ORGANIZACAO)'
+      'WHERE CBD.ID_ORGANIZACAO=:PIDORGANIZACAO'
+      'AND CBD.ID_TITULO_PAGAR IS NULL'
+      'AND CBD.ID_LOTE_CONTABIL IS NULL'
+      
+        'AND CBD.ID_TIPO_OPERACAO_BANCARIA <> '#39'TRANSFERENCIA ENTRE CONTAS' +
+        #39
+      'AND CBD.DATA_MOVIMENTO BETWEEN :DTDATAINICIAL AND :DTDATAFINAL'
+      'ORDER BY CBD.DATA_MOVIMENTO DESC')
+    Left = 480
+    Top = 472
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+      end
+      item
+        Name = 'DTDATAINICIAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end
+      item
+        Name = 'DTDATAFINAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end>
+  end
+  object qryObterTDPERIODO: TFDQuery
+    Connection = dmConexao.conn
+    SQL.Strings = (
+      'SELECT TD.ID_TESOURARIA_DEBITO AS IDTD,'
+      'TD.DATA_MOVIMENTO AS DATALANCAMENTO,'
+      'TD.DESCRICAO AS DESCLANCAMENTO,'
+      'HST.CODIGO AS CODIGOHISTORICOPADRAO,'
+      'HST.DESCRICAO AS DESCHISTORICO,'
+      'TD.VALOR_NOMINAL AS VALORLANCAMENTO,'
+      'TD.TIPO_LANCAMENTO AS TIPOLANCAMENTO,'
+      'CCD.CONTA AS CONTADEBITO,'
+      'CCD.DESCRICAO AS CCDDESC,'
+      'CCD.CODREDUZ AS CCDCODREDUZ'
+      
+        '--CCC.CONTA AS CONTACREDITO, -- AQUI '#201' A CONTA CAIXA. VER COMO F' +
+        'AZER ISSO.'
+      '--CCC.DESCRICAO AS CCCDESC,'
+      '--CCC.CODREDUZ AS CCCCODREDUZ'
+      'FROM TESOURARIA_DEBITO TD'
+      
+        'LEFT OUTER JOIN HISTORICO HST ON TD.ID_HISTORICO=HST.ID_HISTORIC' +
+        'O AND TD.ID_ORGANIZACAO=HST.ID_ORGANIZACAO'
+      
+        'LEFT OUTER JOIN CONTA_CONTABIL CCD ON (CCD.ID_CONTA_CONTABIL=HST' +
+        '.ID_CONTA_CONTABIL AND HST.ID_ORGANIZACAO=CCD.ID_ORGANIZACAO)'
+      'WHERE TD.ID_ORGANIZACAO=:PIDORGANIZACAO'
+      'AND TD.DATA_MOVIMENTO BETWEEN :DTDATAINICIAL AND :DTDATAFINAL'
+      'AND TD.ID_TITULO_PAGAR_BAIXA IS NULL'
+      'AND TD.ID_LOTE_CONTABIL IS NULL'
+      'AND TD.ID_HISTORICO <> '#39'DEPOSITO TESOURARIA/BANCO'#39)
+    Left = 312
+    Top = 552
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+      end
+      item
+        Name = 'DTDATAINICIAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end
+      item
+        Name = 'DTDATAFINAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end>
+  end
+  object qryObterTCPERIODO: TFDQuery
+    Connection = dmConexao.conn
+    SQL.Strings = (
+      'SELECT TC.ID_TESOURARIA_CREDITO AS IDTC,'
+      'TC.DATA_MOVIMENTO AS DATALANCAMENTO,'
+      'TC.DESCRICAO AS DESCLANCAMENTO,'
+      'HST.CODIGO AS CODIGOHISTORICOPADRAO,'
+      'HST.DESCRICAO AS DESCHISTORICO,'
+      'TC.VALOR_NOMINAL AS VALORLANCAMENTO,'
+      'TC.TIPO_LANCAMENTO AS TIPOLANCAMENTO,'
+      
+        '--CCD.CONTA AS CONTADEBITO, -- AQUI '#201' A CONTA CAIXA. VER COMO FA' +
+        'ZER ISSO.'
+      '--CCD.DESCRICAO AS CCDDESC,'
+      '--CCD.CODREDUZ AS CCDCODREDUZ'
+      'CCC.CONTA AS CONTACREDITO,'
+      'CCC.DESCRICAO AS CCCDESC,'
+      'CCC.CODREDUZ AS CCCCODREDUZ'
+      'FROM TESOURARIA_CREDITO TC'
+      
+        'LEFT OUTER JOIN HISTORICO HST ON TC.ID_HISTORICO=HST.ID_HISTORIC' +
+        'O AND TC.ID_ORGANIZACAO=HST.ID_ORGANIZACAO'
+      
+        'LEFT OUTER JOIN CONTA_CONTABIL CCC ON (CCC.ID_CONTA_CONTABIL=HST' +
+        '.ID_CONTA_CONTABIL AND HST.ID_ORGANIZACAO=CCC.ID_ORGANIZACAO)'
+      'WHERE TC.ID_ORGANIZACAO=:PIDORGANIZACAO'
+      'AND TC.DATA_MOVIMENTO BETWEEN :DTDATAINICIAL AND :DTDATAFINAL'
+      'AND TC.ID_TITULO_RECEBER_BAIXA IS NULL'
+      'AND TC.id_titulo_receber_baixa_cheque is null'
+      'AND TC.ID_LOTE_CONTABIL IS NULL'
+      'AND TC.ID_HISTORICO <> '#39'TRANSFERE BANCO/TESOURARIA'#39)
+    Left = 344
+    Top = 424
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'DTDATAINICIAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end
+      item
+        Name = 'DTDATAFINAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end>
+  end
+  object qryObterPendentes: TFDQuery
+    Connection = dmConexao.conn
+    SQL.Strings = (
+      'SELECT LC.id,'
+      'lc.id_organizacao,'
+      'lc.identificacao,'
+      'lc.valor,'
+      'lc.tipo,'
+      'lc.pendencia'
+      ''
+      ' FROM lanc_export_pend LC'
+      ' WHERE LC.id_organizacao = :PIDORGANIZACAO ')
+    Left = 36
+    Top = 568
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+      end>
+  end
+  object qryInserePendente: TFDQuery
+    Connection = dmConexao.conn
+    Left = 208
+    Top = 440
+  end
+  object qryLimparPendentes: TFDQuery
+    Connection = dmConexao.conn
+    SQL.Strings = (
+      'DELETE FROM  lanc_export_pend lc '
+      'WHERE lc.id_organizacao = :pIDORGANIZACAO'
+      
+        'AND lc.data_registro between '#39'01.01.1900'#39' AND ( Select (current_' +
+        'date -1) from RDB$DATABASE)')
+    Left = 36
+    Top = 440
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+  object qryObterValorDebitoGeneric: TFDQuery
+    Connection = dmConexao.conn
+    SQL.Strings = (
+      'Select Sum(valor) as valorDebito'
+      'from conta_bancaria_transferencia cbt'
+      'WHERE CBT.DATA_MOVIMENTO BETWEEN :DTDATAINICIAL AND :DTDATAFINAL'
+      'AND CBT.ID_ORGANIZACAO=:PIDORGANIZACAO'
+      'AND CBT.ID_LOTE_CONTABIL IS NULL')
+    Left = 264
+    Top = 24
+    ParamData = <
+      item
+        Name = 'DTDATAINICIAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end
+      item
+        Name = 'DTDATAFINAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+  object qryUpdateGeneric: TFDQuery
+    Connection = dmConexao.conn
+    Left = 36
+    Top = 496
+  end
+  object qryHstSemCC: TFDQuery
+    Connection = dmConexao.conn
+    SQL.Strings = (
+      'SELECT H.descricao, H.CODIGO'
+      'FROM  HISTORICO H'
+      'WHERE (H.ID_ORGANIZACAO = :pIdOrganizacao) AND'
+      '      (H.id_conta_contabil IS NULL)')
+    Left = 32
+    Top = 24
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+  object qryBancoCaixa: TFDQuery
+    Connection = dmConexao.conn
+    FetchOptions.AssignedValues = [evRowsetSize]
+    FetchOptions.RowsetSize = 500
+    FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
+    FormatOptions.FmtDisplayNumeric = '###,##0.00'
+    FormatOptions.FmtEditNumeric = '###,##0.00'
+    SQL.Strings = (
+      'SELECT  CBD.id_conta_bancaria_debito AS ID, '
+      '        CBD.id_tipo_operacao_bancaria AS IDOPER,'
+      '        CBD.ID_ORGANIZACAO AS IDORG,        '
+      '        CBD.VALOR AS VALOR,'
+      '        CBD.DATA_MOVIMENTO AS DATA,'
+      '        CBD.IDENTIFICACAO AS IDENTIFCRE,'
+      '        CBD.IDENTIFICACAO AS IDENTIFDEB,'
+      '        CB.CONTA AS CTAORIGEM,'
+      '        '#39'CAIXA'#39' AS CTADESTINO,'
+      ''
+      '       CCC.CONTA AS CONTA_CRE,'
+      '       CCC.DGVER AS DGCRE,'
+      '       CCC.CODREDUZ AS CDREDUZCRE,'
+      '       CCC.DGREDUZ AS DGREDUZCRE,'
+      '       CCC.DESCRICAO AS DESCTACREDITO,'
+      '     '
+      '       CCD.CONTA AS CONTA_DEB,'
+      '       CCD.DGVER AS DGDEB,'
+      '       CCD.CODREDUZ AS CDREDUZDEB,'
+      '       CCD.DGREDUZ AS DGREDUZDEB,'
+      '       CCD.DESCRICAO AS DESCTADEBITO,'
+      '       TOB.TIPO AS TIPOOPERACAO,'
+      '       TOB.CODIGO AS CDHIST,'
+      '       TOB.DESCRICAO AS COMPL,'
+      '       TOB.ID_TIPO_OPERACAO_BANCARIA AS HISTORICO,             '
+      '       '#39'TRF_BC_CX'#39' as TIPO'
+      ''
+      'FROM CONTA_BANCARIA_DEBITO CBD'
+      
+        'LEFT OUTER JOIN CONTA_BANCARIA CB ON (CB.ID_CONTA_BANCARIA = CBD' +
+        '.ID_CONTA_BANCARIA) AND (CB.ID_ORGANIZACAO = CBD.ID_ORGANIZACAO)'
+      'LEFT OUTER JOIN BANCO B ON (B.ID_BANCO = CB.ID_BANCO)'
+      
+        'LEFT OUTER JOIN CONTA_CONTABIL CCC ON (CCC.ID_CONTA_CONTABIL = C' +
+        'B.ID_CONTA_CONTABIL)  AND (CCC.ID_ORGANIZACAO = CBD.ID_ORGANIZAC' +
+        'AO)'
+      
+        'LEFT OUTER JOIN TIPO_OPERACAO_BANCARIA TOB ON (TOB.ID_TIPO_OPERA' +
+        'CAO_BANCARIA = CBD.ID_TIPO_OPERACAO_BANCARIA) AND (TOB.ID_ORGANI' +
+        'ZACAO = CBD.ID_ORGANIZACAO)'
+      
+        'LEFT OUTER JOIN CONTA_CONTABIL CCD ON (CCD.ID_CONTA_CONTABIL = T' +
+        'OB.ID_CONTA_CONTABIL) AND (CCD.ID_ORGANIZACAO = CBD.ID_ORGANIZAC' +
+        'AO)'
+      ''
+      ''
+      ''
+      'WHERE (CBD.ID_ORGANIZACAO = :PIDORGANIZACAO)AND'
+      
+        '      (CBD.DATA_MOVIMENTO BETWEEN :DTDATAINICIAL AND :DTDATAFINA' +
+        'L) AND'
+      
+        '      (CBD.ID_TIPO_OPERACAO_BANCARIA = '#39'TRANSFERE BANCO/TESOURAR' +
+        'IA'#39') AND'
+      '      (CBD.ID_LOTE_CONTABIL IS NULL)'
+      'ORDER BY CBD.DATA_MOVIMENTO, CBD.VALOR')
+    Left = 160
+    Top = 112
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'DTDATAINICIAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end
+      item
+        Name = 'DTDATAFINAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end>
+  end
+  object qryCaixaBanco: TFDQuery
+    Connection = dmConexao.conn
+    FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
+    FormatOptions.FmtDisplayNumeric = '###,##0.00'
+    FormatOptions.FmtEditNumeric = '###,##0.00'
+    SQL.Strings = (
+      '--obter as transferencias da tesouraria para o banco'
+      '-- por periodo'
+      'SELECT  CBC.ID_CONTA_BANCARIA_CREDITO as ID,'
+      '        CBC.id_organizacao as IDORG,'
+      '        CBC.id_tipo_operacao_bancaria AS IDOPER,'
+      '        CBC.DESCRICAO,'
+      '        CBC.VALOR as VALOR,'
+      '        CBC.DATA_MOVIMENTO AS DATA,'
+      '        CBC.IDENTIFICACAO AS IDENTIFCRE,'
+      '        CBC.IDENTIFICACAO AS IDENTIFDEB,'
+      '        CB.CONTA AS CONTA_BANCO,'
+      '        CB.AGENCIA,'
+      '        CB.CONTA AS CTADESTINO,'
+      '        '#39'CAIXA'#39' AS CTAORIGEM,'
+      '       '
+      '       CCC.CONTA AS CONTA_CRE,'
+      '       CCC.DGVER AS DGCRE,'
+      '       CCC.CODREDUZ AS CDREDUZCRE,'
+      '       CCC.DGREDUZ AS DGREDUZCRE,'
+      '       CCC.DESCRICAO AS DESCTACREDITO,'
+      ' '
+      '       CCD.CONTA AS CONTA_DEB,'
+      '       CCD.DGVER AS DGDEB,'
+      '       CCD.CODREDUZ AS CDREDUZDEB,'
+      '       CCD.DGREDUZ AS DGREDUZDEB,'
+      '       CCD.DESCRICAO AS DESCTADEBITO,'
+      ''
+      '        TOB.TIPO AS TIPOOPERACAO,'
+      '        TOB.CODIGO AS CDHIST,'
+      '        TOB.DESCRICAO AS COMPL,'
+      '        TOB.ID_TIPO_OPERACAO_BANCARIA AS HISTORICO,        '
+      '        '#39'TRF_TES_BCO'#39' as TIPO'
+      ''
+      'FROM CONTA_BANCARIA_CREDITO CBC'
+      
+        'LEFT OUTER JOIN TIPO_OPERACAO_BANCARIA TOB ON (TOB.ID_TIPO_OPERA' +
+        'CAO_BANCARIA = CBC.ID_TIPO_OPERACAO_BANCARIA) AND (TOB.ID_ORGANI' +
+        'ZACAO = CBC.ID_ORGANIZACAO)'
+      
+        'LEFT OUTER JOIN CONTA_BANCARIA CB ON (CB.ID_CONTA_BANCARIA = CBC' +
+        '.ID_CONTA_BANCARIA) AND (CB.ID_ORGANIZACAO = CBC.ID_ORGANIZACAO)'
+      
+        'LEFT OUTER JOIN CONTA_CONTABIL CCC ON (CCC.ID_CONTA_CONTABIL = T' +
+        'OB.ID_CONTA_CONTABIL ) AND (CCC.ID_ORGANIZACAO = CBC.ID_ORGANIZA' +
+        'CAO)'
+      
+        'LEFT OUTER JOIN CONTA_CONTABIL CCD ON (CCD.ID_CONTA_CONTABIL = C' +
+        'B.ID_CONTA_CONTABIL ) AND (CCD.ID_ORGANIZACAO = CBC.ID_ORGANIZAC' +
+        'AO)'
+      ''
+      'WHERE (CBC.ID_ORGANIZACAO = :PIDORGANIZACAO)AND'
+      
+        '      (CBC.DATA_MOVIMENTO BETWEEN :DTDATAINICIAL AND :DTDATAFINA' +
+        'L) AND'
+      
+        '      (CBC.ID_TIPO_OPERACAO_BANCARIA = '#39'DEPOSITO TESOURARIA/BANC' +
+        'O'#39') AND'
+      '      (CBC.ID_LOTE_CONTABIL IS NULL)')
+    Left = 272
+    Top = 112
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'DTDATAINICIAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end
+      item
+        Name = 'DTDATAFINAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end>
+  end
+  object qryTPPROVBASE: TFDQuery
+    Connection = dmConexao.conn
+    FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
+    FormatOptions.FmtDisplayNumeric = '###,##0.00'
+    FormatOptions.FmtEditNumeric = '###,##0.00'
+    SQL.Strings = (
+      '--PEGA TODOS OS TITULOS A PAGAR PROVISIONADOS '
+      '--PAGOS/ ABERTOS E PARCIALMENTE PAGOS'
+      ''
+      'SELECT TP.VALOR_NOMINAL AS VALOR,'
+      '       TP.ID_ORGANIZACAO,'
+      '       TP.REGISTRO_PROVISAO,'
+      '       TP.ID_TITULO_PAGAR as ID,'
+      '       TP.ID_ORGANIZACAO,'
+      '       TP.NUMERO_DOCUMENTO,'
+      '       TP.DATA_PAGAMENTO,'
+      '       TP.DATA_EMISSAO,'
+      '       TP.DESCRICAO AS COMPL,'
+      '       TP.ID_CEDENTE,'
+      '       TP.ID_CONTA_CONTABIL_CREDITO,'
+      '       CCD.CONTA AS CONTA_DEB,'
+      '       CCD.DGVER AS DGDEB,'
+      '       CCD.CODREDUZ AS CDREDUZDEB,'
+      '       CCD.DGREDUZ AS DGREDUZDEB,'
+      '       CCD.DESCRICAO AS DESCTADEBITO,'
+      '       TPB.ID_TITULO_PAGAR_BAIXA as IDTPB,'
+      '       H.CODIGO AS CDHIST,       '
+      '       H.descricao AS HISTORICO,'
+      '       '#39'TPPROV'#39' as TIPO'
+      ''
+      'FROM TITULO_PAGAR TP'
+      
+        'LEFT OUTER JOIN CONTA_CONTABIL CCD ON (CCD.ID_CONTA_CONTABIL = T' +
+        'P.ID_CONTA_CONTABIL_CREDITO) AND (CCD.ID_ORGANIZACAO = TP.ID_ORG' +
+        'ANIZACAO)'
+      
+        'LEFT OUTER JOIN TITULO_PAGAR_BAIXA TPB ON (TPB.ID_TITULO_PAGAR =' +
+        ' TP.ID_TITULO_PAGAR) AND (TPB.ID_ORGANIZACAO = TP.ID_ORGANIZACAO' +
+        ')'
+      
+        'LEFT OUTER JOIN HISTORICO H ON (H.ID_HISTORICO = TP.ID_HISTORICO' +
+        ')  AND (H.ID_ORGANIZACAO = TP.ID_ORGANIZACAO)'
+      ''
+      ''
+      'WHERE (TP.ID_ORGANIZACAO = :PIDORGANIZACAO) AND'
+      
+        '      (TP.DATA_EMISSAO BETWEEN :pDataInicial AND :pDataFinal) AN' +
+        'D'
+      '      (TP.REGISTRO_PROVISAO IS NOT NULL) AND'
+      '      (TP.ID_LOTE_TPB IS NULL) AND'
+      '      (TP.ID_TIPO_STATUS in ('#39'ABERTO'#39','#39'QUITADO'#39', '#39'PARCIAL'#39'))'
+      ''
+      'ORDER BY DATA_EMISSAO ASC, VALOR_NOMINAL DESC;'
+      '')
+    Left = 488
+    Top = 32
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'PDATAINICIAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end
+      item
+        Name = 'PDATAFINAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end>
+  end
+  object qryTPPROVDB: TFDQuery
+    Connection = dmConexao.conn
+    FormatOptions.AssignedValues = [fvDefaultParamDataType, fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.DefaultParamDataType = ftString
+    FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
+    FormatOptions.FmtDisplayNumeric = '###,##0.00'
+    FormatOptions.FmtEditNumeric = '###,##0.00'
+    SQL.Strings = (
+      'SELECT TPH.valor,'
+      '       TPH.ID_TITULO_PAGAR_HISTORICO AS ID,'
+      '       TPH.id_organizacao,'
+      '       CCD.CONTA AS CONTA_DEB,'
+      '       CCD.DGVER AS DGDEB,'
+      '       CCD.CODREDUZ AS CDREDUZDEB,'
+      '       CCD.DGREDUZ AS DGREDUZDEB,'
+      '       CCD.DESCRICAO AS DESCTADEBITO,'
+      '       H.CODIGO AS CDHIST,'
+      '       H.descricao_reduzida AS COMPL,'
+      '       H.descricao AS HISTORICO'
+      ''
+      ''
+      'FROM titulo_pagar_historico TPH'
+      ''
+      
+        ' LEFT OUTER JOIN HISTORICO H ON (H.id_historico = TPH.id_histori' +
+        'co) AND (H.id_organizacao = TPH.id_organizacao)'
+      
+        ' LEFT OUTER JOIN conta_contabil CCD ON (CCD.id_conta_contabil = ' +
+        'H.id_conta_contabil) AND (CCD.id_organizacao = TPH.id_organizaca' +
+        'o)'
+      ' '
+      'WHERE  (TPH.ID_ORGANIZACAO = :PIDORGANIZACAO) AND'
+      '       (TPH.ID_TITULO_PAGAR = :PID)')
+    Left = 600
+    Top = 104
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'PID'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+  object qryTPPROVCR: TFDQuery
+    Connection = dmConexao.conn
+    FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
+    FormatOptions.FmtDisplayNumeric = '###,##0.00'
+    FormatOptions.FmtEditNumeric = '###,##0.00'
+    SQL.Strings = (
+      'SELECT TP.ID_TITULO_PAGAR AS ID,'
+      '       TP.VALOR_NOMINAL AS VALOR,'
+      '       TP.DATA_EMISSAO AS DATA,'
+      '       TP.NUMERO_DOCUMENTO AS IDENTIFCRE,'
+      '       TP.DESCRICAO AS COMPL,'
+      '       C.ID_CEDENTE,'
+      '       C.NOME,'
+      '       CCC.ID_CONTA_CONTABIL AS IDCRE,'
+      '       CCC.CONTA AS CONTA_CRE,'
+      '       CCC.DGVER AS DGCRE,'
+      '       CCC.CODREDUZ AS CDREDUZCRE,'
+      '       CCC.DGREDUZ AS DGREDUZCRE,'
+      '       CCC.DESCRICAO AS DESCTACREDITO,'
+      '       H.CODIGO AS CDHIST,       '
+      '       H.descricao AS HISTORICO'
+      ''
+      'FROM  TITULO_PAGAR TP'
+      
+        'LEFT OUTER JOIN CEDENTE C ON (C.ID_CEDENTE = TP.ID_CEDENTE) AND ' +
+        '(C.ID_ORGANIZACAO = TP.ID_ORGANIZACAO)'
+      
+        'LEFT OUTER JOIN CONTA_CONTABIL CCC ON (CCC.ID_CONTA_CONTABIL = T' +
+        'P.ID_CONTA_CONTABIL_CREDITO) AND (CCC.ID_ORGANIZACAO = TP.ID_ORG' +
+        'ANIZACAO)'
+      
+        'LEFT OUTER JOIN HISTORICO H ON (H.id_historico = TP.ID_HISTORICO' +
+        ')  AND (H.ID_ORGANIZACAO = TP.ID_ORGANIZACAO)'
+      'WHERE  (TP.ID_ORGANIZACAO = :PIDORGANIZACAO) AND'
+      '       (TP.ID_TITULO_PAGAR = :PID)'
+      ''
+      ''
+      '')
+    Left = 472
+    Top = 112
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'PID'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+  object qryObterValorTitulo: TFDQuery
+    Connection = dmConexao.conn
+    SQL.Strings = (
+      'SELECT SUM(TP.valor_nominal) AS VALOR_DEBITO  '
+      ''
+      'FROM  TITULO_PAGAR TP '
+      ''
+      
+        'WHERE (TP.DATA_PAGAMENTO BETWEEN :DTDATAINICIAL AND :DTDATAFINAL' +
+        ') '
+      '  AND (TP.ID_ORGANIZACAO = :PIDORGANIZACAO) '
+      '  AND (TP.ID_TIPO_STATUS in ('#39'QUITADO'#39', '#39'PARCIAL'#39')) '
+      '  AND (TP.ID_LOTE_CONTABIL IS NULL)')
+    Left = 272
+    Top = 216
+    ParamData = <
+      item
+        Name = 'DTDATAINICIAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end
+      item
+        Name = 'DTDATAFINAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+  object qryTPB: TFDQuery
+    Connection = dmConexao.conn
+    FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
+    FormatOptions.FmtDisplayNumeric = '###,##0.00'
+    FormatOptions.FmtEditNumeric = '###,##0.00'
+    SQL.Strings = (
+      'SELECT TP.VALOR_NOMINAL AS VALOR,'
+      '       TP.REGISTRO_PROVISAO,'
+      '       TP.ID_TITULO_PAGAR as ID,'
+      '       TP.ID_ORGANIZACAO,'
+      '       TP.NUMERO_DOCUMENTO,'
+      '       TP.DATA_PAGAMENTO,'
+      '       TP.ID_CEDENTE,'
+      '       TP.ID_CONTA_CONTABIL_CREDITO,'
+      '       CCD.CONTA AS CONTA_DEB,'
+      '       CCD.DGVER AS DGDEB,'
+      '       CCD.CODREDUZ AS CDREDUZDEB,'
+      '       CCD.DGREDUZ AS DGREDUZDEB,'
+      '       CCD.DESCRICAO AS DESCTADEBITO,'
+      '       TPB.ID_TITULO_PAGAR_BAIXA as IDTPB,'
+      '       H.CODIGO AS CDHIST,'
+      '       H.descricao_reduzida AS COMPL,'
+      '       H.descricao AS HISTORICO '
+      ''
+      'FROM TITULO_PAGAR TP'
+      
+        'LEFT OUTER JOIN CONTA_CONTABIL CCD ON (CCD.ID_CONTA_CONTABIL = T' +
+        'P.ID_CONTA_CONTABIL_CREDITO) AND (CCD.ID_ORGANIZACAO = TP.ID_ORG' +
+        'ANIZACAO)'
+      
+        'LEFT OUTER JOIN TITULO_PAGAR_BAIXA TPB ON (TPB.ID_TITULO_PAGAR =' +
+        ' TP.ID_TITULO_PAGAR) AND (TPB.ID_ORGANIZACAO = TP.ID_ORGANIZACAO' +
+        ')'
+      
+        'LEFT OUTER JOIN HISTORICO H ON (H.ID_HISTORICO = TP.ID_HISTORICO' +
+        ')  AND (H.ID_ORGANIZACAO = TP.ID_ORGANIZACAO)'
+      ''
+      'WHERE (TP.ID_ORGANIZACAO = :PIDORGANIZACAO) AND'
+      
+        '      (TP.DATA_PAGAMENTO BETWEEN :pDataInicial AND :pDataFinal) ' +
+        'AND     '
+      '      (TP.ID_TIPO_STATUS in ('#39'QUITADO'#39', '#39'PARCIAL'#39')) AND'
+      '      (TP.ID_LOTE_CONTABIL IS NULL)'
+      ''
+      'ORDER BY TP.DATA_PAGAMENTO'
+      ''
+      '')
+    Left = 600
+    Top = 32
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'PDATAINICIAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end
+      item
+        Name = 'PDATAFINAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end>
+  end
+  object qryTRBAcrescimos: TFDQuery
+    Connection = dmConexao.conn
+    SQL.Strings = (
+      'SELECT TRBAC.ID_TITULO_RECEBER_BAIXA_AC,'
+      '       TRBAC.ID_TITULO_RECEBER_BAIXA,'
+      '       TRBAC.ID_TIPO_ACRESCIMO,'
+      '       TRBAC.VALOR as VALOR,'
+      '       CCC.CONTA AS CONTA_CRE,'
+      '       CCC.DGVER AS DGCRE,'
+      '       CCC.CODREDUZ AS CDREDUZCRE,'
+      '       CCC.DGREDUZ AS DGREDUZCRE,'
+      '       CCC.DESCRICAO AS DESCTACREDITO,'
+      '       H.CODIGO AS CDHIST,'
+      '       H.DESCRICAO_REDUZIDA AS COMPL,'
+      '       H.DESCRICAO AS HISTORICO,'
+      '       TA.DESCRICAO AS DSC_ACRESCIMO'
+      ''
+      'FROM TITULO_RECEBER_BAIXA_AC TRBAC'
+      ''
+      
+        'LEFT OUTER JOIN TIPO_ACRESCIMO TA ON (TA.ID_TIPO_ACRESCIMO = TRB' +
+        'AC.ID_TIPO_ACRESCIMO) AND (TA.ID_ORGANIZACAO = TRBAC.ID_ORGANIZA' +
+        'CAO)'
+      
+        'LEFT OUTER JOIN HISTORICO H ON (H.ID_HISTORICO = TA.ID_HISTORICO' +
+        ') AND (H.ID_ORGANIZACAO = TRBAC.ID_ORGANIZACAO)'
+      
+        'LEFT OUTER JOIN CONTA_CONTABIL CCC ON (CCC.ID_CONTA_CONTABIL = H' +
+        '.ID_CONTA_CONTABIL) AND (CCC.ID_ORGANIZACAO = TRBAC.ID_ORGANIZAC' +
+        'AO)'
+      ''
+      'WHERE   (TRBAC.ID_ORGANIZACAO = :PIDORGANIZACAO) AND'
+      '        (TRBAC.ID_TITULO_RECEBER_BAIXA =:PIDTRB);')
+    Left = 712
+    Top = 272
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'PIDTRB'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+  object qryTPBAcrescimos: TFDQuery
+    Connection = dmConexao.conn
+    FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
+    FormatOptions.FmtDisplayNumeric = '###,##0.00'
+    FormatOptions.FmtEditNumeric = '###,##0.00'
+    SQL.Strings = (
+      'SELECT TPBA.id_titulo_pagar_baixa, '
+      '       TPBA.valor as VALOR, '
+      '       TA.descricao,'
+      '       TA.id_historico, '
+      '       H.CODIGO AS CDHIST,'
+      '       H.descricao_reduzida AS COMPL,'
+      '       H.descricao AS HISTORICO,'
+      '       CCD.CONTA AS CONTA_DEB,'
+      '       CCD.DGVER AS DGDEB,'
+      '       CCD.CODREDUZ AS CDREDUZDEB,'
+      '       CCD.DGREDUZ AS DGREDUZDEB,'
+      '       CCD.DESCRICAO AS DESCTADEBITO, '
+      '       TA.DESCRICAO AS DSC_ACRESCIMO'
+      ''
+      '      '
+      'FROM titulo_pagar_baixa_ac TPBA'
+      ''
+      
+        'JOIN tipo_acrescimo TA ON (TA.id_tipo_acrescimo = TPBA.id_tipo_a' +
+        'crescimo) AND (TA.ID_ORGANIZACAO = TPBA.ID_ORGANIZACAO)'
+      
+        'JOIN HISTORICO H ON (H.id_historico = TA.id_historico) AND (H.ID' +
+        '_ORGANIZACAO = TPBA.ID_ORGANIZACAO)'
+      
+        'JOIN conta_contabil CCD ON (CCD.id_conta_contabil = H.id_conta_c' +
+        'ontabil) AND (CCD.ID_ORGANIZACAO = TPBA.ID_ORGANIZACAO)'
+      ''
+      'WHERE (TPBA.ID_ORGANIZACAO = :pIdOrganizacao) AND'
+      '      (TPBA.id_titulo_pagar_baixa = :pIdTitutloPagarBaixa)'
+      ''
+      'order by TPBA.valor')
+    Left = 706
+    Top = 32
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'PIDTITUTLOPAGARBAIXA'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+  object qryTPBDeducao: TFDQuery
+    Connection = dmConexao.conn
+    FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
+    FormatOptions.FmtDisplayNumeric = '###,##0.00'
+    FormatOptions.FmtEditNumeric = '###,##0.00'
+    SQL.Strings = (
+      'SELECT TPBD.ID_TITULO_PAGAR_BAIXA AS ID, '
+      '       TPBD.VALOR AS VALOR, '
+      '       TD.DESCRICAO,'
+      '       TD.ID_HISTORICO, '
+      '       CCC.CONTA AS CONTA_CRE,'
+      '       CCC.DGVER AS DGCRE,'
+      '       CCC.CODREDUZ AS CDREDUZCRE,'
+      '       CCC.DGREDUZ AS DGREDUZCRE,'
+      '       CCC.DESCRICAO AS DESCTACREDITO,'
+      '       H.CODIGO AS CDHIST,'
+      '       H.DESCRICAO_REDUZIDA AS COMPL,'
+      '       H.DESCRICAO AS HISTORICO'
+      ''
+      'FROM TITULO_PAGAR_BAIXA_DE TPBD'
+      ''
+      
+        'JOIN TIPO_DEDUCAO TD ON (TD.ID_TIPO_DEDUCAO = TPBD.ID_TIPO_DEDUC' +
+        'AO) AND (TD.ID_ORGANIZACAO = TPBD.ID_ORGANIZACAO)'
+      
+        'JOIN HISTORICO H ON (H.ID_HISTORICO = TD.ID_HISTORICO) AND (H.ID' +
+        '_ORGANIZACAO = TPBD.ID_ORGANIZACAO)'
+      
+        'JOIN CONTA_CONTABIL CCC ON (CCC.ID_CONTA_CONTABIL = H.ID_CONTA_C' +
+        'ONTABIL) AND (CCC.ID_ORGANIZACAO = TPBD.ID_ORGANIZACAO)'
+      ''
+      'WHERE (TPBD.ID_ORGANIZACAO = :PIDORGANIZACAO) AND'
+      '      (TPBD.ID_TITULO_PAGAR_BAIXA = :PIDTITUTLOPAGARBAIXA)'
+      ''
+      'ORDER BY TPBD.VALOR DESC')
+    Left = 800
+    Top = 32
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'PIDTITUTLOPAGARBAIXA'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+  object qryTPBCaixa: TFDQuery
+    Connection = dmConexao.conn
+    FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
+    FormatOptions.FmtDisplayNumeric = '###,##0.00'
+    FormatOptions.FmtEditNumeric = '###,##0.00'
+    SQL.Strings = (
+      'SELECT TD.ID_TITULO_PAGAR_BAIXA,'
+      '          TD.ID_ORGANIZACAO,'
+      '          TD.ID_TESOURARIA_DEBITO AS ID, '
+      '          TD.DATA_MOVIMENTO AS DATA, '
+      '          TD.VALOR_NOMINAL AS VALOR,'
+      '          TD.OBSERVACAO, '
+      '          TD.DESCRICAO, '
+      '          CCC.CONTA AS CONTA_CRE,'
+      '          CCC.DGVER AS DGCRE,'
+      '          CCC.CODREDUZ AS CDREDUZCRE,'
+      '          CCC.DGREDUZ AS DGREDUZCRE,'
+      '          CCC.DESCRICAO AS DESCTACREDITO,'
+      '          H.CODIGO AS CDHIST,'
+      '          H.DESCRICAO_REDUZIDA AS COMPL,'
+      '          H.DESCRICAO AS HISTORICO'
+      ''
+      ''
+      'FROM TESOURARIA_DEBITO TD'
+      
+        'LEFT OUTER JOIN HISTORICO H ON (H.ID_HISTORICO = TD.ID_HISTORICO' +
+        ') AND (H.ID_ORGANIZACAO = TD.ID_ORGANIZACAO)'
+      
+        'LEFT OUTER JOIN CONTA_CONTABIL CCC ON (CCC.ID_CONTA_CONTABIL = H' +
+        '.ID_CONTA_CONTABIL) AND (CCC.ID_ORGANIZACAO = TD.ID_ORGANIZACAO)'
+      ''
+      'WHERE (TD.ID_ORGANIZACAO = :PIDORGANIZACAO) AND'
+      '         (TD.ID_TITULO_PAGAR_BAIXA = :PIDTITULOPAGARBAIXA) ')
+    Left = 992
+    Top = 32
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'PIDTITULOPAGARBAIXA'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+  object qryTPBCheque: TFDQuery
+    Connection = dmConexao.conn
+    FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
+    FormatOptions.FmtDisplayNumeric = '###,##0.00'
+    FormatOptions.FmtEditNumeric = '###,##0.00'
+    SQL.Strings = (
+      'SELECT  TPBC.ID_TITULO_PAGAR_BAIXA_CHEQUE AS ID,'
+      '        TPBC.ID_ORGANIZACAO,'
+      '        TPBC.ID_CONTA_BANCARIA_CHEQUE,'
+      '        TPBC.ID_TITULO_PAGAR_BAIXA,'
+      '        TPBC.VALOR AS VALOR,'
+      '        CCC.CONTA AS CONTA_CRE,'
+      '        CCC.DGVER AS DGCRE,'
+      '        CCC.CODREDUZ AS CDREDUZCRE,'
+      '        CCC.DGREDUZ AS DGREDUZCRE,'
+      '        CCC.DESCRICAO AS DESCTACREDITO,'
+      '        TOB.CODIGO AS CDHIST,'
+      '        TOB.DESCRICAO AS COMPL,'
+      '        TOB.DESCRICAO AS HISTORICO'
+      ''
+      ''
+      'FROM TITULO_PAGAR_BAIXA_CHEQUE TPBC'
+      
+        'LEFT OUTER JOIN CONTA_BANCARIA_CHEQUE CBC ON (CBC.ID_CONTA_BANCA' +
+        'RIA_CHEQUE = TPBC.ID_CONTA_BANCARIA_CHEQUE)AND (CBC.ID_ORGANIZAC' +
+        'AO = TPBC.ID_ORGANIZACAO)'
+      
+        'LEFT OUTER JOIN CONTA_BANCARIA CB ON (CB.ID_CONTA_BANCARIA = CBC' +
+        '.ID_CONTA_BANCARIA) AND (CB.ID_ORGANIZACAO = TPBC.ID_ORGANIZACAO' +
+        ')'
+      
+        'LEFT OUTER JOIN CONTA_CONTABIL CCC ON (CCC.ID_CONTA_CONTABIL = C' +
+        'B.ID_CONTA_CONTABIL) AND (CCC.ID_ORGANIZACAO = TPBC.ID_ORGANIZAC' +
+        'AO)'
+      
+        'LEFT OUTER JOIN TIPO_OPERACAO_BANCARIA TOB ON (TOB.ID_TIPO_OPERA' +
+        'CAO_BANCARIA = TPBC.ID_TIPO_OPERACAO_BANCARIA)'
+      ''
+      'WHERE (TPBC.ID_ORGANIZACAO = :PIDORGANIZACAO) AND'
+      '      (TPBC.ID_TITULO_PAGAR_BAIXA = :PIDTITULOPAGARBAIXA) ')
+    Left = 1080
+    Top = 32
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'PIDTITULOPAGARBAIXA'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+  object qryTPBInternet: TFDQuery
+    Connection = dmConexao.conn
+    FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
+    FormatOptions.FmtDisplayNumeric = '###,##0.00'
+    FormatOptions.FmtEditNumeric = '###,##0.00'
+    SQL.Strings = (
+      
+        'SELECT TPBI.ID_TITULO_PAGAR_BAIXA, TPBI.ID_TITULO_PAGAR_BAIXA_IN' +
+        'TERNET as ID,'
+      '       TPBI.ID_ORGANIZACAO,'
+      '       TPBI.VALOR as VALOR,'
+      '       TPBI.id_conta_bancaria,'
+      '       CCC.CONTA AS CONTA_CRE,'
+      '       CCC.DGVER AS DGCRE,'
+      '       CCC.CODREDUZ AS CDREDUZCRE,'
+      '       CCC.DGREDUZ AS DGREDUZCRE,'
+      '       CCC.DESCRICAO AS DESCTACREDITO,'
+      '       TOB.CODIGO AS CDHIST,'
+      '       TOB.DESCRICAO AS COMPL,'
+      '       TOB.DESCRICAO AS HISTORICO'
+      '        '
+      'FROM TITULO_PAGAR_BAIXA_INTERNET TPBI'
+      
+        'LEFT OUTER JOIN CONTA_BANCARIA CB ON (CB.ID_CONTA_BANCARIA = TPB' +
+        'I.ID_CONTA_BANCARIA) AND (CB.ID_ORGANIZACAO = TPBI.ID_ORGANIZACA' +
+        'O)'
+      
+        'LEFT OUTER JOIN CONTA_CONTABIL CCC ON (CCC.ID_CONTA_CONTABIL = C' +
+        'B.ID_CONTA_CONTABIL) AND (CCC.ID_ORGANIZACAO = TPBI.ID_ORGANIZAC' +
+        'AO)'
+      
+        'LEFT OUTER JOIN TIPO_OPERACAO_BANCARIA TOB ON (TOB.ID_TIPO_OPERA' +
+        'CAO_BANCARIA = TPBI.ID_TIPO_OPERACAO_BANCARIA)'
+      ''
+      'WHERE (TPBI.ID_ORGANIZACAO = :PIDORGANIZACAO) AND'
+      '      (TPBI.ID_TITULO_PAGAR_BAIXA = :PIDTITULOPAGARBAIXA) '
+      ''
+      'ORDER BY TPBI.VALOR;'
+      '')
+    Left = 1173
+    Top = 32
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'PIDTITULOPAGARBAIXA'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+  object qryObterTodosLoteContabil: TFDQuery
+    Connection = dmConexao.conn
+    FetchOptions.AssignedValues = [evRowsetSize]
+    FetchOptions.RowsetSize = 500
+    SQL.Strings = (
+      'SELECT  LC.ID_LOTE_CONTABIL,'
+      '        LC.ID_ORGANIZACAO,'
+      '        LC.LOTE,'
+      '        LC.STATUS,'
+      '        LC.DATA_REGISTRO,'
+      '        LC.DATA_ATUALIZACAO,'
+      '        LC.PERIODO_INICIAL,'
+      '        LC.PERIODO_FINAL,'
+      '        LC.TIPO_TABLE,'
+      '        LC.QTD_REGISTROS'
+      ''
+      ' FROM LOTE_CONTABIL LC'
+      ''
+      'WHERE (LC.ID_ORGANIZACAO = :PIDORGANIZACAO) AND'
+      
+        '      (LC.DATA_REGISTRO BETWEEN :DTDATAINICIAL AND :DTDATAFINAL)' +
+        ' AND'
+      '      LC.STATUS <> '#39'EXCLUIDO'#39
+      ''
+      'ORDER BY LC.DATA_REGISTRO, LC.LOTE'
+      '')
+    Left = 36
+    Top = 232
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'DTDATAINICIAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end
+      item
+        Name = 'DTDATAFINAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end>
+  end
+  object qryDeletaLoteContabil: TFDQuery
+    Connection = dmConexao.conn
+    FetchOptions.AssignedValues = [evRowsetSize]
+    FetchOptions.RowsetSize = 500
+    SQL.Strings = (
+      'UPDATE LOTE_CONTABIL LC SET LC.STATUS = '#39'EXCLUIDO'#39
+      ''
+      'WHERE (LC.ID_ORGANIZACAO = :PIDORGANIZACAO) AND '
+      '      (LC.ID_LOTE_CONTABIL = :PIDLOTE);'
+      '')
+    Left = 36
+    Top = 296
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'PIDLOTE'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+  object qrytpprovbase_1: TFDQuery
+    SQL.Strings = (
+      '--PEGA TODOS OS TITULOS A PAGAR PROVISIONADOS '
+      '--PAGOS/ ABERTOS E PARCIALMENTE PAGOS'
+      'SELECT distinct'
+      '              SUM(TP.VALOR_NOMINAL) AS VALOR_NOMINAL,'
+      '              COUNT(tp.registro_provisao) as QTD,'
+      '              max(tp.numero_documento),'
+      '              max(TP.id_historico) as id_historico,'
+      '              TP.REGISTRO_PROVISAO, '
+      '              MAX(TP.ID_ORGANIZACAO) AS ID_ORGANIZACAO,'
+      '              max(tp.id_titulo_pagar) as ID,'
+      '              max(TP.data_emissao) as DATA_EMISSAO,'
+      '              max(TP.numero_documento) as NUMERO_DOCUMENTO,'
+      '              max(TP.ID_CEDENTE) AS ID_CEDENTE,'
+      '              max(TP.DESCRICAO) AS DESCRICAO,'
+      '              max(h.descricao) as HST_DSC,'
+      '             '#39'TPPROV'#39' as TIPO'
+      ''
+      ''
+      'FROM TITULO_PAGAR TP'
+      
+        'LEFT OUTER JOIN historico h on (h.id_historico = tp.id_historico' +
+        ') AND (H.ID_ORGANIZACAO = TP.ID_ORGANIZACAO)'
+      ''
+      'WHERE (TP.ID_ORGANIZACAO = :PIDORGANIZACAO) AND'
+      
+        '      (TP.DATA_EMISSAO BETWEEN :pDataInicial AND :pDataFinal) AN' +
+        'D'
+      '      (TP.ID_TIPO_STATUS <> '#39'EXCLUIDO'#39') AND'
+      '      (TP.ID_LOTE_CONTABIL IS NULL)'
+      ''
+      'GROUP BY TP.REGISTRO_PROVISAO'
+      ''
+      'ORDER BY DATA_EMISSAO ASC, VALOR_NOMINAL DESC;'
+      '')
+    Left = 344
+    Top = 328
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        ParamType = ptInput
+      end
+      item
+        Name = 'PDATAINICIAL'
+        ParamType = ptInput
+      end
+      item
+        Name = 'PDATAFINAL'
+        ParamType = ptInput
+      end>
+  end
+  object qryTPBHistorico: TFDQuery
+    Connection = dmConexao.conn
+    FormatOptions.AssignedValues = [fvDefaultParamDataType, fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.DefaultParamDataType = ftString
+    FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
+    FormatOptions.FmtDisplayNumeric = '###,##0.00'
+    FormatOptions.FmtEditNumeric = '###,##0.00'
+    SQL.Strings = (
+      'SELECT TPH.id_titulo_pagar_historico as ID,'
+      '       TPH.id_organizacao,'
+      '       TPH.id_historico,'
+      '       TPH.id_titulo_pagar,'
+      '       TPH.id_conta_contabil_debito,'
+      '       TPH.VALOR,          '
+      '       H.CODIGO AS CDHIST,'
+      '       H.descricao_reduzida AS COMPL,'
+      '       H.descricao AS HISTORICO,'
+      '       CCD.CONTA AS CONTA_DEB,'
+      '       CCD.DGVER AS DGDEB,'
+      '       CCD.CODREDUZ AS CDREDUZDEB,'
+      '       CCD.DGREDUZ AS DGREDUZDEB,'
+      '       CCD.DESCRICAO AS DESCTADEBITO'
+      ''
+      'FROM TITULO_PAGAR_HISTORICO TPH'
+      ''
+      
+        'LEFT OUTER JOIN HISTORICO H ON (H.ID_HISTORICO = TPH.ID_HISTORIC' +
+        'O) AND (H.ID_ORGANIZACAO = TPH.ID_ORGANIZACAO)'
+      
+        'LEFT OUTER JOIN conta_contabil CCD ON (CCD.id_conta_contabil = H' +
+        '.id_conta_contabil) and (CCD.ID_ORGANIZACAO = TPH.ID_ORGANIZACAO' +
+        ')'
+      ''
+      'WHERE  (TPH.ID_ORGANIZACAO = :PIDORGANIZACAO) AND '
+      '       (TPH.id_titulo_pagar = :PIDTP)'
+      ''
+      'ORDER BY TPH.VALOR')
+    Left = 900
+    Top = 32
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'PIDTP'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+  object qryTRB: TFDQuery
+    Connection = dmConexao.conn
+    FetchOptions.AssignedValues = [evRowsetSize]
+    FetchOptions.RowsetSize = 5000
+    FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
+    FormatOptions.FmtDisplayNumeric = '###,##0.00'
+    FormatOptions.FmtEditNumeric = '###,##0.00'
+    SQL.Strings = (
+      'SELECT TR.VALOR_NOMINAL AS VALOR,'
+      '       TR.ID_ORGANIZACAO,'
+      '       TR.REGISTRO_PROVISAO,'
+      '       TR.ID_TITULO_RECEBER as ID,'
+      '       TR.ID_ORGANIZACAO,'
+      '       TR.NUMERO_DOCUMENTO,'
+      '       TR.DATA_PAGAMENTO,'
+      '       TR.DATA_EMISSAO,'
+      '       TR.DESCRICAO AS COMPL,'
+      '       TR.ID_SACADO,'
+      '       TR.ID_CONTA_CONTABIL_CREDITO,'
+      '       CCC.CONTA AS CONTA_CRE,'
+      '       CCC.DGVER AS DGCRE,'
+      '       CCC.CODREDUZ AS CDREDUZCRE,'
+      '       CCC.DGREDUZ AS DGREDUZCRE,'
+      '       CCC.DESCRICAO AS DESCTACREDITO,'
+      '       TRB.ID_TITULO_RECEBER_BAIXA as IDTRB,'
+      '       H.CODIGO AS CDHIST,       '
+      '       H.descricao AS HISTORICO,'
+      '       '#39'TRB'#39' as TIPO'
+      ''
+      'FROM TITULO_RECEBER TR'
+      
+        'LEFT OUTER JOIN CONTA_CONTABIL CCC ON (CCC.ID_CONTA_CONTABIL = T' +
+        'R.ID_CONTA_CONTABIL_CREDITO) AND (CCC.ID_ORGANIZACAO = TR.ID_ORG' +
+        'ANIZACAO)'
+      
+        'LEFT OUTER JOIN TITULO_RECEBER_BAIXA TRB ON (TRB.ID_TITULO_RECEB' +
+        'ER = TR.ID_TITULO_RECEBER) AND (TRB.ID_ORGANIZACAO = TR.ID_ORGAN' +
+        'IZACAO)'
+      
+        'LEFT OUTER JOIN HISTORICO H ON (H.ID_HISTORICO = TR.ID_HISTORICO' +
+        ')  AND (H.ID_ORGANIZACAO = TR.ID_ORGANIZACAO)'
+      ''
+      'WHERE (TR.ID_ORGANIZACAO = :PIDORGANIZACAO) AND'
+      
+        '      (TR.DATA_PAGAMENTO  BETWEEN :pDataInicial AND :pDataFinal)' +
+        ' AND'
+      '      (TR.ID_LOTE_CONTABIL IS NULL) AND'
+      '      (TR.ID_TIPO_STATUS in ('#39'QUITADO'#39', '#39'PARCIAL'#39'))'
+      ''
+      'ORDER BY DATA_PAGAMENTO ASC, VALOR_NOMINAL DESC;')
+    Left = 608
+    Top = 272
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'PDATAINICIAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end
+      item
+        Name = 'PDATAFINAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end>
+  end
+  object qryTRBDeducao: TFDQuery
+    Connection = dmConexao.conn
+    FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
+    FormatOptions.FmtDisplayNumeric = '###,##0.00'
+    FormatOptions.FmtEditNumeric = '###,##0.00'
+    SQL.Strings = (
+      'SELECT TRBD.ID_TITULO_RECEBER_BAIXA AS ID, '
+      '       TRBD.VALOR AS VALOR, '
+      '       TD.DESCRICAO,'
+      '       TD.ID_HISTORICO, '
+      '       CCC.CONTA AS CONTA_DEB,'
+      '       CCC.DGVER AS DGDEB,'
+      '       CCC.CODREDUZ AS CDREDUZDEB,'
+      '       CCC.DGREDUZ AS DGREDUZDEB,'
+      '       CCC.DESCRICAO AS DESCTADebito,'
+      '       H.CODIGO AS CDHIST,'
+      '       H.DESCRICAO_REDUZIDA AS COMPL,'
+      '       H.DESCRICAO AS HISTORICO'
+      ''
+      'FROM TITULO_RECEBER_BAIXA_DE TRBD'
+      ''
+      
+        'JOIN TIPO_DEDUCAO TD ON (TD.ID_TIPO_DEDUCAO = TRBD.ID_TIPO_DEDUC' +
+        'AO) AND (TD.ID_ORGANIZACAO = TRBD.ID_ORGANIZACAO)'
+      
+        'JOIN HISTORICO H ON (H.ID_HISTORICO = TD.ID_HISTORICO) AND (H.ID' +
+        '_ORGANIZACAO = TRBD.ID_ORGANIZACAO)'
+      
+        'JOIN CONTA_CONTABIL CCC ON (CCC.ID_CONTA_CONTABIL = H.ID_CONTA_C' +
+        'ONTABIL) AND (CCC.ID_ORGANIZACAO = TRBD.ID_ORGANIZACAO)'
+      ''
+      'WHERE (TRBD.ID_ORGANIZACAO = :PIDORGANIZACAO) AND'
+      '      (TRBD.ID_TITULO_RECEBER_BAIXA = :PIDTRB)'
+      ''
+      'ORDER BY TRBD.VALOR DESC')
+    Left = 816
+    Top = 272
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'PIDTRB'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+  object qryTRBHistorico: TFDQuery
+    Connection = dmConexao.conn
+    FormatOptions.AssignedValues = [fvDefaultParamDataType, fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.DefaultParamDataType = ftString
+    FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
+    FormatOptions.FmtDisplayNumeric = '###,##0.00'
+    FormatOptions.FmtEditNumeric = '###,##0.00'
+    SQL.Strings = (
+      'SELECT TRH.id_titulo_RECEBER_historico as ID,'
+      '       TRH.id_organizacao,'
+      '       TRH.id_historico,'
+      '       TRH.id_titulo_RECEBER,'
+      '       TRH.id_conta_contabil_debito,'
+      '       TRH.VALOR,          '
+      '       H.CODIGO AS CDHIST,'
+      '       H.descricao_reduzida AS COMPL,'
+      '       H.descricao AS HISTORICO,'
+      '       CCC.CONTA AS CONTA_CRE,'
+      '       CCC.DGVER AS DGCRE,'
+      '       CCC.CODREDUZ AS CDREDUZCRE,'
+      '       CCC.DGREDUZ AS DGREDUZCRE,'
+      '       CCC.DESCRICAO AS DESCTACREDITO'
+      ''
+      'FROM TITULO_RECEBER_HISTORICO TRH'
+      ''
+      
+        'LEFT OUTER JOIN HISTORICO H ON (H.ID_HISTORICO = TRH.ID_HISTORIC' +
+        'O) AND (H.ID_ORGANIZACAO = TRH.ID_ORGANIZACAO)'
+      
+        'LEFT OUTER JOIN conta_contabil CCC ON (CCC.id_conta_contabil = H' +
+        '.id_conta_contabil) and (CCC.ID_ORGANIZACAO = TRH.ID_ORGANIZACAO' +
+        ')'
+      ''
+      'WHERE  (TRH.ID_ORGANIZACAO = :PIDORGANIZACAO) AND '
+      '       (TRH.ID_TITULO_RECEBER = :PIDTITULO)'
+      ''
+      'ORDER BY TRH.VALOR')
+    Left = 916
+    Top = 272
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'PIDTITULO'
+        ParamType = ptInput
+      end>
+  end
+  object qryTRBCaixa: TFDQuery
+    Connection = dmConexao.conn
+    FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
+    FormatOptions.FmtDisplayNumeric = '###,##0.00'
+    FormatOptions.FmtEditNumeric = '###,##0.00'
+    SQL.Strings = (
+      'SELECT TR.ID_TITULO_RECEBER_BAIXA,'
+      '          TR.ID_ORGANIZACAO,'
+      '          TR.ID_TESOURARIA_CREDITO AS ID, '
+      '          TR.DATA_MOVIMENTO AS DATA, '
+      '          TR.VALOR_NOMINAL AS VALOR,'
+      '          TR.OBSERVACAO, '
+      '          TR.DESCRICAO, '
+      '          CCD.CONTA AS CONTA_DEB,'
+      '          CCD.DGVER AS DGDEB,'
+      '          CCD.CODREDUZ AS CDREDUZDEB,'
+      '          CCD.DGREDUZ AS DGREDUZDEB,'
+      '          CCD.DESCRICAO AS DESCTADEBITO,'
+      '          H.CODIGO AS CDHIST,'
+      '          H.DESCRICAO_REDUZIDA AS COMPL,'
+      '          H.DESCRICAO AS HISTORICO'
+      ''
+      ''
+      'FROM TESOURARIA_CREDITO TR'
+      
+        'LEFT OUTER JOIN HISTORICO H ON (H.ID_HISTORICO = TR.ID_HISTORICO' +
+        ') AND (H.ID_ORGANIZACAO = TR.ID_ORGANIZACAO)'
+      
+        'LEFT OUTER JOIN CONTA_CONTABIL CCD ON (CCD.ID_CONTA_CONTABIL = H' +
+        '.ID_CONTA_CONTABIL) AND (CCD.ID_ORGANIZACAO = TR.ID_ORGANIZACAO)'
+      ''
+      'WHERE (TR.ID_ORGANIZACAO = :PIDORGANIZACAO) AND'
+      '      (TR.ID_TITULO_RECEBER_BAIXA = :PIDTRB)')
+    Left = 1008
+    Top = 272
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'PIDTRB'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+  object qryTRBCheque: TFDQuery
+    Connection = dmConexao.conn
+    FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
+    FormatOptions.FmtDisplayNumeric = '###,##0.00'
+    FormatOptions.FmtEditNumeric = '###,##0.00'
+    SQL.Strings = (
+      'SELECT TRBC.ID_TITULO_RECEBER_BAIXA_CHEQUE,'
+      '        TRBC.ID_TITULO_RECEBER_BAIXA,'
+      '        TRBC.ID_ORGANIZACAO,'
+      '        TRBC.VALOR AS VALOR,'
+      '        H.CODIGO AS CDHIST,'
+      '        H.DESCRICAO_REDUZIDA AS COMPL,'
+      '        H.DESCRICAO AS HISTORICO,'
+      '        CCD.CONTA AS CONTA_DEB,'
+      '        CCD.DGVER AS DGDEB,'
+      '        CCD.CODREDUZ AS CDREDUZDEB,'
+      '        CCD.DGREDUZ AS DGREDUZDEB,'
+      '        CCD.DESCRICAO AS DESCTADEBITO'
+      ''
+      'FROM TITULO_RECEBER_BAIXA_CHEQUE TRBC'
+      
+        'LEFT OUTER JOIN TESOURARIA_CREDITO TC on (tc.id_titulo_receber_b' +
+        'aixa_cheque = TRBC.ID_TITULO_RECEBER_BAIXA_CHEQUE)  AND (TC.id_o' +
+        'rganizacao = TRBC.id_organizacao)'
+      
+        'LEFT OUTER JOIN HISTORICO H ON (H.ID_HISTORICO = TC.ID_HISTORICO' +
+        ') and (h.id_organizacao = TRBC.id_organizacao)'
+      
+        'LEFT OUTER JOIN CONTA_CONTABIL CCD ON (CCD.ID_CONTA_CONTABIL = H' +
+        '.ID_CONTA_CONTABIL) AND (CCD.id_organizacao = TRBC.id_organizaca' +
+        'o)'
+      ''
+      'WHERE (TRBC.id_organizacao = :PIDORGANIZACAO) AND'
+      '      (TRBC.ID_TITULO_RECEBER_BAIXA = :PIDTRB);'
+      '')
+    Left = 1088
+    Top = 272
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'PIDTRB'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+  object qryTRBInternet: TFDQuery
+    Connection = dmConexao.conn
+    FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
+    FormatOptions.FmtDisplayNumeric = '###,##0.00'
+    FormatOptions.FmtEditNumeric = '###,##0.00'
+    SQL.Strings = (
+      'SELECT  CBC.ID_CONTA_BANCARIA,'
+      '        CBC.ID_ORGANIZACAO,'
+      '        CBC.VALOR AS VALOR,'
+      '        CBC.DATA_MOVIMENTO,'
+      '        CBC.DESCRICAO,'
+      '        TOB.CODIGO AS CDHIST,'
+      '        TOB.DESCRICAO AS COMPL,'
+      '        TOB.DESCRICAO AS HISTORICO,'
+      '        CCD.CONTA AS CONTA_DEB,'
+      '        CCD.DGVER AS DGDEB,'
+      '        CCD.CODREDUZ AS CDREDUZDEB,'
+      '        CCD.DGREDUZ AS DGREDUZDEB,'
+      '        CCD.DESCRICAO AS DESCTADEBITO'
+      ''
+      'FROM CONTA_BANCARIA_CREDITO CBC'
+      
+        'LEFT OUTER JOIN TIPO_OPERACAO_BANCARIA TOB ON (TOB.ID_TIPO_OPERA' +
+        'CAO_BANCARIA = CBC.ID_TIPO_OPERACAO_BANCARIA) AND (TOB.ID_ORGANI' +
+        'ZACAO = CBC.ID_ORGANIZACAO)'
+      
+        'LEFT OUTER JOIN CONTA_BANCARIA CB ON (CB.ID_CONTA_BANCARIA = CBC' +
+        '.ID_CONTA_BANCARIA) AND (CB.ID_ORGANIZACAO = CBC.ID_ORGANIZACAO)'
+      
+        'LEFT OUTER JOIN CONTA_CONTABIL CCD ON (CCD.ID_CONTA_CONTABIL = C' +
+        'B.ID_CONTA_CONTABIL) AND (CCD.ID_ORGANIZACAO = CBC.ID_ORGANIZACA' +
+        'O)'
+      ''
+      'WHERE (CBC.ID_ORGANIZACAO = :PIDORGANIZACAO) AND'
+      '      (CBC.ID_TITULO_RECEBER = :PIDTR)'
+      '')
+    Left = 1189
+    Top = 272
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'PIDTR'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+  object qryTR: TFDQuery
+    Connection = dmConexao.conn
+    FetchOptions.AssignedValues = [evRowsetSize]
+    FetchOptions.RowsetSize = 5000
+    FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
+    FormatOptions.FmtDisplayNumeric = '###,##0.00'
+    FormatOptions.FmtEditNumeric = '###,##0.00'
+    SQL.Strings = (
+      'SELECT TR.VALOR_NOMINAL AS VALOR,'
+      '       TR.ID_ORGANIZACAO,'
+      '       TR.REGISTRO_PROVISAO,'
+      '       TR.ID_TITULO_RECEBER as ID,'
+      '       TR.ID_ORGANIZACAO,'
+      '       TR.NUMERO_DOCUMENTO,'
+      '       TR.DATA_PAGAMENTO,'
+      '       TR.DATA_EMISSAO,'
+      '       TR.DESCRICAO AS COMPL,'
+      '       TR.ID_SACADO,'
+      '       TR.ID_CONTA_CONTABIL_DEBITO,'
+      '       CCC.CONTA AS CONTA_CRE,'
+      '       CCC.DGVER AS DGCRE,'
+      '       CCC.CODREDUZ AS CDREDUZCRE,'
+      '       CCC.DGREDUZ AS DGREDUZCRE,'
+      '       CCC.DESCRICAO AS DESCTACREDITO,'
+      '       TRB.ID_TITULO_RECEBER_BAIXA as IDBAIXA,'
+      '       H.CODIGO AS CDHIST,       '
+      '       H.descricao AS HISTORICO,'
+      '       '#39'TRPROV'#39' as TIPO'
+      ''
+      'FROM TITULO_RECEBER TR'
+      
+        'LEFT OUTER JOIN CONTA_CONTABIL CCC ON (CCC.ID_CONTA_CONTABIL = T' +
+        'R.ID_CONTA_CONTABIL_DEBITO) AND (CCC.ID_ORGANIZACAO = TR.ID_ORGA' +
+        'NIZACAO)'
+      
+        'LEFT OUTER JOIN TITULO_RECEBER_BAIXA TRB ON (TRB.ID_TITULO_RECEB' +
+        'ER = TR.ID_TITULO_RECEBER) AND (TRB.ID_ORGANIZACAO = TR.ID_ORGAN' +
+        'IZACAO)'
+      
+        'LEFT OUTER JOIN HISTORICO H ON (H.ID_HISTORICO = TR.ID_HISTORICO' +
+        ')  AND (H.ID_ORGANIZACAO = TR.ID_ORGANIZACAO)'
+      ''
+      ''
+      'WHERE (TR.ID_ORGANIZACAO = :PIDORGANIZACAO) AND'
+      
+        '      (TR.DATA_EMISSAO BETWEEN :pDataInicial AND :pDataFinal) AN' +
+        'D'
+      '      (TR.REGISTRO_PROVISAO IS NOT NULL) AND'
+      '      (TR.ID_LOTE_TRB IS NULL) AND'
+      '      (TR.ID_TIPO_STATUS in ('#39'ABERTO'#39','#39'QUITADO'#39', '#39'PARCIAL'#39'))'
+      ''
+      'ORDER BY DATA_EMISSAO ASC, VALOR_NOMINAL DESC;'
+      '')
+    Left = 600
+    Top = 208
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'PDATAINICIAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end
+      item
+        Name = 'PDATAFINAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end>
+  end
+  object qryTRCR: TFDQuery
+    Connection = dmConexao.conn
+    FetchOptions.AssignedValues = [evRowsetSize]
+    FetchOptions.RowsetSize = 5000
+    FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
+    FormatOptions.FmtDisplayNumeric = '###,##0.00'
+    FormatOptions.FmtEditNumeric = '###,##0.00'
+    SQL.Strings = (
+      'SELECT TR.ID_TITULO_RECEBER AS ID,'
+      '       TR.VALOR_NOMINAL AS VALOR,'
+      '       TR.DATA_EMISSAO AS DATA,'
+      '       TR.NUMERO_DOCUMENTO AS IDENTIFCRE,'
+      '       TR.DESCRICAO AS COMPL,'
+      '       S.ID_SACADO,'
+      '       S.NOME,'
+      '       CCD.CONTA AS CONTA_DEB,'
+      '       CCD.DGVER AS DGDEB,'
+      '       CCD.CODREDUZ AS CDREDUZDEB,'
+      '       CCD.DGREDUZ AS DGREDUZDEB,'
+      '       CCD.DESCRICAO AS DESCTADEBITO,'
+      '       H.CODIGO AS CDHIST,       '
+      '       H.descricao AS HISTORICO'
+      ''
+      'FROM  TITULO_RECEBER TR'
+      
+        'LEFT OUTER JOIN SACADO S ON (S.ID_SACADO = TR.ID_SACADO) AND (S.' +
+        'ID_ORGANIZACAO = TR.ID_ORGANIZACAO)'
+      
+        'LEFT OUTER JOIN CONTA_CONTABIL CCD ON (CCD.ID_CONTA_CONTABIL = T' +
+        'R.ID_CONTA_CONTABIL_CREDITO) AND (CCD.ID_ORGANIZACAO = TR.ID_ORG' +
+        'ANIZACAO)'
+      
+        'LEFT OUTER JOIN HISTORICO H ON (H.ID_HISTORICO = TR.ID_HISTORICO' +
+        ')  AND (H.ID_ORGANIZACAO = TR.ID_ORGANIZACAO)'
+      'WHERE  (TR.ID_ORGANIZACAO = :PIDORGANIZACAO) AND'
+      '       (TR.ID_TITULO_RECEBER = :PID)')
+    Left = 672
+    Top = 208
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'PID'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+  object qryTRDB: TFDQuery
+    Connection = dmConexao.conn
+    FetchOptions.AssignedValues = [evRowsetSize]
+    FetchOptions.RowsetSize = 5000
+    FormatOptions.AssignedValues = [fvDefaultParamDataType, fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.DefaultParamDataType = ftString
+    FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
+    FormatOptions.FmtDisplayNumeric = '###,##0.00'
+    FormatOptions.FmtEditNumeric = '###,##0.00'
+    SQL.Strings = (
+      'SELECT TPH.VALOR,'
+      '       TPH.ID_TITULO_RECEBER_HISTORICO AS ID,'
+      '       TPH.ID_ORGANIZACAO,'
+      '       CCC.CONTA AS CONTA_CRE,'
+      '       CCC.DGVER AS DGCRE,'
+      '       CCC.CODREDUZ AS CDREDUZCRE,'
+      '       CCC.DGREDUZ AS DGREDUZCRE,'
+      '       CCC.DESCRICAO AS DESCTACREDITO,'
+      '       H.CODIGO AS CDHIST,'
+      '       H.DESCRICAO_REDUZIDA AS COMPL,'
+      '       H.DESCRICAO AS HISTORICO'
+      ''
+      'FROM TITULO_RECEBER_HISTORICO TPH'
+      ''
+      
+        ' LEFT OUTER JOIN HISTORICO H ON (H.ID_HISTORICO = TPH.ID_HISTORI' +
+        'CO) AND (H.ID_ORGANIZACAO = TPH.ID_ORGANIZACAO)'
+      
+        ' LEFT OUTER JOIN CONTA_CONTABIL CCC ON (CCC.ID_CONTA_CONTABIL = ' +
+        'H.ID_CONTA_CONTABIL) AND (CCC.ID_ORGANIZACAO = TPH.ID_ORGANIZACA' +
+        'O)'
+      ' '
+      'WHERE  (TPH.ID_ORGANIZACAO = :PIDORGANIZACAO) AND'
+      '       (TPH.ID_TITULO_RECEBER = :PID)')
+    Left = 752
+    Top = 208
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'PID'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+  object qryExistCODREDUZ: TFDQuery
+    Connection = dmConexao.ConnMega
+    FetchOptions.AssignedValues = [evRowsetSize]
+    FetchOptions.RowsetSize = 5000
+    FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
+    FormatOptions.FmtDisplayNumeric = '###,##0.00'
+    FormatOptions.FmtEditNumeric = '###,##0.00'
+    SQL.Strings = (
+      
+        '--SELECT COUNT(*) FROM cplanoempresa PLANO WHERE PLANO.empresa =' +
+        ' :PIDEMPRESA AND PLANO.CODREDUZ = :PCODREDUZ'
+      ''
+      'SELECT FIRST 1'
+      '    NMCONTA,'
+      '    CONTA, '
+      '    DGVER, '
+      '    CODREDUZ, '
+      '    DGREDUZ, '
+      '    INSCMF, '
+      '    TIPO, '
+      '    GRAU, '
+      '    ORDEM_DIPJ, '
+      '    RELACIONAMENTO, '
+      '    NATUREZA '
+      'FROM CPLANOEMPRESA '
+      
+        'WHERE (LEI11638 <> 0 ) AND (GRAU = 5)  AND (EMPRESA = :PIDEMPRES' +
+        'A) '
+      'AND CODREDUZ = :PCODREDUZ'
+      ''
+      '')
+    Left = 736
+    Top = 480
+    ParamData = <
+      item
+        Name = 'PIDEMPRESA'
+        DataType = ftInteger
+        ParamType = ptInput
+        Size = 1
+      end
+      item
+        Name = 'PCODREDUZ'
+        DataType = ftInteger
+        ParamType = ptInput
+        Size = 1
+      end>
+  end
+end
