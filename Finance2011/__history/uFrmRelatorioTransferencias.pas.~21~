@@ -1,0 +1,160 @@
+unit uFrmRelatorioTransferencias;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, uFramePeriodo, udmConexao, uDMOrganizacao, uUtil,
+  Vcl.StdCtrls, Vcl.Buttons, FireDAC.Stan.Intf, FireDAC.Stan.Option,
+  FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
+  FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB,
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, frxClass, frxDBSet;
+
+type
+  TfrmRelatorioTransferencias = class(TForm)
+    frmPeriodo1: TfrmPeriodo;
+    btnBuscaTRF: TBitBtn;
+    btnImprimir: TBitBtn;
+    btnFechar: TBitBtn;
+    qryObterPorPeriodo: TFDQuery;
+    frxDBDataset1: TfrxDBDataset;
+    frxRelatorioTRF: TfrxReport;
+    procedure FormCreate(Sender: TObject);
+    procedure btnBuscaTRFClick(Sender: TObject);
+    procedure btnImprimirClick(Sender: TObject);
+  private
+    { Private declarations }
+    pIDOrganizacao :string;
+    pDataInicial,  pDataFinal: TDate;
+    pathRelatorio :string;
+    procedure limpaPanel;
+    function obterPorPeriodo(pIdOrganizacao: String; dtDataInicial,
+      dtDataFinal: TDateTime): Boolean;
+    procedure inicializarVariaveisRelatorio(dtInicial, dtFinal: TDate);
+  public
+    { Public declarations }
+  end;
+
+var
+  frmRelatorioTransferencias: TfrmRelatorioTransferencias;
+
+implementation
+
+{$R *.dfm}
+
+procedure TfrmRelatorioTransferencias.btnBuscaTRFClick(Sender: TObject);
+
+begin
+ pDataInicial :=  frmPeriodo1.getDataInicial;
+ pDataFinal   := frmPeriodo1.getDataFinal;
+ pathRelatorio := uUtil.TPathRelatorio.getRelatorioTransferencias;
+
+  if obterPorPeriodo(pIDOrganizacao, pDataInicial, pDataFinal) then begin
+
+     btnImprimir.Enabled := True;
+
+  end;
+
+end;
+
+function TfrmRelatorioTransferencias.obterPorPeriodo(pIdOrganizacao: String; dtDataInicial, dtDataFinal: TDateTime): Boolean;
+begin
+
+try
+  qryObterPorPeriodo.Close;
+  qryObterPorPeriodo.Connection := dmConexao.Conn;
+  qryObterPorPeriodo.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+  qryObterPorPeriodo.ParamByName('DTDATAINICIAL').AsDateTime := dtDataInicial;
+  qryObterPorPeriodo.ParamByName('DTDATAFINAL').AsDateTime := dtDataFinal;
+  qryObterPorPeriodo.Open;
+  qryObterPorPeriodo.Last;
+
+except
+  raise Exception.Create('Erro ao obter transferências no período.');
+
+end;
+
+  Result := not qryObterPorPeriodo.IsEmpty;
+
+end;
+
+
+procedure TfrmRelatorioTransferencias.btnImprimirClick(Sender: TObject);
+begin
+
+if qryObterPorPeriodo.RecordCount >0 then begin
+
+      frxRelatorioTRF.Clear;
+      if not(frxRelatorioTRF.LoadFromFile(pathRelatorio)) then
+      begin
+        ShowMessage('Relatório template não encontrado. Contate o Administrador do sistema.');
+      end
+      else
+      begin
+        inicializarVariaveisRelatorio(pDataInicial, pDataFinal);
+        frxRelatorioTRF.OldStyleProgress := True;
+        frxRelatorioTRF.ShowProgress := True;
+        frxRelatorioTRF.ShowReport;
+      end;
+
+
+
+
+end;
+
+end;
+
+procedure TfrmRelatorioTransferencias.FormCreate(Sender: TObject);
+begin
+
+ dmConexao.conectarBanco;
+ pIDOrganizacao :=uUtil.TOrgAtual.getId;
+
+
+ limpaPanel;
+
+
+end;
+
+
+procedure TfrmRelatorioTransferencias.limpaPanel;
+begin
+
+ frmPeriodo1.inicializa(Now,Now);
+
+ pDataInicial := frmPeriodo1.getDataInicial;
+ pDataFinal :=frmPeriodo1.getDataFinal;
+ pIDOrganizacao := uutil.TOrgAtual.getId;
+
+
+end;
+
+
+procedure TfrmRelatorioTransferencias.inicializarVariaveisRelatorio(dtInicial, dtFinal: TDate);
+begin
+
+  with frxRelatorioTRF.Variables do
+  begin
+
+    Variables['strRazaoSocial'] :=
+      QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('RAZAO_SOCIAL')
+      .AsString);
+    Variables['strCNPJ'] :=
+      QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('CNPJ').AsString);
+    Variables['strEndereco'] :=
+      QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('ENDERECO').AsString);
+    Variables['strCEP'] :=
+      QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('CEP').AsString);
+    Variables['strCidade'] :=
+      QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('CIDADE').AsString);
+    Variables['strUF'] :=
+      QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('UF').AsString);
+    Variables['strPeriodo'] :=' de ' + QuotedStr( FormatDateTime('DD/MM/YYYY', dtInicial)) + ' até ' + QuotedStr( FormatDateTime('DD/MM/YYYY', dtFinal));
+
+
+  end;
+
+end;
+
+
+end.

@@ -1,0 +1,184 @@
+object frmRelatorioTransferencias: TfrmRelatorioTransferencias
+  Left = 0
+  Top = 0
+  Caption = 'Relat'#243'rio das Transferencias '
+  ClientHeight = 304
+  ClientWidth = 654
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  Position = poDesktopCenter
+  OnCreate = FormCreate
+  PixelsPerInch = 96
+  TextHeight = 13
+  inline frmPeriodo1: TfrmPeriodo
+    Left = 1
+    Top = 1
+    Width = 257
+    Height = 97
+    TabOrder = 0
+    ExplicitLeft = 1
+    ExplicitTop = 1
+    ExplicitWidth = 257
+    ExplicitHeight = 97
+  end
+  object btnBuscaTRF: TBitBtn
+    Left = 328
+    Top = 1
+    Width = 153
+    Height = 26
+    Caption = 'Buscar'
+    TabOrder = 1
+    OnClick = btnBuscaTRFClick
+  end
+  object btnImprimir: TBitBtn
+    Left = 328
+    Top = 33
+    Width = 153
+    Height = 26
+    Caption = 'Imprimir'
+    TabOrder = 2
+    OnClick = btnImprimirClick
+  end
+  object btnFechar: TBitBtn
+    Left = 328
+    Top = 65
+    Width = 153
+    Height = 26
+    Caption = 'Fechar'
+    TabOrder = 3
+    OnClick = btnFecharClick
+  end
+  object dxStatusBar1: TdxStatusBar
+    Left = 0
+    Top = 284
+    Width = 654
+    Height = 20
+    Panels = <
+      item
+        PanelStyleClassName = 'TdxStatusBarTextPanelStyle'
+        Width = 100
+      end
+      item
+        PanelStyleClassName = 'TdxStatusBarTextPanelStyle'
+        Width = 500
+      end>
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ExplicitLeft = 624
+    ExplicitTop = 288
+    ExplicitWidth = 0
+  end
+  object qryObterPorPeriodo: TFDQuery
+    Connection = dmConexao.conn
+    FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
+    FormatOptions.FmtDisplayNumeric = '###,##0.00'
+    FormatOptions.FmtEditNumeric = '###,##0.00'
+    SQL.Strings = (
+      'SELECT  CBT.ID_CONTA_BANCARIA_TRANSFERENCIA,'
+      '        CBT.ID_CONTA_BANCARIA_CREDITO,'
+      '        CBT.ID_CONTA_BANCARIA_DEBITO,'
+      '        CBT.ID_TIPO_OPERACAO_BANCARIA,'
+      '        CBT.VALOR, '
+      '        CBT.DATA_MOVIMENTO,'
+      '        CBT.IDENTIFICACAO,'
+      '        CBT.VALOR,'
+      '       CBDS.id_conta_bancaria_credito,'
+      '       CBC.CONTA AS CONTADESTINO,'
+      '       CBC.AGENCIA AS AGENCIADESTINO,'
+      '       CBC.TITULAR AS TITULARDESTINO,'
+      '       CBDS.IDENTIFICACAO AS IDENTICACAODESTINO,'
+      '       CBD.CONTA AS CONTAORIGEM,'
+      '       CBD.AGENCIA AS AGENCIAORIGEM,'
+      '       CBD.TITULAR AS TITULARORIGEM,'
+      '       CBOG.IDENTIFICACAO AS IDENTICACAOORIGEM,'
+      '       lc.lote, lc.data_registro'
+      ''
+      ''
+      'FROM CONTA_BANCARIA_TRANSFERENCIA CBT'
+      ''
+      
+        'LEFT OUTER JOIN CONTA_BANCARIA_CREDITO CBDS ON (CBDS.ID_CONTA_BA' +
+        'NCARIA_CREDITO = CBT.ID_CONTA_BANCARIA_CREDITO) AND (CBDS.ID_ORG' +
+        'ANIZACAO = CBT.ID_ORGANIZACAO)'
+      
+        'LEFT OUTER JOIN CONTA_BANCARIA CBC ON (CBC.ID_CONTA_BANCARIA = C' +
+        'BDS.ID_CONTA_BANCARIA) AND (CBC.ID_ORGANIZACAO = CBT.ID_ORGANIZA' +
+        'CAO)'
+      
+        'LEFT OUTER JOIN CONTA_BANCARIA_DEBITO  CBOG ON (CBOG.ID_CONTA_BA' +
+        'NCARIA_DEBITO  = CBT.ID_CONTA_BANCARIA_DEBITO) AND (CBOG.ID_ORGA' +
+        'NIZACAO = CBT.ID_ORGANIZACAO)'
+      
+        'LEFT OUTER JOIN CONTA_BANCARIA CBD ON (CBD.ID_CONTA_BANCARIA = C' +
+        'BOG.ID_CONTA_BANCARIA) AND (CBD.ID_ORGANIZACAO = CBT.ID_ORGANIZA' +
+        'CAO)'
+      
+        'LEFT OUTER JOIN LOTE_CONTABIL LC ON (LC.ID_LOTE_CONTABIL = CBT.I' +
+        'D_LOTE_CONTABIL) AND (LC.ID_ORGANIZACAO = CBT.ID_ORGANIZACAO)'
+      ''
+      ''
+      'WHERE   (CBT.ID_ORGANIZACAO = :PIDORGANIZACAO) AND        '
+      
+        '        (CBT.DATA_MOVIMENTO BETWEEN :DTDATAINICIAL AND :DTDATAFI' +
+        'NAL)'
+      ''
+      ''
+      '')
+    Left = 496
+    Top = 152
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'DTDATAINICIAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end
+      item
+        Name = 'DTDATAFINAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end>
+  end
+  object frxDBDataset1: TfrxDBDataset
+    UserName = 'frxDBDataset1'
+    CloseDataSource = False
+    BCDToCurrency = False
+    Left = 536
+    Top = 16
+  end
+  object frxRelatorioTRF: TfrxReport
+    Version = '6.3.7'
+    DotMatrixReport = False
+    IniFile = '\Software\Fast Reports'
+    PreviewOptions.Buttons = [pbPrint, pbLoad, pbSave, pbExport, pbZoom, pbFind, pbOutline, pbPageSetup, pbTools, pbEdit, pbNavigator, pbExportQuick, pbCopy, pbSelection]
+    PreviewOptions.Zoom = 1.000000000000000000
+    PrintOptions.Printer = 'Padr'#227'o'
+    PrintOptions.PrintOnSheet = 0
+    ReportOptions.CreateDate = 43789.422723564810000000
+    ReportOptions.LastChange = 43789.422723564810000000
+    ScriptLanguage = 'PascalScript'
+    ScriptText.Strings = (
+      'begin'
+      ''
+      'end.')
+    Left = 544
+    Top = 72
+    Datasets = <>
+    Variables = <>
+    Style = <>
+  end
+end
