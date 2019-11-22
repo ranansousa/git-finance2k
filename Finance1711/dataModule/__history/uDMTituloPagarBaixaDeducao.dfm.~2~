@@ -1,9 +1,0 @@
-object dtsTPBDeducao: TdtsTPBDeducao
-  OldCreateOrder = False
-  Height = 360
-  Width = 508
-  object qryObterPorTPB: TFDQuery
-    Left = 112
-    Top = 88
-  end
-end

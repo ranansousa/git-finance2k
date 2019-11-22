@@ -1,5 +1,0 @@
-object dmTPCentroCustoConsulta: TdmTPCentroCustoConsulta
-  OldCreateOrder = False
-  Height = 550
-  Width = 873
-end
