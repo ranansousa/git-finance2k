@@ -1,0 +1,596 @@
+unit uFrmTransfereBancoCaixa;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, dxSkinsCore, dxSkinsDefaultPainters,
+  cxClasses, dxBar, cxGraphics, cxControls, cxLookAndFeels, udmConexao, uUtil,System.DateUtils,
+  cxLookAndFeelPainters, dxRibbonSkins, dxRibbonCustomizationForm, dxRibbon,uContaContabilModel,
+  dxBarBuiltInMenu, cxPC, uFrameCheque, uFrameContaBancaria, uFrameGeneric,uDMTransfBancoCaixa,
+  uFrameResponsavel, cxContainer, cxEdit, cxTextEdit, cxLabel, Vcl.ComCtrls,
+  dxCore, cxDateUtils, dxStatusBar, cxMaskEdit, cxDropDownEdit, cxCalendar,
+  Vcl.StdCtrls, ENumEd, FireDAC.Stan.Intf, FireDAC.Stan.Option,uCheque, uDMOrganizacao,
+  FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
+  FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB,
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.ExtCtrls, Vcl.Grids,
+  Vcl.DBGrids, uFramePeriodo, Vcl.Buttons, ACBrBase, ACBrExtenso, frxClass,
+  frxDBSet, EExtenso;
+
+type
+  TfrmTransferenciasBancoCaixa = class(TForm)
+    dxBarManager1: TdxBarManager;
+    dxMainTab1: TdxRibbonTab;
+    dxMain: TdxRibbon;
+    cxpgcntrlPGTRFBCOCAIXA: TcxPageControl;
+    tbTransfereCH: TcxTabSheet;
+    tbTransfereEstorna: TcxTabSheet;
+    frmContaBancaria1: TfrmContaBancaria;
+    cxLabel2: TcxLabel;
+    edtTipoOperacao: TcxTextEdit;
+    cxLabel9: TcxLabel;
+    edtContaContabilDB: TcxTextEdit;
+    cbbDataMovimento: TcxDateEdit;
+    dxStatusTRF: TdxStatusBar;
+    lblResponsavel: TLabel;
+    cxLabel5: TcxLabel;
+    edtValor: TEvNumEdit;
+    cxLabel10: TcxLabel;
+    edtContaContabilCR: TcxTextEdit;
+    dxBarManager1Bar1: TdxBar;
+    dxBarManager1Bar2: TdxBar;
+    dxBarManager1Bar3: TdxBar;
+    dxBarManager1Bar4: TdxBar;
+    dxBarManager1Bar5: TdxBar;
+    dxbrlrgbtn1: TdxBarLargeButton;
+    dxbrlrgbtn2: TdxBarLargeButton;
+    dxbrlrgbtn3: TdxBarLargeButton;
+    dxBtnTrfEstorna: TdxBarLargeButton;
+    dxBtnTrfConfirma: TdxBarLargeButton;
+    dxBtnTrfEspecie: TdxBarLargeButton;
+    cxLabel1: TcxLabel;
+    edtIdentificador: TcxTextEdit;
+    frameCheque1: TframeCheque;
+    rgOpcaoTRF: TRadioGroup;
+    frameResponsavel1: TframeResponsavel;
+    dbgrd1: TDBGrid;
+    ds1: TDataSource;
+    frmPeriodo1: TfrmPeriodo;
+    btnPesquisa: TBitBtn;
+    edtLoteContabil: TcxTextEdit;
+    cxLabel3: TcxLabel;
+    edtIdentificaCBD: TcxTextEdit;
+    edtNumCheque: TcxTextEdit;
+    cxLabel4: TcxLabel;
+    cxLabel6: TcxLabel;
+    edtIdentTC: TcxTextEdit;
+    cxLabel7: TcxLabel;
+    dxStatusBarEstorna: TdxStatusBar;
+    ACBrExtenso1: TACBrExtenso;
+    btnImprimir: TBitBtn;
+    btnFechar: TBitBtn;
+    frxRelatorioTRFBCOCX: TfrxReport;
+    frxDBDataset1: TfrxDBDataset;
+    frxDBDataset2: TfrxDBDataset;
+    frxDBDataset3: TfrxDBDataset;
+    EvExtenso1: TEvExtenso;
+    procedure FormCreate(Sender: TObject);
+    procedure frmContaBancaria1cbbContaChange(Sender: TObject);
+    procedure cbbDataMovimentoPropertiesChange(Sender: TObject);
+    procedure dxbrlrgbtn1Click(Sender: TObject);
+    procedure dxbrlrgbtn2Click(Sender: TObject);
+    procedure frameResponsavel1cbbcomboChange(Sender: TObject);
+    procedure frameCheque1cbbChequeChange(Sender: TObject);
+    procedure dxBtnTrfConfirmaClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure tbTransfereEstornaShow(Sender: TObject);
+    procedure btnPesquisaClick(Sender: TObject);
+    procedure dbgrd1DblClick(Sender: TObject);
+    procedure ds1DataChange(Sender: TObject; Field: TField);
+    procedure dxBtnTrfEstornaClick(Sender: TObject);
+    procedure btnFecharClick(Sender: TObject);
+    procedure btnImprimirClick(Sender: TObject);
+    procedure dxbrlrgbtn3Click(Sender: TObject);
+  private
+    { Private declarations }
+  FsListaIdTransferencia, FslistaIdResponsavel,    FslistaIdConta,    FslistaIdCheque :TStringList;
+     idLoteContabil,  pIdCheque, pIdResponsavel, pIdentificacao,  iDContaOrigem, pIdOperacao,    pIDOrganizacao :string;
+    pDataMovimento, pDataRegistro :TDate;
+    procedure limpaPanel;
+    function validarForm: Boolean;
+    procedure limpaStatusBar;
+    procedure inicializarVariaveisRelatorio(dtInicial, dtFinal: TDate);
+
+  public
+    { Public declarations }
+  end;
+
+var
+  frmTransferenciasBancoCaixa: TfrmTransferenciasBancoCaixa;
+
+implementation
+
+{$R *.dfm}
+
+{ TForm1 }
+
+procedure TfrmTransferenciasBancoCaixa.btnFecharClick(Sender: TObject);
+begin
+      PostMessage(Self.Handle, WM_CLOSE, 0, 0);
+end;
+
+procedure TfrmTransferenciasBancoCaixa.btnImprimirClick(Sender: TObject);
+var
+pathRelatorio :string;
+begin
+  pathRelatorio := Uutil.TPathRelatorio.getRelatorioTransfBancoCaixa;
+
+
+  if dmTransfBancoCaixa.qryObterCBD.RecordCount >0 then begin
+
+        frxRelatorioTRFBCOCX.Clear;
+        if not(frxRelatorioTRFBCOCX.LoadFromFile(pathRelatorio)) then
+        begin
+          ShowMessage('Relatório template não encontrado. Contate o Administrador do sistema.');
+        end
+        else
+        begin
+
+          dxStatusBarEstorna.Panels[1].Text := ' Preparando para a impressão... ';
+          inicializarVariaveisRelatorio(frmPeriodo1.getDataInicial, frmPeriodo1.getDataFinal);
+          frxRelatorioTRFBCOCX.OldStyleProgress := True;
+          frxRelatorioTRFBCOCX.ShowProgress := True;
+          frxRelatorioTRFBCOCX.ShowReport;
+        end;
+
+  end;
+
+  limpaPanel;
+
+
+end;
+
+procedure TfrmTransferenciasBancoCaixa.btnPesquisaClick(Sender: TObject);
+var pDataIn, pDataEnd :TDateTime;
+begin
+
+pDataIn := frmPeriodo1.getDataInicial;
+pDataEnd := frmPeriodo1.getDataFinal;
+
+dmTransfBancoCaixa.obterCBD(pIDOrganizacao, pDataIn, pDataEnd);
+dbgrd1.DataSource.DataSet.Refresh;
+dbgrd1.Refresh;
+
+
+end;
+
+procedure TfrmTransferenciasBancoCaixa.cbbDataMovimentoPropertiesChange(
+  Sender: TObject);
+  var
+   validarData :Integer;
+begin
+  limpaStatusBar;
+  pDataMovimento := StrToDate(FormatDateTime('DD/MM/YYYY',cbbDataMovimento.Date));
+  pDataRegistro  := StrToDate(FormatDateTime('DD/MM/YYYY',now ));
+  //se movimento < hoje = -1
+  // se movimento > hoje =  1
+  validarData := compareDate(pDataMovimento, pDataRegistro);
+
+  if validarData = 1  then   begin // a data do movimento é maior que a data de hoje
+
+    ShowMessage(' A data do movimento não pode ser maior que a data de hoje...');
+    dxStatusTRF.Panels[0].Text := 'ERRO ';
+    dxStatusTRF.Panels[1].Text := 'Erro na data de movimento. ';
+
+  end;
+
+
+end;
+
+procedure TfrmTransferenciasBancoCaixa.dbgrd1DblClick(Sender: TObject);
+begin
+ ShowMessage('clicou na posicao ' + IntToStr(dbgrd1.DataSource.DataSet.RecNo));
+
+end;
+
+procedure TfrmTransferenciasBancoCaixa.ds1DataChange(Sender: TObject;
+  Field: TField);
+  var
+ idTC, idConta, idCheque,  idCBD :string;
+cheque : TChequeModel;
+begin
+limpaStatusBar;
+ idCBD       := dmTransfBancoCaixa.qryObterCBD.FieldByName('IDCBD').AsString ;
+ idCheque    := dmTransfBancoCaixa.qryObterCBD.FieldByName('ID_CONTA_BANCARIA_CHEQUE').AsString ;
+ idConta     := dmTransfBancoCaixa.qryObterCBD.FieldByName('ID_CONTA_BANCARIA').AsString ;
+  cheque := TChequeModel.Create;
+  cheque := dmTransfBancoCaixa.obterCheque(pIDOrganizacao,idConta, idCheque );
+
+ if dmTransfBancoCaixa.obterTC(pIDOrganizacao, idCBD) then begin
+     idTC            :=  dmTransfBancoCaixa.qryObterTC.FieldByName('IDTC').AsString ;
+     edtIdentTC.Text :=  dmTransfBancoCaixa.qryObterTC.FieldByName('NUMERO_DOCUMENTO').AsString ;
+ end;
+
+ idLoteContabil        := dmTransfBancoCaixa.qryObterCBD.FieldByName('ID_LOTE_CONTABIL').AsString ;
+ edtLoteContabil.Text  := dmTransfBancoCaixa.qryObterCBD.FieldByName('ID_LOTE_CONTABIL').AsString ;
+ edtIdentificaCBD.Text := dmTransfBancoCaixa.qryObterCBD.FieldByName('IDENTIFICACAO').AsString ;
+
+ if not uutil.Empty(idCheque) then begin
+     edtNumCheque.Text     := cheque.FNumeroCheque;
+     dxStatusBarEstorna.Panels[0].Text := 'Extenso ';
+     dxStatusBarEstorna.Panels[1].Text :='Cheque ' + cheque.FNumeroCheque + '  ' +  EvExtenso1.GetExtenso((cheque.FValor)) ;
+ end else begin
+
+
+
+
+ end;
+
+   //obter a parte da tesouraria
+  //obter a parte do cheque
+
+
+  validarForm;
+
+end;
+
+procedure TfrmTransferenciasBancoCaixa.dxbrlrgbtn1Click(Sender: TObject);
+begin
+ PostMessage(Self.Handle, WM_CLOSE, 0, 0);
+end;
+
+procedure TfrmTransferenciasBancoCaixa.dxbrlrgbtn2Click(Sender: TObject);
+begin
+ limpaPanel;
+end;
+
+procedure TfrmTransferenciasBancoCaixa.dxbrlrgbtn3Click(Sender: TObject);
+begin
+btnImprimirClick(Self);
+end;
+
+procedure TfrmTransferenciasBancoCaixa.dxBtnTrfConfirmaClick(Sender: TObject);
+var
+pIdentificacao, pDescricao,ID,cmdCBD, cmdTC :string;
+pValor :Currency;
+sucess :Boolean;
+begin
+  if validarForm then begin
+    pDescricao := 'TRANSF BCO P CAIXA';
+    pIdentificacao := edtIdentificador.Text;
+    pValor := StrToCurr(edtValor.Text);
+    sucess := False;
+
+    //lancamento na conta_bancaria_debito
+    //lancamento na tesouraria_credito
+    try
+     dmConexao.conectarBanco;
+     dmConexao.conn.StartTransaction;
+
+
+          sucess := dmTransfBancoCaixa.transferenciaBancoCaixa(pIDOrganizacao,
+                                                     iDContaOrigem,
+                                                     pIdOperacao,
+                                                     pIdResponsavel,
+                                                     pIdCheque,
+                                                     pDescricao,
+                                                     pIdentificacao, pValor, pDataMovimento ) ;
+
+      if (sucess) then
+      begin
+        dmConexao.conn.CommitRetaining;
+        limpaPanel;
+        ShowMessage('Transferência concluída com sucesso.');
+
+      end
+      else
+      begin
+        dmConexao.conn.RollbackRetaining;
+      end;
+
+
+     except
+         on e: Exception do  ShowMessage(e.Message + sLineBreak );
+
+        end;
+  end;
+end;
+
+
+procedure TfrmTransferenciasBancoCaixa.dxBtnTrfEstornaClick(Sender: TObject);
+var
+ idTC, idConta, idCheque,  idCBD :string;
+cheque : TChequeModel;
+begin
+ idTC            :=  dmTransfBancoCaixa.qryObterTC.FieldByName('IDTC').AsString ;
+ idConta     := dmTransfBancoCaixa.qryObterCBD.FieldByName('ID_CONTA_BANCARIA').AsString ;
+ idCheque    := dmTransfBancoCaixa.qryObterCBD.FieldByName('ID_CONTA_BANCARIA_CHEQUE').AsString ;
+ idCBD       := dmTransfBancoCaixa.qryObterCBD.FieldByName('IDCBD').AsString ;
+ cheque := TChequeModel.Create;
+ cheque := dmTransfBancoCaixa.obterCheque(pIDOrganizacao,idConta, idCheque );
+ idLoteContabil        := dmTransfBancoCaixa.qryObterCBD.FieldByName('ID_LOTE_CONTABIL').AsString ;
+
+
+       if (uutil.Empty(idLoteContabil)) then begin
+         try
+         dmConexao.conn.StartTransaction;
+                if uutil.Empty(idCheque) then
+                begin
+
+                  if dmTransfBancoCaixa.deletarTC(pIDOrganizacao, idCBD, idTC) then
+                  begin
+
+                    if dmTransfBancoCaixa.deletarCBD(pIDOrganizacao, idCBD) then
+                    begin
+                      ShowMessage('Lançamentos excluídos com sucesso.');
+                    end;
+
+                  end;
+
+                end
+                else
+                begin
+
+                  if dmTransfBancoCaixa.deletarTC(pIDOrganizacao, idCBD, idTC) then
+                  begin
+                    if dmTransfBancoCaixa.alteraCheque(pIDOrganizacao, idConta, idCheque) then
+                    begin
+
+                      if dmTransfBancoCaixa.deletarCBD(pIDOrganizacao, idCBD) then
+                      begin
+                        ShowMessage('Lançamentos excluídos com sucesso.');
+                      end;
+
+                    end;
+
+                  end;
+
+                end;
+
+          dmConexao.conn.CommitRetaining;
+
+         except
+            on e: Exception do  ShowMessage(e.Message + sLineBreak );
+
+         end;
+
+
+       end else begin
+
+        ShowMessage('Não é possível cancelar lançamento exportado para a contabilidade.');
+
+       end;
+
+
+     limpaPanel;
+     btnPesquisaClick(Self);
+
+
+end;
+
+procedure TfrmTransferenciasBancoCaixa.FormClose(Sender: TObject;
+  var Action: TCloseAction);
+begin
+
+ if  (Assigned(dmTransfBancoCaixa)) then
+  begin
+    FreeAndNil(dmTransfBancoCaixa);
+  end;
+
+ Action := caFree;
+end;
+
+procedure TfrmTransferenciasBancoCaixa.FormCreate(Sender: TObject);
+begin
+
+ dmConexao.conectarBanco;
+
+ if not (Assigned(dmTransfBancoCaixa)) then
+  begin
+    dmTransfBancoCaixa := TdmTransfBancoCaixa.Create(Self);
+  end;
+
+
+ pIDOrganizacao := uUtil.TOrgAtual.getId;
+ limpaPanel;
+
+
+end;
+
+procedure TfrmTransferenciasBancoCaixa.frameCheque1cbbChequeChange(
+  Sender: TObject);
+begin
+
+  if rgOpcaoTRF.ItemIndex = 0 then
+  begin
+    if (frmContaBancaria1.cbbConta.ItemIndex > 0) then
+    begin
+      pIdCheque := FslistaIdCheque[frmContaBancaria1.cbbConta.ItemIndex];
+      validarForm;
+    end
+    else
+    begin
+      frameCheque1.cbbCheque.ItemIndex := 0;
+    end;
+  end;
+
+end;
+
+procedure TfrmTransferenciasBancoCaixa.frameResponsavel1cbbcomboChange(
+  Sender: TObject);
+begin
+ if frameResponsavel1.cbbcombo.ItemIndex >0 then begin
+     pIdResponsavel := FslistaIdResponsavel[frameResponsavel1.cbbcombo.ItemIndex];
+ end;
+  validarForm;
+end;
+
+procedure TfrmTransferenciasBancoCaixa.frmContaBancaria1cbbContaChange(
+  Sender: TObject);
+  var
+  contaContabilCR : TContaContabilModel;
+begin
+ frameCheque1.cbbCheque.Enabled := False;
+ if frmContaBancaria1.cbbConta.ItemIndex > 0 then
+  begin
+      contaContabilCR := TContaContabilModel.Create;
+      contaContabilCR := frmContaBancaria1.getContaContabil(pIDOrganizacao, iDContaOrigem);
+      edtContaContabilDB.Text := contaContabilCR.FConta;
+      iDContaOrigem := FslistaIdConta[frmContaBancaria1.cbbConta.ItemIndex];
+
+    if rgOpcaoTRF.ItemIndex = 0 then
+    begin
+      if frameCheque1.obterTodosPorStatus(iDContaOrigem, 'BLOQUEADO', frameCheque1.cbbCheque, FslistaIdCheque) then
+      begin
+        frameCheque1.cbbCheque.Enabled := True;
+      end ;
+    end
+    else
+    begin
+       frameCheque1.cbbCheque.ItemIndex :=0;
+      frameCheque1.cbbCheque.Enabled := false;
+    end;
+
+
+  end
+  else
+  begin
+    frameCheque1.cbbCheque.ItemIndex :=0;
+    ShowMessage('Precisa selecionar uma conta.. ');
+  end;
+
+  validarForm;
+
+end;
+
+procedure TfrmTransferenciasBancoCaixa.limpaStatusBar;
+begin
+dxStatusBarEstorna.Panels[0].Text := 'Status ';
+dxStatusBarEstorna.Panels[1].Text := 'Ativo ';
+dxStatusTRF.Panels[0].Text := 'Status ';
+dxStatusTRF.Panels[1].Text := 'Ativo ';
+
+
+end;
+
+procedure TfrmTransferenciasBancoCaixa.limpaPanel;
+var
+qryTOB :TFDQuery;
+begin
+ pIdOperacao :=  'TRANSFERE BANCO/TESOURARIA';
+ edtTipoOperacao.Text := pIdOperacao;
+ frameResponsavel1.createComboAll('FUNCIONARIO','NOME','NOME',frameResponsavel1.cbbcombo,FslistaIdResponsavel);
+ frmContaBancaria1.obterTodos(pIDOrganizacao,frmContaBancaria1.cbbConta, FslistaIdConta);
+ frameCheque1.cbbCheque.ItemIndex :=0; frameCheque1.cbbCheque.Enabled := False;
+ cbbDataMovimento.Date := Now;
+ edtValor.Clear;
+ edtIdentificador.Clear;
+ edtContaContabilDB.Clear;
+ edtContaContabilCR.Clear;
+
+    qryTOB := TFDQuery.Create(Self);
+    qryTOB := dmTransfBancoCaixa.obterTipoOperacaoBancaria(pIDOrganizacao, pIdOperacao);
+
+    if not qryTOB.IsEmpty then
+    begin
+      edtContaContabilCR.Text := qryTOB.FieldByName('CONTA').AsString;
+    end;
+
+    dxBtnTrfConfirma.Enabled := False;
+    dxBtnTrfEstorna.Enabled := False;
+
+    rgOpcaoTRF.ItemIndex := 0;
+    frmPeriodo1.inicializa(Now, now);
+    limpaStatusBar;
+
+end;
+
+
+procedure TfrmTransferenciasBancoCaixa.tbTransfereEstornaShow(Sender: TObject);
+begin
+ dmTransfBancoCaixa.obterCBD(pIDOrganizacao, Now, Now);
+
+end;
+
+function TfrmTransferenciasBancoCaixa.validarForm: Boolean;
+var
+valido :Boolean;
+begin
+valido := False;
+
+//para TRF CHEQUE
+
+ if (frmContaBancaria1.cbbConta.ItemIndex > 0) then begin
+
+       if (StrToCurr(edtValor.Text)) > 1 then begin
+
+          if (frameResponsavel1.cbbcombo.ItemIndex > 0) then begin
+              pIdResponsavel := FslistaIdResponsavel[frameResponsavel1.cbbcombo.ItemIndex];
+              dxBtnTrfConfirma.Enabled := True;
+              dxBtnTrfEstorna.Enabled := False;
+              valido := True;
+
+                if rgOpcaoTRF.ItemIndex = 0 then
+                begin
+                  if frameCheque1.cbbCheque.ItemIndex < 1 then
+                  begin
+                    dxBtnTrfConfirma.Enabled := False;
+                    dxBtnTrfEstorna.Enabled := False;
+                    valido := False;
+
+                  end;
+                end;
+
+              pIdentificacao := dmTransfBancoCaixa.obterIdentificador(pIDOrganizacao);
+              edtIdentificador.Text := pIdentificacao;
+              Application.ProcessMessages;
+
+
+          end;
+       end;
+ end;
+
+
+   //para a parte de estorno
+
+   if not ( uutil.Empty(idLoteContabil) ) then begin
+     dxBtnTrfEstorna.Enabled := False;
+   end else begin
+        dxBtnTrfEstorna.Enabled := True;
+   end;
+
+  Result := valido;
+
+end;
+
+
+procedure TfrmTransferenciasBancoCaixa.inicializarVariaveisRelatorio(dtInicial, dtFinal: TDate);
+begin
+
+  with frxRelatorioTRFBCOCX.Variables do
+  begin
+
+    Variables['strRazaoSocial'] :=
+      QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('RAZAO_SOCIAL')
+      .AsString);
+    Variables['strCNPJ'] :=
+      QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('CNPJ').AsString);
+    Variables['strEndereco'] :=
+      QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('ENDERECO').AsString);
+    Variables['strCEP'] :=
+      QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('CEP').AsString);
+    Variables['strCidade'] :=
+      QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('CIDADE').AsString);
+    Variables['strUF'] :=
+      QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('UF').AsString);
+      Variables['strPeriodo'] :=QuotedStr( ' de  ' + DateToStr(dtInicial) + '  até  ' + DateToStr(dtFinal));
+
+  end;
+
+
+
+
+end;
+
+
+end.

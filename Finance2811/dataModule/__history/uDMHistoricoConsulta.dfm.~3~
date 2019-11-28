@@ -1,0 +1,22 @@
+object dmHistoricoConsulta: TdmHistoricoConsulta
+  OldCreateOrder = False
+  Height = 303
+  Width = 479
+  object qryObterHistoricoSemContaContabil: TFDQuery
+    Connection = dmConexao.Conn
+    SQL.Strings = (
+      'SELECT H.descricao, H.codigo'
+      'FROM  HISTORICO H'
+      'WHERE (H.ID_ORGANIZACAO = :pIdOrganizacao) AND'
+      '      (H.id_conta_contabil IS NULL)')
+    Left = 128
+    Top = 64
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+end

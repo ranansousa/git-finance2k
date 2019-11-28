@@ -1,0 +1,68 @@
+unit uFrmPendentes;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Data.DB, Vcl.Grids, Vcl.DBGrids, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
+  FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async,
+  FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client,uDMContasReceber,udmConexao,
+  Vcl.Buttons;
+
+type
+  TfrmPendentes = class(TForm)
+    DBGrid1: TDBGrid;
+    btnFechar: TBitBtn;
+    btnRefresh: TBitBtn;
+    procedure FoTOrmShow(Sender: TObject);
+    procedure btnRefreshClick(Sender: TObject);
+    procedure inicializarDM(Sender: TObject);
+  private
+    { Private declarations }
+
+  public
+    { Public declarations }
+  end;
+
+var
+  frmPendentes: TfrmPendentes;
+
+implementation
+
+{$R *.dfm}
+
+procedure TfrmPendentes.btnRefreshClick(Sender: TObject);
+begin
+ DBGrid1.DataSource :=dmContasReceber.dtsPendentesImportados;
+end;
+
+procedure TfrmPendentes.FoTOrmShow(Sender: TObject);
+begin
+  Top := 0;
+  Left := 0;
+  Width := Screen.Width;
+  Height := Screen.Height;
+  inicializarDM(Self); //ver isso
+
+  dmContasReceber.obterTRPendentesImportados('imap');
+  DBGrid1.DataSource :=dmContasReceber.dtsPendentesImportados;
+end;
+
+
+procedure TfrmPendentes.inicializarDM(Sender: TObject);
+  begin
+
+      if not(Assigned(dmConexao)) then begin
+             dmConexao := TdmConexao.Create(Self);
+             dmConexao.conectarBanco;
+      end;
+
+
+      if not(Assigned(dmContasReceber)) then begin
+             dmContasReceber := TdmContasReceber.Create(Self);
+      end;
+
+end;
+
+
+end.
