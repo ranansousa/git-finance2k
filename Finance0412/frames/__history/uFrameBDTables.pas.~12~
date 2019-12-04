@@ -1,0 +1,64 @@
+unit uFrameBDTables;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, udmConexao, udmManutencao,
+  Data.DB, Vcl.Grids, Vcl.DBGrids, Vcl.StdCtrls, FireDAC.Stan.Intf,
+  FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
+  FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client;
+
+type
+  TfrmBDTables = class(TFrame)
+    dbgrd1: TDBGrid;
+    ds1: TDataSource;
+    qryAllTables: TFDQuery;
+  private
+    { Private declarations }
+  public
+  procedure obterTabelas();
+  function listaTables: TStringList;
+
+    { Public declarations }
+  end;
+
+implementation
+
+{$R *.dfm}
+
+{ TfrmBDTables }
+
+procedure TfrmBDTables.obterTabelas;
+begin
+listaTables;
+end;
+
+
+
+function TfrmBDTables.listaTables: TStringList;
+var
+  lista: TStringList;
+begin
+
+  lista := TStringList.Create;
+  lista.Clear;
+  lista.Add('>> Selecione uma tabela << ');
+
+ if obterTables then begin
+
+ qryAllTables.First;
+
+  while not qryAllTables.Eof do
+  begin
+    lista.Add(qryAllTables.FieldByName('TABELA') .AsString);
+    qryAllTables.Next;
+  end;
+  //qryAllTables.Close;
+
+  Result := lista;
+
+ end;
+
+end.

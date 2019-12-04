@@ -1,0 +1,238 @@
+unit uFrmRelatorios;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
+  Vcl.Graphics,Vcl.Controls, Vcl.Forms, Vcl.Dialogs, udmConexao, uUtil,
+  Vcl.StdCtrls, Vcl.ComCtrls, Vcl.Buttons,uFrmDemonstrativoRD, uFrmRelatoriosPagamentos,uFrmRelatorioPagamentosHistorico,
+  FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,uDMOrganizacao,
+  FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
+  FireDAC.Stan.Async, FireDAC.DApt, Data.DB, Vcl.Grids, Vcl.DBGrids,
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, frxClass, frxExportPDF, frxDBSet,
+  frxExportBaseDialog;
+
+type
+  TfrmRelatorios = class(TForm)
+    PageControl1: TPageControl;
+    tbsContasPagar: TTabSheet;
+    TabSheet2: TTabSheet;
+    TabSheet1: TTabSheet;
+    TabSheet3: TTabSheet;
+    btnRelContaPagar: TButton;
+    btnCTPHistorico: TBitBtn;
+    Label1: TLabel;
+    btnRD: TBitBtn;
+    tsHistorico: TTabSheet;
+    qryObterHistoricos: TFDQuery;
+    dbgrd1: TDBGrid;
+    ds1: TDataSource;
+    btnImprimirHistorico: TButton;
+    frxDBDataset1: TfrxDBDataset;
+    frxReport1: TfrxReport;
+    procedure btnRelContaPagarClick(Sender: TObject);
+    procedure inicializarDM(Sender: TObject);
+    procedure freeAndNilDM(Sender: TObject);
+    procedure btnCTPHistoricoClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure btnRDClick(Sender: TObject);
+    procedure btnImprimirHistoricoClick(Sender: TObject);
+  private
+    { Private declarations }
+     pIdOrganizacao :string;
+    function obterHistoricos(pIdOrganizacao :string):Boolean;
+    procedure inicializarVariaveisRelatorio(dtInicial, dtFinal: TDate);
+
+
+  public
+    { Public declarations }
+  end;
+
+var
+  frmRelatorios: TfrmRelatorios;
+
+implementation
+
+{$R *.dfm}
+
+procedure TfrmRelatorios.btnCTPHistoricoClick(Sender: TObject);
+begin
+
+  try
+      frmCTPHistorico := TfrmCTPHistorico.Create(Self);
+      frmCTPHistorico.ShowModal;
+      FreeAndNil(frmCTPHistorico);
+
+  except on e: Exception do
+    ShowMessage(e.Message + sLineBreak + 'Contate o administrador!');
+  end;
+
+end;
+
+procedure TfrmRelatorios.btnImprimirHistoricoClick(Sender: TObject);
+var
+pathRelatorio :String;
+begin
+  pathRelatorio := uUtil.TPathRelatorio.getListaHistoricos;
+
+  if (dmOrganizacao.carregarDadosEmpresa(pIdOrganizacao ) ) then begin
+      if  (obterHistoricos(pIdOrganizacao)) then begin
+
+            if qryObterHistoricos.RecordCount <1 then begin
+                 ShowMessage('Não existem dados para exibir');
+            end;
+
+          frxRepHistorico.Clear;
+          if not(frxRepHistorico.LoadFromFile(pathRelatorio)) then
+          begin
+             ShowMessage('Relatório não encontrado...');
+          end
+          else
+          begin
+            inicializarVariaveisRelatorio(now, now);
+            frxRepHistorico.OldStyleProgress := True;
+            frxRepHistorico.ShowProgress := True;
+            frxRepHistorico.ShowReport;
+          end;
+     end;
+  end;
+
+end;
+
+
+procedure TfrmRelatorios.inicializarVariaveisRelatorio(dtInicial, dtFinal: TDate);
+begin
+
+
+  with frxRepHistorico.Variables do
+  begin
+
+    Variables['strRazaoSocial'] :=
+      QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('RAZAO_SOCIAL').AsString);
+    Variables['strCNPJ'] :=
+      QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('CNPJ').AsString);
+    Variables['strEndereco'] :=
+      QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('ENDERECO').AsString);
+    Variables['strCEP'] :=
+      QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('CEP').AsString);
+    Variables['strCidade'] :=
+      QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('CIDADE').AsString);
+    Variables['strUF'] :=
+      QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('UF').AsString);
+    Variables['strPeriodo'] :=QuotedStr( ' de  ' + DateToStr(dtInicial) + '  até  ' + DateToStr(dtFinal));
+
+
+
+    // Variables['strTipo'] := QuotedStr(tipo); // muda a depender do lancamento
+
+  end;
+
+end;
+
+procedure TfrmRelatorios.btnRDClick(Sender: TObject);
+begin
+
+  try
+      frmDemonstrativoRD := TFrmDemonstrativoRD.Create(Self);
+      frmDemonstrativoRD.ShowModal;
+      FreeAndNil(frmDemonstrativoRD);
+
+  except on e: Exception do
+    ShowMessage(e.Message + sLineBreak + 'Contate o administrador!');
+  end;
+
+
+end;
+
+procedure TfrmRelatorios.btnRelContaPagarClick(Sender: TObject);
+
+begin
+
+  try
+      frmRelatorioPagamentos := TfrmRelatorioPagamentos.Create(Self);
+      frmRelatorioPagamentos.ShowModal;
+      FreeAndNil(frmRelatorioPagamentos);
+
+  except on e: Exception do
+    ShowMessage(e.Message + sLineBreak + 'Contate o administrador!');
+  end;
+end;
+
+
+
+procedure TfrmRelatorios.FormCreate(Sender: TObject);
+begin
+inicializarDM(Self);
+end;
+
+procedure TfrmRelatorios.freeAndNilDM(Sender: TObject);
+begin
+
+
+  if (Assigned(frmCTPHistorico)) then
+  begin
+    FreeAndNil(frmCTPHistorico);
+  end;
+
+  if (Assigned(frmRelatorioPagamentos)) then
+  begin
+    FreeAndNil(frmRelatorioPagamentos);
+  end;
+
+
+
+  
+end;
+
+procedure TfrmRelatorios.inicializarDM(Sender: TObject);
+begin
+
+
+  if not(Assigned(frmCTPHistorico)) then
+  begin
+    frmCTPHistorico := TfrmCTPHistorico.Create(Self);
+  end;
+
+
+  if not(Assigned(frmRelatorioPagamentos)) then
+  begin
+    frmRelatorioPagamentos := TfrmRelatorioPagamentos.Create(Self);
+  end;
+
+  if not (Assigned(dmOrganizacao)) then
+  begin
+    dmOrganizacao := TdmOrganizacao.Create(Self);
+  end;
+
+  pIdOrganizacao := uUtil.TOrgAtual.getId;
+
+  obterHistoricos(uUtil.TOrgAtual.getId);
+  PageControl1.ActivePage := tbsContasPagar;
+
+
+
+end;
+
+function TfrmRelatorios.obterHistoricos(pIdOrganizacao: string): Boolean;
+begin
+  dmConexao.conectarBanco;
+  try
+
+    qryObterHistoricos.Close;
+    qryObterHistoricos.Connection :=dmConexao.conn;
+    qryObterHistoricos.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+    qryObterHistoricos.Open;
+    qryObterHistoricos.Last;
+    qryObterHistoricos.First;
+
+
+  except
+  raise Exception.Create('Erro ao tentar obter históricos.');
+
+  end;
+
+   Result := not qryObterHistoricos.IsEmpty;
+
+end;
+
+end.

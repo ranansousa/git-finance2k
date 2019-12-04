@@ -1,0 +1,422 @@
+object dmTransfBancoCaixa: TdmTransfBancoCaixa
+  OldCreateOrder = False
+  OnCreate = DataModuleCreate
+  Height = 377
+  Width = 467
+  object qryExisteIdentificacao: TFDQuery
+    Connection = dmConexao.conn
+    FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
+    FormatOptions.FmtDisplayNumeric = '###,##0.00'
+    FormatOptions.FmtEditNumeric = '###,##0.00'
+    SQL.Strings = (
+      'SELECT COUNT(*) AS QTD'
+      ''
+      'FROM CONTA_BANCARIA_DEBITO CBD'
+      ''
+      ''
+      'WHERE   (CBD.ID_ORGANIZACAO = :PIDORGANIZACAO) AND'
+      '        (CBD.IDENTIFICACAO = :PIDENTIFICACAO)'
+      ''
+      ''
+      ''
+      '')
+    Left = 120
+    Top = 24
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'PIDENTIFICACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+  object qryObterGUID: TFDQuery
+    SQL.Strings = (
+      'select createguid() as newID from rdb$database')
+    Left = 216
+    Top = 24
+  end
+  object qryObterTOB: TFDQuery
+    Connection = dmConexao.conn
+    FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
+    FormatOptions.FmtDisplayNumeric = '###,##0.00'
+    FormatOptions.FmtEditNumeric = '###,##0.00'
+    SQL.Strings = (
+      'SELECT TOB.id_tipo_operacao_bancaria,'
+      '       tob.id_organizacao,'
+      '       tob.descricao,'
+      '       tob.tipo,'
+      '       tob.codigo,'
+      '       tob.id_conta_contabil,'
+      '       CC.conta,'
+      '       CC.codreduz'
+      'FROM tipo_operacao_bancaria TOB'
+      
+        'LEFT OUTER JOIN conta_contabil CC ON (CC.id_conta_contabil = TOB' +
+        '.id_conta_contabil) AND (CC.id_organizacao = TOB.id_organizacao)'
+      'WHERE (TOB.id_organizacao = :PIDORGANIZACAO)'
+      'AND   (TOB.id_tipo_operacao_bancaria = :PIDTOB)'
+      '')
+    Left = 32
+    Top = 24
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'PIDTOB'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+  object qryChequePorID: TFDQuery
+    Connection = dmConexao.conn
+    FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
+    FormatOptions.FmtDisplayNumeric = '###,##0.00'
+    FormatOptions.FmtEditNumeric = '###,##0.00'
+    SQL.Strings = (
+      'SELECT *  FROM conta_bancaria_cheque cbc'
+      ''
+      ' WHERE (CBC.ID_ORGANIZACAO =:PIDORGANIZACAO)'
+      '   AND (CBC.ID_CONTA_BANCARIA = :PIDCONTA)'
+      '   AND (CBC.ID_CONTA_BANCARIA_CHEQUE = :PIDCHEQUE)'
+      ''
+      ''
+      ''
+      '')
+    Left = 184
+    Top = 136
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'PIDCONTA'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'PIDCHEQUE'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+  object qryObterCBD: TFDQuery
+    Connection = dmConexao.conn
+    FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
+    FormatOptions.FmtDisplayNumeric = '###,##0.00'
+    FormatOptions.FmtEditNumeric = '###,##0.00'
+    SQL.Strings = (
+      ''
+      '      SELECT CBD.ID_CONTA_BANCARIA_DEBITO as IDCBD,'
+      '             CBD.ID_ORGANIZACAO,'
+      '             CBD.ID_CONTA_BANCARIA,'
+      '             CBD.ID_TIPO_OPERACAO_BANCARIA,'
+      '             CBD.ID_RESPONSAVEL,             '
+      '             CBD.ID_CONTA_BANCARIA_CHEQUE,'
+      '             CBD.TIPO_LANCAMENTO,'
+      '             CBD.OBSERVACAO,'
+      '             CBD.DESCRICAO,'
+      '             CBD.VALOR,'
+      '             CBD.DATA_REGISTRO,'
+      '             CBD.DATA_MOVIMENTO,'
+      '             CBD.IDENTIFICACAO,'
+      '             CBD.ID_LOTE_CONTABIL,'
+      '             CB.CONTA,'
+      '             CBC.NUMERO_CHEQUE AS CHEQUE'
+      '      FROM CONTA_BANCARIA_DEBITO CBD'
+      
+        '      LEFT OUTER JOIN CONTA_BANCARIA CB ON (CB.ID_CONTA_BANCARIA' +
+        ' = CBD.ID_CONTA_BANCARIA) AND (CB.ID_ORGANIZACAO = CBD.ID_ORGANI' +
+        'ZACAO)'
+      
+        '      LEFT OUTER JOIN CONTA_BANCARIA_CHEQUE CBC ON (CBC.ID_CONTA' +
+        '_BANCARIA_CHEQUE = CBD.ID_CONTA_BANCARIA_CHEQUE) AND (CBC.ID_ORG' +
+        'ANIZACAO = CBD.ID_ORGANIZACAO)'
+      '      '
+      'WHERE  (CBD.ID_ORGANIZACAO = :PIDORGANIZACAO) '
+      '   AND (CBD.DATA_MOVIMENTO BETWEEN :PDTINICIAL AND :PDTFINAL)'
+      
+        '   AND (CBD.ID_TIPO_OPERACAO_BANCARIA = '#39'TRANSFERE BANCO/TESOURA' +
+        'RIA'#39')'
+      ''
+      'ORDER BY CBD.DATA_MOVIMENTO DESC, CBD.VALOR')
+    Left = 40
+    Top = 136
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'PDTINICIAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end
+      item
+        Name = 'PDTFINAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end>
+  end
+  object qryObterTC: TFDQuery
+    Connection = dmConexao.conn
+    FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
+    FormatOptions.FmtDisplayNumeric = '###,##0.00'
+    FormatOptions.FmtEditNumeric = '###,##0.00'
+    SQL.Strings = (
+      'SELECT TC.ID_TESOURARIA_CREDITO as IDTC,'
+      '             TC.ID_ORGANIZACAO,'
+      '             TC.DATA_CONTABIL,'
+      '             TC.DATA_MOVIMENTO,'
+      '             TC.VALOR_NOMINAL,'
+      '             TC.OBSERVACAO,'
+      '             TC.NUMERO_DOCUMENTO,'
+      '             TC.DESCRICAO,'
+      '             TC.TIPO_LANCAMENTO,'
+      '             TC.ID_CONTA_BANCARIA_DEBITO'
+      ''
+      'FROM TESOURARIA_CREDITO TC'
+      'WHERE (TC.ID_ORGANIZACAO = :PIDORGANIZACAO)'
+      'AND   (TC.ID_CONTA_BANCARIA_DEBITO = :PIDCBD)')
+    Left = 104
+    Top = 136
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'PIDCBD'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+  object qryDeletaCBD: TFDQuery
+    Connection = dmConexao.conn
+    FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
+    FormatOptions.FmtDisplayNumeric = '###,##0.00'
+    FormatOptions.FmtEditNumeric = '###,##0.00'
+    SQL.Strings = (
+      
+        ' DELETE FROM CONTA_BANCARIA_DEBITO CBD  WHERE (CBD.ID_ORGANIZACA' +
+        'O = :PIDORGANIZACAO) AND ( CBD.ID_CONTA_BANCARIA_DEBITO = :PIDCB' +
+        'D)')
+    Left = 280
+    Top = 152
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'PIDCBD'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+  object qryDeletaTC: TFDQuery
+    Connection = dmConexao.conn
+    FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
+    FormatOptions.FmtDisplayNumeric = '###,##0.00'
+    FormatOptions.FmtEditNumeric = '###,##0.00'
+    SQL.Strings = (
+      'DELETE FROM TESOURARIA_CREDITO TC'
+      ''
+      'WHERE (TC.ID_ORGANIZACAO = :PIDORGANIZACAO)'
+      ''
+      '  AND (TC.ID_TESOURARIA_CREDITO = :PIDTC)'
+      ''
+      '  AND ( TC.ID_CONTA_BANCARIA_DEBITO = :PIDCBD)'
+      '')
+    Left = 384
+    Top = 144
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'PIDTC'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'PIDCBD'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+  object qryUpdateCheque: TFDQuery
+    Connection = dmConexao.conn
+    FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
+    FormatOptions.FmtDisplayNumeric = '###,##0.00'
+    FormatOptions.FmtEditNumeric = '###,##0.00'
+    SQL.Strings = (
+      ''
+      'UPDATE CONTA_BANCARIA_CHEQUE'
+      'SET'
+      '    ID_TIPO_STATUS = '#39'BLOQUEADO'#39','
+      '    DATA_EMISSAO = null,'
+      '    DATA_COMPENSACAO = null,'
+      '    VALOR = 0,'
+      '    OBSERVACAO = '#39#39','
+      '    PORTADOR = '#39#39','
+      '    DATA_PREVISAO_COMPENSACAO = null,'
+      '    DATA_ESTORNO = null,'
+      '    ID_USUARIO = 43'
+      ''
+      
+        'WHERE  (ID_CONTA_BANCARIA = :PIDCONTA) AND (ID_CONTA_BANCARIA_CH' +
+        'EQUE = :PIDCHEQUE) AND (ID_ORGANIZACAO = :PIDORGANIZACAO );'
+      ''
+      ''
+      '')
+    Left = 272
+    Top = 88
+    ParamData = <
+      item
+        Name = 'PIDCONTA'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'PIDCHEQUE'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+  object frxRelTRFBCOCAIXA: TfrxReport
+    Version = '6.3.7'
+    DotMatrixReport = False
+    IniFile = '\Software\Fast Reports'
+    PreviewOptions.Buttons = [pbPrint, pbLoad, pbSave, pbExport, pbZoom, pbFind, pbOutline, pbPageSetup, pbTools, pbEdit, pbNavigator, pbExportQuick, pbCopy, pbSelection]
+    PreviewOptions.Zoom = 1.000000000000000000
+    PrintOptions.Printer = 'Padr'#227'o'
+    PrintOptions.PrintOnSheet = 0
+    ReportOptions.CreateDate = 43796.791581284720000000
+    ReportOptions.LastChange = 43796.791581284720000000
+    ScriptLanguage = 'PascalScript'
+    ScriptText.Strings = (
+      'begin'
+      ''
+      'end.')
+    Left = 40
+    Top = 272
+    Datasets = <>
+    Variables = <>
+    Style = <>
+  end
+  object frxCBD: TfrxDBDataset
+    UserName = 'CBD'
+    CloseDataSource = False
+    FieldAliases.Strings = (
+      'IDCBD=IDCBD'
+      'ID_ORGANIZACAO=ID_ORGANIZACAO'
+      'ID_CONTA_BANCARIA=ID_CONTA_BANCARIA'
+      'ID_TIPO_OPERACAO_BANCARIA=ID_TIPO_OPERACAO_BANCARIA'
+      'ID_RESPONSAVEL=ID_RESPONSAVEL'
+      'ID_CONTA_BANCARIA_CHEQUE=ID_CONTA_BANCARIA_CHEQUE'
+      'TIPO_LANCAMENTO=TIPO_LANCAMENTO'
+      'OBSERVACAO=OBSERVACAO'
+      'DESCRICAO=DESCRICAO'
+      'VALOR=VALOR'
+      'DATA_REGISTRO=DATA_REGISTRO'
+      'DATA_MOVIMENTO=DATA_MOVIMENTO'
+      'IDENTIFICACAO=IDENTIFICACAO'
+      'ID_LOTE_CONTABIL=ID_LOTE_CONTABIL'
+      'CONTA=CONTA'
+      'CHEQUE=CHEQUE')
+    DataSet = qryObterCBD
+    BCDToCurrency = False
+    Left = 32
+    Top = 200
+  end
+  object frxTC: TfrxDBDataset
+    UserName = 'TC'
+    CloseDataSource = False
+    FieldAliases.Strings = (
+      'IDTC=IDTC'
+      'ID_ORGANIZACAO=ID_ORGANIZACAO'
+      'DATA_CONTABIL=DATA_CONTABIL'
+      'DATA_MOVIMENTO=DATA_MOVIMENTO'
+      'VALOR_NOMINAL=VALOR_NOMINAL'
+      'OBSERVACAO=OBSERVACAO'
+      'NUMERO_DOCUMENTO=NUMERO_DOCUMENTO'
+      'DESCRICAO=DESCRICAO'
+      'TIPO_LANCAMENTO=TIPO_LANCAMENTO'
+      'ID_CONTA_BANCARIA_DEBITO=ID_CONTA_BANCARIA_DEBITO')
+    DataSet = qryObterTC
+    BCDToCurrency = False
+    Left = 96
+    Top = 200
+  end
+  object frxCheque: TfrxDBDataset
+    UserName = 'CHEQUE'
+    CloseDataSource = False
+    FieldAliases.Strings = (
+      'ID_CONTA_BANCARIA_CHEQUE=ID_CONTA_BANCARIA_CHEQUE'
+      'ID_ORGANIZACAO=ID_ORGANIZACAO'
+      'ID_CONTA_BANCARIA=ID_CONTA_BANCARIA'
+      'ID_FUNCIONARIO=ID_FUNCIONARIO'
+      'ID_TIPO_STATUS=ID_TIPO_STATUS'
+      'NUMERO_CHEQUE=NUMERO_CHEQUE'
+      'DATA_REGISTRO=DATA_REGISTRO'
+      'DATA_EMISSAO=DATA_EMISSAO'
+      'DATA_COMPENSACAO=DATA_COMPENSACAO'
+      'VALOR=VALOR'
+      'OBSERVACAO=OBSERVACAO'
+      'PORTADOR=PORTADOR'
+      'DATA_PREVISAO_COMPENSACAO=DATA_PREVISAO_COMPENSACAO'
+      'DATA_ESTORNO=DATA_ESTORNO'
+      'ID_USUARIO=ID_USUARIO'
+      'QTD_IMPRESSAO=QTD_IMPRESSAO')
+    DataSet = qryChequePorID
+    BCDToCurrency = False
+    Left = 168
+    Top = 200
+  end
+end
