@@ -1,0 +1,77 @@
+unit uFrameEstado;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, uFrameGeneric, FireDAC.Stan.Intf,
+  FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
+  FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
+  Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.StdCtrls,udmConexao;
+
+type
+  TfrmEstado = class(TframeGeneric)
+  private
+    function obterPorCidade(pIdValue: string; var combo: TComboBox;
+      var listaID: TStringList): boolean;
+    { Private declarations }
+
+  public
+    { Public declarations }
+
+    end;
+
+
+var
+
+  frmEstado: TfrmEstado;
+
+implementation
+
+{$R *.dfm}
+
+
+function TfrmEstado.obterPorCidade(pIdValue: string; var combo: TComboBox;   var listaID: TStringList): boolean;
+var
+cmd, field_ : string ;
+begin
+
+
+  cmd := ' SELECT B.ID_BAIRRO,B.ID_CIDADE, B.BAIRRO FROM BAIRRO B ' +
+         ' WHERE (B.ID_CIDADE = :pId) ';
+
+
+  listaID := TStringList.Create;
+  listaID.Clear;
+  listaID.Add('Sem ID');
+  combo.Clear;
+  combo.Items.Add('<<< Selecione  >>>');
+
+  //carrega a qry
+
+ if not qryObterTodos.Connection.Connected then
+  begin
+    qryObterTodos.Connection := dmConexao.Conn;
+  end;
+
+  qryObterTodos.Close;
+  qryObterTodos.SQL.Clear;
+  qryObterTodos.SQL.Add(cmd);
+  qryObterTodos.ParamByName('pId').AsString := pIdValue;
+  qryObterTodos.Open;
+  qryObterTodos.First;
+
+  while not qryObterTodos.Eof do
+  begin
+    combo.Items.Add(qryObterTodos.FieldByName('BAIRRO').AsString);
+    listaID.Add(qryObterTodos.FieldByName('ID_BAIRRO').AsString)  ;
+    qryObterTodos.Next;
+  end;
+  qryObterTodos.Close;
+  combo.ItemIndex := 0;
+
+end;
+
+
+
+end.
