@@ -4,7 +4,7 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs,uDMExportaFinance, udmConexao,udmCombos,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs,udmConexao,
   Vcl.StdCtrls, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
   FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet, uUtil,uDMDeletaLoteContabil,
@@ -55,7 +55,7 @@ type
     procedure inicializarDM(Sender: TObject);
     procedure freeAndNilDM();
     function obterLoteID(pId, pIdOrganizacao :string):Boolean;
-    procedure preencheAba(pId, pIdOrganizacao :string);
+    function preencheAba(pId, pIdOrganizacao :string) :Boolean;
     procedure limpaCampos;
     function obterLancamentosPorLote(pIdLote, pIdOrganizacao, pTable :string):Boolean;
     function deletarLoteContabil() :Boolean;
@@ -201,6 +201,7 @@ end;
 procedure TfrmDeletaLoteContabil.btnLimparClick(Sender: TObject);
 begin
  limpaCampos;
+  cbbAno.ItemIndex := indiceCbbAno;
 
 end;
 
@@ -209,7 +210,8 @@ var
 ano :string;
 begin
 
- if cbbAno.ItemIndex > (-1) then begin
+ if cbbAno.ItemIndex > 0 then begin
+    cbbLoteContabil.Clear;
     indiceCbbAno := cbbAno.ItemIndex;
     ano := cbbAno.Items[indiceCbbAno];
 
@@ -217,11 +219,13 @@ begin
 
   if dmDeletaLoteContabil.preencheComboLoteContabil(pIdOrganizacao, ano) then
     begin
-      dmCombos.listaLoteContabil(cbbLoteContabil, FsListaIdLotes);
+      cbbLoteContabil.Enabled := True;
+      dmDeletaLoteContabil.listaLoteContabil(cbbLoteContabil, FsListaIdLotes);
+
     end;
 
 
-    cbbLoteContabil.Enabled := True;
+
     cbbAno.ItemIndex := indiceCbbAno;
 
  end;
@@ -234,14 +238,14 @@ begin
     pid:='';
     indice:=0;
 
-if (cbbLoteContabil.ItemIndex > (-1)) then
+if (cbbLoteContabil.ItemIndex > 0 ) then
   begin
     indice := (cbbLoteContabil.ItemIndex );
     pid := FsListaIdLotes[indice];
   end;
 
-  preencheAba(pid, pIdOrganizacao);
-  btnDeletarLote.Enabled :=True;
+ if  preencheAba(pid, pIdOrganizacao) then begin
+
 
   if (obterLancamentosPorLote(pid,pIdOrganizacao, edtTabela.Text)) then begin
 
@@ -258,6 +262,9 @@ if (cbbLoteContabil.ItemIndex > (-1)) then
           ShowMessage(e.Message + sLineBreak + ' obterLoteID!');
       end;
   end;
+
+ end;
+
 
 
 
@@ -300,9 +307,9 @@ begin
           deletaLoteContabil(idLote, pIdOrganizacao);
 
           //atualizar o combo
-          if dmExportaFinance.preencheComboLoteContabil(pIdOrganizacao,'') then
+          if dmDeletaLoteContabil.preencheComboLoteContabil(pIdOrganizacao,'') then
            begin
-            dmCombos.listaLoteContabil(cbbLoteContabil, FsListaIdLotes);
+            dmDeletaLoteContabil.listaLoteContabil(cbbLoteContabil, FsListaIdLotes);
           end;
 
           btnDeletarLote.Enabled := False;
@@ -472,8 +479,11 @@ end;
 
 
 
-procedure TfrmDeletaLoteContabil.preencheAba(pId, pIdOrganizacao :string);
+function TfrmDeletaLoteContabil.preencheAba(pId, pIdOrganizacao :string) :Boolean;
+var
+abaPreenchida :Boolean;
 begin
+      abaPreenchida := False;
 
       if obterLoteID(pid,pIdOrganizacao) then begin
 
@@ -484,9 +494,22 @@ begin
        medtValorDB.Text       := (FormatFloat('R$ ###,###,##0.00',qryObterLoteID.FieldByName('VALOR_DB').AsCurrency));
        medtValorCR.Text       := (FormatFloat('R$ ###,###,##0.00',qryObterLoteID.FieldByName('VALOR_CR').AsCurrency));
 
+        if uutil.Empty(qryObterLoteID.FieldByName('TIPO_TABLE').AsString) then
+        begin
+          edtTabela.Text := 'NC';
+          edtTipoLancamento.Text := 'NC';
+
+          medtValorDB.Text := (FormatFloat('R$ ###,###,##0.00', 0));
+          medtValorCR.Text := (FormatFloat('R$ ###,###,##0.00', 0));
+
+          btnDeletarLote.Enabled := False;
+        end else begin       abaPreenchida := True;
+        btnDeletarLote.Enabled := True; end;
+
+
       end;
 
-
+   Result :=  abaPreenchida;
 end;
 
 function TfrmDeletaLoteContabil.obterTituloPagarProvisao(pId, pIdOrganizacao :string): Boolean;

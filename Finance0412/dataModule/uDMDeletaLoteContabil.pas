@@ -6,7 +6,9 @@ uses
   System.SysUtils, System.Classes, udmConexao, FireDAC.Stan.Intf,
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, uUtil,
-  Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client;
+  Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client,
+ Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls,
+  Vcl.StdCtrls ;
 type
   TdmDeletaLoteContabil = class(TDataModule)
     qryObterTodosLoteContabil: TFDQuery;
@@ -16,9 +18,11 @@ type
    procedure inicializarDM(Sender: TObject);
     procedure freeAndNilDM(Sender: TObject);
 
+
   public
     { Public declarations }
-        function preencheComboLoteContabil(pIdOrganizacao, pAno: string): boolean;
+     procedure listaLoteContabil(var combo: TComboBox; var listaID: TStringList);
+     function preencheComboLoteContabil(pIdOrganizacao, pAno: string): boolean;
   end;
 
 var
@@ -55,15 +59,17 @@ pDataInicial, pDataFinal, dataServer :TDateTime;
 
 begin
   dataServer := uUtil.getDataServer;
-  ano := FormatDateTime('yyyy', dataServer );
+  ano := pAno; // FormatDateTime('yyyy', dataServer );
   pDataInicial := StrToDateTime('01/01/'+ano);
+   dataServer := StrToDateTime('31/12/'+ano);
+
 
   Result := false;
   cmd :=  ' SELECT  LC.ID_LOTE_CONTABIL, LC.LOTE '+
           ' FROM LOTE_CONTABIL LC ' +
           ' WHERE (LC.ID_ORGANIZACAO = :PIDORGANIZACAO) AND ' +
           ' (LC.DATA_REGISTRO BETWEEN :DTDATAINICIAL AND :DTDATAFINAL) AND ' +
-          ' LC.STATUS <> ''EXCLUIDO'' ' +
+          ' (LC.STATUS <> ''REMOVIDO'' )' +
           ' ORDER BY LC.LOTE ' ;
 
 
@@ -84,6 +90,28 @@ begin
       end;
 
     Result := not qryObterTodosLoteContabil.IsEmpty;
+
+end;
+
+
+procedure TdmDeletaLoteContabil.listaLoteContabil(var combo: TComboBox; var listaID: TStringList);
+begin
+
+  listaID := TStringList.Create;
+  listaID.Clear;
+  listaID.Add('Sem ID');
+  combo.Clear;
+  combo.Items.Add('<<< LOTES   >>>');
+ // preencheComboLoteContabil(uUtil.TOrgAtual.getId, '');
+  qryObterTodosLoteContabil.First;
+  while not qryObterTodosLoteContabil.Eof do
+  begin
+    combo.Items.Add(qryObterTodosLoteContabil.FieldByName('LOTE').AsString);
+    listaID.Add(qryObterTodosLoteContabil.FieldByName('ID_LOTE_CONTABIL').AsString);
+    qryObterTodosLoteContabil.Next;
+  end;
+
+  combo.ItemIndex := 0;
 
 end;
 

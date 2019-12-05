@@ -140,7 +140,7 @@ object frmSaldoContas: TfrmSaldoContas
   end
   object btnProcessarSaldo: TButton
     Left = 584
-    Top = 33
+    Top = 28
     Width = 145
     Height = 45
     Caption = 'Processar'
@@ -188,48 +188,6 @@ object frmSaldoContas: TfrmSaldoContas
     OnDataChange = dsSaldoDataChange
     Left = 448
     Top = 256
-  end
-  object qryCRTodasPeriodo: TFDQuery
-    Connection = dmConexao.conn
-    FormatOptions.AssignedValues = [fvFmtDisplayNumeric, fvFmtEditNumeric]
-    FormatOptions.FmtDisplayNumeric = '###,##0.00'
-    FormatOptions.FmtEditNumeric = '###,##0.00'
-    SQL.Strings = (
-      'SELECT SUM(CBC.valor) AS VALOR_CR'
-      ''
-      'FROM conta_bancaria_credito CBC'
-      ''
-      
-        'WHERE (CBC.data_movimento BETWEEN :pDataInicial AND :pDataFinal)' +
-        ' AND'
-      '      (CBC.id_organizacao = :PIDORGANIZACAO) AND'
-      '      (CBC.id_conta_bancaria = :PIDCONTA)'
-      'GROUP BY cbc.data_movimento')
-    Left = 800
-    Top = 544
-    ParamData = <
-      item
-        Name = 'PDATAINICIAL'
-        DataType = ftDate
-        ParamType = ptInput
-      end
-      item
-        Name = 'PDATAFINAL'
-        DataType = ftDate
-        ParamType = ptInput
-      end
-      item
-        Name = 'PIDORGANIZACAO'
-        DataType = ftString
-        ParamType = ptInput
-        Size = 36
-      end
-      item
-        Name = 'PIDCONTA'
-        DataType = ftString
-        ParamType = ptInput
-        Size = 36
-      end>
   end
   object qryObterConta: TFDQuery
     Connection = dmConexao.conn
@@ -332,49 +290,6 @@ object frmSaldoContas: TfrmSaldoContas
     ParamData = <
       item
         Name = 'PIDORGANIZACAO'
-        DataType = ftString
-        ParamType = ptInput
-        Size = 36
-      end>
-  end
-  object qryDBTodasPeriodo: TFDQuery
-    Connection = dmConexao.conn
-    FormatOptions.AssignedValues = [fvFmtDisplayNumeric, fvFmtEditNumeric]
-    FormatOptions.FmtDisplayNumeric = '###,##0.00'
-    FormatOptions.FmtEditNumeric = '###,##0.00'
-    SQL.Strings = (
-      'SELECT SUM(CBD.valor) AS VALOR_DB'
-      ''
-      'FROM CONTA_BANCARIA_DEBITO CBD'
-      ''
-      
-        'WHERE (CBD.data_movimento BETWEEN :pDataInicial AND :pDataFinal)' +
-        ' AND'
-      '      (CBD.id_organizacao = :PIDORGANIZACAO) AND'
-      '      (CBD.id_conta_bancaria = :PIDCONTA)'
-      ''
-      'GROUP BY CBD.data_movimento')
-    Left = 688
-    Top = 544
-    ParamData = <
-      item
-        Name = 'PDATAINICIAL'
-        DataType = ftDate
-        ParamType = ptInput
-      end
-      item
-        Name = 'PDATAFINAL'
-        DataType = ftDate
-        ParamType = ptInput
-      end
-      item
-        Name = 'PIDORGANIZACAO'
-        DataType = ftString
-        ParamType = ptInput
-        Size = 36
-      end
-      item
-        Name = 'PIDCONTA'
         DataType = ftString
         ParamType = ptInput
         Size = 36
@@ -1781,5 +1696,120 @@ object frmSaldoContas: TfrmSaldoContas
     ForcedQuotes = False
     Left = 1000
     Top = 40
+  end
+  object qrySaldoDebito: TFDQuery
+    Connection = dmConexao.conn
+    FetchOptions.AssignedValues = [evRowsetSize]
+    FetchOptions.RowsetSize = 500
+    FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
+    FormatOptions.FmtDisplayNumeric = '###,##0.00'
+    FormatOptions.FmtEditNumeric = '###,##0.00'
+    SQL.Strings = (
+      'select sum(CBD.valor) as SALDO,'
+      '       max(cb.conta) as conta_banco,'
+      '       max(cb.titular) as titular,'
+      '       max(cc.conta) as conta_contbil,'
+      '       max(cc.descricao) as dsc_cc'
+      ''
+      'FROM  conta_bancaria_debito CBD'
+      
+        'left outer join conta_bancaria cb on (cb.id_conta_bancaria = cbD' +
+        '.id_conta_bancaria) and (CB.ID_ORGANIZACAO = CBD.ID_ORGANIZACAO)'
+      
+        'left outer join conta_contabil cc on (cc.id_conta_contabil = cb.' +
+        'id_conta_contabil) and (CC.ID_ORGANIZACAO = CBD.ID_ORGANIZACAO)'
+      ''
+      ''
+      ''
+      'WHERE (CBD.ID_ORGANIZACAO = :PIDORGANIZACAO) AND'
+      
+        '      (CBD.DATA_MOVIMENTO BETWEEN :DTDATAINICIAL AND :DTDATAFINA' +
+        'L) AND'
+      '      (CBD.ID_CONTA_BANCARIA = :PIDCONTA)'
+      ''
+      '')
+    Left = 792
+    Top = 546
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'DTDATAINICIAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end
+      item
+        Name = 'DTDATAFINAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end
+      item
+        Name = 'PIDCONTA'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+  object qrySaldoCredito: TFDQuery
+    Connection = dmConexao.conn
+    FetchOptions.AssignedValues = [evRowsetSize]
+    FetchOptions.RowsetSize = 500
+    FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
+    FormatOptions.FmtDisplayNumeric = '###,##0.00'
+    FormatOptions.FmtEditNumeric = '###,##0.00'
+    SQL.Strings = (
+      'select sum(cbc.valor) as SALDO,'
+      '       max(cb.conta) as conta_banco,'
+      '       max(cb.titular) as titular,'
+      '       max(cc.conta) as conta_contbil,'
+      '       max(cc.descricao) as dsc_cc'
+      ''
+      'FROM  conta_bancaria_credito cbc'
+      
+        'left outer join conta_bancaria cb on (cb.id_conta_bancaria = cbc' +
+        '.id_conta_bancaria)'
+      
+        'left outer join conta_contabil cc on (cc.id_conta_contabil = cb.' +
+        'id_conta_contabil)'
+      ''
+      'WHERE (CBC.ID_ORGANIZACAO = :PIDORGANIZACAO) AND'
+      
+        '      (CBC.DATA_MOVIMENTO BETWEEN :DTDATAINICIAL AND :DTDATAFINA' +
+        'L) AND'
+      '      (CBC.ID_CONTA_BANCARIA = :PIDCONTA)'
+      ''
+      ''
+      '')
+    Left = 680
+    Top = 546
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'DTDATAINICIAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end
+      item
+        Name = 'DTDATAFINAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end
+      item
+        Name = 'PIDCONTA'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
   end
 end

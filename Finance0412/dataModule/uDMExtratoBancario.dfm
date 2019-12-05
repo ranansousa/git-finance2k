@@ -230,7 +230,7 @@ object dmExtratoBancario: TdmExtratoBancario
       '      (CBD.ID_CONTA_BANCARIA = :PIDCONTA)'
       ''
       '')
-    Left = 272
+    Left = 480
     Top = 42
     ParamData = <
       item

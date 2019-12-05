@@ -17,12 +17,10 @@ type
     frmContaBancaria1: TfrmContaBancaria;
     dbgrd1: TDBGrid;
     dsSaldo: TDataSource;
-    qryCRTodasPeriodo: TFDQuery;
     qryObterConta: TFDQuery;
     qrySaldosBancarios: TFDQuery;
     btnProcessarSaldo: TButton;
     qryObterTodasContas: TFDQuery;
-    qryDBTodasPeriodo: TFDQuery;
     qryLimpaDataset: TFDQuery;
     qryPreparaDataset: TFDQuery;
     qryInsereSaldoConta: TFDQuery;
@@ -34,6 +32,8 @@ type
     frxCSVExport1: TfrxCSVExport;
     pnl1: TPanel;
     btn1: TBitBtn;
+    qrySaldoDebito: TFDQuery;
+    qrySaldoCredito: TFDQuery;
     procedure FormCreate(Sender: TObject);
     procedure btnProcessarSaldoClick(Sender: TObject);
     procedure btnImprimirClick(Sender: TObject);
@@ -49,21 +49,27 @@ type
     pDataInicial, pDataFinal :TDate;
 
     function obterTodosSaldos(pIdOrganizacao :string): Boolean;
-    function obterSaldoPorCOnta(pIdOrganizacao,pIdConta :string): Boolean;
-    function obterCreditoContas(pIdOrganizacao, pIdConta, pDataInicial, pDataFinal :String): Currency;
+    function obterSaldoPorConta(pIdOrganizacao,pIdConta :string): Boolean;
     function limpaDataSet() : Boolean;
     function preparaDataSet(pIdConta,pAno :string): Boolean;
+    procedure preparaDadosExibir(pIdOrganizacao, pIdConta: String);
     function insereSaldos(piDconta, pMes :string; pValorSaldo :Currency): Boolean;
-
-
 
     procedure preencheComboAno();
     procedure limpaPanel;
-    function obterDebitoContas(pIdOrganizacao, pIdConta, pDataInicial,  pDataFinal: String): Currency;
     procedure exibirRelatorioSaldos(dtInicial, dtFinal: TDate);
     procedure inicializarVariaveisRelatorio(dtInicial, dtFinal: TDate);
     function retornarCaminhoRelatorio: string;
     procedure alinharColsGrid(pDbGrid: TDBGrid; qtdCol :Integer);
+
+    //usando
+    function obterSaldoAnterior(pIdOrganizacao, pIDConta: string; pDataInicial,
+      pDataFinal: TDate): Currency;
+    function obterSaldoPorContaCredito(pIdOrganizacao, pIDConta: string;
+      pDataInicial, pDataFinal: TDate): Currency;
+    function obterSaldoPorContaDebito(pIdOrganizacao, pIDConta: string;
+      pDataInicial, pDataFinal: TDate): Currency;
+
 
 
 
@@ -181,23 +187,31 @@ var
 aux :Integer;
 idConta, itemPedido : string;
 begin
- pDataInicial :=  frmPeriodo1.getDataInicial;
- pDataFinal   := frmPeriodo1.getDataFinal;
+  pDataInicial :=  frmPeriodo1.getDataInicial;
+  pDataFinal   := frmPeriodo1.getDataFinal;
   idConta := FsListaIdContas[frmContaBancaria1.cbbConta.ItemIndex];
   dbgrd1.DataSource.DataSet.Close;
 
     // descConta := frmContaBancaria1.cbbConta.Items[frmContaBancaria1.cbbConta.ItemIndex];
+  if ((idConta.Equals('0')) or (idConta.Equals('Sem ID'))) then
+  begin //nao foi escolhida uma conta válida e então precisa trazer de todas
 
- if ( (idConta.Equals('0')) OR (idConta.Equals('Sem ID')) )  then begin //nao foi escolhida uma conta válida e então precisa trazer de todas
-
-   obterTodosSaldos(idOrganizacao);
- end else begin
-  //passou uma conta especifica
-
-    ShowMessage('Rotina em testes.  Serão apresentadas toads as contas bancárias ...');
     obterTodosSaldos(idOrganizacao);
+  end
+  else
+  begin
+  //passou uma conta especifica
+    if frmContaBancaria1.cbbConta.ItemIndex > 0 then
+    begin
+      obterSaldoPorConta(idOrganizacao, idConta);
+    end
+    else
+    begin
 
- end;
+      obterTodosSaldos(idOrganizacao);
+
+    end;
+  end;
 
 end;
 
@@ -388,83 +402,34 @@ begin
 
 end;
 
-function TfrmSaldoContas.obterCreditoContas(pIdOrganizacao, pIdConta,   pDataInicial, pDataFinal: String): Currency;
-  var
-  valorCredito :Currency;
-begin
-
-  valorCredito :=0;
-  dmConexao.conectarBanco;
-
-  qryCRTodasPeriodo.Close;
-  qryCRTodasPeriodo.Connection := dmConexao.conn;
-  qryCRTodasPeriodo.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
-  qryCRTodasPeriodo.ParamByName('PDATAINICIAL').AsString := pDataInicial;
-  qryCRTodasPeriodo.ParamByName('PDATAFINAL').AsString := pDataFinal;
-  qryCRTodasPeriodo.ParamByName('PIDCONTA').AsString :=pIdConta;
-  qryCRTodasPeriodo.Open;
-  qryCRTodasPeriodo.First;
-
-
-  while not qryCRTodasPeriodo.Eof do begin
-
-    valorCredito := valorCredito + qryCRTodasPeriodo.FieldByName('VALOR_CR').AsCurrency;
-
-           qryCRTodasPeriodo.Next;
-
-  end;
-
-
-   Result := valorCredito;
 
 
 
-end;
-
-
-function TfrmSaldoContas.obterDebitoContas(pIdOrganizacao, pIdConta,   pDataInicial, pDataFinal: String): Currency;
-  var
-  valorDebito :Currency;
-begin
-
-  valorDebito :=0;
-  dmConexao.conectarBanco;
-
-  qryDBTodasPeriodo.Close;
-  qryDBTodasPeriodo.Connection := dmConexao.conn;
-  qryDBTodasPeriodo.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
-  qryDBTodasPeriodo.ParamByName('PDATAINICIAL').AsString := pDataInicial;
-  qryDBTodasPeriodo.ParamByName('PDATAFINAL').AsString := pDataFinal;
-  qryDBTodasPeriodo.ParamByName('PIDCONTA').AsString :=pIdConta;
-  qryDBTodasPeriodo.Open;
-  qryDBTodasPeriodo.First;
-
-
-  while not qryDBTodasPeriodo.Eof do begin
-
-    valorDebito := valorDebito + qryDBTodasPeriodo.FieldByName('VALOR_DB').AsCurrency;
-
-    qryDBTodasPeriodo.Next;
-
-  end;
-
-
-   Result := valorDebito;
-
-end;
-
-
-function TfrmSaldoContas.obterSaldoPorCOnta(pIdOrganizacao, pIdConta: string): Boolean;
+function TfrmSaldoContas.obterSaldoPorConta(pIdOrganizacao, pIdConta: string): Boolean;
+var
+pAno :string;
 begin
 // fazer igual fez na obter todos... só que por conta
+
+   dmConexao.conectarBanco;
+   limpaDataSet;  //deleta tudo que estiver na tabela do saldo
+
+
+if frmContaBancaria1.cbbConta.ItemIndex >0 then begin
+  pAno := FormatDateTime('yyyy', frmPeriodo1.getDataInicial);
+  idConta := FsListaIdContas[frmContaBancaria1.cbbConta.ItemIndex];
+  preparaDataSet(idConta, pAno);
+  preparaDadosExibir(idOrganizacao, idConta );
+
+end;
 
 
 end;
 
 function TfrmSaldoContas.obterTodosSaldos(pIdOrganizacao: string): Boolean;
 var
-pCampo, pMes,pAno,idConta :string;
-vlrGlobal, vlrCR, vlrDB, vlrSaldo :Currency;
+pConta, pCampo, pMes,pAno,idConta :string;
+vlrSaldoAnterior, vlrGlobal, vlrCR, vlrDB, vlrSaldo :Currency;
  anoAnt, I: Integer;
   pDataInicial, pDataFinal, pDataAnterior :string;
   dtInicial, dtFinal :TDate;
@@ -474,7 +439,7 @@ begin
 
  if uUtil.Empty(pAno)  then begin pAno := FormatDateTime('yyyy', uUtil.getDataServer); end; 
 
- anoAnt := StrToInt(pAno) - 1;
+   anoAnt := StrToInt(pAno) - 1;
 
    dmConexao.conectarBanco;
    limpaDataSet;  //deleta tudo que estiver na tabela do saldo
@@ -508,284 +473,9 @@ begin
       while not qryObterTodasContas.Eof do begin
 
          idConta := qryObterTodasContas.FieldByName('ID_CONTA_BANCARIA').AsString;
+         preparaDadosExibir(idOrganizacao, idConta );
 
-        //fazer isso para o ano inteiro. A cada mes em separado
-
-         for I := 1 to 12 do begin
-
-           vlrCR :=0; vlrDB :=0; vlrSaldo :=0;
-
-             if I = 1  then begin
-                pMes := '01'; pCampo := 'JANE';
-                pDataInicial  := '01'  + '/'+ pMes + '/' + pAno;
-                dtFinal := EndOfTheMonth(StrToDate(pDataInicial ));
-                pDataFinal    := FormatDateTime('dd',dtFinal)  + '.'+ pMes + '.' + pAno;
-
-                pDataAnterior := '31' +'.12.' + IntToStr(anoAnt);
-
-               vlrGlobal :=  (obterCreditoContas(pIdOrganizacao, idConta, '01.01.1900', pDataAnterior ) - obterDebitoContas(pIdOrganizacao, idConta, '01.01.1900', pDataAnterior ));
-
-               vlrCR   := obterCreditoContas(pIdOrganizacao, idConta, pDataInicial, pDataFinal  );
-               vlrDB   := obterDebitoContas(pIdOrganizacao, idConta, pDataInicial, pDataFinal  );
-
-                 vlrSaldo := (vlrCR - vlrDB);
-                 vlrSaldo := vlrGlobal + vlrSaldo;
-
-                insereSaldos(idConta,pCampo,vlrSaldo );
-
-             end;
-
-
-              if I = 2  then begin
-                pMes := '02'; pCampo := 'FEVE';
-                pDataInicial := '01' +'/'+pMes+'/'+pAno;
-                dtFinal := EndOfTheMonth(StrToDate(pDataInicial ));
-                pDataFinal    := FormatDateTime('dd',dtFinal)  + '.'+ pMes + '.' + pAno;
-
-
-                pDataAnterior := '31' +'.12.' + IntToStr(anoAnt);
-
-                vlrGlobal :=  (obterCreditoContas(pIdOrganizacao, idConta, '01.01.1900', pDataAnterior ) - obterDebitoContas(pIdOrganizacao, idConta, '01.01.1900', pDataAnterior ));
-
-               vlrCR   := obterCreditoContas(pIdOrganizacao, idConta, pDataInicial, pDataFinal  );
-               vlrDB   := obterDebitoContas(pIdOrganizacao, idConta, pDataInicial, pDataFinal  );
-
-                 vlrSaldo := (vlrCR - vlrDB);
-                 vlrSaldo := vlrGlobal + vlrSaldo;
-                insereSaldos(idConta,pCampo,vlrSaldo );
-
-             end;
-
-
-              if I = 3  then begin
-                pMes := '03'; pCampo := 'MARC';
-                pDataInicial := '01' +'/'+pMes+'/'+pAno;
-                dtFinal := EndOfTheMonth(StrToDate(pDataInicial ));
-                pDataFinal    := FormatDateTime('dd',dtFinal)  + '.'+ pMes + '.' + pAno;
-
-
-                pDataAnterior := '31' +'.12.' + IntToStr(anoAnt);
-
-                vlrGlobal :=  (obterCreditoContas(pIdOrganizacao, idConta, '01.01.1900', pDataAnterior ) - obterDebitoContas(pIdOrganizacao, idConta, '01.01.1900', pDataAnterior ));
-
-               vlrCR   := obterCreditoContas(pIdOrganizacao, idConta, pDataInicial, pDataFinal  );
-               vlrDB   := obterDebitoContas(pIdOrganizacao, idConta, pDataInicial, pDataFinal  );
-                vlrSaldo := (vlrCR - vlrDB);
-                vlrSaldo := vlrGlobal + vlrSaldo;
-
-                insereSaldos(idConta,pCampo,vlrSaldo );
-
-             end;
-
-
-              if I = 4  then begin
-                pMes := '04'; pCampo := 'ABRI';
-                pDataInicial := '01' +'/'+pMes+'/'+pAno;
-                dtFinal := EndOfTheMonth(StrToDate(pDataInicial ));
-                pDataFinal    := FormatDateTime('dd',dtFinal)  + '.'+ pMes + '.' + pAno;
-                pDataAnterior := '31' +'.12.' + IntToStr(anoAnt);
-
-                vlrGlobal :=  (obterCreditoContas(pIdOrganizacao, idConta, '01.01.1900', pDataAnterior ) - obterDebitoContas(pIdOrganizacao, idConta, '01.01.1900', pDataAnterior ));
-
-               vlrCR   := obterCreditoContas(pIdOrganizacao, idConta, pDataInicial, pDataFinal  );
-               vlrDB   := obterDebitoContas(pIdOrganizacao, idConta, pDataInicial, pDataFinal  );
-               vlrSaldo := (vlrCR - vlrDB);
-               vlrSaldo := vlrGlobal + vlrSaldo;
-               insereSaldos(idConta,pCampo,vlrSaldo );
-
-             end;
-
-
-              if I = 5  then begin
-                pMes := '05'; pCampo := 'MAIO';
-                pDataInicial := '01' +'/'+pMes+'/'+pAno;
-                dtFinal := EndOfTheMonth(StrToDate(pDataInicial ));
-                pDataFinal    := FormatDateTime('dd',dtFinal)  + '.'+ pMes + '.' + pAno;
-                pDataAnterior := '31' +'.12.' + IntToStr(anoAnt);
-
-                vlrGlobal :=  (obterCreditoContas(pIdOrganizacao, idConta, '01.01.1900', pDataAnterior ) - obterDebitoContas(pIdOrganizacao, idConta, '01.01.1900', pDataAnterior ));
-
-               vlrCR   := obterCreditoContas(pIdOrganizacao, idConta, pDataInicial, pDataFinal  );
-               vlrDB   := obterDebitoContas(pIdOrganizacao, idConta, pDataInicial, pDataFinal  );
-               vlrSaldo := (vlrCR - vlrDB);
-               vlrSaldo := vlrGlobal + vlrSaldo;
-               insereSaldos(idConta,pCampo,vlrSaldo );
-
-             end;
-
-
-
-              if I = 6  then begin
-                pMes := '06'; pCampo := 'JUNH';
-                pDataInicial := '01' +'/'+pMes+'/'+pAno;
-                dtFinal := EndOfTheMonth(StrToDate(pDataInicial ));
-                pDataFinal    := FormatDateTime('dd',dtFinal)  + '.'+ pMes + '.' + pAno;
-
-
-                pDataAnterior := '31' +'.12.' + IntToStr(anoAnt);
-
-                vlrGlobal :=  (obterCreditoContas(pIdOrganizacao, idConta, '01.01.1900', pDataAnterior ) - obterDebitoContas(pIdOrganizacao, idConta, '01.01.1900', pDataAnterior ));
-
-               vlrCR   := obterCreditoContas(pIdOrganizacao, idConta, pDataInicial, pDataFinal  );
-               vlrDB   := obterDebitoContas(pIdOrganizacao, idConta, pDataInicial, pDataFinal  );
-               vlrSaldo := (vlrCR - vlrDB);
-               vlrSaldo := vlrGlobal + vlrSaldo;
-
-                insereSaldos(idConta,pCampo,vlrSaldo );
-
-             end;
-
-
-            if  (StrToInt(FormatDateTime('mm',now))) >= I then begin
-
-              if I = 7  then begin
-                pMes := '07'; pCampo := 'JULH';
-                pDataInicial := '01' +'/'+pMes+'/'+pAno;
-                dtFinal := EndOfTheMonth(StrToDate(pDataInicial ));
-                pDataFinal    := FormatDateTime('dd',dtFinal)  + '.'+ pMes + '.' + pAno;
-
-                pDataAnterior := '31' +'.12.' + IntToStr(anoAnt);
-
-                vlrGlobal :=  (obterCreditoContas(pIdOrganizacao, idConta, '01.01.1900', pDataAnterior ) - obterDebitoContas(pIdOrganizacao, idConta, '01.01.1900', pDataAnterior ));
-
-               vlrCR   := obterCreditoContas(pIdOrganizacao, idConta, pDataInicial, pDataFinal  );
-               vlrDB   := obterDebitoContas(pIdOrganizacao, idConta, pDataInicial, pDataFinal  );
-               vlrSaldo := (vlrCR - vlrDB);
-               vlrSaldo := vlrGlobal + vlrSaldo;
-
-                insereSaldos(idConta,pCampo,vlrSaldo );
-
-             end;
-
-
-             end;
-
-
-           if  (StrToInt(FormatDateTime('mm',now))) >= I then begin
-
-              if I = 8  then begin
-                pMes := '08'; pCampo := 'AGOS';
-                pDataInicial := '01' +'/'+pMes+'/'+pAno;
-                dtFinal := EndOfTheMonth(StrToDate(pDataInicial ));
-                pDataFinal    := FormatDateTime('dd',dtFinal)  + '.'+ pMes + '.' + pAno;
-
-                pDataAnterior := '31' +'.12.' + IntToStr(anoAnt);
-
-                vlrGlobal :=  (obterCreditoContas(pIdOrganizacao, idConta, '01.01.1900', pDataAnterior ) - obterDebitoContas(pIdOrganizacao, idConta, '01.01.1900', pDataAnterior ));
-
-               vlrCR   := obterCreditoContas(pIdOrganizacao, idConta, pDataInicial, pDataFinal  );
-               vlrDB   := obterDebitoContas(pIdOrganizacao, idConta, pDataInicial, pDataFinal  );
-
-                vlrSaldo := (vlrCR - vlrDB);
-                vlrSaldo := vlrGlobal + vlrSaldo;
-                insereSaldos(idConta,pCampo,vlrSaldo );
-
-             end;
-
-
-              end;
-
-
-            if  (StrToInt(FormatDateTime('mm',now))) >= I then begin
-
-              if I = 9  then begin
-                pMes := '09'; pCampo := 'SETE';
-                pDataInicial := '01' +'/'+pMes+'/'+pAno;
-                dtFinal := EndOfTheMonth(StrToDate(pDataInicial ));
-                pDataFinal    := FormatDateTime('dd',dtFinal)  + '.'+ pMes + '.' + pAno;
-
-                pDataAnterior := '31' +'.12.' + IntToStr(anoAnt);
-
-                vlrGlobal :=  (obterCreditoContas(pIdOrganizacao, idConta, '01.01.1900', pDataAnterior ) - obterDebitoContas(pIdOrganizacao, idConta, '01.01.1900', pDataAnterior ));
-
-               vlrCR   := obterCreditoContas(pIdOrganizacao, idConta, pDataInicial, pDataFinal  );
-               vlrDB   := obterDebitoContas(pIdOrganizacao, idConta, pDataInicial, pDataFinal  );
-
-                 vlrSaldo := (vlrCR - vlrDB);
-                 vlrSaldo := vlrGlobal + vlrSaldo;
-                insereSaldos(idConta,pCampo,vlrSaldo );
-
-             end;
-
-              end;
-
-
-            if  (StrToInt(FormatDateTime('mm',now))) >= I then begin
-
-             if I = 10  then begin
-                pMes := '10'; pCampo := 'OUTU';
-                pDataInicial := '01' +'/'+pMes+'/'+pAno;
-                dtFinal := EndOfTheMonth(StrToDate(pDataInicial ));
-                pDataFinal    := FormatDateTime('dd',dtFinal)  + '.'+ pMes + '.' + pAno;
-
-                pDataAnterior := '31' +'.12.' + IntToStr(anoAnt);
-
-                vlrGlobal :=  (obterCreditoContas(pIdOrganizacao, idConta, '01.01.1900', pDataAnterior ) - obterDebitoContas(pIdOrganizacao, idConta, '01.01.1900', pDataAnterior ));
-
-               vlrCR   := obterCreditoContas(pIdOrganizacao, idConta, pDataInicial, pDataFinal  );
-               vlrDB   := obterDebitoContas(pIdOrganizacao, idConta, pDataInicial, pDataFinal  );
-
-                 vlrSaldo := (vlrCR - vlrDB);
-                 vlrSaldo := vlrGlobal + vlrSaldo;
-                insereSaldos(idConta,pCampo,vlrSaldo );
-
-             end;
-           end;
-
-
-           if  (StrToInt(FormatDateTime('mm',now))) >= I then begin
-
-              if I = 11  then begin
-                pMes := '11'; pCampo := 'NOVE';
-                pDataInicial := '01' +'/'+pMes+'/'+pAno;
-                dtFinal := EndOfTheMonth(StrToDate(pDataInicial ));
-                pDataFinal    := FormatDateTime('dd',dtFinal)  + '.'+ pMes + '.' + pAno;
-
-                pDataAnterior := '31' +'.12.' + IntToStr(anoAnt);
-
-                vlrGlobal :=  (obterCreditoContas(pIdOrganizacao, idConta, '01.01.1900', pDataAnterior ) - obterDebitoContas(pIdOrganizacao, idConta, '01.01.1900', pDataAnterior ));
-
-               vlrCR   := obterCreditoContas(pIdOrganizacao, idConta, pDataInicial, pDataFinal  );
-               vlrDB   := obterDebitoContas(pIdOrganizacao, idConta, pDataInicial, pDataFinal  );
-                 vlrSaldo := (vlrCR - vlrDB);
-                 vlrSaldo := vlrGlobal + vlrSaldo;
-
-                insereSaldos(idConta,pCampo,vlrSaldo );
-
-             end;
-             end;
-
-           if  (StrToInt(FormatDateTime('mm',now))) >= I then begin
-
-              if I = 12  then begin
-                pMes := '12'; pCampo := 'DEZE';
-                pDataInicial := '01' +'/'+pMes+'/'+pAno;
-                dtFinal := EndOfTheMonth(StrToDate(pDataInicial ));
-                pDataFinal    := FormatDateTime('dd',dtFinal)  + '.'+ pMes + '.' + pAno;
-
-                pDataAnterior := '31' +'.12.' + IntToStr(anoAnt);
-
-                vlrGlobal :=  (obterCreditoContas(pIdOrganizacao, idConta, '01.01.1900', pDataAnterior ) - obterDebitoContas(pIdOrganizacao, idConta, '01.01.1900', pDataAnterior ));
-
-               vlrCR   := obterCreditoContas(pIdOrganizacao, idConta, pDataInicial, pDataFinal  );
-               vlrDB   := obterDebitoContas(pIdOrganizacao, idConta, pDataInicial, pDataFinal  );
-
-                 vlrSaldo := (vlrCR - vlrDB);
-                 vlrSaldo := vlrGlobal + vlrSaldo;
-
-                insereSaldos(idConta,pCampo,vlrSaldo );
-
-             end;
-
-           end;
-
-
-
-
-         end;
-
-
-       qryObterTodasContas.Next;
+         qryObterTodasContas.Next;
 
       end;
 
@@ -795,13 +485,351 @@ begin
 
 
 
+end;
+
+
+
+function TfrmSaldoContas.obterSaldoAnterior(pIdOrganizacao, pIDConta: string;   pDataInicial, pDataFinal: TDate): Currency;
+  var
+  valorDB, valorCR,  vlrSaldo : Currency;
+  pDataInicio: TDate  ;
+begin
+   valorDB :=0; valorCR :=0;  vlrSaldo :=0;
+   pDataInicio :=  StrToDate('01/01/1990');
+
+
+  try
+
+      valorDB := obterSaldoPorContaDebito(pIdOrganizacao, pIDConta, pDataInicio,IncDay(pDataInicial, -1));
+      valorCR := obterSaldoPorContaCredito(pIdOrganizacao, pIDConta, pDataInicio,IncDay(pDataInicial, -1));
+
+      vlrSaldo := valorCR - valorDB;
+
+
+  except
+
+  raise Exception.Create('Erro ao obter saldo anterior...');
+
+  end;
+
+   Result := vlrSaldo;
+end;
+
+
+
+function TfrmSaldoContas.obterSaldoPorContaDebito(pIdOrganizacao, pIDConta: string;   pDataInicial, pDataFinal: TDate): Currency;
+  var
+  valor : Currency;
+begin
+
+  valor :=0;
+
+    dmConexao.conectarBanco;
+    try
+
+      qrySaldoDebito.Close;
+      qrySaldoDebito.Connection := dmConexao.conn;
+      qrySaldoDebito.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+      qrySaldoDebito.ParamByName('PIDCONTA').AsString       := pIDConta ;
+      qrySaldoDebito.ParamByName('DTDATAINICIAL').AsDate    := pDataInicial;
+      qrySaldoDebito.ParamByName('DTDATAFINAL').AsDate      := pDataFinal;
+      qrySaldoDebito.Open;
+
+      if not qrySaldoDebito.IsEmpty then
+       valor := qrySaldoDebito.FieldByName('SALDO').AsCurrency;
+
+        except
+    raise Exception.Create('Erro ao obter saldo débito ');
+    end;
+
+     Result := valor;
+end;
+
+
+function TfrmSaldoContas.obterSaldoPorContaCredito(pIdOrganizacao, pIDConta: string;
+  pDataInicial, pDataFinal: TDate): Currency;
+  var
+  valor : Currency;
+begin
+
+  valor :=0;
+
+
+    dmConexao.conectarBanco;
+    try
+
+      qrySaldoCredito.Close;
+      qrySaldoCredito.Connection := dmConexao.conn;
+      qrySaldoCredito.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+      qrySaldoCredito.ParamByName('PIDCONTA').AsString       := pIDConta ;
+      qrySaldoCredito.ParamByName('DTDATAINICIAL').AsDate    := pDataInicial;
+      qrySaldoCredito.ParamByName('DTDATAFINAL').AsDate      := pDataFinal;
+      qrySaldoCredito.Open;
+
+      if not qrySaldoCredito.IsEmpty then
+       valor := qrySaldoCredito.FieldByName('SALDO').AsCurrency;
+
+
+
+    except
+    raise Exception.Create('Erro ao obter saldo crédito ');
+    end;
+
+    Result := valor;
+
+end;
+
+procedure TfrmSaldoContas.preparaDadosExibir(pIdOrganizacao, pIdConta :String );
+var
+pConta, pCampo, pMes,pAno,idConta :string;
+vlrSaldoAnterior, vlrGlobal, vlrCR, vlrDB, vlrSaldo :Currency;
+ anoAnt, I: Integer;
+  pDataInicial, pDataFinal, pDataAnterior :string;
+  dtInicial, dtFinal :TDate;
+
+begin
+  pAno := FormatDateTime('yyyy', frmPeriodo1.getDataInicial);
+  idConta := pIdConta;
+
+ if uUtil.Empty(pAno)  then begin pAno := FormatDateTime('yyyy', uUtil.getDataServer); end;
+
+   anoAnt := StrToInt(pAno) - 1;
+
+
+ //fazer isso para o ano inteiro. A cada mes em separado
+
+           vlrCR :=0; vlrDB :=0; vlrGlobal :=0; vlrSaldo :=0;
+
+            if  (StrToInt(FormatDateTime('mm',now))) >= 1 then begin
+
+                  pMes := '01'; pCampo := 'JANE';
+                  pDataInicial  := '01'  + '/'+ pMes + '/' + pAno;
+                  dtFinal := EndOfTheMonth(StrToDate(pDataInicial ));
+                  pDataFinal    := FormatDateTime('dd',dtFinal)  + '/'+ pMes + '/' + pAno;
+
+
+                  vlrSaldoAnterior := obterSaldoAnterior(idOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+                  vlrDB := obterSaldoPorContaDebito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+                  vlrCR := obterSaldoPorContaCredito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+
+                  vlrSaldo := vlrSaldoAnterior + (vlrCR - vlrDB);
+                  insereSaldos(idConta,pCampo,vlrSaldo );
+
+            end;
+
+             vlrCR :=0; vlrDB :=0;  vlrSaldo :=0;
+
+            if  (StrToInt(FormatDateTime('mm',now))) >= 2 then begin
+
+
+                  pMes := '02'; pCampo := 'FEVE';
+                  pDataInicial := '01' +'/'+pMes+'/'+pAno;
+                  dtFinal := EndOfTheMonth(StrToDate(pDataInicial ));
+                  pDataFinal    := FormatDateTime('dd',dtFinal)  + '/'+ pMes + '/' + pAno;
+                  vlrSaldoAnterior := obterSaldoAnterior(idOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+                  vlrDB := obterSaldoPorContaDebito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+                  vlrCR := obterSaldoPorContaCredito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+
+                  vlrSaldo := vlrSaldoAnterior + (vlrCR - vlrDB);
+                  insereSaldos(idConta,pCampo,vlrSaldo );
+
+             end;
+
+
+             vlrCR :=0; vlrDB :=0; vlrSaldo :=0;
+
+            if  (StrToInt(FormatDateTime('mm',now))) >= 3 then begin
+
+
+                pMes := '03'; pCampo := 'MARC';
+                pDataInicial := '01' +'/'+pMes+'/'+pAno;
+                dtFinal := EndOfTheMonth(StrToDate(pDataInicial ));
+                pDataFinal    := FormatDateTime('dd',dtFinal)  + '/'+ pMes + '/' + pAno;
+                  vlrSaldoAnterior := obterSaldoAnterior(idOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+                  vlrDB := obterSaldoPorContaDebito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+                  vlrCR := obterSaldoPorContaCredito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+
+                  vlrSaldo := vlrSaldoAnterior + (vlrCR - vlrDB);
+                  insereSaldos(idConta,pCampo,vlrSaldo );
+
+             end;
+
+
+               vlrCR :=0; vlrDB :=0;  vlrSaldo :=0;
+
+            if  (StrToInt(FormatDateTime('mm',now))) >= 4 then begin
+
+                pMes := '04'; pCampo := 'ABRI';
+                pDataInicial := '01' +'/'+pMes+'/'+pAno;
+                dtFinal := EndOfTheMonth(StrToDate(pDataInicial ));
+                pDataFinal    := FormatDateTime('dd',dtFinal)  + '.'+ pMes + '.' + pAno;
+               pDataFinal    := FormatDateTime('dd',dtFinal)  + '/'+ pMes + '/' + pAno;
+                  vlrSaldoAnterior := obterSaldoAnterior(idOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+                  vlrDB := obterSaldoPorContaDebito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+                  vlrCR := obterSaldoPorContaCredito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+
+                  vlrSaldo := vlrSaldoAnterior + (vlrCR - vlrDB);
+                  insereSaldos(idConta,pCampo,vlrSaldo );
+
+             end;
+
+               vlrCR :=0; vlrDB :=0; vlrSaldo :=0;
+
+            if  (StrToInt(FormatDateTime('mm',now))) >= 5 then begin
+
+                pMes := '05'; pCampo := 'MAIO';
+                pDataInicial := '01' +'/'+pMes+'/'+pAno;
+                dtFinal := EndOfTheMonth(StrToDate(pDataInicial ));
+               pDataFinal    := FormatDateTime('dd',dtFinal)  + '/'+ pMes + '/' + pAno;
+                  vlrSaldoAnterior := obterSaldoAnterior(idOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+                  vlrDB := obterSaldoPorContaDebito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+                  vlrCR := obterSaldoPorContaCredito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+
+                  vlrSaldo := vlrSaldoAnterior + (vlrCR - vlrDB);
+                  insereSaldos(idConta,pCampo,vlrSaldo );
+
+             end;
+
+           vlrCR :=0; vlrDB :=0; vlrSaldo :=0;
+
+            if  (StrToInt(FormatDateTime('mm',now))) >= 6 then begin
+
+                pMes := '06'; pCampo := 'JUNH';
+                pDataInicial := '01' +'/'+pMes+'/'+pAno;
+                dtFinal := EndOfTheMonth(StrToDate(pDataInicial ));
+                pDataFinal    := FormatDateTime('dd',dtFinal)  + '/'+ pMes + '/' + pAno;
+                  vlrSaldoAnterior := obterSaldoAnterior(idOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+                  vlrDB := obterSaldoPorContaDebito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+                  vlrCR := obterSaldoPorContaCredito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+
+                  vlrSaldo := vlrSaldoAnterior + (vlrCR - vlrDB);
+                  insereSaldos(idConta,pCampo,vlrSaldo );
+
+             end;
+
+
+               vlrCR :=0; vlrDB :=0; vlrSaldo :=0;
+
+            if  (StrToInt(FormatDateTime('mm',now))) >= 7 then begin
+
+                pMes := '07'; pCampo := 'JULH';
+                pDataInicial := '01' +'/'+pMes+'/'+pAno;
+                dtFinal := EndOfTheMonth(StrToDate(pDataInicial ));
+                pDataFinal    := FormatDateTime('dd',dtFinal)  + '/'+ pMes + '/' + pAno;
+                  vlrSaldoAnterior := obterSaldoAnterior(idOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+                  vlrDB := obterSaldoPorContaDebito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+                  vlrCR := obterSaldoPorContaCredito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+
+                  vlrSaldo := vlrSaldoAnterior + (vlrCR - vlrDB);
+                  insereSaldos(idConta,pCampo,vlrSaldo );
+
+             end;
+
+               vlrCR :=0; vlrDB :=0; vlrSaldo :=0;
+
+            if  (StrToInt(FormatDateTime('mm',now))) >= 8 then begin
+
+                pMes := '08'; pCampo := 'AGOS';
+                pDataInicial := '01' +'/'+pMes+'/'+pAno;
+                dtFinal := EndOfTheMonth(StrToDate(pDataInicial ));
+                pDataFinal    := FormatDateTime('dd',dtFinal)  + '/'+ pMes + '/' + pAno;
+                  vlrSaldoAnterior := obterSaldoAnterior(idOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+                  vlrDB := obterSaldoPorContaDebito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+                  vlrCR := obterSaldoPorContaCredito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+
+                  vlrSaldo := vlrSaldoAnterior + (vlrCR - vlrDB);
+                  insereSaldos(idConta,pCampo,vlrSaldo );
+
+             end;
+
+
+
+
+               vlrCR :=0; vlrDB :=0; vlrSaldo :=0;
+
+            if  (StrToInt(FormatDateTime('mm',now))) >= 9 then begin
+
+                pMes := '09'; pCampo := 'SETE';
+                pDataInicial := '01' +'/'+pMes+'/'+pAno;
+                dtFinal := EndOfTheMonth(StrToDate(pDataInicial ));
+              pDataFinal    := FormatDateTime('dd',dtFinal)  + '/'+ pMes + '/' + pAno;
+                  vlrSaldoAnterior := obterSaldoAnterior(idOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+                  vlrDB := obterSaldoPorContaDebito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+                  vlrCR := obterSaldoPorContaCredito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+
+                  vlrSaldo := vlrSaldoAnterior + (vlrCR - vlrDB);
+                  insereSaldos(idConta,pCampo,vlrSaldo );
+
+             end;
+
+
+
+
+              vlrCR :=0; vlrDB :=0; vlrSaldo :=0;
+
+            if  (StrToInt(FormatDateTime('mm',now))) >= 10 then begin
+
+                pMes := '10'; pCampo := 'OUTU';
+                pDataInicial := '01' +'/'+pMes+'/'+pAno;
+                dtFinal := EndOfTheMonth(StrToDate(pDataInicial ));
+                pDataFinal    := FormatDateTime('dd',dtFinal)  + '/'+ pMes + '/' + pAno;
+                  vlrSaldoAnterior := obterSaldoAnterior(idOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+                  vlrDB := obterSaldoPorContaDebito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+                  vlrCR := obterSaldoPorContaCredito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+
+                  vlrSaldo := vlrSaldoAnterior + (vlrCR - vlrDB);
+                  insereSaldos(idConta,pCampo,vlrSaldo );
+
+             end;
+
+               vlrCR :=0; vlrDB :=0; vlrSaldo :=0;
+
+            if  (StrToInt(FormatDateTime('mm',now))) >= 11 then begin
+
+                pMes := '11'; pCampo := 'NOVE';
+                pDataInicial := '01' +'/'+pMes+'/'+pAno;
+                dtFinal := EndOfTheMonth(StrToDate(pDataInicial ));
+                 pDataFinal    := FormatDateTime('dd',dtFinal)  + '/'+ pMes + '/' + pAno;
+                  vlrSaldoAnterior := obterSaldoAnterior(idOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+                  vlrDB := obterSaldoPorContaDebito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+                  vlrCR := obterSaldoPorContaCredito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+
+                  vlrSaldo := vlrSaldoAnterior + (vlrCR - vlrDB);
+                  insereSaldos(idConta,pCampo,vlrSaldo );
+
+             end;
+
+              vlrCR :=0; vlrDB :=0; vlrSaldo :=0;
+
+           if  (StrToInt(FormatDateTime('mm',now))) >= 12 then begin
+
+                vlrCR :=0; vlrDB :=0; vlrSaldo :=0;
+                pMes := '12'; pCampo := 'DEZE';
+                pDataInicial := '01' +'/'+pMes+'/'+pAno;
+                dtFinal := EndOfTheMonth(StrToDate(pDataInicial ));
+                pDataFinal    := FormatDateTime('dd',dtFinal)  + '/'+ pMes + '/' + pAno;
+                  vlrSaldoAnterior := obterSaldoAnterior(idOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+                  vlrDB := obterSaldoPorContaDebito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+                  vlrCR := obterSaldoPorContaCredito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+
+                  vlrSaldo := vlrSaldoAnterior + (vlrCR - vlrDB);
+                  insereSaldos(idConta,pCampo,vlrSaldo );
+
+           end;
+
+
    qrySaldosBancarios.Close;
    qrySaldosBancarios.Connection := dmConexao.conn;
    qrySaldosBancarios.Open;
 
+   if not qrySaldosBancarios.IsEmpty then begin
 
-
+     btnImprimir.Enabled := True;
+   end else begin      btnImprimir.Enabled := False; end;
 
 end;
+
+
+
 
 end.

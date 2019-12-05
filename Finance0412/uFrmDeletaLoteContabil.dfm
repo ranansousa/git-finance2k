@@ -18,10 +18,10 @@ object frmDeletaLoteContabil: TfrmDeletaLoteContabil
   TextHeight = 13
   object lbl1: TLabel
     Left = 246
-    Top = 25
-    Width = 63
+    Top = 27
+    Width = 61
     Height = 13
-    Caption = 'Lote Cont'#225'bil'
+    Caption = 'Lote cont'#225'bil'
   end
   object lbl2: TLabel
     Left = 66
@@ -61,13 +61,13 @@ object frmDeletaLoteContabil: TfrmDeletaLoteContabil
   object lbl7: TLabel
     Left = 130
     Top = 25
-    Width = 77
-    Height = 11
+    Width = 75
+    Height = 13
     Caption = 'Selecione o ano'
   end
   object cbbLoteContabil: TComboBox
     Left = 246
-    Top = 44
+    Top = 46
     Width = 110
     Height = 21
     Font.Charset = DEFAULT_CHARSET
@@ -155,6 +155,7 @@ object frmDeletaLoteContabil: TfrmDeletaLoteContabil
     Text = '>>Selecione <<'
     OnChange = cbbAnoChange
     Items.Strings = (
+      '>> Selecione o ano << '
       '2019'
       '2018'
       '2017'
@@ -163,7 +164,7 @@ object frmDeletaLoteContabil: TfrmDeletaLoteContabil
       '2014')
   end
   object btnFechar: TBitBtn
-    Left = 612
+    Left = 606
     Top = 42
     Width = 102
     Height = 28

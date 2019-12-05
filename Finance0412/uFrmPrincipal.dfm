@@ -7736,7 +7736,6 @@ object FrmPrincipal: TFrmPrincipal
       Index = 1
     end
     object dxRibbon1Tab1: TdxRibbonTab
-      Active = True
       Caption = 'Tesouraria'
       Groups = <
         item
@@ -7751,6 +7750,7 @@ object FrmPrincipal: TFrmPrincipal
       Index = 2
     end
     object menuContaBancaria: TdxRibbonTab
+      Active = True
       Caption = 'Concilia'#231#227'o Banc'#225'ria'
       Groups = <
         item
@@ -32151,8 +32151,8 @@ object FrmPrincipal: TFrmPrincipal
           Visible = True
           ItemName = 'dxBtbTrfCxChq'
         end>
-      OneOnRow = True
-      Row = 2
+      OneOnRow = False
+      Row = 0
       UseOwnFont = False
       Visible = True
       WholeRow = False
@@ -32167,8 +32167,8 @@ object FrmPrincipal: TFrmPrincipal
       FloatClientWidth = 0
       FloatClientHeight = 0
       ItemLinks = <>
-      OneOnRow = True
-      Row = 1
+      OneOnRow = False
+      Row = 0
       UseOwnFont = False
       Visible = True
       WholeRow = False
@@ -32183,7 +32183,7 @@ object FrmPrincipal: TFrmPrincipal
       FloatClientWidth = 0
       FloatClientHeight = 0
       ItemLinks = <>
-      OneOnRow = True
+      OneOnRow = False
       Row = 0
       UseOwnFont = False
       Visible = True
