@@ -1,0 +1,335 @@
+unit udmConexao;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, FireDAC.Stan.Intf, FireDAC.Stan.Option,
+  Vcl.Dialogs, IniFiles,uFrmRegistraBaseDados,
+  FireDAC.Stan.Error, FireDAC.UI.Intf, FireDAC.Phys.Intf, FireDAC.Stan.Def,
+  FireDAC.Stan.Pool, FireDAC.Stan.Async, FireDAC.Phys, FireDAC.VCLUI.Error,
+  FireDAC.VCLUI.Wait, FireDAC.Phys.FBDef, FireDAC.Phys.IBBase, FireDAC.Phys.FB,
+  FireDAC.Comp.UI, Data.DB, FireDAC.Comp.Client, FireDAC.Stan.Param, uUtil,
+  FireDAC.DatS, FireDAC.DApt.Intf, FireDAC.DApt, FireDAC.Comp.DataSet,
+  FireDAC.Phys.Oracle, FireDAC.Phys.OracleDef;
+
+type
+  TdmConexao = class(TDataModule)
+    FDGUIxErrorDialog1: TFDGUIxErrorDialog;
+    FDGUIxWaitCursor1: TFDGUIxWaitCursor;
+    FDPhysFBDriverLink1: TFDPhysFBDriverLink;
+    ConnMega: TFDConnection;
+    qryEstacoesConectadas: TFDQuery;
+    qryObterGUID: TFDQuery;
+    conn: TFDConnection;
+    qryDadosEmpresaMega: TFDQuery;
+    procedure DataModuleCreate(Sender: TObject);
+  private
+    function carregarDadosEmpresaMega(pCnpj: string): Boolean;
+    function verificarIdentificador(pIdOrganizacao,pTable, pValor: string): Integer;
+    { Private declarations }
+  public
+    { Public declarations }
+    database: string;
+    databaseFinance:String;
+    databaseMega: string;
+    pathMega: string;
+    host: string;
+    porta: string;
+    user: string;
+    password: string;
+    function conectarBanco: boolean;
+    function conectarMega: boolean;
+    function obterHostONLINE: boolean;
+    function obterNewID():string; // retorna o id novo do banco
+   function obterIdentificador(pIdOrganizacao, pTable: string): string;
+
+
+
+
+  end;
+
+var
+  dmConexao: TdmConexao;
+
+implementation
+
+{ %CLASSGROUP 'Vcl.Controls.TControl' }
+
+{$R *.dfm}
+
+function TdmConexao.conectarBanco: boolean;
+var  Arquivo: TIniFile { uses IniFiles };
+begin
+
+  if not(Conn.Connected) then
+   begin
+    Result := False;
+      uUtil.TOrgAtual.setPathSGBD(databaseFinance);
+      try
+
+      //  databaseFinance := '192.168.15.15/3050:D:\Clientes\imap\FINANCE.FDB';
+
+        conn.Params.Clear;
+        conn.LoginPrompt := false;
+        conn.DriverName := 'FB';
+        conn.Params.Add('database=' + databaseFinance);
+        conn.Params.Add('user_name=' + 'SYSDBA');
+        conn.Params.Add('password=' + 'masterkey');//
+        conn.Params.Add('blobsize=-1');
+        conn.Params.Add('SQLDialect=3');
+        conn.Params.Add('CharacterSet = iso8859_1');
+        conn.Params.Add('PageSize=4096');
+        conn.Open;
+
+
+    except
+      raise Exception.Create('Não foi possível conectar ao banco de dados!  ' + databaseFinance);
+     // Exception.Create('O Caminho do banco de dados parece estar incorreto.');
+
+    end;
+ end;
+
+  Result := Conn.Connected;
+end;
+
+function TdmConexao.conectarMega: boolean;
+ var
+ Arquivo: TIniFile ;
+ databaseMega:String;
+begin
+Arquivo := TIniFile.Create(uUtil.GetPathConfigIni);
+databaseMega :=  Arquivo.ReadString('DADOSMEGA','DATABASE', '');
+
+  if not(ConnMega.Connected) then
+   begin
+
+    try
+      begin
+        ConnMega.Params.Clear;
+        ConnMega.LoginPrompt := false;
+        ConnMega.DriverName := 'FB';
+        ConnMega.Params.Add('database=' + databaseMega);
+        //ConnMega.Params.Add('drivername=' + ConnMega.DriverName);
+        //ConnMega.Params.Add('hostname=' + host);
+        //ConnMega.Params.Add('port=' + '3050');
+        ConnMega.Params.Add('user_name=' + 'SYSDBA');
+        ConnMega.Params.Add('password=' + 'masterkey');//
+        ConnMega.Params.Add('blobsize=-1');
+        ConnMega.Params.Add('SQLDialect=3');
+        ConnMega.Params.Add('CharacterSet = iso8859_1');
+        ConnMega.Params.Add('PageSize=4096');
+        ConnMega.Open;
+      end;
+      if not ConnMega.Ping then
+      begin
+
+        raise Exception.Create('Não foi possível conectar ao Sistema Contábil! '   + databaseMega);
+      end;
+    except
+      raise Exception.Create('Erro ao tentar acessar a base do Sistema Contábil !');
+    end;
+
+  end;// chamar o registra base de dados aqui
+
+
+  // Arquivo.Free;
+   FreeAndNil(Arquivo);
+  Result := ConnMega.Connected;
+end;
+
+
+procedure TdmConexao.DataModuleCreate(Sender: TObject);
+var  Arquivo: TIniFile { uses IniFiles };
+
+begin
+   //      teste := uUtil.GetPathConfigIni;
+   Arquivo := TIniFile.Create(uUtil.GetPathConfigIni);
+
+    if not uUtil.ArquivoExist(Arquivo.FileName) then
+    begin
+          raise Exception.Create('Não foi possível acesso o Config!');
+    end ;
+
+   databaseFinance :=  Arquivo.ReadString('DADOSFINANCE','DATABASE', '');
+   databaseMega    :=  Arquivo.ReadString('DADOSMEGA','DATABASE', '');
+
+   FreeAndNil(Arquivo);
+
+   Conn.Connected :=False;
+   ConnMega.Connected :=False;
+end;
+
+function TdmConexao.obterHostONLINE: boolean;
+begin
+ //verifica as estacoes que estao ativas no momento
+
+  qryEstacoesConectadas.Connection := dmConexao.Conn;
+  qryEstacoesConectadas.Close;
+  qryEstacoesConectadas.Open;
+
+
+  Result := not qryEstacoesConectadas.IsEmpty;
+
+end;
+
+
+
+
+function TdmConexao.obterNewID: string;
+var id:string;
+begin
+//fornece um novo id.
+//o banco precisa ter instalado a UDF createguid
+  id := '0';
+  qryObterGUID := TFDQuery.Create(Self);
+  qryObterGUID.Close;
+  qryObterGUID.Connection := dmConexao.Conn;
+  qryObterGUID.SQL.Clear;
+  qryObterGUID.SQL.Add('  select createguid() as newID from rdb$database ');
+
+  qryObterGUID.Open;
+
+
+    if  not qryObterGUID.IsEmpty then
+      begin
+       id := qryObterGUID.FieldByName('NEWID').AsString;
+       qryObterGUID.Free;
+     end;
+
+ Result := id;
+end;
+
+function TdmConexao.carregarDadosEmpresaMega(pCnpj: string): Boolean;
+var
+  x: string;
+begin
+
+ try
+      qryDadosEmpresaMega.Close;
+      qryDadosEmpresaMega.Connection := dmConexao.ConnMega;
+      qryDadosEmpresaMega.ParamByName('pCnpj').AsString := pCnpj;
+      qryDadosEmpresaMega.Open;
+
+ except
+    raise(Exception).Create('Erro ao tentar obter dados do MEGA ' + ' carregarDadosEmpresaMega ');
+ end;
+
+  Result := not qryDadosEmpresaMega.IsEmpty;
+end;
+
+function TdmConexao.obterIdentificador(pIdOrganizacao, pTable: string): string;
+var
+_strIdentificador :string;
+pDia, pMes, pAno :string;
+ incAux,qtdExist :Integer;
+
+begin
+_strIdentificador :='';
+  incAux :=1;
+  pDia := FormatDateTime('DD',Now);
+  pMes := FormatDateTime('MM',Now);
+  pAno := FormatDateTime('YYYY',Now);
+  _strIdentificador := pAno + pMes+ pDia + IntToStr(incAux)   ; //2019 11 19 1
+
+  try
+
+    qtdExist := verificarIdentificador(pIdOrganizacao, pTable, _strIdentificador);
+
+    while ( qtdExist > 0) do begin
+
+      Inc(incAux);
+     _strIdentificador :=  pAno + pMes+ pDia + IntToStr(incAux);
+      qtdExist := verificarIdentificador(pIdOrganizacao, pTable, _strIdentificador);
+
+    end;
+
+
+  except
+
+   raise Exception.Create('Erro ao tentar gerar um identificador..');
+
+  end;
+
+
+ Result := _strIdentificador;
+end;
+
+function TdmConexao.verificarIdentificador(pIdOrganizacao, pTable, pValor: string): Integer;
+//verifica se o pValor passado existe na table informada
+var
+qtd :Integer;
+qryVerifica :TFDQuery;
+cmdSql : string;
+begin
+qtd :=0;
+         if pTable.Equals('CBT') then begin
+
+           cmdSql :=' SELECT COUNT(*) AS QTD FROM CONTA_BANCARIA_TRANSFERENCIA CBT ' +
+                    ' WHERE   (CBT.ID_ORGANIZACAO = :PIDORGANIZACAO) AND  (CBT.IDENTIFICACAO = :PIDENTIFICACAO) ';
+         end;
+
+          if pTable.Equals('CBC') then begin
+
+           cmdSql :=' SELECT COUNT(*) AS QTD FROM CONTA_BANCARIA_CREDITO CBC ' +
+                    ' WHERE   (CBC.ID_ORGANIZACAO = :PIDORGANIZACAO) AND  (CBC.IDENTIFICACAO = :PIDENTIFICACAO) ';
+         end;
+
+           if pTable.Equals('CBD') then begin
+
+           cmdSql :=' SELECT COUNT(*) AS QTD FROM CONTA_BANCARIA_DEBITO CBD ' +
+                    ' WHERE   (CBD.ID_ORGANIZACAO = :PIDORGANIZACAO) AND  (CBD.IDENTIFICACAO = :PIDENTIFICACAO) ';
+         end;
+
+
+          if pTable.Equals('TP') then begin
+
+           cmdSql :=' SELECT COUNT(*) AS QTD FROM TITULO_PAGAR TP ' +
+                    ' WHERE   (TP.ID_ORGANIZACAO = :PIDORGANIZACAO) AND  (TP.NUMERO_DOCUMENTO = :PIDENTIFICACAO) ';
+         end;
+
+          if pTable.Equals('TR') then begin
+
+           cmdSql :=' SELECT COUNT(*) AS QTD FROM TITULO_RECEBER TR ' +
+                    ' WHERE   (TR.ID_ORGANIZACAO = :PIDORGANIZACAO) AND  (TR.NUMERO_DOCUMENTO = :PIDENTIFICACAO) ';
+         end;
+
+          if pTable.Equals('TC') then begin
+
+           cmdSql :=' SELECT COUNT(*) AS QTD FROM TESOURARIA_CREDITO TC ' +
+                    ' WHERE   (TC.ID_ORGANIZACAO = :PIDORGANIZACAO) AND  (TC.NUMERO_DOCUMENTO = :PIDENTIFICACAO) ';
+         end;
+
+
+           if pTable.Equals('TD') then begin
+
+           cmdSql :=' SELECT COUNT(*) AS QTD FROM TESOURARIA_DEBITO TD ' +
+                    ' WHERE   (TD.ID_ORGANIZACAO = :PIDORGANIZACAO) AND  (TD.NUMERO_DOCUMENTO = :PIDENTIFICACAO) ';
+         end;
+
+
+  try
+    qryVerifica := TFDQuery.Create(Self);
+    qryVerifica.Close;
+    qryVerifica.Connection := dmConexao.Conn;
+    qryVerifica.SQL.Clear;
+    qryVerifica.SQL.Add(cmdSql);
+    qryVerifica.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+    qryVerifica.ParamByName('PIDENTIFICACAO').AsString := pValor;
+    qryVerifica.Open;
+
+     qtd := qryVerifica.FieldByName('QTD').AsInteger;
+
+
+  except
+   raise Exception.Create('Erro ao verificar o identificador ' + pValor);
+
+  end;
+
+   Result := qtd;
+
+end;
+
+
+
+
+end.
