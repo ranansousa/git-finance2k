@@ -1,0 +1,58 @@
+unit uDMComboBox;
+
+interface
+
+uses
+ System.SysUtils, System.Classes,Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
+ Vcl.ComCtrls, Vcl.StdCtrls,uDMCedenteConsulta;
+
+type
+  TDataModule1 = class(TDataModule)
+  private
+    { Private declarations }
+    FsListaIdOrganizacoes: TStringList;
+    FsListaIdCentrosCusto: TStringList;
+    FsListaIdFornecedor: TStringList;
+    FsListaIdCliente: TStringList;
+    FsListaIdHistorico: TStringList;
+    FsListaIdContaBancaria: TStringList;
+  public
+    { Public declarations }
+    procedure listaFornecedor(Var combo: TComboBox; var listaID :TStringList);
+
+  end;
+
+var
+  DataModule1: TDataModule1;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+
+{$R *.dfm}
+
+{ TDataModule1 }
+
+procedure TDataModule1.listaFornecedor(var combo: TComboBox;
+  var listaID: TStringList);
+begin
+
+
+listaID := TStringList.Create;
+  listaID.Clear;
+  listaID.Add('Sem ID'); //Linha adicionada somente para combatibilizar com os itens do ComboBox cbxCentrosCusto
+  combo.Clear;
+  combo.Items.Add('<<< Selecione  >>>');
+  dmContasPagar.qryCentroCusto.First;
+  while not dmContasPagar.qryCentroCusto.Eof do begin
+    cbxCentrosCusto.Items.Add(dmContasPagar.qryCentroCusto.FieldByName('DESCRICAO'     ).AsString);
+    FsListaIdCentrosCusto.Add(dmContasPagar.qryCentroCusto.FieldByName('ID_CENTRO_CUSTO').AsString);
+    dmContasPagar.qryCentroCusto.Next;
+  end;
+  dmContasPagar.qryCentroCusto.Close;
+  cbxCentrosCusto.ItemIndex := 0;
+end;
+
+end;
+
+end.

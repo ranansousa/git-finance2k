@@ -1,0 +1,144 @@
+object frmExtratoTesouraria: TfrmExtratoTesouraria
+  Left = 0
+  Top = 0
+  Caption = 'frmExtratoTesouraria'
+  ClientHeight = 222
+  ClientWidth = 879
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  Position = poDesktopCenter
+  OnCreate = FormCreate
+  PixelsPerInch = 96
+  TextHeight = 13
+  inline frmPeriodo1: TfrmPeriodo
+    Left = 24
+    Top = 8
+    Width = 257
+    Height = 65
+    TabOrder = 0
+    ExplicitLeft = 24
+    ExplicitTop = 8
+    ExplicitWidth = 257
+    ExplicitHeight = 65
+    inherited lbl1: TLabel
+      Top = 3
+      Height = 19
+      ExplicitTop = 3
+      ExplicitHeight = 19
+    end
+    inherited lbl2: TLabel
+      Top = 3
+      Height = 19
+      ExplicitTop = 3
+      ExplicitHeight = 19
+    end
+    inherited dtpDataInicial: TDateTimePicker
+      Top = 28
+      Height = 30
+      ExplicitTop = 28
+      ExplicitHeight = 30
+    end
+    inherited dtpDataFinal: TDateTimePicker
+      Top = 28
+      Height = 30
+      ExplicitTop = 28
+      ExplicitHeight = 30
+    end
+  end
+  object btnImprimir: TButton
+    Left = 312
+    Top = 36
+    Width = 150
+    Height = 30
+    Caption = 'Imprimir'
+    TabOrder = 1
+    OnClick = btnImprimirClick
+  end
+  object btnFechar: TBitBtn
+    Left = 488
+    Top = 36
+    Width = 150
+    Height = 30
+    Caption = 'Fechar'
+    TabOrder = 2
+  end
+  object frxExtratoTesouraria: TfrxReport
+    Version = '6.3.7'
+    DotMatrixReport = False
+    IniFile = '\Software\Fast Reports'
+    PreviewOptions.Buttons = [pbPrint, pbLoad, pbSave, pbExport, pbZoom, pbFind, pbOutline, pbPageSetup, pbTools, pbEdit, pbNavigator, pbExportQuick, pbCopy, pbSelection]
+    PreviewOptions.Zoom = 1.000000000000000000
+    PrintOptions.Printer = 'Padr'#227'o'
+    PrintOptions.PrintOnSheet = 0
+    ReportOptions.CreateDate = 43808.552455011570000000
+    ReportOptions.LastChange = 43808.552455011570000000
+    ScriptLanguage = 'PascalScript'
+    ScriptText.Strings = (
+      'begin'
+      ''
+      'end.')
+    Left = 72
+    Top = 144
+    Datasets = <>
+    Variables = <>
+    Style = <>
+  end
+  object frxDBDExtrato: TfrxDBDataset
+    UserName = 'EXTRATO'
+    CloseDataSource = False
+    FieldAliases.Strings = (
+      'DATA=DATA'
+      'VALOR=VALOR'
+      'DETALHAMENTO=DETALHAMENTO'
+      'TIPO=TIPO')
+    BCDToCurrency = False
+    Left = 200
+    Top = 144
+  end
+  object frxpdfxprt1: TfrxPDFExport
+    UseFileCache = True
+    ShowProgress = True
+    OverwritePrompt = False
+    DataOnly = False
+    OpenAfterExport = False
+    PrintOptimized = False
+    Outline = False
+    Background = False
+    HTMLTags = True
+    Quality = 95
+    Transparency = False
+    Author = 'FastReport'
+    Subject = 'FastReport PDF export'
+    ProtectionFlags = [ePrint, eModify, eCopy, eAnnot]
+    HideToolbar = False
+    HideMenubar = False
+    HideWindowUI = False
+    FitWindow = False
+    CenterWindow = False
+    PrintScaling = False
+    PdfA = False
+    PDFStandard = psNone
+    PDFVersion = pv17
+    Left = 296
+    Top = 144
+  end
+  object frxCSVExport1: TfrxCSVExport
+    UseFileCache = True
+    ShowProgress = True
+    OverwritePrompt = False
+    DataOnly = False
+    Separator = ';'
+    OEMCodepage = False
+    UTF8 = False
+    OpenAfterExport = False
+    NoSysSymbols = True
+    ForcedQuotes = False
+    Left = 376
+    Top = 144
+  end
+end

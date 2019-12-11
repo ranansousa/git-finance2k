@@ -1,0 +1,23 @@
+object dmContasPagarManter: TdmContasPagarManter
+  OldCreateOrder = False
+  Height = 433
+  Width = 669
+  object qryDeletaExcluidos: TFDQuery
+    Connection = dmConexao.Conn
+    SQL.Strings = (
+      'DELETE '
+      'FROM TITULO_PAGAR TP '
+      'WHERE (TP.ID_TIPO_STATUS = '#39'EXCLUIDO'#39') AND'
+      '      (TP.ID_ORGANIZACAO = :PIDORGANIZACAO);'
+      '')
+    Left = 376
+    Top = 232
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+end
