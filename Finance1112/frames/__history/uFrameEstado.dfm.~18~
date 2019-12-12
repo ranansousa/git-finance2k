@@ -1,0 +1,8 @@
+inherited frameEstado: TframeEstado
+  inherited cbbcombo: TComboBox
+    Left = 3
+    Top = 6
+    ExplicitLeft = 3
+    ExplicitTop = 6
+  end
+end
