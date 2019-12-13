@@ -1,0 +1,228 @@
+unit UfrmPosicaoFinanceira;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.Grids, udmConexao, Vcl.DBGrids,
+  FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, uUtil, uDMParametros,
+  FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
+  FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client;
+
+type
+  TfrmPosicaoFinanceira = class(TForm)
+    dbgrd1: TDBGrid;
+    qryUpdatePanel: TFDQuery;
+    ds1: TDataSource;
+    qryPreencheGridPanel: TFDQuery;
+    qrySaldosPainel: TFDQuery;
+    procedure FormCreate(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+  private
+        pTela :string;
+    procedure atualizaTablePainel(_codigo: string; _valor: Currency);
+    function obterContas(pIdOrganizacao, pCodigo: string): Currency;
+    procedure PreencheGridPanel;
+    { Private declarations }
+
+  public
+    { Public declarations }
+
+  end;
+
+var
+  frmPosicaoFinanceira: TfrmPosicaoFinanceira;
+
+implementation
+
+{$R *.dfm}
+
+procedure TfrmPosicaoFinanceira.FormClose(Sender: TObject;
+  var Action: TCloseAction);
+begin
+
+Action := caFree;
+
+end;
+
+procedure TfrmPosicaoFinanceira.FormCreate(Sender: TObject);
+begin
+  pTela := 'TA011'; //ver o status do parametros
+      dmConexao.conectarBanco;
+  if dmParametros.obterStatusTela(pTela) <> 0 then
+    begin
+    PreencheGridPanel;
+  end else begin
+   // ver como faer
+
+
+  end;
+
+end;
+
+function TfrmPosicaoFinanceira.obterContas(pIdOrganizacao,  pCodigo: string): Currency;
+  var
+  sqlCmd :string;
+
+begin
+
+  if pCodigo.Equals('bancoDB') then begin
+
+
+  sqlCmd := ' SELECT SUM(TP.VALOR) AS VALOR ' +
+           ' FROM CONTA_BANCARIA_DEBITO TP '+
+           ' WHERE (TP.id_organizacao = :PIDORGANIZACAO) '+
+           ' AND   (TP.DATA_MOVIMENTO between ''01.01.1900'' AND current_date) ';
+
+
+  end;
+
+
+
+   if pCodigo.Equals('bancoCR') then begin
+
+
+  sqlCmd := ' SELECT SUM(TP.VALOR) AS VALOR ' +
+           ' FROM CONTA_BANCARIA_CREDITO TP '+
+           ' WHERE (TP.id_organizacao = :PIDORGANIZACAO) '+
+           ' AND   (TP.DATA_MOVIMENTO between ''01.01.1900'' AND current_date) ';
+
+
+  end;
+
+
+   if pCodigo.Equals('cheques') then begin
+
+
+  sqlCmd := ' SELECT SUM(TP.VALOR) AS VALOR ' +
+           ' FROM CONTA_BANCARIA_CHEQUE TP '+
+           ' WHERE (TP.id_organizacao = :PIDORGANIZACAO) '+
+           ' AND   (TP.DATA_EMISSAO between ''01.01.1900'' AND current_date) ' +
+           ' AND   (TP.ID_TIPO_STATUS = ''EMITIDO'' )'  ;
+
+
+  end;
+
+
+
+
+  if (pCodigo.Equals('1.1')) then begin     //TP
+
+
+  sqlCmd := ' SELECT SUM(TP.VALOR_NOMINAL) AS VALOR ' +
+           ' FROM TITULO_PAGAR TP '+
+           ' WHERE (TP.id_organizacao = :PIDORGANIZACAO) '+
+           ' AND   (TP.data_vencimento between ''01.01.1900'' AND current_date) '+
+           ' AND   (TP.id_tipo_status = ''ABERTO'') ' ;
+ end;
+
+
+  if (pCodigo.Equals('1.2')) then begin   //TR
+
+
+  sqlCmd := ' SELECT SUM(TP.VALOR_NOMINAL) AS VALOR ' +
+           ' FROM TITULO_RECEBER TP '+
+           ' WHERE (TP.id_organizacao = :PIDORGANIZACAO) '+
+           ' AND   (TP.data_vencimento between ''01.01.1900'' AND current_date) '+
+           ' AND   (TP.id_tipo_status = ''ABERTO'') ' ;
+ end;
+
+
+  qrySaldosPainel.Close;
+  qrySaldosPainel.Connection := dmConexao.conn;
+  qrySaldosPainel.SQL.Clear;
+  qrySaldosPainel.SQL.Add(sqlCmd);
+  qrySaldosPainel.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+  qrySaldosPainel.Open;
+
+
+
+ Result := qrySaldosPainel.FieldByName('VALOR').AsCurrency;
+
+end;
+
+procedure TfrmPosicaoFinanceira.atualizaTablePainel(_codigo :string; _valor :Currency);
+begin
+
+  qryUpdatePanel.Close;
+  qryUpdatePanel.Connection := dmConexao.conn;
+  qryUpdatePanel.SQL.Clear;
+  qryUpdatePanel.SQL.Add('UPDATE PAINEL SET VALOR = :PVALOR WHERE CODIGO = :PCODIGO ');
+  qryUpdatePanel.ParamByName('PVALOR').AsCurrency := _valor;
+  qryUpdatePanel.ParamByName('PCODIGO').AsString := _codigo;
+  qryUpdatePanel.ExecSQL;
+  dmConexao.conn.CommitRetaining;
+
+
+end;
+
+
+
+procedure TfrmPosicaoFinanceira.PreencheGridPanel;
+var
+pCheques, pBancoDB, pBancoCR, pSaldoBanco, pValorSDTITULOS, pvalorRC, pValorTP :Currency;
+
+begin
+  pCheques :=0;
+  pBancoDB :=0;
+  pBancoCR :=0;
+  pValorTP :=0;
+  pvalorRC :=0;
+  pCheques :=0;
+  pSaldoBanco :=0;
+  pValorSDTITULOS :=0;
+
+  //
+  pValorTP := obterContas(TOrgAtual.getId,'1.1');
+  pvalorRC := obterContas(TOrgAtual.getId,'1.2');
+  pBancoDB := obterContas(TOrgAtual.getId,'bancoDB');
+  pBancoCR := obterContas(TOrgAtual.getId,'bancoCR');
+  pCheques := obterContas(TOrgAtual.getId,'cheques');
+
+
+  if pCheques >0  then begin
+
+     atualizaTablePainel('2.2', pCheques );
+
+  end;
+
+
+  if pValorTP >0  then begin
+
+     atualizaTablePainel('1.1', (pValorTP * (-1)) );
+
+  end;
+
+   if (( pvalorRC >0))  then begin
+
+
+     atualizaTablePainel('1.2',pvalorRC);
+
+     pValorSDTITULOS := pvalorRC - pValorTP ;
+     atualizaTablePainel('1', pValorSDTITULOS);
+
+  end;
+
+
+   if (( pBancoDB >0) or (pBancoCR >0))  then begin
+
+     atualizaTablePainel('2.1',(pBancoCR - pBancoDB) );
+
+  end;
+
+
+
+
+  qryPreencheGridPanel.Close;
+  qryPreencheGridPanel.Connection := dmConexao.conn;
+  qryPreencheGridPanel.SQL.Clear;
+  qryPreencheGridPanel.SQL.Add('SELECT p.detalhe, p.valor  FROM PAINEL p WHERE 1=1 ORDER BY CODIGO');
+  qryPreencheGridPanel.Open;
+
+
+end;
+
+
+
+
+end.

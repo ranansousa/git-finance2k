@@ -1,0 +1,43 @@
+object frmBDTables: TfrmBDTables
+  Left = 0
+  Top = 0
+  Width = 306
+  Height = 150
+  TabOrder = 0
+  object dbgrd1: TDBGrid
+    Left = 3
+    Top = 3
+    Width = 281
+    Height = 81
+    DataSource = ds1
+    TabOrder = 0
+    TitleFont.Charset = DEFAULT_CHARSET
+    TitleFont.Color = clWindowText
+    TitleFont.Height = -11
+    TitleFont.Name = 'Tahoma'
+    TitleFont.Style = []
+    Columns = <
+      item
+        Expanded = False
+        FieldName = 'TABELA'
+        Visible = True
+      end>
+  end
+  object ds1: TDataSource
+    DataSet = qryAllTables
+    Left = 112
+    Top = 96
+  end
+  object qryAllTables: TFDQuery
+    Connection = dmConexao.Conn
+    SQL.Strings = (
+      'SELECT rdb$relation_name as tabela'
+      'FROM rdb$relations'
+      'WHERE rdb$system_flag = 0'
+      '   -- and rdb$relation_type = 0'
+      'order by rdb$relation_name'
+      ';')
+    Left = 192
+    Top = 96
+  end
+end
