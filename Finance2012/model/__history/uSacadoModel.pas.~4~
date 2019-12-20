@@ -1,0 +1,126 @@
+unit uSacadoModel;
+
+interface
+
+uses
+  Windows, Messages, Classes, SysUtils;
+
+type
+  TCedenteModel = class(TObject)
+  private
+    FFIDtipoSacado: string;
+    FFIDendereco: string;
+    FFIDcontato: string;
+    FFnome: string;
+    FFcpfCnpj: string;
+    FFinscricaoEstadual: string;
+    FFinscricaoMunicipal: string;
+    FFcga: string;
+    FFpersonalidade: string;
+    FFconta: string;
+    FFagencia: string;
+    FFIDbanco: string;
+    FFIDcontaContabil: string;
+    FFIDcartaoCreditoModel: string;
+
+
+
+
+
+  public
+
+
+    property FIDtipoSacado: string read FFIDtipoSacado write SetFIDtipoSacado;
+    property FIDendereco: string read FFIDendereco write SetFIDendereco;
+    property FIDcontato: string read FFIDcontato write SetFIDcontato;
+    property Fnome: string read FFnome write SetFnome;
+    property FcpfCnpj: string read FFcpfCnpj write SetFcpfCnpj;
+    property FinscricaoEstadual: string read FFinscricaoEstadual write SetFinscricaoEstadual;
+    property FinscricaoMunicipal: string read FFinscricaoMunicipal write SetFinscricaoMunicipal;
+    property Fcga: string read FFcga write SetFcga;
+    property Fpersonalidade: string read FFpersonalidade write SetFpersonalidade;
+    property Fconta: string read FFconta write SetFconta;
+    property Fagencia: string read FFagencia write SetFagencia;
+    property FIDbanco: string read FFIDbanco write SetFIDbanco;
+    property FIDcontaContabil: string read FFIDcontaContabil write SetFIDcontaContabil;
+    property FIDcartaoCreditoModel: string read FFIDcartaoCreditoModel write SetFIDcartaoCreditoModel;
+
+end;
+
+
+
+implementation
+
+{ TCedenteModel }
+
+procedure TCedenteModel.SetFagencia(const Value: string);
+begin
+  FFagencia := Value;
+end;
+
+procedure TCedenteModel.SetFcga(const Value: string);
+begin
+  FFcga := Value;
+end;
+
+procedure TCedenteModel.SetFconta(const Value: string);
+begin
+  FFconta := Value;
+end;
+
+procedure TCedenteModel.SetFcpfCnpj(const Value: string);
+begin
+  FFcpfCnpj := Value;
+end;
+
+procedure TCedenteModel.SetFIDbanco(const Value: string);
+begin
+  FFIDbanco := Value;
+end;
+
+procedure TCedenteModel.SetFIDcartaoCreditoModel(const Value: string);
+begin
+  FFIDcartaoCreditoModel := Value;
+end;
+
+procedure TCedenteModel.SetFIDcontaContabil(const Value: string);
+begin
+  FFIDcontaContabil := Value;
+end;
+
+procedure TCedenteModel.SetFIDcontato(const Value: string);
+begin
+  FFIDcontato := Value;
+end;
+
+procedure TCedenteModel.SetFIDendereco(const Value: string);
+begin
+  FFIDendereco := Value;
+end;
+
+procedure TCedenteModel.SetFIDtipoSacado(const Value: string);
+begin
+  FFIDtipoSacado := Value;
+end;
+
+procedure TCedenteModel.SetFinscricaoEstadual(const Value: string);
+begin
+  FFinscricaoEstadual := Value;
+end;
+
+procedure TCedenteModel.SetFinscricaoMunicipal(const Value: string);
+begin
+  FFinscricaoMunicipal := Value;
+end;
+
+procedure TCedenteModel.SetFnome(const Value: string);
+begin
+  FFnome := Value;
+end;
+
+procedure TCedenteModel.SetFpersonalidade(const Value: string);
+begin
+  FFpersonalidade := Value;
+end;
+
+end.

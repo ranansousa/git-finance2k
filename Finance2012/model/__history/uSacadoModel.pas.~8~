@@ -1,0 +1,223 @@
+unit uSacadoModel;
+
+interface
+
+uses
+  Windows, Messages, Classes, SysUtils;
+
+type
+  TCedenteModel = class(TObject)
+  private
+    FFIDtipoSacado: string;
+    FFIDendereco: string;
+    FFIDcontato: string;
+    FFnome: string;
+    FFcpfCnpj: string;
+    FFinscricaoEstadual: string;
+    FFinscricaoMunicipal: string;
+    FFcga: string;
+    FFpersonalidade: string;
+    FFconta: string;
+    FFagencia: string;
+    FFIDbanco: string;
+    FFIDcontaContabil: string;
+    FFIDcartaoCreditoModel: string;
+
+    function getFFIDtipoSacado: string;
+    function getFFIDendereco: string;
+    function getFFIDcontato: string;
+    function getFFnome: string;
+    function getFFcpfCnpj: string;
+    function getFFinscricaoEstadual: string;
+    function getFFinscricaoMunicipal: string;
+    function getFFcga: string;
+    function getFFpersonalidade: string;
+    function getFFconta: string;
+    function getFFagencia: string;
+    function getFFIDbanco: string;
+    function getFFIDcontaContabil: string;
+    function getFFIDcartaoCreditoModel: string;
+
+    procedure SetFagencia(const Value: string);
+    procedure SetFcga(const Value: string);
+    procedure SetFconta(const Value: string);
+    procedure SetFcpfCnpj(const Value: string);
+    procedure SetFIDbanco(const Value: string);
+    procedure SetFIDcartaoCreditoModel(const Value: string);
+    procedure SetFIDcontaContabil(const Value: string);
+    procedure SetFIDcontato(const Value: string);
+    procedure SetFIDendereco(const Value: string);
+    procedure SetFIDtipoSacado(const Value: string);
+    procedure SetFinscricaoEstadual(const Value: string);
+    procedure SetFinscricaoMunicipal(const Value: string);
+    procedure SetFnome(const Value: string);
+    procedure SetFpersonalidade(const Value: string);
+
+
+  public
+
+
+    property FIDtipoSacado: string read getFFIDtipoSacado write SetFIDtipoSacado;
+    property FIDendereco: string read getFFIDendereco write SetFIDendereco;
+    property FIDcontato: string read getFFIDcontato write SetFIDcontato;
+    property Fnome: string read getFFnome write SetFnome;
+    property FcpfCnpj: string read getFFcpfCnpj write SetFcpfCnpj;
+    property FinscricaoEstadual: string read getFFinscricaoEstadual write SetFinscricaoEstadual;
+    property FinscricaoMunicipal: string read getFFinscricaoMunicipal write SetFinscricaoMunicipal;
+    property Fcga: string read getFFcga write SetFcga;
+    property Fpersonalidade: string read getFFpersonalidade write SetFpersonalidade;
+    property Fconta: string read getFFconta write SetFconta;
+    property Fagencia: string read getFFagencia write SetFagencia;
+    property FIDbanco: string read getFFIDbanco write SetFIDbanco;
+    property FIDcontaContabil: string read getFFIDcontaContabil write SetFIDcontaContabil;
+    property FIDcartaoCreditoModel: string read getFFIDcartaoCreditoModel write SetFIDcartaoCreditoModel;
+
+end;
+
+
+
+implementation
+
+{ TCedenteModel }
+
+function TCedenteModel.getFFagencia: string;
+begin
+ Result := FFagencia;
+end;
+
+function TCedenteModel.getFFcga: string;
+begin
+
+end;
+
+function TCedenteModel.getFFconta: string;
+begin
+  Result := FFconta
+end;
+
+function TCedenteModel.getFFcpfCnpj: string;
+begin
+
+end;
+
+function TCedenteModel.getFFIDbanco: string;
+begin
+
+end;
+
+function TCedenteModel.getFFIDcartaoCreditoModel: string;
+begin
+
+end;
+
+function TCedenteModel.getFFIDcontaContabil: string;
+begin
+
+end;
+
+function TCedenteModel.getFFIDcontato: string;
+begin
+
+end;
+
+function TCedenteModel.getFFIDendereco: string;
+begin
+
+end;
+
+function TCedenteModel.getFFIDtipoSacado: string;
+begin
+
+end;
+
+function TCedenteModel.getFFinscricaoEstadual: string;
+begin
+
+end;
+
+function TCedenteModel.getFFinscricaoMunicipal: string;
+begin
+
+end;
+
+function TCedenteModel.getFFnome: string;
+begin
+
+end;
+
+function TCedenteModel.getFFpersonalidade: string;
+begin
+
+end;
+
+procedure TCedenteModel.SetFagencia(const Value: string);
+begin
+  FFagencia := Value;
+end;
+
+procedure TCedenteModel.SetFcga(const Value: string);
+begin
+  FFcga := Value;
+end;
+
+procedure TCedenteModel.SetFconta(const Value: string);
+begin
+  FFconta := Value;
+end;
+
+procedure TCedenteModel.SetFcpfCnpj(const Value: string);
+begin
+  FFcpfCnpj := Value;
+end;
+
+procedure TCedenteModel.SetFIDbanco(const Value: string);
+begin
+  FFIDbanco := Value;
+end;
+
+procedure TCedenteModel.SetFIDcartaoCreditoModel(const Value: string);
+begin
+  FFIDcartaoCreditoModel := Value;
+end;
+
+procedure TCedenteModel.SetFIDcontaContabil(const Value: string);
+begin
+  FFIDcontaContabil := Value;
+end;
+
+procedure TCedenteModel.SetFIDcontato(const Value: string);
+begin
+  FFIDcontato := Value;
+end;
+
+procedure TCedenteModel.SetFIDendereco(const Value: string);
+begin
+  FFIDendereco := Value;
+end;
+
+procedure TCedenteModel.SetFIDtipoSacado(const Value: string);
+begin
+  FFIDtipoSacado := Value;
+end;
+
+procedure TCedenteModel.SetFinscricaoEstadual(const Value: string);
+begin
+  FFinscricaoEstadual := Value;
+end;
+
+procedure TCedenteModel.SetFinscricaoMunicipal(const Value: string);
+begin
+  FFinscricaoMunicipal := Value;
+end;
+
+procedure TCedenteModel.SetFnome(const Value: string);
+begin
+  FFnome := Value;
+end;
+
+procedure TCedenteModel.SetFpersonalidade(const Value: string);
+begin
+  FFpersonalidade := Value;
+end;
+
+end.
