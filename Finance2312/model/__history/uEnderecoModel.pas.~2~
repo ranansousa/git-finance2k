@@ -1,0 +1,13 @@
+unit uEnderecoModel;
+
+interface
+
+
+uses
+  Windows, Messages, Classes, SysUtils,uOrganizacaoModel;
+
+
+
+implementation
+
+end.
