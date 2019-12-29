@@ -1,0 +1,77 @@
+unit uDMExportaFinanceTPB;
+
+interface
+
+uses
+  System.SysUtils, System.Classes,udmConexao, FireDAC.Stan.Intf,
+  FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
+  FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
+  Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client;
+
+type
+  TdmExportFinanceTPB = class(TDataModule)
+    qryObterBaixaPorTitulo: TFDQuery;
+  private
+    procedure inicializarDM(Sender: TObject);
+
+    { Private declarations }
+  public
+    { Public declarations }
+     function obterBaixaPorTitulo(pIdOrganizacao,
+      pIdTituloPagar: String): Boolean;
+
+      function obterId(pIdOrganizacao,
+      pIdTituloPagar: String): String;
+  end;
+
+var
+  dmExportFinanceTPB: TdmExportFinanceTPB;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+
+{$R *.dfm}
+
+
+function TdmExportFinanceTPB.obterBaixaPorTitulo(pIdOrganizacao,pIdTituloPagar : String): Boolean;
+begin
+  Result := false;
+
+  inicializarDM(Self);
+
+  if not qryObterBaixaPorTitulo.Connection.Connected then
+  begin
+    qryObterBaixaPorTitulo.Connection := dmConexao.Conn;
+  end;
+
+  qryObterBaixaPorTitulo.Close;
+  qryObterBaixaPorTitulo.ParamByName('PIDORGANIZACAO').AsString :=  pIdOrganizacao;
+  qryObterBaixaPorTitulo.ParamByName('pIdtituloPagar').AsString := pIdTituloPagar;
+  qryObterBaixaPorTitulo.Open;
+  Result := not qryObterBaixaPorTitulo.IsEmpty;
+
+end;
+
+
+
+function TdmExportFinanceTPB.obterId(pIdOrganizacao,
+  pIdTituloPagar: String): String;
+begin
+Result := qryObterBaixaPorTitulo.FieldByName('ID_TITULO_PAGAR_BAIXA').AsString;
+end;
+
+procedure TdmExportFinanceTPB.inicializarDM(Sender: TObject);
+begin
+  if not(Assigned(dmConexao)) then
+  begin
+    dmConexao := TdmConexao.Create(Self);
+  end
+  else
+  begin
+    dmConexao.conectarBanco;
+  end;
+
+end;
+
+end.

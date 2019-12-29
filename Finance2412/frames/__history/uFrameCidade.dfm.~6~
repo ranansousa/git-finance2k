@@ -1,0 +1,10 @@
+inherited frmCidade: TfrmCidade
+  Width = 360
+  Height = 217
+  ExplicitWidth = 360
+  ExplicitHeight = 217
+  object qryObterEstado: TFDQuery
+    Left = 96
+    Top = 160
+  end
+end
