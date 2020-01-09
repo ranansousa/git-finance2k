@@ -1,0 +1,25 @@
+unit uFrmTelaPagamentoTP;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls;
+
+type
+  TfrmPagamentoTitulos = class(TForm)
+    btnBaixaTP: TButton;
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmPagamentoTitulos: TfrmPagamentoTitulos;
+
+implementation
+
+{$R *.dfm}
+
+end.

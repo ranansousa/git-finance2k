@@ -1,0 +1,227 @@
+unit uLancamento;
+
+//classe que implementa o objeto lancamento. tabela CLANCAMENTOS (MEGA)
+// o DM importarMega vai receber uma lista desses objetos e persistir no SGBD
+
+interface
+uses Windows,Messages,Classes,SysUtils,uDMMegaContabil;
+
+
+type
+
+TLancamento = class(TObject)
+private
+FIdLancamento : Integer;
+FIdEmpresa : Integer;
+FAno  : Integer;
+FLote  : Integer;
+FLinha  : Integer;
+FCentroCusto  : Integer;
+FFilial  : Integer;
+FCcodReduzDeb  : Integer; // codigo reduzido da conta debito
+FCodReduzCre  : Integer; // codigo reduzido da conta credito
+FCodHistorico : Integer;
+FValor : Currency;
+FData : TDateTime; //data do fato
+FDdataLanc : TDateTime; //data do registro
+FTipo : string;
+FCcontaDebito : string;
+FContaCredito : string;
+FDdgContaDebito : string;
+FDgContaCredito : string;
+FDgCodigoReduzDeb : string;
+FDgCodigoReduzCre : string;
+FHistorico : string;
+FCcomplemento : string;
+FExecTrg : string;
+
+
+public
+
+function getIdLancamento() :Integer;
+function getIdEmpresa()  :Integer;
+function getAno()  : Integer;
+function getLote()  : Integer;
+function getLinha()  : Integer;
+function getCentroCusto()  : Integer;
+function getFilial()  : Integer;
+function getCodReduzDeb()  : Integer; // codigo reduzido da conta debito
+function getCodReduzCre()  : Integer; // codigo reduzido da conta credito
+function getCodHistorico() : Integer;
+function getValor() : Currency;
+function getDdata() : TDateTime; //data do fato
+function getDataLanc() : TDateTime; //data do registro
+function getTipo() : string;
+function getContaDebito() : string;
+function getContaCredito() : string;
+function getDgContaDebito() : string;
+function getDgContaCredito() : string;
+function getDdgCodigoReduzDeb() : string;
+function getDgCodigoReduzCre() : string;
+function getHistorico() : string;
+function getComplemento() : string;
+function getExecTrg() : string;
+
+
+
+
+public
+//
+    constructor Create(pIdLancamento,pIdEmpresa, pAno, pLote, pLinha, pCentroCusto, pFilial, pCodReduzDeb, pCodReduzCre, pCodHistorico : Integer;
+    pValor : Currency; pData, pDataLanc : TDateTime; pTipo, pContaDebito, pContaCredito, pDgContaDebito, pDgContaCredito, pDgCodigoReduzDeb,
+    pDdgCodigoReduzCre, pHistorico, pComplemento, pExecTrg : string );
+
+    destructor Destroy; override;
+
+end;
+
+
+
+
+implementation
+
+
+{ TLancamento }
+
+constructor TLancamento.Create(pIdLancamento, pIdEmpresa, pAno, pLote, pLinha,
+  pCentroCusto, pFilial, pCodReduzDeb, pCodReduzCre, pCodHistorico: Integer;
+  pValor: Currency; pData, pDataLanc: TDateTime; pTipo, pContaDebito,
+  pContaCredito, pDgContaDebito, pDgContaCredito, pDgCodigoReduzDeb,
+  pDdgCodigoReduzCre, pHistorico, pComplemento, pExecTrg: string);
+begin
+
+//aqui os atributos recebem os valores que chegam pelo construtor.
+
+FIdLancamento := pIdLancamento;
+FAno := pAno;
+
+
+end;
+
+destructor TLancamento.Destroy;
+begin
+//limpa memoria
+//destroi objetos que tenham sido criados aqui.
+
+  inherited;
+end;
+
+function TLancamento.getAno: Integer;
+begin
+//metodo que retorna o valor do atributo.
+//seria interessante validar aqui?
+// if FAno = nil enviar uma exceção ?
+Result := FAno;
+end;
+
+function TLancamento.getCentroCusto: Integer;
+begin
+
+end;
+
+function TLancamento.getCodHistorico: Integer;
+begin
+
+end;
+
+function TLancamento.getCodReduzCre: Integer;
+begin
+
+end;
+
+function TLancamento.getCodReduzDeb: Integer;
+begin
+
+end;
+
+function TLancamento.getComplemento: string;
+begin
+
+end;
+
+function TLancamento.getContaCredito: string;
+begin
+
+end;
+
+function TLancamento.getContaDebito: string;
+begin
+
+end;
+
+function TLancamento.getDataLanc: TDateTime;
+begin
+
+end;
+
+function TLancamento.getDdata: TDateTime;
+begin
+
+end;
+
+function TLancamento.getDdgCodigoReduzDeb: string;
+begin
+
+end;
+
+function TLancamento.getDgCodigoReduzCre: string;
+begin
+
+end;
+
+function TLancamento.getDgContaCredito: string;
+begin
+
+end;
+
+function TLancamento.getDgContaDebito: string;
+begin
+
+end;
+
+function TLancamento.getExecTrg: string;
+begin
+
+end;
+
+function TLancamento.getFilial: Integer;
+begin
+
+end;
+
+function TLancamento.getHistorico: string;
+begin
+
+end;
+
+function TLancamento.getIdEmpresa: Integer;
+begin
+
+end;
+
+function TLancamento.getIdLancamento: Integer;
+begin
+
+end;
+
+function TLancamento.getLinha: Integer;
+begin
+
+end;
+
+function TLancamento.getLote: Integer;
+begin
+
+end;
+
+function TLancamento.getTipo: string;
+begin
+
+end;
+
+function TLancamento.getValor: Currency;
+begin
+
+end;
+
+end.
