@@ -1,0 +1,86 @@
+unit uDMBaixaTP;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, uUtil, udmConexao, uDMOrganizacao,
+  FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
+  FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
+  FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet,
+  FireDAC.Comp.Client;
+
+type
+  TdmBaixaTP = class(TDataModule)
+    qryPreencheGrid: TFDQuery;
+  private
+    { Private declarations }
+    pIdOrganizacao, pIdUsuario :string;
+    procedure preencheGrid(pIdOrganizacao: string);
+  public
+    { Public declarations }
+
+        constructor Create (AOwner :TComponent; pIdOrganizacao :string);
+  end;
+
+var
+  dmBaixaTP: TdmBaixaTP;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+
+{$R *.dfm}
+
+{ TdmBaixaTP }
+
+constructor TdmBaixaTP.Create(AOwner: TComponent; pIdOrganizacao: string);
+begin
+  inherited Create(AOwner);
+  pIdOrganizacao := pIdOrganizacao;
+
+
+end;
+
+
+procedure TdmBaixaTP.preencheGrid(pIdOrganizacao: string);
+var
+sqlCmd :string;
+begin
+
+dmConexao.conectarBanco;
+ try
+
+    sqlCmd := ' SELECT TP.ID_TITULO_PAGAR, ' +
+              ' TP.NUMERO_DOCUMENTO AS DOC,       ' +
+              ' TP.ID_ORGANIZACAO,'  +
+              ' (H.descricao || '' '' ||  TP.DESCRICAO) AS DESCRICAO,' +
+              ' TPB.VALOR_PAGO, TP.ID_CEDENTE,' +
+              ' TP.data_pagamento, C.nome AS FORNECEDOR, TP.PARCELA' +
+              ' FROM TITULO_PAGAR TP' +
+              ' LEFT OUTER JOIN TITULO_PAGAR_BAIXA TPB ON (TPB.id_titulo_pagar = TP.id_titulo_pagar) AND (TPB.id_organizacao = TP.id_organizacao) '+
+              ' LEFT OUTER JOIN CEDENTE C ON (C.id_cedente = TP.id_cedente) AND (C.id_organizacao = TP.id_organizacao)' +
+              ' LEFT OUTER JOIN HISTORICO H ON (H.id_historico =  TP.id_historico) AND (H.id_organizacao = TP.id_organizacao)' +
+              ' WHERE ( TP.ID_ORGANIZACAO = :PIDORGANIZACAO ) ' +
+              ' AND  ( TP.ID_TIPO_STATUS IN (''PARCIAL'', ''QUITADO'') )' +
+              ' ORDER BY TP.DATA_EMISSAO DESC, TP.VALOR_NOMINAL DESC ';
+
+
+    qryPreencheGrid.Close;
+    qryPreencheGrid.Connection := dmConexao.conn;
+    qryPreencheGrid.SQL.Clear;
+    qryPreencheGrid.SQL.Add(sqlCmd);
+    qryPreencheGrid.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+    qryPreencheGrid.Open;
+
+    (dbgrd1.DataSource.DataSet as TFDQuery).Last;
+    (dbgrd1.DataSource.DataSet as TFDQuery).First;
+
+ except
+ raise Exception.Create('Erro ao obter lista...' + pTable);
+
+ end;
+
+
+end;
+
+end.

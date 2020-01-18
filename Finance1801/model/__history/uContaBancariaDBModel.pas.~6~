@@ -1,0 +1,83 @@
+unit uContaBancariaDBModel;
+
+
+interface
+{
+ TABLE
+
+
+CREATE TABLE CONTA_BANCARIA_DEBITO (
+    ID_CONTA_BANCARIA_DEBITO       VARCHAR(36) NOT NULL,
+    ID_ORGANIZACAO                 VARCHAR(36) NOT NULL,
+    ID_CONTA_BANCARIA              VARCHAR(36),
+    ID_TIPO_OPERACAO_BANCARIA      VARCHAR(36),
+    ID_RESPONSAVEL                 VARCHAR(36),
+    ID_TITULO_PAGAR                VARCHAR(36),
+    ID_CONTA_BANCARIA_CHEQUE       VARCHAR(36),
+    ID_LOTE_CONTABIL               VARCHAR(36),
+    ID_USUARIO                     NUMERIC(5,0),
+    TIPO_LANCAMENTO                VARCHAR(1) NOT NULL,
+    OBSERVACAO                     VARCHAR(250),
+    DESCRICAO                      VARCHAR(150),
+    VALOR                          NUMERIC(10,2) NOT NULL,
+    DATA_REGISTRO                  DATE NOT NULL,
+    DATA_MOVIMENTO                 DATE NOT NULL,
+    IDENTIFICACAO                  VARCHAR(36)
+
+);
+
+
+
+);   }
+
+uses
+  Windows, Messages, Classes, SysUtils,uOrganizacaoModel;
+
+type
+  TContaBancariaDBModel = class(TObject)
+  private
+    FFID: string;
+    FFOrganizacao: TOrganizacaoModel;
+    FFIDorganizacao: string;
+    FFIDResponsavel: string;
+    FFIDTOB: string;
+    FFIDcontaBancaria: string;
+    FFIDTP: string; //titulo pagar
+    FFIDCheque: string;
+    FFIDloteContabil: string;
+    FFIDusuario: string;
+    FFtipoLancamento: string;
+    FFobservacao: string;
+    FFdescricao: string;
+    FFidentificacao: string;
+    FFvalor: Currency;
+    FFdataRegistro: TDateTime;
+    FFdataMovimento: TDateTime;
+
+
+  public
+
+    property FID: string read getFFID write SetFID;
+    property FIDorganizacao: string read getFFIDorganizacao write SetFIDorganizacao;
+    property Forganizacao: TOrganizacaoModel read getFFOrganizacao write SetForganizacao;
+    property FIDusuario: string read getFFIDusuario write SetFIDusuario;
+    property FIDResponsavel: string read getFFIDResponsavel write SetFIDResponsavel;
+    property FIDTOB: string read getFFIDTOB write SetFIDTOB;
+    property FIDcontaBancaria: string read getFFIDcontaBancaria write SetFIDcontaBancaria;
+    property FIDTP: string read getFFIDTP write SetFIDTP;
+    property FIDCheque: string read getFFIDCheque write SetFIDCheque;
+    property FIDloteContabil: string read getFFIDloteContabil write SetFIDloteContabil;
+    property FtipoLancamento: string read FtipoLancamento write SetFtipoLancamento;
+    property Fdependente: string read getFFdependente write SetFdependente;
+    property FlimiteCredito: Currency read getFFlimiteCredito write SetFlimiteCredito;
+    property FsaldoInicial: Currency read getFFsaldoInicial write SetFsaldoInicial;
+
+
+
+      Constructor Create;
+
+  end;
+
+implementation
+
+end.

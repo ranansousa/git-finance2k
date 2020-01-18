@@ -1,0 +1,189 @@
+unit uFrmBaixaFPCheque;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, uFrameCheque, uFrameContaBancaria, uChequeModel, uUtil,
+  Vcl.StdCtrls, ENumEd, uFrameGeneric, uFrameResponsavel, System.DateUtils, Vcl.ComCtrls;
+
+type
+  TfrmBaixaFPCheque = class(TForm)
+    frmContaBancaria1: TfrmContaBancaria;
+    frameCheque1: TframeCheque;
+    edtValorCh: TEvNumEdit;
+    lbl1: TLabel;
+    frameResponsavel1: TframeResponsavel;
+    dtpEmissao: TDateTimePicker;
+    lbl2: TLabel;
+    edtPortador: TEdit;
+    lbl3: TLabel;
+    btnConfirmaCh: TButton;
+    btnCancelar: TButton;
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure frmContaBancaria1cbbContaChange(Sender: TObject);
+    procedure frameCheque1cbbChequeChange(Sender: TObject);
+    procedure btnConfirmaChClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure frameResponsavel1cbbcomboChange(Sender: TObject);
+    procedure btnCancelarClick(Sender: TObject);
+
+
+  private
+    { Private declarations }
+    chequeAux :  TChequeModel;
+    FSListaIDResponsavel, FSListaIDConta, FSListaIDCheque :TStringList;
+   idResponsavel, iDConta, idCheque, pIdOrganizcacao : string;
+    pValorCheque :Currency;
+
+  public
+    { Public declarations }
+
+    function getCheque: TChequeModel;
+    constructor Create(AOwner: TComponent; var cheque: TChequeModel);
+
+  end;
+
+var
+  frmBaixaFPCheque: TfrmBaixaFPCheque;
+
+implementation
+
+{$R *.dfm}
+
+{ TfrmBaixaFPCheque }
+
+procedure TfrmBaixaFPCheque.btnCancelarClick(Sender: TObject);
+begin
+
+  chequeAux                  := TChequeModel.Create;
+  chequeAux.FIdCheque        := '';
+  chequeAux.FIdContaBancaria := '';
+  chequeAux.FIdOrganizacao   := '';
+
+ PostMessage(Self.Handle, WM_CLOSE, 0, 0);
+
+
+end;
+
+procedure TfrmBaixaFPCheque.btnConfirmaChClick(Sender: TObject);
+begin
+
+  chequeAux                  := TChequeModel.Create;
+  chequeAux.FIdCheque        := idCheque;
+  chequeAux.FIdContaBancaria := iDConta;
+  chequeAux.FIdOrganizacao   := pIdOrganizcacao;
+
+   chequeAux := frameCheque1.obterChequePorID(iDConta, idCheque);
+
+    if not uutil.Empty(chequeAux.FIdCheque) then
+    begin
+
+      chequeAux.FPortador := edtPortador.Text;
+      chequeAux.FValor := edtValorCh.Value;
+      chequeAux.FDataEmissao := dtpEmissao.Date;
+
+      chequeAux.FDataRegistro := uutil.getDataServer;
+      chequeAux.FDataPrevisaoCompensacao := IncDay(uutil.getDataServer,3) ;
+      chequeAux.FIdUsuario := uutil.TUserAtual.getUserId;
+      chequeAux.FIdFuncionario := idResponsavel;
+      chequeAux.FIdTipoStatus := 'EMITIDO';
+
+    end;
+
+
+ PostMessage(Self.Handle, WM_CLOSE, 0, 0);
+
+end;
+
+constructor TfrmBaixaFPCheque.Create(AOwner: TComponent;   var cheque: TChequeModel);
+begin
+  inherited Create(AOwner);
+    frameCheque1.cbbCheque.Enabled := False;
+
+    pIdOrganizcacao     := cheque.FIdOrganizacao;
+    pValorCheque        := cheque.FValor;
+    edtPortador.Text    := cheque.FPortador;
+    edtValorCh.Value    := pValorCheque;
+
+
+    edtValorCh.Enabled  :=False;
+
+    FSListaIDConta      := TStringList.Create;
+    FSListaIDCheque     := TStringList.Create;
+    dtpEmissao.DateTime := Now;
+
+
+    frmContaBancaria1.obterTodos(pIdOrganizcacao, frmContaBancaria1.cbbConta,FSListaIDConta );
+    frameResponsavel1.obterTodos(pIdOrganizcacao, frameResponsavel1.cbbcombo,FSListaIDResponsavel )
+   // Self.Close;
+
+end;
+
+function TfrmBaixaFPCheque.getCheque: TChequeModel;
+begin
+
+  Result := chequeAux;
+
+end;
+
+
+procedure TfrmBaixaFPCheque.FormClose(Sender: TObject;
+  var Action: TCloseAction);
+begin
+   Action := caFree;
+end;
+
+
+procedure TfrmBaixaFPCheque.FormCreate(Sender: TObject);
+begin
+btnConfirmaCh.Enabled := False;
+
+end;
+
+procedure TfrmBaixaFPCheque.frameCheque1cbbChequeChange(Sender: TObject);
+begin
+  if frameCheque1.cbbCheque.ItemIndex > 0 then
+  begin
+      idCheque := FSListaIDCheque[frameCheque1.cbbCheque.ItemIndex];
+
+  end;
+
+end;
+
+procedure TfrmBaixaFPCheque.frameResponsavel1cbbcomboChange(Sender: TObject);
+begin
+if  frameResponsavel1.cbbcombo.ItemIndex >0 then begin
+ if frameCheque1.cbbCheque.ItemIndex >0 then begin
+    btnConfirmaCh.Enabled := True;
+    idResponsavel := FSListaIDResponsavel[frameResponsavel1.cbbcombo.ItemIndex];
+ end;
+end;
+
+end;
+
+procedure TfrmBaixaFPCheque.frmContaBancaria1cbbContaChange(Sender: TObject);
+begin
+ frameCheque1.cbbCheque.Enabled := False;
+ if frmContaBancaria1.cbbConta.ItemIndex > 0 then
+  begin
+      iDConta := FslistaIdConta[frmContaBancaria1.cbbConta.ItemIndex];
+
+      if frameCheque1.obterTodosPorStatus(iDConta, 'BLOQUEADO', frameCheque1.cbbCheque, FslistaIdCheque) then
+      begin
+        frameCheque1.cbbCheque.Enabled := True;
+      end;
+
+  end
+  else
+  begin
+    frameCheque1.cbbCheque.ItemIndex :=0;
+    ShowMessage('Precisa selecionar uma conta.. ');
+  end;
+
+
+end;
+
+end.
+
+

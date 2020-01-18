@@ -1,0 +1,5 @@
+object dmBaixaTP: TdmBaixaTP
+  OldCreateOrder = False
+  Height = 230
+  Width = 527
+end
