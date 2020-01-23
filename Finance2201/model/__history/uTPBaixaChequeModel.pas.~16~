@@ -1,0 +1,73 @@
+unit uTPBaixaChequeModel;
+{ //table :
+CREATE TABLE TITULO_PAGAR_BAIXA_CHEQUE (
+    ID_TITULO_PAGAR_BAIXA_CHEQUE  VARCHAR(36) NOT NULL,
+    ID_ORGANIZACAO                VARCHAR(36) NOT NULL,
+    ID_TITULO_PAGAR_BAIXA         VARCHAR(36),
+    VALOR                         NUMERIC(10,2) NOT NULL,
+    ID_TIPO_OPERACAO_BANCARIA     VARCHAR(36),
+    ID_CONTA_BANCARIA_CHEQUE      VARCHAR(36),
+    OBSERVACAO                    VARCHAR(60)
+
+);    }
+interface
+uses
+  Windows, Messages, Classes, SysUtils,uOrganizacaoModel,uChequeModel;
+
+type
+  TTPBaixaChequeModel = class(TObject)
+  private
+    FFID: string;
+    FFIDorganizacao: string;
+    FFOrganizacao: TOrganizacaoModel;
+
+    FFIDTPBaixa: string;// n trazer  o objeto. Apenas setar o ID
+    FFIDTOB: string;
+    FFCheque :TChequeModel;
+    FFvalor: Currency;
+
+    function getFFOrganizacao : TOrganizacaoModel;
+    function getFFIDorganizacao: string;
+    function getFFID: string;
+
+    function getFFIDTPBaixa: string;
+    function getFFIDTOB: string;
+    function getFFCheque: TChequeModel;
+    function getFFvalor: Currency;
+
+
+    procedure SetFForganizacao(const Value: TOrganizacaoModel);
+    procedure setFFID(const Value: string);
+    procedure setFFIDorganizacao(const Value: string);
+
+    procedure setFFIDTOB(const Value: string);
+    procedure setFFIDTPBaixa(const Value: string);
+    procedure setFFCheque(const Value: TChequeModel);
+
+    procedure setFFvalor(const Value: Currency);
+
+
+
+  public
+
+    property FID: string read getFFID write SetFFID;
+    property FIDorganizacao: string read getFFIDorganizacao write SetFFIDorganizacao;
+    property Forganizacao: TOrganizacaoModel read getFFOrganizacao write SetFForganizacao;
+
+
+    property FIDTOB: string read getFFIDTOB write SetFFIDTOB;
+    property FIDTPBaixa: string read getFFIDTPBaixa write setFFIDTPBaixa;
+
+    property Fvalor: Currency read getFFvalor write setFFvalor;
+
+
+
+      Constructor Create;
+
+  end;
+
+
+implementation
+
+
+end.
