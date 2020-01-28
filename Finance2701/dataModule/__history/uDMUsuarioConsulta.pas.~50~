@@ -1,0 +1,142 @@
+unit uDMUsuarioConsulta;
+
+interface
+
+uses
+  System.SysUtils, uMD5, System.Classes, FireDAC.Stan.Intf, uUtil, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB, udmConexao, FireDAC.Comp.DataSet, FireDAC.Comp.Client;
+
+type
+  TdmUsuarioConsulta = class(TDataModule)
+    qryPreencheCombo: TFDQuery;
+    qryObterUsuarioPorID: TFDQuery;
+    dtsPreencheGrid: TDataSource;
+    dtsUsuarioPorID: TDataSource;
+    qryUsuarios: TFDQuery;
+    qryValidarUsuario: TFDQuery;
+  private
+    { Private declarations }
+    procedure inicializarDM(Sender: TObject);
+    procedure freeAndNilDM(Sender: TObject);
+  public
+    { Public declarations }
+    function preencheCombo(): Boolean;
+    function carregarUsuarios: Boolean;
+    function obterListaUsuarios: TStringList;
+    function obterUsuarioPorID(idUsuario: Integer): Boolean;
+
+    function validarLogin(idUsuario: Integer; login, senha: string): Boolean;
+  end;
+
+var
+  dmUsuarioConsulta: TdmUsuarioConsulta;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+
+{$R *.dfm}
+
+{ TdmUsuarioConsulta }
+
+function TdmUsuarioConsulta.carregarUsuarios: Boolean;
+begin
+  try
+        qryUsuarios.Connection := dmConexao.Conn;
+        qryUsuarios.Close;
+        qryUsuarios.Open;
+  except
+    raise(Exception).Create('Problemas ao obter lista de usuários... ');
+  end;
+
+  Result := not qryUsuarios.IsEmpty;
+end;
+
+procedure TdmUsuarioConsulta.freeAndNilDM(Sender: TObject);
+begin
+  //nada
+end;
+
+procedure TdmUsuarioConsulta.inicializarDM(Sender: TObject);
+begin
+  //nada
+
+end;
+
+function TdmUsuarioConsulta.obterListaUsuarios: TStringList;
+begin
+         //ver como
+end;
+
+function TdmUsuarioConsulta.obterUsuarioPorID(idUsuario: Integer): Boolean;
+begin
+  try
+    if (idUsuario > 0) then
+     begin
+
+      qryObterUsuarioPorID.Close;
+      qryObterUsuarioPorID.Connection := dmConexao.Conn;
+      qryObterUsuarioPorID.ParamByName('pIdUsuario').AsInteger := idUsuario;
+      qryObterUsuarioPorID.Open;
+
+      //lanca os dados na       uUtil.TUserAtual
+
+      if not qryObterUsuarioPorID.IsEmpty then
+      begin
+
+        uUtil.TUserAtual.setId(qryObterUsuarioPorID.FieldByName('id_usuario').AsString);
+        uUtil.TUserAtual.setLogin(qryObterUsuarioPorID.FieldByName('login').AsString);
+        uUtil.TUserAtual.setNameUser(qryObterUsuarioPorID.FieldByName('nome').AsString);
+
+      end;
+    end;
+
+
+
+  except
+    raise(Exception).Create('Problemas ao consultar dados do usuário... ');
+  end;
+
+
+   Result := not qryObterUsuarioPorID.IsEmpty;
+
+end;
+
+function TdmUsuarioConsulta.preencheCombo(): Boolean;
+begin
+
+  Result := false;
+  try
+      qryPreencheCombo.Close;
+      qryPreencheCombo.Connection := dmConexao.Conn;
+      qryPreencheCombo.Open;
+   except
+    raise(Exception).Create('Problemas ao consultar dados do usuário para preencher o Combo... ');
+  end;
+
+    Result := not qryPreencheCombo.IsEmpty;
+
+end;
+
+function TdmUsuarioConsulta.validarLogin(idUsuario: Integer; login, senha: string): Boolean;
+begin
+
+      try
+          qryValidarUsuario.Close;
+          qryValidarUsuario.Connection := dmConexao.Conn;
+          qryValidarUsuario.ParamByName('pIdUsuario').AsInteger := idUsuario;
+          qryValidarUsuario.ParamByName('pLogin').AsString := login.ToLower;
+          qryValidarUsuario.ParamByName('pSenha').AsString := MD5String(senha);
+          qryValidarUsuario.Open;
+
+      except
+    raise(Exception).Create('Problemas ao consultar dados do usuário para validar... ');
+  end;
+
+
+ Result := not qryValidarUsuario.IsEmpty;
+
+end;
+
+end.
+
+

@@ -1,0 +1,195 @@
+unit uFrmRelatorioTransferencias;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, uFramePeriodo, udmConexao, uDMOrganizacao, uUtil,
+  Vcl.StdCtrls, Vcl.Buttons, FireDAC.Stan.Intf, FireDAC.Stan.Option,
+  FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
+  FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB,
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, frxClass, frxDBSet, cxGraphics,
+  cxControls, cxLookAndFeels, cxLookAndFeelPainters, dxSkinsCore,
+  dxSkinsDefaultPainters, dxStatusBar, Vcl.Grids, Vcl.DBGrids, EDBGrid,
+  frxExportBaseDialog, frxExportPDF, frxExportXLSX, frxExportMail;
+
+type
+  TfrmRelatorioTransferencias = class(TForm)
+    frmPeriodo1: TfrmPeriodo;
+    btnBuscaTRF: TBitBtn;
+    btnImprimir: TBitBtn;
+    btnFechar: TBitBtn;
+    qryObterPorPeriodo: TFDQuery;
+    frxDBTRFS: TfrxDBDataset;
+    frxRelatorioTRF: TfrxReport;
+    dxStatusBar1: TdxStatusBar;
+    EvDBGrid3D1: TEvDBGrid3D;
+    ds1: TDataSource;
+    frxpdfxprt1: TfrxPDFExport;
+    frxXLSXExport1: TfrxXLSXExport;
+    exportMail: TfrxMailExport;
+    procedure FormCreate(Sender: TObject);
+    procedure btnBuscaTRFClick(Sender: TObject);
+    procedure btnImprimirClick(Sender: TObject);
+    procedure btnFecharClick(Sender: TObject);
+  private
+    { Private declarations }
+    pIDOrganizacao :string;
+    pDataInicial,  pDataFinal: TDate;
+    pathRelatorio :string;
+    procedure limpaPanel;
+    function obterPorPeriodo(pIdOrganizacao: String; dtDataInicial,
+      dtDataFinal: TDateTime): Boolean;
+    procedure inicializarVariaveisRelatorio(dtInicial, dtFinal: TDate);
+    procedure salvarPDF(pPasta, pTipoRel: string);
+  public
+    { Public declarations }
+  end;
+
+var
+  frmRelatorioTransferencias: TfrmRelatorioTransferencias;
+
+implementation
+
+{$R *.dfm}
+
+procedure TfrmRelatorioTransferencias.btnBuscaTRFClick(Sender: TObject);
+
+begin
+ pDataInicial :=  frmPeriodo1.getDataInicial;
+ pDataFinal   := frmPeriodo1.getDataFinal;
+ pathRelatorio := uUtil.TPathRelatorio.getRelatorioTransferencias;
+
+  if obterPorPeriodo(pIDOrganizacao, pDataInicial, pDataFinal) then begin
+
+     btnImprimir.Enabled := True;
+     dxStatusBar1.Panels[1].Text := ' Foram encontrados   ' + IntToStr(qryObterPorPeriodo.RecordCount) + ' registros para impressão...';
+
+  end;
+
+end;
+
+function TfrmRelatorioTransferencias.obterPorPeriodo(pIdOrganizacao: String; dtDataInicial, dtDataFinal: TDateTime): Boolean;
+begin
+
+try
+  qryObterPorPeriodo.Close;
+  qryObterPorPeriodo.Connection := dmConexao.Conn;
+  qryObterPorPeriodo.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+  qryObterPorPeriodo.ParamByName('DTDATAINICIAL').AsDateTime := dtDataInicial;
+  qryObterPorPeriodo.ParamByName('DTDATAFINAL').AsDateTime := dtDataFinal;
+  qryObterPorPeriodo.Open;
+  qryObterPorPeriodo.Last;
+  qryObterPorPeriodo.First;
+
+except
+  raise Exception.Create('Erro ao obter transferências no período.');
+
+end;
+
+  Result := not qryObterPorPeriodo.IsEmpty;
+
+end;
+
+
+procedure TfrmRelatorioTransferencias.btnFecharClick(Sender: TObject);
+begin
+    PostMessage(Self.Handle, WM_CLOSE, 0, 0);
+end;
+
+procedure TfrmRelatorioTransferencias.btnImprimirClick(Sender: TObject);
+begin
+  if qryObterPorPeriodo.RecordCount >0 then begin
+
+        frxRelatorioTRF.Clear;
+        if not(frxRelatorioTRF.LoadFromFile(pathRelatorio)) then
+        begin
+          ShowMessage('Relatório template não encontrado. Contate o Administrador do sistema.');
+        end
+        else
+        begin
+
+          dxStatusBar1.Panels[1].Text := ' Preparando para a impressão... ';
+          inicializarVariaveisRelatorio(pDataInicial, pDataFinal);
+          salvarPDF('BANCOS','TRF.ENTRE.CONTAS');
+          frxRelatorioTRF.OldStyleProgress := True;
+          frxRelatorioTRF.ShowProgress := True;
+          frxRelatorioTRF.ShowReport;
+
+          exportMail.Start
+
+        end;
+
+  end;
+
+  limpaPanel;
+
+end;
+
+procedure TfrmRelatorioTransferencias.salvarPDF(pPasta,pTipoRel :string);
+begin
+          frxpdfxprt1.DefaultPath := pPasta;
+          frxpdfxprt1.FileName :=  uUtil.TPathRelatorio.getNameFileExportPDF(pPasta, pTipoRel);
+          frxpdfxprt1.ShowDialog := False ;
+          frxRelatorioTRF.PrepareReport();
+          frxRelatorioTRF.Export(frxpdfxprt1);
+
+
+end;
+
+procedure TfrmRelatorioTransferencias.FormCreate(Sender: TObject);
+begin
+
+ dmConexao.conectarBanco;
+ pIDOrganizacao :=uUtil.TOrgAtual.getId;
+
+
+ limpaPanel;
+
+
+end;
+
+
+procedure TfrmRelatorioTransferencias.limpaPanel;
+begin
+
+ frmPeriodo1.inicializa(Now,Now);
+
+ pDataInicial := frmPeriodo1.getDataInicial;
+ pDataFinal :=frmPeriodo1.getDataFinal;
+ pIDOrganizacao := uutil.TOrgAtual.getId;
+   btnImprimir.Enabled := False;
+   dxStatusBar1.Panels[0].Text := 'Status : ';
+   dxStatusBar1.Panels[1].Text := ' Pronto. Digite um período para a busca.. : ';
+
+
+end;
+
+
+procedure TfrmRelatorioTransferencias.inicializarVariaveisRelatorio(dtInicial, dtFinal: TDate);
+begin
+
+  with frxRelatorioTRF.Variables do
+  begin
+
+    Variables['strRazaoSocial'] :=
+      QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('RAZAO_SOCIAL')
+      .AsString);
+    Variables['strCNPJ'] :=
+      QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('CNPJ').AsString);
+    Variables['strEndereco'] :=
+      QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('ENDERECO').AsString);
+    Variables['strCEP'] :=
+      QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('CEP').AsString);
+    Variables['strCidade'] :=
+      QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('CIDADE').AsString);
+    Variables['strUF'] :=
+      QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('UF').AsString);
+      Variables['strPeriodo'] :=QuotedStr( ' de  ' + DateToStr(dtInicial) + '  até  ' + DateToStr(dtFinal));
+
+  end;
+
+end;
+
+
+end.
