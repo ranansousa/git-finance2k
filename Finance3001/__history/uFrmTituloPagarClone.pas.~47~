@@ -1,0 +1,198 @@
+unit uFrmTituloPagarClone;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, ENumEd, Vcl.StdCtrls, System.Generics.Collections,
+  uTituloPagarHistoricoModel, uTituloPagarHistoricoDAO, uTituloPagarCentroCustoModel, uTituloPagarCentroCustoDAO,
+  uTituloPagarModel, uTituloPagarDAO, udmConexao, uCedenteModel, uCedenteDAO, uUtil;
+
+type
+  TfrmTituloPagarClone = class(TForm)
+    lbl3: TLabel;
+    edtDoc: TEdit;
+    lbl4: TLabel;
+    edtDescricao: TEdit;
+    lbl5: TLabel;
+    lbl6: TLabel;
+    edtParcela: TEdit;
+    lbl7: TLabel;
+    edtValotTP: TEvNumEdit;
+    lbl8: TLabel;
+    edtCedente: TEdit;
+    lbl11: TLabel;
+    edtCNPJ: TEdit;
+    dtpVcto: TDateTimePicker;
+    btnConfirmaCh: TButton;
+    btnCancelar: TButton;
+    procedure btnCancelarClick(Sender: TObject);
+    procedure btnConfirmaChClick(Sender: TObject);
+  private
+  pIdOrganizacao :string;
+
+    procedure preencheForm(pTitulo: TTituloPagarModel);
+    { Private declarations }
+  public
+    { Public declarations }
+    tituloClonado :TTituloPagarModel;
+    function getTitulo: TTituloPagarModel;
+    constructor Create (AOwner :TComponent; pTitulo :TTituloPagarModel);
+
+
+  end;
+
+var
+  frmTituloPagarClone: TfrmTituloPagarClone;
+
+implementation
+
+{$R *.dfm}
+
+{ TfrmTituloPagarClone }
+
+procedure TfrmTituloPagarClone.btnCancelarClick(Sender: TObject);
+begin
+
+  tituloClonado                  := TTituloPagarModel.Create;
+  tituloClonado.FID              := '';
+  tituloClonado.FIDorganizacao   := '';
+
+ PostMessage(Self.Handle, WM_CLOSE, 0, 0);
+
+
+
+end;
+
+procedure TfrmTituloPagarClone.btnConfirmaChClick(Sender: TObject);
+begin
+{  tituloClonado                         := TContaBancariaChequeModel.Create;
+  tituloClonado.FID                     := idCheque;
+  tituloClonado.FIdContaBancaria        := iDConta;
+  tituloClonado.FIdOrganizacao          := pIdOrganizcacao;
+  tituloClonado                         := frameCheque1.obterChequePorID(iDConta, idCheque);
+
+  if not uutil.Empty(chequeAux.FID) then
+  begin
+
+    chequeAux.FPortador                 := edtPortador.Text;
+    chequeAux.FValor                    := edtValorCh.Value;
+    chequeAux.FDataEmissao              := dtpEmissao.Date;
+    chequeAux.FDataRegistro             := uutil.getDataServer;
+    chequeAux.FDataPrevisaoCompensacao  := IncDay(uutil.getDataServer, 3);
+    chequeAux.FIdUsuario                := uutil.TUserAtual.getUserId;
+    chequeAux.FIDresponsavel            := idResponsavel;
+    chequeAux.FIdTipoStatus             := 'EMITIDO';
+    chequeAux.FQtdImpressao             := 0;
+
+  end;  }
+
+ PostMessage(Self.Handle, WM_CLOSE, 0, 0);
+end;
+
+constructor TfrmTituloPagarClone.Create(AOwner: TComponent;  pTitulo: TTituloPagarModel);
+var
+parcela :Integer;
+listaHistorico :  TObjectList<TTituloPagarHistoricoModel>;
+listaCustos    :  TObjectList<TTituloPagarCentroCustoModel>;
+historico : TTituloPagarHistoricoModel  ;
+centroCusto : TTituloPagarCentroCustoModel;
+ qtdRateioC, qtdRateioH, I :Integer;
+ valorNominal, valorAntecipado :Currency;
+
+begin
+ inherited Create(AOwner);
+  qtdRateioH :=0;
+  qtdRateioC  :=0;
+  I:=0;
+  pIdOrganizacao    := uutil.TOrgAtual.getId;
+   valorNominal     := pTitulo.FvalorNominal ;
+   valorAntecipado  := pTitulo.FvalorAntecipado;
+
+
+  tituloClonado := TTituloPagarModel.Create;
+  tituloClonado := TTituloPagarDAO.obterPorID(pTitulo);
+
+  if not uUtil.Empty(tituloClonado.FID) then begin
+  // parcela := uutil.SoNumeros(pTitulo.Fparcela);
+
+  tituloClonado.FdataUltimaAtualizacao  := Now;
+  tituloClonado.FdataRegistro           := Now;
+  tituloClonado.FdataProtocolo          := Now;
+  tituloClonado.FprevisaoCartorio       := IncMonth(Now);
+  tituloClonado.FdataEmissao            := Now;
+  tituloClonado.FIDTipoStatus           := 'ABERTO';
+  tituloClonado.Fparcela                := '';
+  tituloClonado.FnumeroDocumento        := dmConexao.obterIdentificador(pIdOrganizacao, 'TP');
+  tituloClonado.FvalorNominal           := valorNominal;
+  tituloClonado.FIDTituloPagarAnterior  := pTitulo.FID;
+  tituloClonado.FvalorAntecipado        := valorAntecipado;
+
+
+   qtdRateioH := tituloClonado.listaHistorico.Count;
+   qtdRateioC := tituloClonado.listaCustos.Count;
+
+   for I := 0 to qtdRateioH -1  do begin
+
+     historico.FID                    := TTituloPagarHistoricoModel(tituloClonado.listaHistorico[I]).FID;
+     historico.FIDorganizacao         := tituloClonado.listaHistorico[I].FIDorganizacao;
+     historico.FIDHistorico           := tituloClonado.listaHistorico[I].FIDHistorico;
+     historico.FIDContaContabilDebito := tituloClonado.listaHistorico[I].FIDContaContabilDebito;
+     historico.FIDTP                  := tituloClonado.listaHistorico[I].FIDTP;
+     historico.Fvalor                 := tituloClonado.listaHistorico[I].Fvalor;
+     tituloClonado.listaHistorico.Clear;
+     tituloClonado.AdicionarHST(historico);
+
+
+   end;
+
+   for I := 0 to qtdRateioC -1  do begin
+
+     centroCusto.FID                    := tituloClonado.listaCustos[I].FID;
+     centroCusto.FIDorganizacao         := tituloClonado.listaCustos[I].FIDorganizacao;
+     centroCusto.FIDCentroCusto         := tituloClonado.listaCustos[I].FIDCentroCusto;
+     centroCusto.FIDTP                  := tituloClonado.listaCustos[I].FIDTP;
+     centroCusto.Fvalor                 := tituloClonado.listaCustos[I].Fvalor;
+     tituloClonado.listaCustos.Clear;
+     tituloClonado.AdicionarCC(centroCusto);
+
+   end;
+
+
+   preencheForm(tituloClonado);
+
+
+  end;
+
+
+
+
+end;
+
+function TfrmTituloPagarClone.getTitulo: TTituloPagarModel;
+begin
+Result := tituloClonado;
+end;
+
+procedure TfrmTituloPagarClone.preencheForm(pTitulo :TTituloPagarModel);
+var
+cedente :TCedenteModel;
+begin
+  cedente := TCedenteModel.Create;
+  cedente.FIDorganizacao :=pTitulo.FIDorganizacao;
+  cedente.FID := ptitulo.FIDCedente;
+  cedente := TCedenteDAO.obterPorID(cedente);
+
+
+  edtValotTP.Value  := pTitulo.FvalorNominal;
+  edtDoc.Text       := pTitulo.FnumeroDocumento;
+  edtDescricao.Text := pTitulo.Fdescricao;
+  edtParcela.Text   := pTitulo.Fparcela;
+  edtCedente.Text   := cedente.Fnome;
+  edtCNPJ.Text      := cedente.FcpfCnpj;
+  dtpVcto.DateTime := Now;
+
+end;
+
+
+end.
