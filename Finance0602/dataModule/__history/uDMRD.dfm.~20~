@@ -1,0 +1,5228 @@
+object dmRD: TdmRD
+  OldCreateOrder = False
+  Height = 343
+  Width = 878
+  object qryDespesas: TFDQuery
+    Active = True
+    Connection = dmConexao.Conn
+    FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
+    FormatOptions.FmtDisplayNumeric = '###,##0.00'
+    FormatOptions.FmtEditNumeric = '###,##0.00'
+    SQL.Strings = (
+      
+        'SELECT  SUM(TPRCC.VALOR) AS VALOR_DESPESA, MAX(CC.DESCRICAO) AS ' +
+        'CENTRO_CUSTOS, TPRCC.ID_CENTRO_CUSTO'
+      ''
+      'FROM TITULO_PAGAR_RATEIO_CC TPRCC'
+      
+        'LEFT OUTER JOIN TITULO_PAGAR TP ON (TP.ID_TITULO_PAGAR = TPRCC.I' +
+        'D_TITULO_PAGAR) AND (TP.ID_ORGANIZACAO = TPRCC.ID_ORGANIZACAO)'
+      
+        'LEFT OUTER JOIN CENTRO_CUSTO CC ON (CC.ID_CENTRO_CUSTO = TPRCC.I' +
+        'D_CENTRO_CUSTO) AND (CC.ID_ORGANIZACAO = TPRCC.ID_ORGANIZACAO)'
+      ''
+      ''
+      'WHERE (TP.ID_ORGANIZACAO = :PIDORGANIZACAO) '
+      
+        '       AND (TP.DATA_PAGAMENTO BETWEEN :DTDATAINICIAL AND :DTDATA' +
+        'FINAL) '
+      '       AND (TP.ID_TIPO_STATUS <> '#39'EXCLUIDO'#39' )'
+      ''
+      'GROUP BY TPRCC.ID_CENTRO_CUSTO'
+      'ORDER BY VALOR_DESPESA')
+    Left = 64
+    Top = 72
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'DTDATAINICIAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end
+      item
+        Name = 'DTDATAFINAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end>
+  end
+  object frxPDFExport1: TfrxPDFExport
+    UseFileCache = True
+    ShowProgress = True
+    OverwritePrompt = False
+    DataOnly = False
+    PrintOptimized = False
+    Outline = False
+    Background = False
+    HTMLTags = True
+    Quality = 95
+    Transparency = False
+    Author = 'FastReport'
+    Subject = 'FastReport PDF export'
+    ProtectionFlags = [ePrint, eModify, eCopy, eAnnot]
+    HideToolbar = False
+    HideMenubar = False
+    HideWindowUI = False
+    FitWindow = False
+    CenterWindow = False
+    PrintScaling = False
+    PdfA = False
+    Left = 336
+    Top = 136
+  end
+  object frxCSVExport1: TfrxCSVExport
+    UseFileCache = True
+    ShowProgress = True
+    OverwritePrompt = False
+    DataOnly = False
+    Separator = ';'
+    OEMCodepage = False
+    UTF8 = False
+    NoSysSymbols = True
+    ForcedQuotes = False
+    Left = 408
+    Top = 136
+  end
+  object frxReportRD: TfrxReport
+    Version = '5.3.14'
+    DotMatrixReport = False
+    IniFile = '\Software\Fast Reports'
+    PreviewOptions.Buttons = [pbPrint, pbLoad, pbSave, pbExport, pbZoom, pbFind, pbOutline, pbPageSetup, pbTools, pbEdit, pbNavigator, pbExportQuick]
+    PreviewOptions.Zoom = 1.000000000000000000
+    PrintOptions.Printer = 'Default'
+    PrintOptions.PrintOnSheet = 0
+    ReportOptions.CreateDate = 42573.413464710600000000
+    ReportOptions.LastChange = 43683.350115949100000000
+    ScriptLanguage = 'PascalScript'
+    ScriptText.Strings = (
+      'begin'
+      ''
+      'end.')
+    Left = 256
+    Top = 136
+    Datasets = <
+      item
+        DataSet = dmRelExportacaoMega.frxDBCBTC
+        DataSetName = 'CBT_C'
+      end
+      item
+        DataSet = dmRelExportacaoMega.frxDBCBTD
+        DataSetName = 'CBT_D'
+      end
+      item
+        DataSet = dmRelExportacaoMega.frxDBCBT
+        DataSetName = 'CBTBASE'
+      end
+      item
+        DataSet = dmRelExportacaoMega.frxTPBAcrescimo
+        DataSetName = 'TPBAcrescimo'
+      end
+      item
+        DataSet = dmRelExportacaoMega.frxDBTPB
+        DataSetName = 'TPBaixa'
+      end
+      item
+        DataSet = dmRelExportacaoMega.frxTPBBanco
+        DataSetName = 'TPBBanco'
+      end
+      item
+        DataSet = dmRelExportacaoMega.frxDBTPBCaixa
+        DataSetName = 'TPBCaixa'
+      end
+      item
+        DataSet = dmRelExportacaoMega.frxTPBCheque
+        DataSetName = 'TPBCheque'
+      end
+      item
+        DataSet = dmRelExportacaoMega.frxTPBDeducao
+        DataSetName = 'TPBDeducao'
+      end
+      item
+        DataSet = dmRelExportacaoMega.frxTPBHistorico
+        DataSetName = 'TPBHistorico'
+      end
+      item
+        DataSet = dmRelExportacaoMega.frxDBTitulos
+        DataSetName = 'TPPROVBASE'
+      end
+      item
+        DataSet = dmRelExportacaoMega.frxTPPROVCR
+        DataSetName = 'TPPROVCR'
+      end
+      item
+        DataSet = dmRelExportacaoMega.frxTPROVDB
+        DataSetName = 'TPPROVDB'
+      end
+      item
+        DataSet = dmRelExportacaoMega.frxDBTPQuitados
+        DataSetName = 'TPQUITADOS'
+      end
+      item
+        DataSet = dmRelExportacaoMega.frxDBTRBAcrescimo
+        DataSetName = 'TRBAcrescimo'
+      end
+      item
+        DataSet = dmRelExportacaoMega.frxDBTRBaixa
+        DataSetName = 'TRBaixa'
+      end
+      item
+        DataSet = dmRelExportacaoMega.frxDBTRQuitadoBanco
+        DataSetName = 'TRBBanco'
+      end
+      item
+        DataSet = dmRelExportacaoMega.frxDBTRBCaixa
+        DataSetName = 'TRBCaixa'
+      end
+      item
+        DataSet = dmRelExportacaoMega.frxDBTRBCheque
+        DataSetName = 'TRBCheque'
+      end
+      item
+        DataSet = dmRelExportacaoMega.frxTRBDeducao
+        DataSetName = 'TRBDeducao'
+      end
+      item
+        DataSet = dmRelExportacaoMega.frxBCOCAIXA
+        DataSetName = 'TRFBCOCAIXA'
+      end
+      item
+        DataSet = dmRelExportacaoMega.frxTRFCaixaBanco
+        DataSetName = 'TRFCAIXABANCO'
+      end
+      item
+        DataSet = dmRelExportacaoMega.frxDBTRProv
+        DataSetName = 'TRPROVBASE'
+      end
+      item
+        DataSet = dmRelExportacaoMega.frxTRPROVCR
+        DataSetName = 'TRPROVCR'
+      end
+      item
+        DataSet = dmRelExportacaoMega.frxTRPROVDB
+        DataSetName = 'TRPROVDB'
+      end
+      item
+        DataSet = dmRelExportacaoMega.frxDBTRQuitados
+        DataSetName = 'TRQUITADOS'
+      end>
+    Variables = <
+      item
+        Name = ' Pempec'
+        Value = Null
+      end
+      item
+        Name = 'strRazaoSocial'
+        Value = Null
+      end
+      item
+        Name = 'strCNPJ'
+        Value = Null
+      end
+      item
+        Name = 'strEndereco'
+        Value = Null
+      end
+      item
+        Name = 'strCEP'
+        Value = Null
+      end
+      item
+        Name = 'strCidade'
+        Value = Null
+      end
+      item
+        Name = 'strUF'
+        Value = Null
+      end
+      item
+        Name = 'strTipoStatus'
+        Value = Null
+      end
+      item
+        Name = 'strTipo'
+        Value = Null
+      end
+      item
+        Name = 'strPeriodo'
+        Value = Null
+      end>
+    Style = <>
+    object Data: TfrxDataPage
+      Height = 1000.000000000000000000
+      Width = 1000.000000000000000000
+    end
+    object Page1: TfrxReportPage
+      Orientation = poLandscape
+      PaperWidth = 297.000000000000000000
+      PaperHeight = 210.000000000000000000
+      PaperSize = 9
+      LeftMargin = 10.000000000000000000
+      RightMargin = 10.000000000000000000
+      TopMargin = 10.000000000000000000
+      BottomMargin = 10.000000000000000000
+      LargeDesignHeight = True
+      object PageHeader1: TfrxPageHeader
+        FillType = ftBrush
+        Height = 52.913420000000000000
+        Top = 18.897650000000000000
+        Width = 1046.929810000000000000
+        Child = frxReportRD.Child1
+        object Memo2: TfrxMemoView
+          Left = 3.779530000000000000
+          Top = 1.338590000000000000
+          Width = 109.606370000000000000
+          Height = 22.677180000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -13
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'Organiza'#231#227'o: ')
+          ParentFont = False
+        end
+        object strRazaoSocial1: TfrxMemoView
+          Left = 117.283550000000000000
+          Top = 1.338590000000000000
+          Width = 449.764070000000000000
+          Height = 18.897650000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -13
+          Font.Name = 'tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[strRazaoSocial]')
+          ParentFont = False
+        end
+        object Memo3: TfrxMemoView
+          Left = 572.433210000000000000
+          Top = 1.338590000000000000
+          Width = 52.913420000000000000
+          Height = 18.897650000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -13
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'CNPJ:')
+          ParentFont = False
+        end
+        object strCNPJ: TfrxMemoView
+          Left = 639.976810000000000000
+          Top = 1.338590000000000000
+          Width = 158.740260000000000000
+          Height = 18.897650000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -13
+          Font.Name = 'tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[strCNPJ]')
+          ParentFont = False
+        end
+        object Memo4: TfrxMemoView
+          Left = 3.779530000000000000
+          Top = 24.015770000000000000
+          Width = 109.606370000000000000
+          Height = 18.897650000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -13
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'Endere'#231'o:')
+          ParentFont = False
+        end
+        object strEndereco: TfrxMemoView
+          Left = 117.283550000000000000
+          Top = 24.015770000000000000
+          Width = 449.764070000000000000
+          Height = 18.897650000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -13
+          Font.Name = 'tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[strEndereco]')
+          ParentFont = False
+        end
+        object strCEP: TfrxMemoView
+          Left = 639.976810000000000000
+          Top = 24.015770000000000000
+          Width = 79.370130000000000000
+          Height = 18.897650000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -13
+          Font.Name = 'tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[strCEP]')
+          ParentFont = False
+        end
+        object Memo5: TfrxMemoView
+          Left = 570.709030000000000000
+          Top = 24.015770000000000000
+          Width = 56.692950000000000000
+          Height = 18.897650000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -13
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'CEP  :')
+          ParentFont = False
+        end
+        object Memo6: TfrxMemoView
+          Left = 793.701300000000000000
+          Top = 27.795300000000000000
+          Width = 98.267780000000000000
+          Height = 18.897650000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -13
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'CIDADE/UF:')
+          ParentFont = False
+        end
+        object strCidade: TfrxMemoView
+          Left = 903.307670000000000000
+          Top = 27.795300000000000000
+          Width = 120.944960000000000000
+          Height = 18.897650000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -13
+          Font.Name = 'tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[strCidade]/[strUF]')
+          ParentFont = False
+          Formats = <
+            item
+            end
+            item
+            end>
+        end
+        object Page: TfrxMemoView
+          Left = 975.118740000000000000
+          Top = 1.338590000000000000
+          Width = 56.692950000000000000
+          Height = 18.897650000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -13
+          Font.Name = 'tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[Page]')
+          ParentFont = False
+          Formats = <
+            item
+            end
+            item
+            end>
+        end
+        object Memo15: TfrxMemoView
+          Left = 925.984850000000000000
+          Top = 1.338590000000000000
+          Width = 45.354360000000000000
+          Height = 18.897650000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -13
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          HAlign = haCenter
+          Memo.UTF8W = (
+            'P'#193'G.')
+          ParentFont = False
+        end
+      end
+      object Child1: TfrxChild
+        FillType = ftBrush
+        Height = 37.795300000000000000
+        Top = 94.488250000000000000
+        Width = 1046.929810000000000000
+        object Memo1: TfrxMemoView
+          Left = 3.779530000000000000
+          Width = 559.370440000000000000
+          Height = 22.677180000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -13
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'RELAT'#211'RIO ESPELHO DA EXPORTA'#199#195'O')
+          ParentFont = False
+        end
+        object Memo77: TfrxMemoView
+          Left = 570.709030000000000000
+          Width = 75.590600000000000000
+          Height = 22.677180000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -13
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'PER'#205'ODO: ')
+          ParentFont = False
+        end
+        object Memo78: TfrxMemoView
+          Left = 647.079160000000000000
+          Width = 362.834880000000000000
+          Height = 22.677180000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -13
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            '[strPeriodo]')
+          ParentFont = False
+        end
+      end
+      object GroupHeader1: TfrxGroupHeader
+        FillType = ftBrush
+        Height = 18.897662200000000000
+        Top = 192.756030000000000000
+        Width = 1046.929810000000000000
+        Condition = '1=1'
+        ReprintOnNewPage = True
+        object Memo7: TfrxMemoView
+          Left = -0.220470000000000000
+          Top = 1.338590000000011000
+          Width = 64.252010000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'EMISS'#195'O')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo13: TfrxMemoView
+          Left = 181.346559210000000000
+          Top = 1.338590000000011000
+          Width = 124.724490000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'DESCRI'#199#195'O  ')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo12: TfrxMemoView
+          Left = 63.031540000000000000
+          Top = 1.338590000000011000
+          Width = 75.590600000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'DOCUMENTO')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo14: TfrxMemoView
+          Left = 310.480520000000000000
+          Top = 1.338590000000011000
+          Width = 268.346630000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'C'#211'D.HIST.                    DESCRI'#199#195'O CONT'#193'BIL')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo16: TfrxMemoView
+          Left = 640.331170000000000000
+          Top = 1.338590000000011000
+          Width = 90.708720000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            'CONTA  CONT'#193'BIL')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo17: TfrxMemoView
+          Left = 783.803650000000000000
+          Top = 1.338590000000011000
+          Width = 120.944960000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            'D'#201'BITO')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo18: TfrxMemoView
+          Left = 944.882500000000000000
+          Top = 1.338590000000011000
+          Width = 98.267780000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            'CR'#201'DITO')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo8: TfrxMemoView
+          Left = 587.149970000000000000
+          Top = 1.338590000000011000
+          Width = 49.133890000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          HAlign = haCenter
+          Memo.UTF8W = (
+            'PARCELAS')
+          ParentFont = False
+        end
+        object Memo23: TfrxMemoView
+          Left = 141.181200000000000000
+          Top = 1.338590000000011000
+          Width = 37.795300000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'TIPO')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Line7: TfrxLineView
+          Left = -0.220470000000000000
+          Width = 1046.929810000000000000
+          Color = clBlack
+          Frame.Typ = [ftTop]
+        end
+        object Memo52: TfrxMemoView
+          Left = 733.228820000000000000
+          Top = 1.338590000000011000
+          Width = 49.133890000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            'CD.REDUZ')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+      end
+      object MD_TP_PROV: TfrxMasterData
+        FillType = ftBrush
+        Height = 15.118110240000000000
+        Top = 260.787570000000000000
+        Width = 1046.929810000000000000
+        DataSet = dmRelExportacaoMega.frxDBTitulos
+        DataSetName = 'TPPROVBASE'
+        RowCount = 0
+        object TitulosNUMERO_DOCUMENTO: TfrxMemoView
+          Left = 63.031540000000000000
+          Top = 2.000000000000000000
+          Width = 75.590600000000000000
+          Height = 15.118120000000000000
+          DataField = 'NUMERO_DOCUMENTO'
+          DataSet = dmRelExportacaoMega.frxDBTitulos
+          DataSetName = 'TPPROVBASE'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TPPROVBASE."NUMERO_DOCUMENTO"]')
+          ParentFont = False
+        end
+        object TitulosDATA_EMISSAO: TfrxMemoView
+          Left = -0.220470000000000000
+          Top = 2.000000000000000000
+          Width = 60.472480000000000000
+          Height = 15.118120000000000000
+          DataField = 'DATA_EMISSAO'
+          DataSet = dmRelExportacaoMega.frxDBTitulos
+          DataSetName = 'TPPROVBASE'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TPPROVBASE."DATA_EMISSAO"]')
+          ParentFont = False
+        end
+        object TitulosDSC_CONTA: TfrxMemoView
+          Left = 310.480520000000000000
+          Top = 2.000000000000000000
+          Width = 264.567100000000000000
+          Height = 15.118120000000000000
+          DataField = 'FORNECEDOR'
+          DataSet = dmRelExportacaoMega.frxDBTitulos
+          DataSetName = 'TPPROVBASE'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TPPROVBASE."FORNECEDOR"]')
+          ParentFont = False
+          WordWrap = False
+        end
+        object TitulosPARCELA: TfrxMemoView
+          Left = 587.149970000000000000
+          Top = 2.000000000000000000
+          Width = 49.133890000000000000
+          Height = 15.118120000000000000
+          DataField = 'PARCELA'
+          DataSet = dmRelExportacaoMega.frxDBTitulos
+          DataSetName = 'TPPROVBASE'
+          DisplayFormat.FormatStr = '%g'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Arial'
+          Font.Style = []
+          HAlign = haCenter
+          Memo.UTF8W = (
+            '[TPPROVBASE."PARCELA"]')
+          ParentFont = False
+        end
+        object Memo25: TfrxMemoView
+          Left = 141.181200000000000000
+          Top = 2.000000000000000000
+          Width = 37.795300000000000000
+          Height = 15.118120000000000000
+          DataField = 'TIPO'
+          DataSet = dmRelExportacaoMega.frxDBTitulos
+          DataSetName = 'TPPROVBASE'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Arial'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TPPROVBASE."TIPO"]')
+          ParentFont = False
+        end
+        object Memo171: TfrxMemoView
+          Left = 181.346559210000000000
+          Top = 2.000000000000000000
+          Width = 128.504020000000000000
+          Height = 15.118120000000000000
+          DataField = 'DESCRICAO'
+          DataSet = dmRelExportacaoMega.frxDBTitulos
+          DataSetName = 'TPPROVBASE'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TPPROVBASE."DESCRICAO"]')
+          ParentFont = False
+          WordWrap = False
+        end
+      end
+      object DT_TP_PROV_CR: TfrxDetailData
+        FillType = ftBrush
+        Height = 15.118110240000000000
+        Top = 336.378170000000000000
+        Width = 1046.929810000000000000
+        DataSet = dmRelExportacaoMega.frxTPPROVCR
+        DataSetName = 'TPPROVCR'
+        RowCount = 0
+        object HistoricosDESCRICAO: TfrxMemoView
+          Left = 392.630180000000000000
+          Width = 241.889920000000000000
+          Height = 15.118110240000000000
+          DataField = 'CCC_DSC'
+          DataSet = dmRelExportacaoMega.frxTPPROVCR
+          DataSetName = 'TPPROVCR'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TPPROVCR."CCC_DSC"]')
+          ParentFont = False
+          WordWrap = False
+        end
+        object HistoricosVALOR: TfrxMemoView
+          Left = 922.205320000000000000
+          Width = 120.944960000000000000
+          Height = 15.118110240000000000
+          DataSet = dmRelExportacaoMega.frxTPPROVCR
+          DataSetName = 'TPPROVCR'
+          DisplayFormat.FormatStr = '%2.2n'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TPPROVCR."VALOR_TOTAL"]')
+          ParentFont = False
+        end
+        object HistoricosCONTA: TfrxMemoView
+          Left = 640.331170000000000000
+          Width = 90.708720000000000000
+          Height = 15.118110240000000000
+          DataField = 'CONTA_CR'
+          DataSet = dmRelExportacaoMega.frxTPPROVCR
+          DataSetName = 'TPPROVCR'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TPPROVCR."CONTA_CR"]')
+          ParentFont = False
+        end
+        object HistoricosCODIGO: TfrxMemoView
+          Left = 310.480520000000000000
+          Width = 79.370130000000000000
+          Height = 15.118110240000000000
+          DataField = 'COD_HIST'
+          DataSet = dmRelExportacaoMega.frxTPPROVCR
+          DataSetName = 'TPPROVCR'
+          DisplayFormat.FormatStr = '%g'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Arial'
+          Font.Style = []
+          HAlign = haCenter
+          Memo.UTF8W = (
+            '[TPPROVCR."COD_HIST"]')
+          ParentFont = False
+        end
+        object HistoricosCODREDUZ: TfrxMemoView
+          Left = 733.228820000000000000
+          Width = 49.133890000000000000
+          Height = 15.118110240000000000
+          DataField = 'COD_RED_CR'
+          DataSet = dmRelExportacaoMega.frxTPPROVCR
+          DataSetName = 'TPPROVCR'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Arial'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TPPROVCR."COD_RED_CR"]')
+          ParentFont = False
+        end
+      end
+      object GroupHeader3: TfrxGroupHeader
+        FillType = ftBrush
+        Height = 1.779530000000000000
+        Top = 234.330860000000000000
+        Width = 1046.929810000000000000
+        Condition = 'TPPROVBASE."ID_TITULO_PAGAR"'
+        object Line1: TfrxLineView
+          Top = 1.779529999999966000
+          Width = 1046.929810000000000000
+          Color = clBlack
+          Frame.Typ = [ftTop]
+        end
+      end
+      object ReportSummary1: TfrxReportSummary
+        FillType = ftBrush
+        Height = 68.031540000000000000
+        Top = 2071.182440000000000000
+        Width = 1046.929810000000000000
+        object Line2: TfrxLineView
+          Top = 3.000000000000000000
+          Width = 1046.929810000000000000
+          Color = clBlack
+          Frame.Typ = [ftTop]
+        end
+        object Memo20: TfrxMemoView
+          Left = 753.567410000000000000
+          Top = 11.338589999999840000
+          Width = 151.181200000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            'TOTAL DE D'#201'BITO')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo21: TfrxMemoView
+          Left = 918.425790000000000000
+          Top = 11.338589999999840000
+          Width = 124.724490000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            'TOTAL DE CR'#201'DITO')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo74: TfrxMemoView
+          Left = 768.685530000000000000
+          Top = 26.015769999999970000
+          Width = 136.063080000000000000
+          Height = 15.118110240000000000
+          DisplayFormat.FormatStr = '%2.2n'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            '['
+            ''
+            'SUM(<TPPROVDB."VALOR_TOTAL">,DT_TP_PROV_DB) +'
+            'SUM(<TPBHistorico."VALOR">,DT_TPB_HIST)+'
+            'SUM(<TPBAcrescimo."VALOR">,DT_TPB_AC)+'
+            'SUM(<TRPROVDB."VALOR">,DT_TR_PROV_DB) +'
+            ''
+            'SUM(<TRBDeducao."VALOR">,DT_TRB_DEDUCAO)+'
+            'SUM(<TRBCaixa."VALOR">,DT_TRB_CAIXA)+'
+            'SUM(<TRBCheque."VALOR">,DT_TRB_CHEQUE)+'
+            'SUM(<TRBBanco."VALOR">,DT_TRB_BANCO) +'
+            'SUM(<TRFCAIXABANCO."VALOR">,MD_TRF_CX_BCO)+'
+            'SUM(<CBT_C."VALOR">,DT_CBT_CR)+'
+            'SUM(<TRFBCOCAIXA."VALOR">,MD_TRF_BCO_CX)'
+            ']')
+          ParentFont = False
+        end
+        object Memo76: TfrxMemoView
+          Left = 907.087200000000000000
+          Top = 26.015769999999970000
+          Width = 136.063080000000000000
+          Height = 15.118110240000000000
+          DisplayFormat.FormatStr = '%2.2n'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            '['
+            'SUM(<TPPROVCR."VALOR_TOTAL">,DT_TP_PROV_CR) + '
+            'SUM(<TPBDeducao."VALOR">,DT_TPB_DE)+ '
+            'SUM(<TPBCaixa."VALOR">,DT_TPB_CAIXA)+ '
+            'SUM(<TPBBanco."VALOR">,DT_TPB_BANCO)+'
+            'SUM(<TPBCheque."VALOR">,DT_TPB_CHEQUE)+'
+            'SUM(<TRPROVCR."VALOR">,DT_TR_PROV_CR)+'
+            'SUM(<TRQUITADOS."VALOR">,MD_TR_QUITADO) + '
+            'SUM(<TRBAcrescimo."VALOR">,DT_TRB_ACRESCIMO)+'
+            'SUM(<TRFCAIXABANCO."VALOR">,MD_TRF_CX_BCO)+'
+            'SUM(<CBT_D."VALOR">,DT_CBT_DB)+'
+            'SUM(<TRFBCOCAIXA."VALOR">,MD_TRF_BCO_CX)'
+            ']')
+          ParentFont = False
+        end
+      end
+      object Memo41: TfrxMemoView
+        Left = 7.559060000000000000
+        Top = -7.559060000000000000
+        Width = 49.133890000000000000
+        Height = 15.118120000000000000
+        DataSet = dmRelExportacaoMega.frxDBTitulos
+        DataSetName = 'TPPROVBASE'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlack
+        Font.Height = -13
+        Font.Name = 'tahoma'
+        Font.Style = []
+        ParentFont = False
+      end
+      object GroupFooter4: TfrxGroupFooter
+        FillType = ftBrush
+        Height = 26.456700240000000000
+        Top = 374.173470000000000000
+        Width = 1046.929810000000000000
+        object Line25: TfrxLineView
+          Left = 816.378626460000000000
+          Top = 3.559059999999988000
+          Width = 226.771653540000000000
+          Color = clBlue
+          ArrowSolid = True
+          Frame.Style = fsDot
+          Frame.Typ = [ftTop]
+        end
+        object SysMemo1: TfrxSysMemoView
+          Left = 922.205320000000000000
+          Top = 7.559059999999988000
+          Width = 120.944960000000000000
+          Height = 15.118110240000000000
+          DisplayFormat.FormatStr = '%2.2n'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[SUM(<TPPROVCR."VALOR_TOTAL">,DT_TP_PROV_CR)]')
+          ParentFont = False
+        end
+        object SysMemo2: TfrxSysMemoView
+          Left = 783.803650000000000000
+          Top = 7.559059999999988000
+          Width = 120.944960000000000000
+          Height = 15.118110240000000000
+          DisplayFormat.FormatStr = '%2.2n'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[SUM(<TPPROVDB."VALOR_TOTAL">,DT_TP_PROV_DB)]')
+          ParentFont = False
+        end
+      end
+      object DT_TP_PROV_DB: TfrxDetailData
+        FillType = ftBrush
+        Height = 15.118110240000000000
+        Top = 298.582870000000000000
+        Width = 1046.929810000000000000
+        DataSet = dmRelExportacaoMega.frxTPROVDB
+        DataSetName = 'TPPROVDB'
+        RowCount = 0
+        object Memo11: TfrxMemoView
+          Left = 392.071120000000000000
+          Width = 241.889920000000000000
+          Height = 15.118110240000000000
+          DataField = 'CCD_DSC'
+          DataSet = dmRelExportacaoMega.frxTPROVDB
+          DataSetName = 'TPPROVDB'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TPPROVDB."CCD_DSC"]')
+          ParentFont = False
+          WordWrap = False
+        end
+        object Memo19: TfrxMemoView
+          Left = 783.803650000000000000
+          Width = 120.944960000000000000
+          Height = 15.118110240000000000
+          DataField = 'VALOR_TOTAL'
+          DataSet = dmRelExportacaoMega.frxTPROVDB
+          DataSetName = 'TPPROVDB'
+          DisplayFormat.FormatStr = '%2.2n'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TPPROVDB."VALOR_TOTAL"]')
+          ParentFont = False
+        end
+        object Memo22: TfrxMemoView
+          Left = 640.331170000000000000
+          Width = 90.708720000000000000
+          Height = 15.118110240000000000
+          DataField = 'CONTA_DB'
+          DataSet = dmRelExportacaoMega.frxTPROVDB
+          DataSetName = 'TPPROVDB'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TPPROVDB."CONTA_DB"]')
+          ParentFont = False
+        end
+        object Memo24: TfrxMemoView
+          Left = 309.921460000000000000
+          Width = 79.370130000000000000
+          Height = 15.118110240000000000
+          DataField = 'HST_CODIGO'
+          DataSet = dmRelExportacaoMega.frxTPROVDB
+          DataSetName = 'TPPROVDB'
+          DisplayFormat.FormatStr = '%g'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Arial'
+          Font.Style = []
+          HAlign = haCenter
+          Memo.UTF8W = (
+            '[TPPROVDB."HST_CODIGO"]')
+          ParentFont = False
+        end
+        object Memo26: TfrxMemoView
+          Left = 733.228820000000000000
+          Width = 49.133890000000000000
+          Height = 15.118110240000000000
+          DataField = 'COD_RED_DB'
+          DataSet = dmRelExportacaoMega.frxTPROVDB
+          DataSetName = 'TPPROVDB'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Arial'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TPPROVDB."COD_RED_DB"]')
+          ParentFont = False
+        end
+      end
+      object MD_TP_QUITADO: TfrxMasterData
+        FillType = ftBrush
+        Height = 15.118110240000000000
+        Top = 495.118430000000000000
+        Width = 1046.929810000000000000
+        DataSet = dmRelExportacaoMega.frxDBTPQuitados
+        DataSetName = 'TPQUITADOS'
+        RowCount = 0
+        object titulosPGQuitadosDATA_PAGAMENTO: TfrxMemoView
+          Left = -0.220470000000000000
+          Width = 60.472480000000000000
+          Height = 15.118120000000000000
+          DataField = 'DATA_PAGAMENTO'
+          DataSet = dmRelExportacaoMega.frxDBTPQuitados
+          DataSetName = 'TPQUITADOS'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TPQUITADOS."DATA_PAGAMENTO"]')
+          ParentFont = False
+          WordWrap = False
+        end
+        object titulosPGQuitadosNUMERO_DOCUMENTO: TfrxMemoView
+          Left = 63.031540000000000000
+          Width = 75.590600000000000000
+          Height = 15.118120000000000000
+          DataField = 'NUMERO_DOCUMENTO'
+          DataSet = dmRelExportacaoMega.frxDBTPQuitados
+          DataSetName = 'TPQUITADOS'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TPQUITADOS."NUMERO_DOCUMENTO"]')
+          ParentFont = False
+          WordWrap = False
+        end
+        object titulosPGQuitadosDESCRICAO: TfrxMemoView
+          Left = 181.346559210000000000
+          Width = 139.842610000000000000
+          Height = 15.118120000000000000
+          DataField = 'DESCRICAO'
+          DataSet = dmRelExportacaoMega.frxDBTPQuitados
+          DataSetName = 'TPQUITADOS'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TPQUITADOS."DESCRICAO"]')
+          ParentFont = False
+          WordWrap = False
+        end
+        object titulosPGQuitadosTIPO: TfrxMemoView
+          Left = 141.181200000000000000
+          Width = 37.795300000000000000
+          Height = 15.118120000000000000
+          DataField = 'TIPO'
+          DataSet = dmRelExportacaoMega.frxDBTPQuitados
+          DataSetName = 'TPQUITADOS'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TPQUITADOS."TIPO"]')
+          ParentFont = False
+          WordWrap = False
+        end
+        object titulosPGQuitadosPARCELA: TfrxMemoView
+          Left = 588.370440000000000000
+          Width = 49.133890000000000000
+          Height = 15.118120000000000000
+          DataField = 'PARCELA'
+          DataSet = dmRelExportacaoMega.frxDBTPQuitados
+          DataSetName = 'TPQUITADOS'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haCenter
+          Memo.UTF8W = (
+            '[TPQUITADOS."PARCELA"]')
+          ParentFont = False
+          WordWrap = False
+        end
+        object titulosPGQuitadosDESCRICAO_REDUZIDA: TfrxMemoView
+          Left = 455.882190000000000000
+          Width = 120.944960000000000000
+          Height = 18.897650000000000000
+          DataField = 'DESCRICAO_REDUZIDA'
+          DataSet = dmRelExportacaoMega.frxDBTPQuitados
+          DataSetName = 'TPQUITADOS'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TPQUITADOS."DESCRICAO_REDUZIDA"]')
+          ParentFont = False
+          WordWrap = False
+        end
+        object titulosPGQuitadosNOME: TfrxMemoView
+          Left = 323.819110000000000000
+          Width = 132.283550000000000000
+          Height = 15.118120000000000000
+          DataField = 'NOME'
+          DataSet = dmRelExportacaoMega.frxDBTPQuitados
+          DataSetName = 'TPQUITADOS'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TPQUITADOS."NOME"]')
+          ParentFont = False
+          WordWrap = False
+        end
+      end
+      object GroupHeader7: TfrxGroupHeader
+        FillType = ftBrush
+        Height = 22.677165350000000000
+        Top = 423.307360000000000000
+        Width = 1046.929810000000000000
+        Condition = '1=1'
+        StartNewPage = True
+        object Memo9: TfrxMemoView
+          Left = -0.220470000000000000
+          Top = 7.559059999999988000
+          Width = 64.252010000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'PAGTO')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo10: TfrxMemoView
+          Left = 181.346559210000000000
+          Top = 7.559060000000045000
+          Width = 124.724490000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'DESCRI'#199#195'O')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo27: TfrxMemoView
+          Left = 63.031540000000000000
+          Top = 7.559060000000045000
+          Width = 75.590600000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'DOCUMENTO')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo28: TfrxMemoView
+          Left = 141.181200000000000000
+          Top = 7.559060000000045000
+          Width = 37.795300000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'TIPO')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo29: TfrxMemoView
+          Left = 310.480520000000000000
+          Top = 7.559060000000045000
+          Width = 268.346630000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'C'#211'D.HIST.                    DESCRI'#199#195'O CONT'#193'BIL')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo30: TfrxMemoView
+          Left = 640.331170000000000000
+          Top = 7.559059999999988000
+          Width = 90.708720000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            'CONTA  CONT'#193'BIL')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo31: TfrxMemoView
+          Left = 785.024120000000000000
+          Top = 7.559059999999988000
+          Width = 120.944960000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            'D'#201'BITO')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo32: TfrxMemoView
+          Left = 944.882500000000000000
+          Top = 7.559060000000045000
+          Width = 98.267780000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            'CR'#201'DITO')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo33: TfrxMemoView
+          Left = 588.370440000000000000
+          Top = 7.559060000000045000
+          Width = 49.133890000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          HAlign = haCenter
+          Memo.UTF8W = (
+            'PARCELA')
+          ParentFont = False
+        end
+        object Line6: TfrxLineView
+          Left = 0.559060000000000000
+          Top = 3.779530000000022000
+          Width = 1046.929810000000000000
+          Color = clBlack
+          Frame.Typ = [ftTop]
+        end
+        object Memo54: TfrxMemoView
+          Left = 733.228820000000000000
+          Top = 7.559060000000045000
+          Width = 49.133890000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            'CD.REDUZ')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+      end
+      object DT_TPB_BANCO: TfrxDetailData
+        FillType = ftBrush
+        Height = 15.118110240000000000
+        Top = 684.094930000000000000
+        Width = 1046.929810000000000000
+        DataSet = dmRelExportacaoMega.frxTPBBanco
+        DataSetName = 'TPBBanco'
+        RowCount = 0
+        object TPBBancoVALOR: TfrxMemoView
+          Left = 944.882500000000000000
+          Width = 98.267780000000000000
+          Height = 15.118120000000000000
+          DataField = 'VALOR'
+          DataSet = dmRelExportacaoMega.frxTPBBanco
+          DataSetName = 'TPBBanco'
+          DisplayFormat.DecimalSeparator = ','
+          DisplayFormat.FormatStr = '%2.2n'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TPBBanco."VALOR"]')
+          ParentFont = False
+        end
+        object TPBBancoCONTA_CREDITO: TfrxMemoView
+          Left = 640.331170000000000000
+          Width = 90.708720000000000000
+          Height = 11.338590000000000000
+          DataField = 'CONTA_CR'
+          DataSet = dmRelExportacaoMega.frxTPBBanco
+          DataSetName = 'TPBBanco'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TPBBanco."CONTA_CR"]')
+          ParentFont = False
+        end
+        object TPBBancoDSC_CC: TfrxMemoView
+          Left = 323.819110000000000000
+          Width = 309.921460000000000000
+          Height = 11.338590000000000000
+          DataField = 'DSC_CONTA_CR'
+          DataSet = dmRelExportacaoMega.frxTPBBanco
+          DataSetName = 'TPBBanco'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TPBBanco."DSC_CONTA_CR"]')
+          ParentFont = False
+        end
+        object Memo42: TfrxMemoView
+          Left = 733.228820000000000000
+          Width = 49.133890000000000000
+          Height = 11.338590000000000000
+          DataField = 'COD_RED_CR'
+          DataSet = dmRelExportacaoMega.frxTPBBanco
+          DataSetName = 'TPBBanco'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Arial'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TPBBanco."COD_RED_CR"]')
+          ParentFont = False
+        end
+      end
+      object DT_TPB_CAIXA: TfrxDetailData
+        FillType = ftBrush
+        Height = 15.118110240000000000
+        Top = 646.299630000000000000
+        Width = 1046.929810000000000000
+        DataSet = dmRelExportacaoMega.frxDBTPBCaixa
+        DataSetName = 'TPBCaixa'
+        RowCount = 0
+        object TPBCaixaVALOR_NOMINAL: TfrxMemoView
+          Left = 944.882500000000000000
+          Top = 2.779530000000022000
+          Width = 98.267780000000000000
+          Height = 11.338590000000000000
+          DataField = 'VALOR'
+          DataSet = dmRelExportacaoMega.frxDBTPBCaixa
+          DataSetName = 'TPBCaixa'
+          DisplayFormat.DecimalSeparator = ','
+          DisplayFormat.FormatStr = '%2.2n'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TPBCaixa."VALOR"]')
+          ParentFont = False
+        end
+        object TPBCaixaCONTA_CREDITO: TfrxMemoView
+          Left = 640.331170000000000000
+          Top = 2.779530000000022000
+          Width = 90.708720000000000000
+          Height = 11.338590000000000000
+          DataField = 'CONTA_CREDITO'
+          DataSet = dmRelExportacaoMega.frxDBTPBCaixa
+          DataSetName = 'TPBCaixa'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TPBCaixa."CONTA_CREDITO"]')
+          ParentFont = False
+        end
+        object TPBCaixaDSC_CC: TfrxMemoView
+          Left = 323.819110000000000000
+          Top = 2.779530000000022000
+          Width = 309.921460000000000000
+          Height = 11.338590000000000000
+          DataField = 'DSC_CC'
+          DataSet = dmRelExportacaoMega.frxDBTPBCaixa
+          DataSetName = 'TPBCaixa'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TPBCaixa."DSC_CC"]')
+          ParentFont = False
+          WordWrap = False
+        end
+        object Memo40: TfrxMemoView
+          Left = 733.228820000000000000
+          Top = 2.779530000000022000
+          Width = 49.133890000000000000
+          Height = 11.338590000000000000
+          DataField = 'CODREDUZ'
+          DataSet = dmRelExportacaoMega.frxDBTPBCaixa
+          DataSetName = 'TPBCaixa'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Arial'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TPBCaixa."CODREDUZ"]')
+          ParentFont = False
+        end
+        object Memo47: TfrxMemoView
+          Left = 243.889920000000000000
+          Top = 2.779530000000022000
+          Width = 79.370130000000000000
+          Height = 11.338590000000000000
+          DataField = 'HST_COD'
+          DataSet = dmRelExportacaoMega.frxDBTPBCaixa
+          DataSetName = 'TPBCaixa'
+          DisplayFormat.FormatStr = '%g'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TPBCaixa."HST_COD"]')
+          ParentFont = False
+          WordWrap = False
+        end
+      end
+      object GroupHeader9: TfrxGroupHeader
+        FillType = ftBrush
+        Height = 1.779530000000000000
+        Top = 468.661720000000000000
+        Width = 1046.929810000000000000
+        Condition = 'TPQUITADOS."ID_TITULO_PAGAR"'
+        object Line5: TfrxLineView
+          Top = 1.779530000000022000
+          Width = 1046.929810000000000000
+          Color = clBlack
+          Frame.Typ = [ftTop]
+        end
+      end
+      object DT_TPB_HIST: TfrxDetailData
+        FillType = ftBrush
+        Height = 15.118110240000000000
+        Top = 532.913730000000000000
+        Width = 1046.929810000000000000
+        DataSet = dmRelExportacaoMega.frxTPBHistorico
+        DataSetName = 'TPBHistorico'
+        RowCount = 0
+        object Memo34: TfrxMemoView
+          Left = 323.819110000000000000
+          Width = 309.921460000000000000
+          Height = 11.338590000000000000
+          DataField = 'HST_DSC'
+          DataSet = dmRelExportacaoMega.frxTPBHistorico
+          DataSetName = 'TPBHistorico'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TPBHistorico."HST_DSC"]')
+          ParentFont = False
+          WordWrap = False
+        end
+        object Memo35: TfrxMemoView
+          Left = 783.803650000000000000
+          Width = 120.944960000000000000
+          Height = 15.118120000000000000
+          DataField = 'VALOR'
+          DataSet = dmRelExportacaoMega.frxTPBHistorico
+          DataSetName = 'TPBHistorico'
+          DisplayFormat.DecimalSeparator = ','
+          DisplayFormat.FormatStr = '%2.2n'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TPBHistorico."VALOR"]')
+          ParentFont = False
+        end
+        object Memo37: TfrxMemoView
+          Left = 243.889920000000000000
+          Width = 79.370130000000000000
+          Height = 11.338590000000000000
+          DataField = 'HST_COD'
+          DataSet = dmRelExportacaoMega.frxTPBHistorico
+          DataSetName = 'TPBHistorico'
+          DisplayFormat.FormatStr = '%g'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TPBHistorico."HST_COD"]')
+          ParentFont = False
+        end
+        object Memo45: TfrxMemoView
+          Left = 640.331170000000000000
+          Width = 90.708720000000000000
+          Height = 15.118120000000000000
+          DataField = 'CONTA_DB'
+          DataSet = dmRelExportacaoMega.frxTPBHistorico
+          DataSetName = 'TPBHistorico'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TPBHistorico."CONTA_DB"]')
+          ParentFont = False
+        end
+        object Memo46: TfrxMemoView
+          Left = 733.228820000000000000
+          Width = 49.133890000000000000
+          Height = 15.118120000000000000
+          DataField = 'COD_RED_DB'
+          DataSet = dmRelExportacaoMega.frxTPBHistorico
+          DataSetName = 'TPBHistorico'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TPBHistorico."COD_RED_DB"]')
+          ParentFont = False
+        end
+      end
+      object DT_TPB_DE: TfrxDetailData
+        FillType = ftBrush
+        Height = 15.118110240000000000
+        Top = 608.504330000000000000
+        Width = 1046.929810000000000000
+        DataSet = dmRelExportacaoMega.frxTPBDeducao
+        DataSetName = 'TPBDeducao'
+        RowCount = 0
+        object tpbDeducaoVALOR: TfrxMemoView
+          Left = 944.882500000000000000
+          Width = 98.267780000000000000
+          Height = 15.118120000000000000
+          DataField = 'VALOR'
+          DataSet = dmRelExportacaoMega.frxTPBDeducao
+          DataSetName = 'TPBDeducao'
+          DisplayFormat.DecimalSeparator = ','
+          DisplayFormat.FormatStr = '%2.2n'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TPBDeducao."VALOR"]')
+          ParentFont = False
+        end
+        object tpbDeducaoCONTA: TfrxMemoView
+          Left = 640.331170000000000000
+          Width = 90.708720000000000000
+          Height = 11.338590000000000000
+          DataField = 'CONTA'
+          DataSet = dmRelExportacaoMega.frxTPBDeducao
+          DataSetName = 'TPBDeducao'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TPBDeducao."CONTA"]')
+          ParentFont = False
+        end
+        object tpbDeducaoCODREDUZ: TfrxMemoView
+          Left = 733.228820000000000000
+          Width = 49.133890000000000000
+          Height = 11.338590000000000000
+          DataField = 'CODREDUZ'
+          DataSet = dmRelExportacaoMega.frxTPBDeducao
+          DataSetName = 'TPBDeducao'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TPBDeducao."CODREDUZ"]')
+          ParentFont = False
+        end
+        object tpbDeducaoDSC_HIST: TfrxMemoView
+          Left = 323.819110000000000000
+          Width = 309.921460000000000000
+          Height = 11.338590000000000000
+          DataField = 'DSC_HIST'
+          DataSet = dmRelExportacaoMega.frxTPBDeducao
+          DataSetName = 'TPBDeducao'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TPBDeducao."DSC_HIST"]')
+          ParentFont = False
+          WordWrap = False
+        end
+        object tpbDeducaoCODIGO: TfrxMemoView
+          Left = 243.889920000000000000
+          Width = 79.370130000000000000
+          Height = 11.338590000000000000
+          DataField = 'CODIGO'
+          DataSet = dmRelExportacaoMega.frxTPBDeducao
+          DataSetName = 'TPBDeducao'
+          DisplayFormat.FormatStr = '%g'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TPBDeducao."CODIGO"]')
+          ParentFont = False
+        end
+      end
+      object DT_TPB_AC: TfrxDetailData
+        FillType = ftBrush
+        Height = 15.118110240000000000
+        Top = 570.709030000000000000
+        Width = 1046.929810000000000000
+        DataSet = dmRelExportacaoMega.frxTPBAcrescimo
+        DataSetName = 'TPBAcrescimo'
+        RowCount = 0
+        object Memo55: TfrxMemoView
+          Left = 783.803650000000000000
+          Width = 120.944960000000000000
+          Height = 15.118120000000000000
+          DataField = 'VALOR'
+          DataSet = dmRelExportacaoMega.frxTPBAcrescimo
+          DataSetName = 'TPBAcrescimo'
+          DisplayFormat.DecimalSeparator = ','
+          DisplayFormat.FormatStr = '%2.2n'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TPBAcrescimo."VALOR"]')
+          ParentFont = False
+        end
+        object Memo56: TfrxMemoView
+          Left = 640.331170000000000000
+          Width = 90.708720000000000000
+          Height = 11.338590000000000000
+          DataField = 'CONTA'
+          DataSet = dmRelExportacaoMega.frxTPBAcrescimo
+          DataSetName = 'TPBAcrescimo'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TPBAcrescimo."CONTA"]')
+          ParentFont = False
+        end
+        object Memo57: TfrxMemoView
+          Left = 733.228820000000000000
+          Width = 49.133890000000000000
+          Height = 11.338590000000000000
+          DataField = 'CODREDUZ'
+          DataSet = dmRelExportacaoMega.frxTPBAcrescimo
+          DataSetName = 'TPBAcrescimo'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Arial'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TPBAcrescimo."CODREDUZ"]')
+          ParentFont = False
+        end
+        object Memo58: TfrxMemoView
+          Left = 323.819110000000000000
+          Width = 309.921460000000000000
+          Height = 11.338590000000000000
+          DataField = 'DSC_HIST'
+          DataSet = dmRelExportacaoMega.frxTPBAcrescimo
+          DataSetName = 'TPBAcrescimo'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TPBAcrescimo."DSC_HIST"]')
+          ParentFont = False
+          WordWrap = False
+        end
+        object Memo59: TfrxMemoView
+          Left = 243.889920000000000000
+          Width = 79.370130000000000000
+          Height = 11.338590000000000000
+          DataField = 'CODIGO'
+          DataSet = dmRelExportacaoMega.frxTPBAcrescimo
+          DataSetName = 'TPBAcrescimo'
+          DisplayFormat.FormatStr = '%g'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TPBAcrescimo."CODIGO"]')
+          ParentFont = False
+        end
+      end
+      object DT_TPB_CHEQUE: TfrxDetailData
+        FillType = ftBrush
+        Height = 15.118110240000000000
+        Top = 721.890230000000000000
+        Width = 1046.929810000000000000
+        DataSet = dmRelExportacaoMega.frxTPBCheque
+        DataSetName = 'TPBCheque'
+        RowCount = 0
+        object Memo68: TfrxMemoView
+          Left = 944.882500000000000000
+          Width = 98.267780000000000000
+          Height = 15.118120000000000000
+          DataField = 'VALOR'
+          DataSet = dmRelExportacaoMega.frxTPBCheque
+          DataSetName = 'TPBCheque'
+          DisplayFormat.DecimalSeparator = ','
+          DisplayFormat.FormatStr = '%2.2n'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TPBCheque."VALOR"]')
+          ParentFont = False
+        end
+        object Memo69: TfrxMemoView
+          Left = 733.228820000000000000
+          Width = 49.133890000000000000
+          Height = 11.338590000000000000
+          DataField = 'COD_REDUZ_CREDITO'
+          DataSet = dmRelExportacaoMega.frxTPBCheque
+          DataSetName = 'TPBCheque'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Arial'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TPBCheque."COD_REDUZ_CREDITO"]')
+          ParentFont = False
+        end
+        object Memo71: TfrxMemoView
+          Left = 640.331170000000000000
+          Width = 90.708720000000000000
+          Height = 11.338590000000000000
+          DataField = 'CONTA_CONTABIL_CREDITO'
+          DataSet = dmRelExportacaoMega.frxTPBCheque
+          DataSetName = 'TPBCheque'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TPBCheque."CONTA_CONTABIL_CREDITO"]')
+          ParentFont = False
+        end
+        object Memo90: TfrxMemoView
+          Left = 323.819110000000000000
+          Width = 309.921460000000000000
+          Height = 11.338590000000000000
+          DataField = 'DSC_CC_CREDITO'
+          DataSet = dmRelExportacaoMega.frxTPBCheque
+          DataSetName = 'TPBCheque'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TPBCheque."DSC_CC_CREDITO"]')
+          ParentFont = False
+        end
+      end
+      object GroupFooter5: TfrxGroupFooter
+        FillType = ftBrush
+        Height = 26.456692913385800000
+        Top = 759.685530000000000000
+        Width = 1046.929810000000000000
+        object Line24: TfrxLineView
+          Left = 816.378626460000000000
+          Width = 226.771653540000000000
+          Color = clBlue
+          ArrowSolid = True
+          Frame.Style = fsDot
+          Frame.Typ = [ftTop]
+        end
+        object SysMemo5: TfrxSysMemoView
+          Left = 783.803650000000000000
+          Top = 2.559060000000045000
+          Width = 120.944960000000000000
+          Height = 15.118110240000000000
+          DisplayFormat.FormatStr = '%2.2n'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            
+              '[SUM(<TPBHistorico."VALOR">,DT_TPB_HIST)+SUM(<TPBAcrescimo."VALO' +
+              'R">,DT_TPB_AC)]')
+          ParentFont = False
+        end
+        object SysMemo6: TfrxSysMemoView
+          Left = 922.205320000000000000
+          Top = 2.559060000000045000
+          Width = 120.944960000000000000
+          Height = 15.118110240000000000
+          DisplayFormat.FormatStr = '%2.2n'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            
+              '[SUM(<TPBDeducao."VALOR">,DT_TPB_DE)+ SUM(<TPBCaixa."VALOR">,DT_' +
+              'TPB_CAIXA)+ SUM(<TPBBanco."VALOR">,DT_TPB_BANCO)+SUM(<TPBCheque.' +
+              '"VALOR">,DT_TPB_CHEQUE)]')
+          ParentFont = False
+        end
+      end
+      object PageFooter1: TfrxPageFooter
+        FillType = ftBrush
+        Height = 22.677180000000000000
+        Top = 2161.891160000000000000
+        Width = 1046.929810000000000000
+        object Memo36: TfrxMemoView
+          Left = -0.661410000000000000
+          Top = 1.779529999999795000
+          Width = 287.244280000000000000
+          Height = 18.897650000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'Pempec Enterprise Finance')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Date: TfrxMemoView
+          Left = 933.528140000000000000
+          Top = 1.779529999999795000
+          Width = 56.692950000000000000
+          Height = 18.897650000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[Date]')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo79: TfrxMemoView
+          Left = 860.512370000000000000
+          Top = 1.779529999999795000
+          Width = 71.811070000000000000
+          Height = 18.897650000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            'Emitido em:  ')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Time: TfrxMemoView
+          Left = 994.016390000000000000
+          Top = 1.779529999999795000
+          Width = 49.133890000000000000
+          Height = 18.897650000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[Time]')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+      end
+      object GroupHeader6: TfrxGroupHeader
+        FillType = ftBrush
+        Height = 22.677180000000000000
+        Top = 808.819420000000000000
+        Width = 1046.929810000000000000
+        Condition = '1=1'
+        StartNewPage = True
+        object Memo43: TfrxMemoView
+          Left = -0.220470000000000000
+          Top = 7.559059999999931000
+          Width = 64.252010000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'EMISS'#195'O')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo44: TfrxMemoView
+          Left = 181.346559210000000000
+          Top = 7.559059999999931000
+          Width = 124.724490000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'DESCRI'#199#195'O')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo38: TfrxMemoView
+          Left = 63.031540000000000000
+          Top = 7.559060000000045000
+          Width = 75.590600000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'DOCUMENTO')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo39: TfrxMemoView
+          Left = 141.181200000000000000
+          Top = 7.559059999999931000
+          Width = 37.795300000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'TIPO')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo48: TfrxMemoView
+          Left = 310.480520000000000000
+          Top = 7.559059999999931000
+          Width = 268.346630000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'C'#211'D.HIST.                    DESCRI'#199#195'O CONT'#193'BIL')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo49: TfrxMemoView
+          Left = 640.331170000000000000
+          Top = 7.559060000000045000
+          Width = 90.708720000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            'CONTA  CONT'#193'BIL')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo50: TfrxMemoView
+          Left = 785.024120000000000000
+          Top = 7.559059999999931000
+          Width = 120.944960000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            'D'#201'BITO')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo51: TfrxMemoView
+          Left = 944.882500000000000000
+          Top = 7.559059999999931000
+          Width = 98.267780000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            'CR'#201'DITO')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo53: TfrxMemoView
+          Left = 588.370440000000000000
+          Top = 7.559059999999931000
+          Width = 49.133890000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          HAlign = haCenter
+          Memo.UTF8W = (
+            'PARCELA')
+          ParentFont = False
+        end
+        object Line3: TfrxLineView
+          Left = -0.220470000000000000
+          Top = 3.779530000000136000
+          Width = 1046.929810000000000000
+          Color = clBlack
+          Frame.Typ = [ftTop]
+        end
+        object Memo60: TfrxMemoView
+          Left = 733.228820000000000000
+          Top = 7.559060000000045000
+          Width = 49.133890000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            'CD.REDUZ')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+      end
+      object GF_TR_PROV: TfrxGroupFooter
+        FillType = ftBrush
+        Height = 26.456692910000000000
+        Top = 994.016390000000000000
+        Width = 1046.929810000000000000
+        object Line8: TfrxLineView
+          Left = 789.921770000000000000
+          Width = 253.228510000000000000
+          Color = clBlack
+          Frame.Style = fsDot
+          Frame.Typ = [ftTop]
+        end
+        object SysMemo7: TfrxSysMemoView
+          Left = 783.803650000000000000
+          Top = 1.559060000000045000
+          Width = 120.944960000000000000
+          Height = 15.118110240000000000
+          DisplayFormat.FormatStr = '%2.2n'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[SUM(<TRPROVDB."VALOR">,DT_TR_PROV_DB)]')
+          ParentFont = False
+        end
+        object SysMemo8: TfrxSysMemoView
+          Left = 922.205320000000000000
+          Top = 1.559060000000045000
+          Width = 120.944960000000000000
+          Height = 15.118110240000000000
+          DisplayFormat.FormatStr = '%2.2n'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[SUM(<TRPROVCR."VALOR">,DT_TR_PROV_CR)]')
+          ParentFont = False
+        end
+      end
+      object MT_TR_PROV: TfrxMasterData
+        FillType = ftBrush
+        Height = 15.118110240000000000
+        Top = 880.630490000000000000
+        Width = 1046.929810000000000000
+        DataSet = dmRelExportacaoMega.frxDBTRProv
+        DataSetName = 'TRPROVBASE'
+        RowCount = 0
+        object Memo75: TfrxMemoView
+          Left = 63.031540000000000000
+          Width = 75.590600000000000000
+          Height = 15.118110240000000000
+          DataField = 'NUMERO_DOCUMENTO'
+          DataSet = dmRelExportacaoMega.frxDBTRProv
+          DataSetName = 'TRPROVBASE'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TRPROVBASE."NUMERO_DOCUMENTO"]')
+          ParentFont = False
+        end
+        object Memo185: TfrxMemoView
+          Left = -0.220470000000000000
+          Width = 60.472480000000000000
+          Height = 15.118110240000000000
+          DataField = 'DATA_EMISSAO'
+          DataSet = dmRelExportacaoMega.frxDBTRProv
+          DataSetName = 'TRPROVBASE'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TRPROVBASE."DATA_EMISSAO"]')
+          ParentFont = False
+        end
+        object Memo186: TfrxMemoView
+          Left = 196.464679210000000000
+          Width = 124.724490000000000000
+          Height = 15.118110240000000000
+          DataField = 'DESCRICAO'
+          DataSet = dmRelExportacaoMega.frxDBTRProv
+          DataSetName = 'TRPROVBASE'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TRPROVBASE."DESCRICAO"]')
+          ParentFont = False
+          WordWrap = False
+        end
+        object Memo187: TfrxMemoView
+          Left = 588.370440000000000000
+          Width = 49.133890000000000000
+          Height = 15.118110240000000000
+          DataField = 'PARCELA'
+          DataSet = dmRelExportacaoMega.frxDBTRProv
+          DataSetName = 'TRPROVBASE'
+          DisplayFormat.FormatStr = '%g'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Arial'
+          Font.Style = []
+          HAlign = haCenter
+          Memo.UTF8W = (
+            '[TRPROVBASE."PARCELA"]')
+          ParentFont = False
+        end
+        object Memo188: TfrxMemoView
+          Left = 141.181200000000000000
+          Width = 37.795300000000000000
+          Height = 15.118110240000000000
+          DataField = 'TIPO'
+          DataSet = dmRelExportacaoMega.frxDBTRProv
+          DataSetName = 'TRPROVBASE'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Arial'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TRPROVBASE."TIPO"]')
+          ParentFont = False
+        end
+        object Memo189: TfrxMemoView
+          Left = 323.819110000000000000
+          Width = 268.346630000000000000
+          Height = 15.118110240000000000
+          DataField = 'CLIENTE'
+          DataSet = dmRelExportacaoMega.frxDBTRProv
+          DataSetName = 'TRPROVBASE'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TRPROVBASE."CLIENTE"]')
+          ParentFont = False
+          WordWrap = False
+        end
+      end
+      object GroupHeader34: TfrxGroupHeader
+        FillType = ftBrush
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlack
+        Font.Height = -27
+        Font.Name = 'Arial'
+        Font.Style = []
+        Height = 3.779527559055120000
+        ParentFont = False
+        Top = 854.173780000000000000
+        Width = 1046.929810000000000000
+        Condition = 'TRPROVBASE."ID_TITULO_RECEBER"'
+        object Line4: TfrxLineView
+          Top = 3.220469999999978000
+          Width = 1043.150280000000000000
+          Color = clBlack
+          Frame.Typ = [ftTop]
+        end
+      end
+      object DT_TR_PROV_CR: TfrxDetailData
+        FillType = ftBrush
+        Height = 15.118110240000000000
+        Top = 956.221090000000000000
+        Width = 1046.929810000000000000
+        DataSet = dmRelExportacaoMega.frxTRPROVCR
+        DataSetName = 'TRPROVCR'
+        RowCount = 0
+        object Memo61: TfrxMemoView
+          Left = 392.630180000000000000
+          Width = 241.889920000000000000
+          Height = 15.118110240000000000
+          DataField = 'CCD_DSC'
+          DataSet = dmRelExportacaoMega.frxTRPROVCR
+          DataSetName = 'TRPROVCR'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TRPROVCR."CCD_DSC"]')
+          ParentFont = False
+          WordWrap = False
+        end
+        object Memo62: TfrxMemoView
+          Left = 922.205320000000000000
+          Width = 120.944960000000000000
+          Height = 15.118110240000000000
+          DataField = 'VALOR'
+          DataSet = dmRelExportacaoMega.frxTRPROVCR
+          DataSetName = 'TRPROVCR'
+          DisplayFormat.FormatStr = '%2.2n'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TRPROVCR."VALOR"]')
+          ParentFont = False
+        end
+        object Memo63: TfrxMemoView
+          Left = 640.331170000000000000
+          Width = 90.708720000000000000
+          Height = 15.118110240000000000
+          DataField = 'CONTA_DB'
+          DataSet = dmRelExportacaoMega.frxTRPROVCR
+          DataSetName = 'TRPROVCR'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TRPROVCR."CONTA_DB"]')
+          ParentFont = False
+        end
+        object Memo64: TfrxMemoView
+          Left = 310.480520000000000000
+          Width = 79.370130000000000000
+          Height = 15.118110240000000000
+          DataField = 'HST_CODIGO'
+          DataSet = dmRelExportacaoMega.frxTRPROVCR
+          DataSetName = 'TRPROVCR'
+          DisplayFormat.FormatStr = '%g'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Arial'
+          Font.Style = []
+          HAlign = haCenter
+          Memo.UTF8W = (
+            '[TRPROVCR."HST_CODIGO"]')
+          ParentFont = False
+        end
+        object Memo65: TfrxMemoView
+          Left = 733.228820000000000000
+          Width = 49.133890000000000000
+          Height = 15.118110240000000000
+          DataField = 'COD_RED_DB'
+          DataSet = dmRelExportacaoMega.frxTRPROVCR
+          DataSetName = 'TRPROVCR'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Arial'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TRPROVCR."COD_RED_DB"]')
+          ParentFont = False
+        end
+      end
+      object DT_TR_PROV_DB: TfrxDetailData
+        FillType = ftBrush
+        Height = 15.118110240000000000
+        Top = 918.425790000000000000
+        Width = 1046.929810000000000000
+        DataSet = dmRelExportacaoMega.frxTRPROVDB
+        DataSetName = 'TRPROVDB'
+        RowCount = 0
+        object Memo66: TfrxMemoView
+          Left = 392.071120000000000000
+          Width = 241.889920000000000000
+          Height = 15.118110240000000000
+          DataField = 'CCC_DSC'
+          DataSet = dmRelExportacaoMega.frxTRPROVDB
+          DataSetName = 'TRPROVDB'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TRPROVDB."CCC_DSC"]')
+          ParentFont = False
+          WordWrap = False
+        end
+        object Memo67: TfrxMemoView
+          Left = 783.803650000000000000
+          Width = 120.944960000000000000
+          Height = 15.118110240000000000
+          DataField = 'VALOR'
+          DataSet = dmRelExportacaoMega.frxTRPROVDB
+          DataSetName = 'TRPROVDB'
+          DisplayFormat.FormatStr = '%2.2n'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TRPROVDB."VALOR"]')
+          ParentFont = False
+        end
+        object Memo70: TfrxMemoView
+          Left = 640.331170000000000000
+          Width = 90.708720000000000000
+          Height = 15.118110240000000000
+          DataField = 'CONTA_CR'
+          DataSet = dmRelExportacaoMega.frxTRPROVDB
+          DataSetName = 'TRPROVDB'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TRPROVDB."CONTA_CR"]')
+          ParentFont = False
+        end
+        object Memo72: TfrxMemoView
+          Left = 309.921460000000000000
+          Width = 79.370130000000000000
+          Height = 15.118110240000000000
+          DataField = 'COD_HIST'
+          DataSet = dmRelExportacaoMega.frxTRPROVDB
+          DataSetName = 'TRPROVDB'
+          DisplayFormat.FormatStr = '%g'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Arial'
+          Font.Style = []
+          HAlign = haCenter
+          Memo.UTF8W = (
+            '[TRPROVDB."COD_HIST"]')
+          ParentFont = False
+        end
+        object Memo73: TfrxMemoView
+          Left = 733.228820000000000000
+          Width = 49.133890000000000000
+          Height = 15.118110240000000000
+          DataField = 'COD_RED_CR'
+          DataSet = dmRelExportacaoMega.frxTRPROVDB
+          DataSetName = 'TRPROVDB'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Arial'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TRPROVDB."COD_RED_CR"]')
+          ParentFont = False
+        end
+      end
+      object GroupHeader14: TfrxGroupHeader
+        FillType = ftBrush
+        Height = 1.889763780000000000
+        Top = 1088.504640000000000000
+        Width = 1046.929810000000000000
+        Condition = 'TRQUITADOS."ID_TITULO_RECEBER"'
+        object Line9: TfrxLineView
+          Top = 0.220469999999977500
+          Width = 1050.709340000000000000
+          Color = clBlack
+          Frame.Typ = [ftTop]
+        end
+      end
+      object MD_TR_QUITADO: TfrxMasterData
+        FillType = ftBrush
+        Height = 15.118110240000000000
+        Top = 1114.961350000000000000
+        Width = 1046.929810000000000000
+        DataSet = dmRelExportacaoMega.frxDBTRQuitados
+        DataSetName = 'TRQUITADOS'
+        RowCount = 0
+        object Memo80: TfrxMemoView
+          Left = -0.220470000000000000
+          Width = 64.252010000000000000
+          Height = 11.338590000000000000
+          DataField = 'DATA_PAGAMENTO'
+          DataSet = dmRelExportacaoMega.frxDBTRQuitados
+          DataSetName = 'TRQUITADOS'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TRQUITADOS."DATA_PAGAMENTO"]')
+          ParentFont = False
+        end
+        object Memo81: TfrxMemoView
+          Left = 63.031540000000000000
+          Width = 75.590600000000000000
+          Height = 11.338590000000000000
+          DataField = 'NUMERO_DOCUMENTO'
+          DataSet = dmRelExportacaoMega.frxDBTRQuitados
+          DataSetName = 'TRQUITADOS'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TRQUITADOS."NUMERO_DOCUMENTO"]')
+          ParentFont = False
+        end
+        object Memo82: TfrxMemoView
+          Left = 141.181200000000000000
+          Width = 37.795300000000000000
+          Height = 11.338590000000000000
+          DataField = 'TIPO'
+          DataSet = dmRelExportacaoMega.frxDBTRQuitados
+          DataSetName = 'TRQUITADOS'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TRQUITADOS."TIPO"]')
+          ParentFont = False
+        end
+        object Memo83: TfrxMemoView
+          Left = 181.346559210000000000
+          Width = 139.842610000000000000
+          Height = 11.338590000000000000
+          DataField = 'DESCRICAO'
+          DataSet = dmRelExportacaoMega.frxDBTRQuitados
+          DataSetName = 'TRQUITADOS'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TRQUITADOS."DESCRICAO"]')
+          ParentFont = False
+          WordWrap = False
+        end
+        object Memo84: TfrxMemoView
+          Left = 323.819110000000000000
+          Width = 132.283550000000000000
+          Height = 11.338590000000000000
+          DataField = 'NOME'
+          DataSet = dmRelExportacaoMega.frxDBTRQuitados
+          DataSetName = 'TRQUITADOS'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TRQUITADOS."NOME"]')
+          ParentFont = False
+          WordWrap = False
+        end
+        object Memo85: TfrxMemoView
+          Left = 455.882190000000000000
+          Width = 120.944960000000000000
+          Height = 11.338590000000000000
+          DataField = 'DESCRICAO_REDUZIDA'
+          DataSet = dmRelExportacaoMega.frxDBTRQuitados
+          DataSetName = 'TRQUITADOS'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TRQUITADOS."DESCRICAO_REDUZIDA"]')
+          ParentFont = False
+        end
+        object Memo86: TfrxMemoView
+          Left = 587.149970000000000000
+          Width = 49.133890000000000000
+          Height = 15.118120000000000000
+          DataField = 'PARCELA'
+          DataSet = dmRelExportacaoMega.frxDBTRQuitados
+          DataSetName = 'TRQUITADOS'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haCenter
+          Memo.UTF8W = (
+            '[TRQUITADOS."PARCELA"]')
+          ParentFont = False
+        end
+      end
+      object GroupHeader16: TfrxGroupHeader
+        FillType = ftBrush
+        Height = 22.677180000000000000
+        Top = 1043.150280000000000000
+        Width = 1046.929810000000000000
+        Condition = '1=1'
+        StartNewPage = True
+        object Line10: TfrxLineView
+          Top = 3.779529999999795000
+          Width = 1046.929810000000000000
+          Color = clBlack
+          Frame.Typ = [ftTop]
+        end
+        object Memo89: TfrxMemoView
+          Left = -0.220470000000000000
+          Top = 7.559060000000045000
+          Width = 64.252010000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'REBTO')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo91: TfrxMemoView
+          Left = 181.346559210000000000
+          Top = 7.559060000000045000
+          Width = 124.724490000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'DESCRI'#199#195'O')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo92: TfrxMemoView
+          Left = 63.031540000000000000
+          Top = 7.559060000000045000
+          Width = 75.590600000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'DOCUMENTO')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo93: TfrxMemoView
+          Left = 141.181200000000000000
+          Top = 7.559060000000045000
+          Width = 37.795300000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'TIPO')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo94: TfrxMemoView
+          Left = 640.331170000000000000
+          Top = 7.559060000000045000
+          Width = 90.708720000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            'CONTA  CONT'#193'BIL')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo95: TfrxMemoView
+          Left = 785.024120000000000000
+          Top = 7.559060000000045000
+          Width = 120.944960000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            'D'#201'BITO')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo96: TfrxMemoView
+          Left = 946.102970000000000000
+          Top = 7.559060000000045000
+          Width = 98.267780000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            'CR'#201'DITO')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo97: TfrxMemoView
+          Left = 588.370440000000000000
+          Top = 7.559060000000045000
+          Width = 49.133890000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          HAlign = haCenter
+          Memo.UTF8W = (
+            'PARCELA')
+          ParentFont = False
+        end
+        object Line11: TfrxLineView
+          Left = 0.559060000000000000
+          Top = 3.779530000000022000
+          Width = 1046.929810000000000000
+          Color = clBlack
+          Frame.Typ = [ftTop]
+        end
+        object Memo98: TfrxMemoView
+          Left = 733.228820000000000000
+          Top = 7.559060000000045000
+          Width = 49.133890000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            'CD.REDUZ')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo99: TfrxMemoView
+          Left = 310.480520000000000000
+          Top = 7.559060000000045000
+          Width = 268.346630000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'C'#211'D.HIST.                    DESCRI'#199#195'O CONT'#193'BIL')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+      end
+      object DT_TRB_CAIXA: TfrxDetailData
+        FillType = ftBrush
+        Height = 15.118110240000000000
+        Top = 1190.551950000000000000
+        Width = 1046.929810000000000000
+        DataSet = dmRelExportacaoMega.frxDBTRBCaixa
+        DataSetName = 'TRBCaixa'
+        RowCount = 0
+        object Memo100: TfrxMemoView
+          Left = 807.701300000000000000
+          Width = 98.267780000000000000
+          Height = 15.118120000000000000
+          DataField = 'VALOR'
+          DataSet = dmRelExportacaoMega.frxDBTRBCaixa
+          DataSetName = 'TRBCaixa'
+          DisplayFormat.DecimalSeparator = ','
+          DisplayFormat.FormatStr = '%2.2n'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TRBCaixa."VALOR"]')
+          ParentFont = False
+        end
+        object Memo101: TfrxMemoView
+          Left = 640.331170000000000000
+          Width = 90.708720000000000000
+          Height = 11.338590000000000000
+          DataField = 'CONTA_DB'
+          DataSet = dmRelExportacaoMega.frxDBTRBCaixa
+          DataSetName = 'TRBCaixa'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TRBCaixa."CONTA_DB"]')
+          ParentFont = False
+        end
+        object Memo102: TfrxMemoView
+          Left = 733.228820000000000000
+          Width = 49.133890000000000000
+          Height = 11.338590000000000000
+          DataField = 'COD_RED_DB'
+          DataSet = dmRelExportacaoMega.frxDBTRBCaixa
+          DataSetName = 'TRBCaixa'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TRBCaixa."COD_RED_DB"]')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo103: TfrxMemoView
+          Left = 391.850650000000000000
+          Width = 188.976500000000000000
+          Height = 11.338590000000000000
+          DataField = 'CTA_DB__DSC'
+          DataSet = dmRelExportacaoMega.frxDBTRBCaixa
+          DataSetName = 'TRBCaixa'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TRBCaixa."CTA_DB__DSC"]')
+          ParentFont = False
+          WordWrap = False
+        end
+        object Memo130: TfrxMemoView
+          Left = 317.480520000000000000
+          Width = 45.354360000000000000
+          Height = 11.338590000000000000
+          DataField = 'HIST_COD'
+          DataSet = dmRelExportacaoMega.frxDBTRBCaixa
+          DataSetName = 'TRBCaixa'
+          DisplayFormat.FormatStr = '%g'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haCenter
+          Memo.UTF8W = (
+            '[TRBCaixa."HIST_COD"]')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+      end
+      object DT_TRB_BANCO: TfrxDetailData
+        FillType = ftBrush
+        Height = 15.118110240000000000
+        Top = 1266.142550000000000000
+        Width = 1046.929810000000000000
+        DataSet = dmRelExportacaoMega.frxDBTRQuitadoBanco
+        DataSetName = 'TRBBanco'
+        RowCount = 0
+        object Memo105: TfrxMemoView
+          Left = 807.701300000000000000
+          Width = 98.267780000000000000
+          Height = 15.118120000000000000
+          DataField = 'VALOR'
+          DataSet = dmRelExportacaoMega.frxDBTRQuitadoBanco
+          DataSetName = 'TRBBanco'
+          DisplayFormat.DecimalSeparator = ','
+          DisplayFormat.FormatStr = '%2.2n'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TRBBanco."VALOR"]')
+          ParentFont = False
+        end
+        object Memo106: TfrxMemoView
+          Left = 391.850650000000000000
+          Width = 188.976500000000000000
+          Height = 11.338590000000000000
+          DataField = 'DSC_CD_DB'
+          DataSet = dmRelExportacaoMega.frxDBTRQuitadoBanco
+          DataSetName = 'TRBBanco'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TRBBanco."DSC_CD_DB"]')
+          ParentFont = False
+          WordWrap = False
+        end
+        object Memo107: TfrxMemoView
+          Left = 640.331170000000000000
+          Width = 90.708720000000000000
+          Height = 11.338590000000000000
+          DataField = 'CONTA_DB'
+          DataSet = dmRelExportacaoMega.frxDBTRQuitadoBanco
+          DataSetName = 'TRBBanco'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TRBBanco."CONTA_DB"]')
+          ParentFont = False
+        end
+        object Memo108: TfrxMemoView
+          Left = 733.228820000000000000
+          Width = 49.133890000000000000
+          Height = 11.338590000000000000
+          DataField = 'COD_RED_DB'
+          DataSet = dmRelExportacaoMega.frxDBTRQuitadoBanco
+          DataSetName = 'TRBBanco'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TRBBanco."COD_RED_DB"]')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo109: TfrxMemoView
+          Left = 63.031540000000000000
+          Width = 234.330860000000000000
+          Height = 11.338590000000000000
+          DataField = 'DESCRICAO'
+          DataSet = dmRelExportacaoMega.frxDBTRQuitadoBanco
+          DataSetName = 'TRBBanco'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TRBBanco."DESCRICAO"]')
+          ParentFont = False
+        end
+      end
+      object DT_TRB_CHEQUE: TfrxDetailData
+        FillType = ftBrush
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlack
+        Font.Height = -8
+        Font.Name = 'Arial'
+        Font.Style = []
+        Height = 15.118110240000000000
+        ParentFont = False
+        Top = 1228.347250000000000000
+        Width = 1046.929810000000000000
+        DataSet = dmRelExportacaoMega.frxDBTRBCheque
+        DataSetName = 'TRBCheque'
+        RowCount = 0
+        object Memo110: TfrxMemoView
+          Left = 807.701300000000000000
+          Width = 98.267780000000000000
+          Height = 15.118120000000000000
+          DataField = 'VALOR'
+          DataSet = dmRelExportacaoMega.frxDBTRBCheque
+          DataSetName = 'TRBCheque'
+          DisplayFormat.DecimalSeparator = ','
+          DisplayFormat.FormatStr = '%2.2n'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TRBCheque."VALOR"]')
+          ParentFont = False
+        end
+        object Memo111: TfrxMemoView
+          Left = 640.331170000000000000
+          Width = 90.708720000000000000
+          Height = 11.338590000000000000
+          DataField = 'CONTA_DB'
+          DataSet = dmRelExportacaoMega.frxDBTRBCheque
+          DataSetName = 'TRBCheque'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TRBCheque."CONTA_DB"]')
+          ParentFont = False
+        end
+        object Memo112: TfrxMemoView
+          Left = 733.228820000000000000
+          Width = 49.133890000000000000
+          Height = 11.338590000000000000
+          DataField = 'COD_RED_DB'
+          DataSet = dmRelExportacaoMega.frxDBTRBCheque
+          DataSetName = 'TRBCheque'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TRBCheque."COD_RED_DB"]')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo113: TfrxMemoView
+          Left = 391.850650000000000000
+          Width = 188.976500000000000000
+          Height = 11.338590000000000000
+          DataField = 'CONTA_DSC_DB'
+          DataSet = dmRelExportacaoMega.frxDBTRBCheque
+          DataSetName = 'TRBCheque'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TRBCheque."CONTA_DSC_DB"]')
+          ParentFont = False
+          WordWrap = False
+          Formats = <
+            item
+            end
+            item
+            end>
+        end
+        object Memo114: TfrxMemoView
+          Left = 63.031540000000000000
+          Width = 234.330860000000000000
+          Height = 11.338590000000000000
+          DataField = 'HIST_DSC'
+          DataSet = dmRelExportacaoMega.frxDBTRBCheque
+          DataSetName = 'TRBCheque'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TRBCheque."HIST_DSC"]')
+          ParentFont = False
+        end
+        object Memo129: TfrxMemoView
+          Left = 317.480520000000000000
+          Top = 1.000000000000000000
+          Width = 45.354360000000000000
+          Height = 11.338590000000000000
+          DataField = 'HIST_COD'
+          DataSet = dmRelExportacaoMega.frxDBTRBCheque
+          DataSetName = 'TRBCheque'
+          DisplayFormat.FormatStr = '%g'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haCenter
+          Memo.UTF8W = (
+            '[TRBCheque."HIST_COD"]')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+      end
+      object DT_TRB_ACRESCIMO: TfrxDetailData
+        FillType = ftBrush
+        Height = 15.118110240000000000
+        Top = 1303.937850000000000000
+        Width = 1046.929810000000000000
+        DataSet = dmRelExportacaoMega.frxDBTRBAcrescimo
+        DataSetName = 'TRBAcrescimo'
+        RowCount = 0
+        object Memo115: TfrxMemoView
+          Left = 946.102970000000000000
+          Top = 0.559060000000045000
+          Width = 98.267780000000000000
+          Height = 15.118110240000000000
+          DataField = 'VALOR'
+          DataSet = dmRelExportacaoMega.frxDBTRBAcrescimo
+          DataSetName = 'TRBAcrescimo'
+          DisplayFormat.DecimalSeparator = ','
+          DisplayFormat.FormatStr = '%2.2n'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TRBAcrescimo."VALOR"]')
+          ParentFont = False
+        end
+        object Memo116: TfrxMemoView
+          Left = 733.228820000000000000
+          Top = 0.559060000000045000
+          Width = 49.133890000000000000
+          Height = 11.338590000000000000
+          DataField = 'CODREDUZ'
+          DataSet = dmRelExportacaoMega.frxDBTRBAcrescimo
+          DataSetName = 'TRBAcrescimo'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TRBAcrescimo."CODREDUZ"]')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo117: TfrxMemoView
+          Left = 640.331170000000000000
+          Top = 0.559060000000045000
+          Width = 90.708720000000000000
+          Height = 11.338590000000000000
+          DataField = 'CONTA'
+          DataSet = dmRelExportacaoMega.frxDBTRBAcrescimo
+          DataSetName = 'TRBAcrescimo'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TRBAcrescimo."CONTA"]')
+          ParentFont = False
+        end
+        object Memo118: TfrxMemoView
+          Left = 391.850650000000000000
+          Top = 0.559060000000045000
+          Width = 188.976500000000000000
+          Height = 11.338590000000000000
+          DataField = 'DSC_CONTA'
+          DataSet = dmRelExportacaoMega.frxDBTRBAcrescimo
+          DataSetName = 'TRBAcrescimo'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TRBAcrescimo."DSC_CONTA"]')
+          ParentFont = False
+        end
+        object Memo119: TfrxMemoView
+          Left = 63.031540000000000000
+          Top = 0.559060000000045000
+          Width = 234.330860000000000000
+          Height = 11.338590000000000000
+          DataField = 'DSC_DEDUCAO'
+          DataSet = dmRelExportacaoMega.frxDBTRBAcrescimo
+          DataSetName = 'TRBAcrescimo'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TRBAcrescimo."DSC_DEDUCAO"]')
+          ParentFont = False
+        end
+        object Memo131: TfrxMemoView
+          Left = 317.480520000000000000
+          Width = 45.354360000000000000
+          Height = 11.338590000000000000
+          DataField = 'COD_HIST'
+          DataSet = dmRelExportacaoMega.frxDBTRBAcrescimo
+          DataSetName = 'TRBAcrescimo'
+          DisplayFormat.FormatStr = '%g'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haCenter
+          Memo.UTF8W = (
+            '[TRBAcrescimo."COD_HIST"]')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+      end
+      object DT_TRB_DEDUCAO: TfrxDetailData
+        FillType = ftBrush
+        Height = 15.118110240000000000
+        Top = 1152.756650000000000000
+        Width = 1046.929810000000000000
+        DataSet = dmRelExportacaoMega.frxTRBDeducao
+        DataSetName = 'TRBDeducao'
+        RowCount = 0
+        object Memo120: TfrxMemoView
+          Left = 807.701300000000000000
+          Width = 98.267780000000000000
+          Height = 11.338590000000000000
+          DataField = 'VALOR'
+          DataSet = dmRelExportacaoMega.frxTRBDeducao
+          DataSetName = 'TRBDeducao'
+          DisplayFormat.DecimalSeparator = ','
+          DisplayFormat.FormatStr = '%2.2n'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TRBDeducao."VALOR"]')
+          ParentFont = False
+        end
+        object Memo121: TfrxMemoView
+          Left = 733.228820000000000000
+          Width = 49.133890000000000000
+          Height = 11.338590000000000000
+          DataField = 'CODREDUZ'
+          DataSet = dmRelExportacaoMega.frxTRBDeducao
+          DataSetName = 'TRBDeducao'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TRBDeducao."CODREDUZ"]')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo122: TfrxMemoView
+          Left = 640.331170000000000000
+          Width = 90.708720000000000000
+          Height = 11.338590000000000000
+          DataField = 'CONTA'
+          DataSet = dmRelExportacaoMega.frxTRBDeducao
+          DataSetName = 'TRBDeducao'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TRBDeducao."CONTA"]')
+          ParentFont = False
+        end
+        object Memo123: TfrxMemoView
+          Left = 391.850650000000000000
+          Width = 188.976500000000000000
+          Height = 11.338590000000000000
+          DataField = 'DSC_CONTA'
+          DataSet = dmRelExportacaoMega.frxTRBDeducao
+          DataSetName = 'TRBDeducao'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TRBDeducao."DSC_CONTA"]')
+          ParentFont = False
+        end
+        object Memo124: TfrxMemoView
+          Left = 317.480520000000000000
+          Width = 45.354360000000000000
+          Height = 11.338590000000000000
+          DataField = 'COD_HIST'
+          DataSet = dmRelExportacaoMega.frxTRBDeducao
+          DataSetName = 'TRBDeducao'
+          DisplayFormat.FormatStr = '%g'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          HAlign = haCenter
+          Memo.UTF8W = (
+            '[TRBDeducao."COD_HIST"]')
+          ParentFont = False
+        end
+      end
+      object GroupFooter3: TfrxGroupFooter
+        FillType = ftBrush
+        Height = 30.236240000000000000
+        Top = 1379.528450000000000000
+        Width = 1046.929810000000000000
+        object Line22: TfrxLineView
+          Left = 774.803650000000000000
+          Width = 268.346630000000000000
+          Color = clBlack
+          Frame.Style = fsDot
+          Frame.Typ = [ftTop]
+        end
+        object Memo125: TfrxMemoView
+          Left = 923.425790000000000000
+          Top = 5.559060000000045000
+          Width = 120.944960000000000000
+          Height = 15.118110240000000000
+          DisplayFormat.FormatStr = '%2.2n'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            
+              '[ SUM(<TRBaixa."VALOR">,DT_TRB_BAIXA) + SUM(<TRBAcrescimo."VALOR' +
+              '">,DT_TRB_ACRESCIMO) ]')
+          ParentFont = False
+        end
+        object Memo126: TfrxMemoView
+          Left = 785.024120000000000000
+          Top = 5.559060000000045000
+          Width = 120.944960000000000000
+          Height = 15.118110240000000000
+          DisplayFormat.FormatStr = '%2.2n'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[ '
+            'SUM(<TRBDeducao."VALOR">,DT_TRB_DEDUCAO)+'
+            'SUM(<TRBCaixa."VALOR">,DT_TRB_CAIXA)+'
+            'SUM(<TRBCheque."VALOR">,DT_TRB_CHEQUE)+'
+            'SUM(<TRBBanco."VALOR">,DT_TRB_BANCO)'
+            ']')
+          ParentFont = False
+        end
+      end
+      object DT_TRB_BAIXA: TfrxDetailData
+        FillType = ftBrush
+        Height = 15.118110240000000000
+        Top = 1341.733150000000000000
+        Width = 1046.929810000000000000
+        DataSet = dmRelExportacaoMega.frxDBTRBaixa
+        DataSetName = 'TRBaixa'
+        RowCount = 0
+        object tituloRBaixaVALOR_PAGO: TfrxMemoView
+          Left = 946.102970000000000000
+          Width = 98.267780000000000000
+          Height = 11.338590000000000000
+          DataField = 'VALOR'
+          DataSet = dmRelExportacaoMega.frxDBTRBaixa
+          DataSetName = 'TRBaixa'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TRBaixa."VALOR"]')
+          ParentFont = False
+        end
+        object Memo87: TfrxMemoView
+          Left = 640.331170000000000000
+          Width = 90.708720000000000000
+          Height = 11.338590000000000000
+          DataField = 'CONTA_CREDITO'
+          DataSet = dmRelExportacaoMega.frxDBTRBaixa
+          DataSetName = 'TRBaixa'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TRBaixa."CONTA_CREDITO"]')
+          ParentFont = False
+        end
+        object Memo88: TfrxMemoView
+          Left = 733.228820000000000000
+          Width = 49.133890000000000000
+          Height = 11.338590000000000000
+          DataField = 'COD_REDUZ_CREDITO'
+          DataSet = dmRelExportacaoMega.frxDBTRBaixa
+          DataSetName = 'TRBaixa'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TRBaixa."COD_REDUZ_CREDITO"]')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo127: TfrxMemoView
+          Left = 391.850650000000000000
+          Width = 188.976500000000000000
+          Height = 11.338590000000000000
+          DataField = 'DSC_HIST'
+          DataSet = dmRelExportacaoMega.frxDBTRBaixa
+          DataSetName = 'TRBaixa'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TRBaixa."DSC_HIST"]')
+          ParentFont = False
+        end
+        object Memo128: TfrxMemoView
+          Left = 317.480520000000000000
+          Width = 45.354360000000000000
+          Height = 11.338590000000000000
+          DataField = 'CODIGO_HIST'
+          DataSet = dmRelExportacaoMega.frxDBTRBaixa
+          DataSetName = 'TRBaixa'
+          DisplayFormat.FormatStr = '%g'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          HAlign = haCenter
+          Memo.UTF8W = (
+            '[TRBaixa."CODIGO_HIST"]')
+          ParentFont = False
+        end
+      end
+      object GroupHeader2: TfrxGroupHeader
+        FillType = ftBrush
+        Height = 1.889763780000000000
+        Top = 1477.796230000000000000
+        Width = 1046.929810000000000000
+        Condition = 'TRFCAIXABANCO."ID_CONTA_BANCARIA_CREDITO"'
+        object Line12: TfrxLineView
+          Top = 0.220469999999977500
+          Width = 1050.709340000000000000
+          Color = clBlack
+          Frame.Typ = [ftTop]
+        end
+      end
+      object GroupHeader4: TfrxGroupHeader
+        FillType = ftBrush
+        Height = 22.677180000000000000
+        Top = 1432.441870000000000000
+        Width = 1046.929810000000000000
+        Condition = '1=1'
+        StartNewPage = True
+        object Line13: TfrxLineView
+          Top = 3.779529999999795000
+          Width = 1046.929810000000000000
+          Color = clBlack
+          Frame.Typ = [ftTop]
+        end
+        object Memo104: TfrxMemoView
+          Left = -0.220470000000000000
+          Top = 7.559060000000045000
+          Width = 64.252010000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'TRANSF.')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo132: TfrxMemoView
+          Left = 181.346559210000000000
+          Top = 7.559060000000045000
+          Width = 124.724490000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'DESCRI'#199#195'O')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo133: TfrxMemoView
+          Left = 63.031540000000000000
+          Top = 7.559060000000045000
+          Width = 75.590600000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'DOCUMENTO')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo134: TfrxMemoView
+          Left = 141.181200000000000000
+          Top = 7.559060000000045000
+          Width = 37.795300000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'TIPO')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo135: TfrxMemoView
+          Left = 640.331170000000000000
+          Top = 7.559060000000045000
+          Width = 90.708720000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            'CONTA  CONT'#193'BIL')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo136: TfrxMemoView
+          Left = 785.024120000000000000
+          Top = 7.559060000000045000
+          Width = 120.944960000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            'D'#201'BITO')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo137: TfrxMemoView
+          Left = 946.102970000000000000
+          Top = 7.559060000000045000
+          Width = 98.267780000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            'CR'#201'DITO')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Line14: TfrxLineView
+          Left = 0.559060000000000000
+          Top = 3.779530000000022000
+          Width = 1046.929810000000000000
+          Color = clBlack
+          Frame.Typ = [ftTop]
+        end
+        object Memo139: TfrxMemoView
+          Left = 733.228820000000000000
+          Top = 7.559060000000045000
+          Width = 49.133890000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            'CD.REDUZ')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo140: TfrxMemoView
+          Left = 310.480520000000000000
+          Top = 7.559060000000045000
+          Width = 268.346630000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'C'#211'D.HIST.                    DESCRI'#199#195'O CONT'#193'BIL')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+      end
+      object MD_TRF_CX_BCO: TfrxMasterData
+        FillType = ftBrush
+        Height = 34.015770000000000000
+        Top = 1504.252940000000000000
+        Width = 1046.929810000000000000
+        DataSet = dmRelExportacaoMega.frxTRFCaixaBanco
+        DataSetName = 'TRFCAIXABANCO'
+        RowCount = 0
+        object Memo141: TfrxMemoView
+          Left = 3.559060000000000000
+          Width = 64.252010000000000000
+          Height = 11.338590000000000000
+          DataField = 'DATA_MOVIMENTO'
+          DataSet = dmRelExportacaoMega.frxTRFCaixaBanco
+          DataSetName = 'TRFCAIXABANCO'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TRFCAIXABANCO."DATA_MOVIMENTO"]')
+          ParentFont = False
+        end
+        object Memo142: TfrxMemoView
+          Left = 181.346559210000000000
+          Width = 124.724490000000000000
+          Height = 11.338590000000000000
+          DataField = 'TIPO_OPERACAO'
+          DataSet = dmRelExportacaoMega.frxTRFCaixaBanco
+          DataSetName = 'TRFCAIXABANCO'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TRFCAIXABANCO."TIPO_OPERACAO"]')
+          ParentFont = False
+        end
+        object Memo143: TfrxMemoView
+          Left = 63.031540000000000000
+          Width = 75.590600000000000000
+          Height = 11.338590000000000000
+          DataField = 'IDENTIFICACAO'
+          DataSet = dmRelExportacaoMega.frxTRFCaixaBanco
+          DataSetName = 'TRFCAIXABANCO'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TRFCAIXABANCO."IDENTIFICACAO"]')
+          ParentFont = False
+        end
+        object Memo144: TfrxMemoView
+          Left = 136.063080000000000000
+          Width = 37.795300000000000000
+          Height = 11.338590000000000000
+          DataField = 'TIPO_OPERACAO'
+          DataSet = dmRelExportacaoMega.frxTRFCaixaBanco
+          DataSetName = 'TRFCAIXABANCO'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TRFCAIXABANCO."TIPO_OPERACAO"]')
+          ParentFont = False
+        end
+        object Memo145: TfrxMemoView
+          Left = 310.480520000000000000
+          Width = 45.354360000000000000
+          Height = 11.338590000000000000
+          DataField = 'TOB_CODIGO'
+          DataSet = dmRelExportacaoMega.frxTRFCaixaBanco
+          DataSetName = 'TRFCAIXABANCO'
+          DisplayFormat.FormatStr = '%g'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          HAlign = haCenter
+          Memo.UTF8W = (
+            '[TRFCAIXABANCO."TOB_CODIGO"]')
+          ParentFont = False
+        end
+        object Memo146: TfrxMemoView
+          Left = 391.850650000000000000
+          Width = 188.976500000000000000
+          Height = 11.338590000000000000
+          DataField = 'DSC_CC_DB'
+          DataSet = dmRelExportacaoMega.frxTRFCaixaBanco
+          DataSetName = 'TRFCAIXABANCO'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TRFCAIXABANCO."DSC_CC_DB"]')
+          ParentFont = False
+        end
+        object Memo147: TfrxMemoView
+          Left = 391.850650000000000000
+          Top = 13.677179999999910000
+          Width = 188.976500000000000000
+          Height = 11.338590000000000000
+          DataField = 'DSC_CC_CR'
+          DataSet = dmRelExportacaoMega.frxTRFCaixaBanco
+          DataSetName = 'TRFCAIXABANCO'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TRFCAIXABANCO."DSC_CC_CR"]')
+          ParentFont = False
+        end
+        object Memo148: TfrxMemoView
+          Left = 640.331170000000000000
+          Width = 90.708720000000000000
+          Height = 11.338590000000000000
+          DataField = 'CONTA_CONTABIL_DB'
+          DataSet = dmRelExportacaoMega.frxTRFCaixaBanco
+          DataSetName = 'TRFCAIXABANCO'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TRFCAIXABANCO."CONTA_CONTABIL_DB"]')
+          ParentFont = False
+        end
+        object Memo149: TfrxMemoView
+          Left = 640.331170000000000000
+          Top = 13.677179999999910000
+          Width = 90.708720000000000000
+          Height = 11.338590000000000000
+          DataField = 'CONTA_CONTABIL_CR'
+          DataSet = dmRelExportacaoMega.frxTRFCaixaBanco
+          DataSetName = 'TRFCAIXABANCO'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TRFCAIXABANCO."CONTA_CONTABIL_CR"]')
+          ParentFont = False
+        end
+        object Memo150: TfrxMemoView
+          Left = 733.228820000000000000
+          Width = 49.133890000000000000
+          Height = 11.338590000000000000
+          DataField = 'COD_REDUZ_DB'
+          DataSet = dmRelExportacaoMega.frxTRFCaixaBanco
+          DataSetName = 'TRFCAIXABANCO'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TRFCAIXABANCO."COD_REDUZ_DB"]')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo151: TfrxMemoView
+          Left = 733.228820000000000000
+          Top = 13.677179999999910000
+          Width = 49.133890000000000000
+          Height = 11.338590000000000000
+          DataField = 'COD_REDUZ_CR'
+          DataSet = dmRelExportacaoMega.frxTRFCaixaBanco
+          DataSetName = 'TRFCAIXABANCO'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TRFCAIXABANCO."COD_REDUZ_CR"]')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo152: TfrxMemoView
+          Left = 807.701300000000000000
+          Width = 98.267780000000000000
+          Height = 15.118120000000000000
+          DataField = 'VALOR'
+          DataSet = dmRelExportacaoMega.frxTRFCaixaBanco
+          DataSetName = 'TRFCAIXABANCO'
+          DisplayFormat.DecimalSeparator = ','
+          DisplayFormat.FormatStr = '%2.2n'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TRFCAIXABANCO."VALOR"]')
+          ParentFont = False
+        end
+        object Memo153: TfrxMemoView
+          Left = 946.102970000000000000
+          Top = 13.677179999999910000
+          Width = 98.267780000000000000
+          Height = 15.118120000000000000
+          DataField = 'VALOR'
+          DataSet = dmRelExportacaoMega.frxTRFCaixaBanco
+          DataSetName = 'TRFCAIXABANCO'
+          DisplayFormat.DecimalSeparator = ','
+          DisplayFormat.FormatStr = '%2.2n'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TRFCAIXABANCO."VALOR"]')
+          ParentFont = False
+        end
+        object Memo154: TfrxMemoView
+          Left = 181.346559210000000000
+          Top = 13.677179999999910000
+          Width = 241.889920000000000000
+          Height = 11.338590000000000000
+          DataField = 'DESCRICAO'
+          DataSet = dmRelExportacaoMega.frxTRFCaixaBanco
+          DataSetName = 'TRFCAIXABANCO'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TRFCAIXABANCO."DESCRICAO"]')
+          ParentFont = False
+        end
+      end
+      object GroupFooter1: TfrxGroupFooter
+        FillType = ftBrush
+        Height = 30.236220470000000000
+        Top = 1980.473720000000000000
+        Width = 1046.929810000000000000
+        object Line15: TfrxLineView
+          Left = 774.803650000000000000
+          Width = 268.346630000000000000
+          Color = clBlack
+          Frame.Style = fsDot
+          Frame.Typ = [ftTop]
+        end
+        object Memo155: TfrxMemoView
+          Left = 923.425790000000000000
+          Top = 5.559060000000045000
+          Width = 120.944960000000000000
+          Height = 15.118110240000000000
+          DisplayFormat.FormatStr = '%2.2n'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[SUM(<TRFBCOCAIXA."VALOR">,MD_TRF_BCO_CX)]')
+          ParentFont = False
+        end
+        object Memo156: TfrxMemoView
+          Left = 785.024120000000000000
+          Top = 5.559060000000045000
+          Width = 120.944960000000000000
+          Height = 15.118110240000000000
+          DisplayFormat.FormatStr = '%2.2n'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[SUM(<TRFBCOCAIXA."VALOR">,MD_TRF_BCO_CX)]')
+          ParentFont = False
+        end
+      end
+      object GroupHeader5: TfrxGroupHeader
+        FillType = ftBrush
+        Height = 1.889763780000000000
+        Top = 1659.213670000000000000
+        Width = 1046.929810000000000000
+        Condition = 'CBTBASE."ID_CONTA_BANCARIA_TRANSFERENCIA"'
+        object Line16: TfrxLineView
+          Top = 0.220469999999977500
+          Width = 1050.709340000000000000
+          Color = clBlack
+          Frame.Typ = [ftTop]
+        end
+      end
+      object GroupHeader8: TfrxGroupHeader
+        FillType = ftBrush
+        Height = 22.677180000000000000
+        Top = 1613.859310000000000000
+        Width = 1046.929810000000000000
+        Condition = '1=1'
+        object Line17: TfrxLineView
+          Top = 3.779529999999795000
+          Width = 1046.929810000000000000
+          Color = clBlack
+          Frame.Typ = [ftTop]
+        end
+        object Memo157: TfrxMemoView
+          Left = -0.220470000000000000
+          Top = 7.559060000000045000
+          Width = 64.252010000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'DATA ')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo158: TfrxMemoView
+          Left = 181.346559210000000000
+          Top = 7.559060000000045000
+          Width = 124.724490000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'DESCRI'#199#195'O')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo159: TfrxMemoView
+          Left = 63.031540000000000000
+          Top = 7.559060000000045000
+          Width = 75.590600000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'DOCUMENTO')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo160: TfrxMemoView
+          Left = 141.181200000000000000
+          Top = 7.559060000000045000
+          Width = 37.795300000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          HAlign = haCenter
+          Memo.UTF8W = (
+            'TIPO')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo161: TfrxMemoView
+          Left = 640.331170000000000000
+          Top = 7.559060000000045000
+          Width = 90.708720000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            'CONTA  CONT'#193'BIL')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo162: TfrxMemoView
+          Left = 785.024120000000000000
+          Top = 7.559060000000045000
+          Width = 120.944960000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            'D'#201'BITO')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo163: TfrxMemoView
+          Left = 946.102970000000000000
+          Top = 7.559060000000045000
+          Width = 98.267780000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            'CR'#201'DITO')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Line18: TfrxLineView
+          Left = 0.559060000000000000
+          Top = 3.779530000000022000
+          Width = 1046.929810000000000000
+          Color = clBlack
+          Frame.Typ = [ftTop]
+        end
+        object Memo165: TfrxMemoView
+          Left = 733.228820000000000000
+          Top = 7.559060000000045000
+          Width = 49.133890000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            'CD.REDUZ')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo166: TfrxMemoView
+          Left = 310.480520000000000000
+          Top = 7.559060000000045000
+          Width = 268.346630000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'C'#211'D.HIST.                    DESCRI'#199#195'O CONT'#193'BIL')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+      end
+      object MD_CBT_BASE: TfrxMasterData
+        FillType = ftBrush
+        Height = 15.118110236220500000
+        Top = 1685.670380000000000000
+        Width = 1046.929810000000000000
+        DataSet = dmRelExportacaoMega.frxDBCBT
+        DataSetName = 'CBTBASE'
+        RowCount = 0
+        object Memo167: TfrxMemoView
+          Left = 3.559060000000000000
+          Width = 64.252010000000000000
+          Height = 11.338590000000000000
+          DataField = 'DATA_MOVIMENTO'
+          DataSet = dmRelExportacaoMega.frxDBCBT
+          DataSetName = 'CBTBASE'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[CBTBASE."DATA_MOVIMENTO"]')
+          ParentFont = False
+        end
+        object Memo168: TfrxMemoView
+          Left = 63.031540000000000000
+          Width = 75.590600000000000000
+          Height = 11.338590000000000000
+          DataField = 'IDENTIFICACAO'
+          DataSet = dmRelExportacaoMega.frxDBCBT
+          DataSetName = 'CBTBASE'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[CBTBASE."IDENTIFICACAO"]')
+          ParentFont = False
+        end
+        object Memo169: TfrxMemoView
+          Left = 141.181200000000000000
+          Width = 37.795300000000000000
+          Height = 11.338590000000000000
+          DataField = 'TIPO'
+          DataSet = dmRelExportacaoMega.frxDBCBT
+          DataSetName = 'CBTBASE'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          HAlign = haCenter
+          Memo.UTF8W = (
+            '[CBTBASE."TIPO"]')
+          ParentFont = False
+        end
+        object Memo170: TfrxMemoView
+          Left = 181.346559210000000000
+          Width = 124.724490000000000000
+          Height = 11.338590000000000000
+          DataField = 'ID_TIPO_OPERACAO_BANCARIA'
+          DataSet = dmRelExportacaoMega.frxDBCBT
+          DataSetName = 'CBTBASE'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[CBTBASE."ID_TIPO_OPERACAO_BANCARIA"]')
+          ParentFont = False
+        end
+      end
+      object DT_CBT_CR: TfrxDetailData
+        FillType = ftBrush
+        Height = 15.118110240000000000
+        Top = 1723.465680000000000000
+        Width = 1046.929810000000000000
+        DataSet = dmRelExportacaoMega.frxDBCBTC
+        DataSetName = 'CBT_C'
+        RowCount = 0
+        object Memo172: TfrxMemoView
+          Left = 181.346559210000000000
+          Width = 124.724490000000000000
+          Height = 11.338590000000000000
+          DataField = 'DESCRICAO'
+          DataSet = dmRelExportacaoMega.frxDBCBTC
+          DataSetName = 'CBT_C'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[CBT_C."DESCRICAO"]')
+          ParentFont = False
+        end
+        object Memo173: TfrxMemoView
+          Left = 518.354670000000000000
+          Width = 94.488250000000000000
+          Height = 11.338590000000000000
+          DataField = 'CONTA_CORRENTE_CREDITO'
+          DataSet = dmRelExportacaoMega.frxDBCBTC
+          DataSetName = 'CBT_C'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[CBT_C."CONTA_CORRENTE_CREDITO"]')
+          ParentFont = False
+        end
+        object Memo174: TfrxMemoView
+          Left = 391.850650000000000000
+          Width = 124.724490000000000000
+          Height = 11.338590000000000000
+          DataField = 'DSC_CC_DB'
+          DataSet = dmRelExportacaoMega.frxDBCBTC
+          DataSetName = 'CBT_C'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[CBT_C."DSC_CC_DB"]')
+          ParentFont = False
+        end
+        object Memo175: TfrxMemoView
+          Left = 640.331170000000000000
+          Width = 90.708720000000000000
+          Height = 11.338590000000000000
+          DataField = 'CONTA_CONTABIL_DB'
+          DataSet = dmRelExportacaoMega.frxDBCBTC
+          DataSetName = 'CBT_C'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[CBT_C."CONTA_CONTABIL_DB"]')
+          ParentFont = False
+        end
+        object Memo176: TfrxMemoView
+          Left = 733.228820000000000000
+          Width = 49.133890000000000000
+          Height = 11.338590000000000000
+          DataField = 'COD_REDUZ_DB'
+          DataSet = dmRelExportacaoMega.frxDBCBTC
+          DataSetName = 'CBT_C'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[CBT_C."COD_REDUZ_DB"]')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo177: TfrxMemoView
+          Left = 807.701300000000000000
+          Width = 98.267780000000000000
+          Height = 15.118120000000000000
+          DataField = 'VALOR'
+          DataSet = dmRelExportacaoMega.frxDBCBTC
+          DataSetName = 'CBT_C'
+          DisplayFormat.DecimalSeparator = ','
+          DisplayFormat.FormatStr = '%2.2n'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[CBT_C."VALOR"]')
+          ParentFont = False
+        end
+      end
+      object DT_CBT_DB: TfrxDetailData
+        FillType = ftBrush
+        Height = 15.118110236220500000
+        Top = 1761.260980000000000000
+        Width = 1046.929810000000000000
+        DataSet = dmRelExportacaoMega.frxDBCBTD
+        DataSetName = 'CBT_D'
+        RowCount = 0
+        object Memo178: TfrxMemoView
+          Left = 181.346559210000000000
+          Width = 124.724490000000000000
+          Height = 11.338590000000000000
+          DataField = 'DESCRICAO'
+          DataSet = dmRelExportacaoMega.frxDBCBTD
+          DataSetName = 'CBT_D'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[CBT_D."DESCRICAO"]')
+          ParentFont = False
+        end
+        object Memo179: TfrxMemoView
+          Left = 518.354670000000000000
+          Width = 94.488250000000000000
+          Height = 11.338590000000000000
+          DataField = 'CONTA_CORRENTE_DEBITO'
+          DataSet = dmRelExportacaoMega.frxDBCBTD
+          DataSetName = 'CBT_D'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[CBT_D."CONTA_CORRENTE_DEBITO"]')
+          ParentFont = False
+        end
+        object Memo180: TfrxMemoView
+          Left = 391.850650000000000000
+          Width = 124.724490000000000000
+          Height = 11.338590000000000000
+          DataField = 'DSC_CC_CR'
+          DataSet = dmRelExportacaoMega.frxDBCBTD
+          DataSetName = 'CBT_D'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[CBT_D."DSC_CC_CR"]')
+          ParentFont = False
+        end
+        object Memo181: TfrxMemoView
+          Left = 640.331170000000000000
+          Width = 90.708720000000000000
+          Height = 11.338590000000000000
+          DataField = 'CONTA_CONTABIL_CR'
+          DataSet = dmRelExportacaoMega.frxDBCBTD
+          DataSetName = 'CBT_D'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[CBT_D."CONTA_CONTABIL_CR"]')
+          ParentFont = False
+        end
+        object Memo182: TfrxMemoView
+          Left = 733.228820000000000000
+          Width = 49.133890000000000000
+          Height = 11.338590000000000000
+          DataField = 'COD_REDUZ_CR'
+          DataSet = dmRelExportacaoMega.frxDBCBTD
+          DataSetName = 'CBT_D'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[CBT_D."COD_REDUZ_CR"]')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo183: TfrxMemoView
+          Left = 946.102970000000000000
+          Width = 98.267780000000000000
+          Height = 15.118120000000000000
+          DataField = 'VALOR'
+          DataSet = dmRelExportacaoMega.frxDBCBTD
+          DataSetName = 'CBT_D'
+          DisplayFormat.DecimalSeparator = ','
+          DisplayFormat.FormatStr = '%2.2n'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[CBT_D."VALOR"]')
+          ParentFont = False
+        end
+      end
+      object GroupFooter2: TfrxGroupFooter
+        FillType = ftBrush
+        Height = 30.236220470000000000
+        Top = 1799.056280000000000000
+        Width = 1046.929810000000000000
+        object Line19: TfrxLineView
+          Left = 774.803650000000000000
+          Width = 268.346630000000000000
+          Color = clBlack
+          Frame.Style = fsDot
+          Frame.Typ = [ftTop]
+        end
+        object Memo184: TfrxMemoView
+          Left = 923.425790000000000000
+          Top = 5.559060000000045000
+          Width = 120.944960000000000000
+          Height = 15.118110240000000000
+          DisplayFormat.FormatStr = '%2.2n'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[SUM(<CBT_D."VALOR">,DT_CBT_DB)]')
+          ParentFont = False
+        end
+        object Memo190: TfrxMemoView
+          Left = 785.024120000000000000
+          Top = 5.559060000000045000
+          Width = 120.944960000000000000
+          Height = 15.118110240000000000
+          DisplayFormat.FormatStr = '%2.2n'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[SUM(<CBT_C."VALOR">,DT_CBT_CR)]')
+          ParentFont = False
+        end
+      end
+      object GroupHeader10: TfrxGroupHeader
+        FillType = ftBrush
+        Height = 1.889763780000000000
+        Top = 1897.324060000000000000
+        Width = 1046.929810000000000000
+        Condition = 'TRFBCOCAIXA."ID_CONTA_BANCARIA_DEBITO"'
+        object Line20: TfrxLineView
+          Top = 0.220469999999977500
+          Width = 1050.709340000000000000
+          Color = clBlack
+          Frame.Typ = [ftTop]
+        end
+      end
+      object GroupHeader11: TfrxGroupHeader
+        FillType = ftBrush
+        Height = 22.677180000000000000
+        Top = 1851.969700000000000000
+        Width = 1046.929810000000000000
+        Condition = '1=1'
+        StartNewPage = True
+        object Line21: TfrxLineView
+          Top = 3.779529999999795000
+          Width = 1046.929810000000000000
+          Color = clBlack
+          Frame.Typ = [ftTop]
+        end
+        object Memo191: TfrxMemoView
+          Left = -0.220470000000000000
+          Top = 7.559060000000045000
+          Width = 64.252010000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'DATA')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo192: TfrxMemoView
+          Left = 181.346559210000000000
+          Top = 7.559060000000045000
+          Width = 124.724490000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'DESCRI'#199#195'O')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo193: TfrxMemoView
+          Left = 63.031540000000000000
+          Top = 7.559060000000045000
+          Width = 75.590600000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'DOCUMENTO')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo194: TfrxMemoView
+          Left = 141.181200000000000000
+          Top = 7.559060000000045000
+          Width = 37.795300000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'TIPO')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo195: TfrxMemoView
+          Left = 640.331170000000000000
+          Top = 7.559060000000045000
+          Width = 90.708720000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            'CONTA  CONT'#193'BIL')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo196: TfrxMemoView
+          Left = 785.024120000000000000
+          Top = 7.559060000000045000
+          Width = 120.944960000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            'D'#201'BITO')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo197: TfrxMemoView
+          Left = 946.102970000000000000
+          Top = 7.559060000000045000
+          Width = 98.267780000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            'CR'#201'DITO')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Line23: TfrxLineView
+          Left = 0.559060000000000000
+          Top = 3.779530000000022000
+          Width = 1046.929810000000000000
+          Color = clBlack
+          Frame.Typ = [ftTop]
+        end
+        object Memo199: TfrxMemoView
+          Left = 733.228820000000000000
+          Top = 7.559060000000045000
+          Width = 49.133890000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            'CD.REDUZ')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo200: TfrxMemoView
+          Left = 310.480520000000000000
+          Top = 7.559060000000045000
+          Width = 268.346630000000000000
+          Height = 11.338590000000000000
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = [fsBold]
+          Memo.UTF8W = (
+            'C'#211'D.HIST.                    DESCRI'#199#195'O CONT'#193'BIL')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+      end
+      object MD_TRF_BCO_CX: TfrxMasterData
+        FillType = ftBrush
+        Height = 34.015748030000000000
+        Top = 1923.780770000000000000
+        Width = 1046.929810000000000000
+        DataSet = dmRelExportacaoMega.frxBCOCAIXA
+        DataSetName = 'TRFBCOCAIXA'
+        RowCount = 0
+        object Memo201: TfrxMemoView
+          Width = 64.252010000000000000
+          Height = 11.338590000000000000
+          DataField = 'DATA_MOVIMENTO'
+          DataSet = dmRelExportacaoMega.frxBCOCAIXA
+          DataSetName = 'TRFBCOCAIXA'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TRFBCOCAIXA."DATA_MOVIMENTO"]')
+          ParentFont = False
+        end
+        object Memo202: TfrxMemoView
+          Left = 181.346559210000000000
+          Width = 196.535560000000000000
+          Height = 11.338590000000000000
+          DataField = 'ID_TIPO_OPERACAO_BANCARIA'
+          DataSet = dmRelExportacaoMega.frxBCOCAIXA
+          DataSetName = 'TRFBCOCAIXA'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TRFBCOCAIXA."ID_TIPO_OPERACAO_BANCARIA"]')
+          ParentFont = False
+        end
+        object Memo203: TfrxMemoView
+          Left = 63.031540000000000000
+          Width = 75.590600000000000000
+          Height = 11.338590000000000000
+          DataField = 'IDENTIFICACAO'
+          DataSet = dmRelExportacaoMega.frxBCOCAIXA
+          DataSetName = 'TRFBCOCAIXA'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TRFBCOCAIXA."IDENTIFICACAO"]')
+          ParentFont = False
+        end
+        object Memo204: TfrxMemoView
+          Left = 141.181200000000000000
+          Width = 37.795300000000000000
+          Height = 11.338590000000000000
+          DataField = 'TIPO'
+          DataSet = dmRelExportacaoMega.frxBCOCAIXA
+          DataSetName = 'TRFBCOCAIXA'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TRFBCOCAIXA."TIPO"]')
+          ParentFont = False
+        end
+        object Memo206: TfrxMemoView
+          Left = 389.850650000000000000
+          Width = 188.976500000000000000
+          Height = 11.338590000000000000
+          DataField = 'DSC_CC_DEBITO'
+          DataSet = dmRelExportacaoMega.frxBCOCAIXA
+          DataSetName = 'TRFBCOCAIXA'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TRFBCOCAIXA."DSC_CC_DEBITO"]')
+          ParentFont = False
+        end
+        object Memo207: TfrxMemoView
+          Left = 389.850650000000000000
+          Top = 13.677179999999910000
+          Width = 188.976500000000000000
+          Height = 11.338590000000000000
+          DataField = 'DSC_CC_CREDITO'
+          DataSet = dmRelExportacaoMega.frxBCOCAIXA
+          DataSetName = 'TRFBCOCAIXA'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TRFBCOCAIXA."DSC_CC_CREDITO"]')
+          ParentFont = False
+        end
+        object Memo208: TfrxMemoView
+          Left = 640.331170000000000000
+          Width = 90.708720000000000000
+          Height = 11.338590000000000000
+          DataField = 'CONTA_CONTABIL_DEBITO'
+          DataSet = dmRelExportacaoMega.frxBCOCAIXA
+          DataSetName = 'TRFBCOCAIXA'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TRFBCOCAIXA."CONTA_CONTABIL_DEBITO"]')
+          ParentFont = False
+        end
+        object Memo209: TfrxMemoView
+          Left = 640.331170000000000000
+          Top = 13.677179999999910000
+          Width = 90.708720000000000000
+          Height = 11.338590000000000000
+          DataField = 'CONTA_CONTABIL_CREDITO'
+          DataSet = dmRelExportacaoMega.frxBCOCAIXA
+          DataSetName = 'TRFBCOCAIXA'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TRFBCOCAIXA."CONTA_CONTABIL_CREDITO"]')
+          ParentFont = False
+        end
+        object Memo210: TfrxMemoView
+          Left = 733.228820000000000000
+          Width = 49.133890000000000000
+          Height = 11.338590000000000000
+          DataField = 'COD_REDUZ_DEBITO'
+          DataSet = dmRelExportacaoMega.frxBCOCAIXA
+          DataSetName = 'TRFBCOCAIXA'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TRFBCOCAIXA."COD_REDUZ_DEBITO"]')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo211: TfrxMemoView
+          Left = 733.228820000000000000
+          Top = 13.677179999999910000
+          Width = 49.133890000000000000
+          Height = 11.338590000000000000
+          DataField = 'COD_REDUZ_CREDITO'
+          DataSet = dmRelExportacaoMega.frxBCOCAIXA
+          DataSetName = 'TRFBCOCAIXA'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TRFBCOCAIXA."COD_REDUZ_CREDITO"]')
+          ParentFont = False
+          VAlign = vaBottom
+        end
+        object Memo212: TfrxMemoView
+          Left = 804.142240000000000000
+          Width = 98.267780000000000000
+          Height = 15.118120000000000000
+          DataField = 'VALOR'
+          DataSet = dmRelExportacaoMega.frxBCOCAIXA
+          DataSetName = 'TRFBCOCAIXA'
+          DisplayFormat.DecimalSeparator = ','
+          DisplayFormat.FormatStr = '%2.2n'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TRFBCOCAIXA."VALOR"]')
+          ParentFont = False
+        end
+        object Memo213: TfrxMemoView
+          Left = 942.543910000000000000
+          Top = 13.677179999999910000
+          Width = 98.267780000000000000
+          Height = 15.118120000000000000
+          DataField = 'VALOR'
+          DataSet = dmRelExportacaoMega.frxBCOCAIXA
+          DataSetName = 'TRFBCOCAIXA'
+          DisplayFormat.DecimalSeparator = ','
+          DisplayFormat.FormatStr = '%2.2n'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'tahoma'
+          Font.Style = []
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[TRFBCOCAIXA."VALOR"]')
+          ParentFont = False
+        end
+        object Memo214: TfrxMemoView
+          Left = 181.346559210000000000
+          Top = 13.677179999999910000
+          Width = 196.535560000000000000
+          Height = 11.338590000000000000
+          DataField = 'DESCRICAO'
+          DataSet = dmRelExportacaoMega.frxBCOCAIXA
+          DataSetName = 'TRFBCOCAIXA'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Memo.UTF8W = (
+            '[TRFBCOCAIXA."DESCRICAO"]')
+          ParentFont = False
+        end
+      end
+      object GroupFooter6: TfrxGroupFooter
+        FillType = ftBrush
+        Height = 30.236220472440900000
+        Top = 1560.945890000000000000
+        Width = 1046.929810000000000000
+        object Line26: TfrxLineView
+          Left = 774.803650000000000000
+          Width = 268.346630000000000000
+          Color = clBlack
+          Frame.Style = fsDot
+          Frame.Typ = [ftTop]
+        end
+        object Memo164: TfrxMemoView
+          Left = 923.425790000000000000
+          Top = 5.559060000000045000
+          Width = 120.944960000000000000
+          Height = 15.118110240000000000
+          DisplayFormat.FormatStr = '%2.2n'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[SUM(<TRFCAIXABANCO."VALOR">,MD_TRF_CX_BCO)]')
+          ParentFont = False
+        end
+        object Memo198: TfrxMemoView
+          Left = 785.024120000000000000
+          Top = 5.559060000000045000
+          Width = 120.944960000000000000
+          Height = 15.118110240000000000
+          DisplayFormat.FormatStr = '%2.2n'
+          DisplayFormat.Kind = fkNumeric
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -8
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          HAlign = haRight
+          Memo.UTF8W = (
+            '[SUM(<TRFCAIXABANCO."VALOR">,MD_TRF_CX_BCO)]')
+          ParentFont = False
+        end
+      end
+    end
+  end
+  object qryReceitas: TFDQuery
+    Active = True
+    Connection = dmConexao.Conn
+    FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
+    FormatOptions.FmtDisplayNumeric = '###,##0.00'
+    FormatOptions.FmtEditNumeric = '###,##0.00'
+    SQL.Strings = (
+      
+        'SELECT  SUM(TRRCC.VALOR) AS VALOR_RECEITA, MAX(CC.DESCRICAO) AS ' +
+        'CENTRO_CUSTOS, TRRCC.ID_CENTRO_CUSTO'
+      ''
+      'FROM TITULO_RECEBER_RATEIO_CC TRRCC'
+      ''
+      
+        'LEFT OUTER JOIN TITULO_RECEBER TR ON (TR.ID_TITULO_RECEBER = TRR' +
+        'CC.ID_TITULO_RECEBER)  AND (TR.ID_ORGANIZACAO = TRRCC.ID_ORGANIZ' +
+        'ACAO)'
+      
+        'LEFT OUTER JOIN CENTRO_CUSTO CC ON (CC.ID_CENTRO_CUSTO = TRRCC.I' +
+        'D_CENTRO_CUSTO) AND (CC.ID_ORGANIZACAO = TRRCC.ID_ORGANIZACAO)'
+      ''
+      'WHERE (TR.ID_ORGANIZACAO = :PIDORGANIZACAO) '
+      
+        '       AND (TR.DATA_PAGAMENTO BETWEEN :DTDATAINICIAL AND :DTDATA' +
+        'FINAL) '
+      '       AND (TR.ID_TIPO_STATUS <> '#39'EXCLUIDO'#39' )'
+      ''
+      ''
+      'GROUP BY TRRCC.ID_CENTRO_CUSTO'
+      'ORDER BY VALOR_RECEITA'
+      '')
+    Left = 64
+    Top = 192
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'DTDATAINICIAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end
+      item
+        Name = 'DTDATAFINAL'
+        DataType = ftDate
+        ParamType = ptInput
+      end>
+  end
+  object frxDespesas: TfrxDBDataset
+    UserName = 'frxDespesas'
+    CloseDataSource = False
+    FieldAliases.Strings = (
+      'VALOR_DESPESA=VALOR_DESPESA'
+      'CENTRO_CUSTOS=CENTRO_CUSTOS'
+      'ID_CENTRO_CUSTO=ID_CENTRO_CUSTO')
+    DataSet = qryDespesas
+    BCDToCurrency = False
+    Left = 144
+    Top = 72
+  end
+  object frxReceitas: TfrxDBDataset
+    UserName = 'frxReceitas'
+    CloseDataSource = False
+    FieldAliases.Strings = (
+      'VALOR_RECEITA=VALOR_RECEITA'
+      'CENTRO_CUSTOS=CENTRO_CUSTOS'
+      'ID_CENTRO_CUSTO=ID_CENTRO_CUSTO')
+    DataSet = qryReceitas
+    BCDToCurrency = False
+    Left = 144
+    Top = 192
+  end
+end

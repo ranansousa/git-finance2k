@@ -1,0 +1,7 @@
+object frmPeriodo: TfrmPeriodo
+  Left = 0
+  Top = 0
+  Width = 537
+  Height = 143
+  TabOrder = 0
+end

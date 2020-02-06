@@ -1,0 +1,38 @@
+object DataModule1: TDataModule1
+  OldCreateOrder = False
+  Height = 490
+  Width = 704
+  object FDQuery1: TFDQuery
+    SQL.Strings = (
+      'SELECT  TRBFP.id_forma_pagamento,'
+      '        FP.id_conta_contabil,'
+      '        CC.descricao,'
+      '        CC.conta,'
+      '        CC.codreduz'
+      'FROM titulo_receber_baixa_fp TRBFP'
+      ''
+      
+        'JOIN forma_pagamento FP ON (FP.id_forma_pagamento = TRBFP.id_for' +
+        'ma_pagamento)'
+      
+        'JOIN conta_contabil CC ON (CC.id_conta_contabil = FP.id_conta_co' +
+        'ntabil)'
+      'WHERE   (TRBFP.id_organizacao = :PIDORGANIZACAO) AND'
+      '        (TRBFP.id_titulo_receber_baixa = :PIDTITULORECEBERBAIXA)')
+    Left = 496
+    Top = 352
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end
+      item
+        Name = 'PIDTITULORECEBERBAIXA'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+end

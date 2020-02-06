@@ -1,0 +1,65 @@
+unit uTPBaixaFPModel;
+
+{table
+
+CREATE TABLE TITULO_PAGAR_BAIXA_FP (
+    ID_TITULO_PAGAR_BAIXA_FP  VARCHAR(36) NOT NULL,
+    ID_ORGANIZACAO            VARCHAR(36) NOT NULL,
+    ID_TITULO_PAGAR_BAIXA     VARCHAR(36),
+    ID_FORMA_PAGAMENTO        VARCHAR(36),
+    VALOR                     NUMERIC(10,2) NOT NULL,
+);
+}
+
+
+interface
+ USes
+  Windows, Messages, Classes, SysUtils,uContaContabilModel,uFormaPagamentoModel,uOrganizacaoModel;
+
+ type
+  TTPBaixaFPModel = class(TObject)
+
+  private
+
+    FFID: string;
+    FFIDorganizacao: string;
+    FFDescricao: string;
+    FFOrganizacao: TOrganizacaoModel;
+    FFContaContabil: TContaContabilModel;
+    FFIdContaContabil :string;
+
+
+    function getFFOrganizacao: TOrganizacaoModel;
+    function getFFID: string;
+    function getFFIDorganizacao: string;
+    function getFFDescricao: string;
+    function getFFIDcontaContabil: string;
+    function getFFContaContabil: TContaContabilModel;
+
+    procedure setFFID(const Value: string);
+    procedure setFFIDorganizacao(const Value: string);
+    procedure setFFDescricao(const Value: string);
+    procedure SetForganizacao(const Value: TOrganizacaoModel);
+    procedure SetFContaContabil(const Value: TContaContabilModel);
+    procedure SetFIdContaContabil(const Value: string);
+
+
+  public
+
+    property FID: string read getFFID write SetFFID;
+    property FIDorganizacao: string read getFFIDorganizacao write SetFFIDorganizacao;
+    property FDescricao: string read getFFDescricao write SetFFDescricao;
+    property Forganizacao: TOrganizacaoModel read getFFOrganizacao write SetForganizacao;
+    property FIDcontaContabil: string read getFFIDcontaContabil write SetFIDcontaContabil;
+    property FContaContabil: TContaContabilModel read getFFContaContabil write SetFContaContabil;
+
+
+  Constructor Create;
+
+
+  end;
+
+
+implementation
+
+end.

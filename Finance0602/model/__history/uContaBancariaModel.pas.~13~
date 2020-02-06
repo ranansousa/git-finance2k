@@ -1,0 +1,121 @@
+unit uContaBancariaModel;
+
+interface
+{
+ TABLE
+
+
+CREATE TABLE CONTA_BANCARIA (
+    ID_CONTA_BANCARIA      VARCHAR(36) NOT NULL,
+    ID_BANCO               VARCHAR(36),
+    ID_ORGANIZACAO         VARCHAR(36) NOT NULL,
+    ID_USUARIO             NUMERIC(5,0),
+    ID_CONTA_CONTABIL      VARCHAR(36),
+
+    CONTA                  VARCHAR(20),
+    AGENCIA                VARCHAR(10),
+    OBSERVACAO             VARCHAR(200),
+    TITULAR                VARCHAR(60),
+    DEPENDENTE             VARCHAR(60),
+    CONTA_INTERNA          VARCHAR(20)
+
+    LIMITE_CREDITO         NUMERIC(10,2),
+    SALDO_INICIAL          NUMERIC(10,2),
+
+
+);   }
+
+uses
+  Windows, Messages, Classes, SysUtils,uOrganizacaoModel;
+
+type
+  TContaBancariaModel = class(TObject)
+  private
+    FFID: string;
+    FFOrganizacao :TOrganizacaoModel;
+    FFIDorganizacao :string;
+    FFIDusuario :string;
+    FFIDbanco: string;
+    FFIDcontaContabil: string;
+
+
+    FFconta: string;
+    FFcontaInterna: string;
+    FFagencia: string;
+    FFobservacao: string;
+    FFtitular: string;
+    FFdependente: string;
+
+    FFlimiteCredito :Currency;
+    FFsaldoInicial :Currency;
+
+
+    function getFFIDbanco: string;
+    function getFFIDusuario: string;
+    function getFFIDcontaContabil: string;
+    function getFFIDorganizacao: string;
+    function getFFOrganizacao : TOrganizacaoModel;
+    function getFFID: string;
+
+    function getFFconta: string;
+    function getFFcontaInterna: string;
+    function getFFobservacao: string;
+    function getFFtitular: string;
+    function getFFdependente: string;
+    function getFFagencia: string;
+
+    function getFFlimiteCredito :Currency;
+    function getFFsaldoInicial :Currency;
+
+
+    procedure SetFIDbanco(const Value: string);
+    procedure SetFIDcontaContabil(const Value: string);
+    procedure SetFIDorganizacao(const Value: string);
+    procedure SetForganizacao(const Value: TOrganizacaoModel);
+    procedure SetFID(const Value: string);
+    procedure SetFIDusuario(const Value: string);
+    procedure SetFagencia(const Value: string);
+    procedure SetFconta(const Value: string);
+    procedure SetFcontaInterna(const Value: string);
+    procedure SetFobservacao(const Value: string);
+    procedure SetFtitular(const Value: string);
+    procedure SetFdependente(const Value: string);
+
+    procedure SetFlimiteCredito(const Value: Currency);
+    procedure SetFsaldoInicial(const Value: Currency);
+
+  public
+
+    property FDataRegistro: TDateTime read getFFDataRegistro write SetFDataRegistro;
+    property FDataUltimaAtualizacao: TDateTime read getFFDataUltimaAtualizacao write SetFDataUltimaAtualizacao;
+
+    property FIDtipoCedente: string read getFFIDtipoCedente write SetFIDtipoCedente;
+    property FCodigo: string read getFFCodigo write SetFCodigo;
+    property FStatus: string read getFFStatus write SetFStatus;
+
+    property  FID: string read getFFID write SetFID;
+    property FIDorganizacao: string read getFFIDorganizacao write SetFIDorganizacao;
+    property Forganizacao: TOrganizacaoModel read getFFOrganizacao write SetForganizacao;
+
+    property FIDendereco: string read getFFIDendereco write SetFIDendereco;
+    property FIDcontato: string read getFFIDcontato write SetFIDcontato;
+    property Fnome: string read getFFnome write SetFnome;
+    property FcpfCnpj: string read getFFcpfCnpj write SetFcpfCnpj;
+    property FinscricaoEstadual: string read getFFinscricaoEstadual write SetFinscricaoEstadual;
+    property FinscricaoMunicipal: string read getFFinscricaoMunicipal write SetFinscricaoMunicipal;
+    property Fcga: string read getFFcga write SetFcga;
+    property Fpersonalidade: string read getFFpersonalidade write SetFpersonalidade;
+    property Fconta: string read getFFconta write SetFconta;
+    property Fagencia: string read getFFagencia write SetFagencia;
+    property FIDbanco: string read getFFIDbanco write SetFIDbanco;
+    property FIDcontaContabil: string read getFFIDcontaContabil write SetFIDcontaContabil;
+    property FIDcartaoCreditoModel: string read getFFIDcartaoCreditoModel write SetFIDcartaoCreditoModel;
+
+      Constructor Create;
+
+  end;
+
+
+implementation
+
+end.

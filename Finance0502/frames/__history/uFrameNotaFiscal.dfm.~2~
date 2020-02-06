@@ -1,0 +1,7 @@
+object frmNotafiscal: TfrmNotafiscal
+  Left = 0
+  Top = 0
+  Width = 994
+  Height = 392
+  TabOrder = 0
+end
