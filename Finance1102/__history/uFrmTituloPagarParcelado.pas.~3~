@@ -1,0 +1,26 @@
+unit uFrmTituloPagarParcelado;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls;
+
+type
+  TfrmTituloPagarParcelado = class(TForm)
+    edtQtdParcelas: TEdit;
+    Label1: TLabel;
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmTituloPagarParcelado: TfrmTituloPagarParcelado;
+
+implementation
+
+{$R *.dfm}
+
+end.
