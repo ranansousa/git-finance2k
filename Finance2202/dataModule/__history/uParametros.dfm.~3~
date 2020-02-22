@@ -1,0 +1,14 @@
+object DataModule1: TDataModule1
+  OldCreateOrder = False
+  Height = 264
+  Width = 448
+  object qryObterTodos: TFDQuery
+    Connection = dmConexao.conn
+    SQL.Strings = (
+      'SELECT * FROM PARAMETROS P'
+      'WHERE 1=1 '
+      'ORDER BY P.CODIGO')
+    Left = 96
+    Top = 72
+  end
+end
