@@ -1,9 +1,0 @@
-object DataModule3: TDataModule3
-  OldCreateOrder = False
-  Height = 391
-  Width = 615
-  object qryGravarLote: TFDQuery
-    Left = 224
-    Top = 192
-  end
-end
