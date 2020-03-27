@@ -1,0 +1,16 @@
+object frmTipoSacado: TfrmTipoSacado
+  Left = 0
+  Top = 0
+  Width = 309
+  Height = 35
+  TabOrder = 0
+  object cbbcombo: TComboBox
+    Left = 1
+    Top = 1
+    Width = 308
+    Height = 21
+    TabOrder = 0
+    Text = '>> Selecione <<'
+    OnChange = cbbcomboChange
+  end
+end
