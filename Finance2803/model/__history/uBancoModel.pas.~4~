@@ -1,0 +1,51 @@
+unit uBancoModel;
+
+interface
+ {
+
+
+CREATE TABLE BANCO (
+    ID_BANCO        VARCHAR(36) NOT NULL,
+    CODIGO_BANCO    VARCHAR(10),
+    NOME_BANCO      VARCHAR(60),
+    SIGLA_BANCO     VARCHAR(20),
+    ID_ORGANIZACAO  VARCHAR(36) NOT NULL
+);
+
+
+}
+uses
+  Windows, Messages, Classes, SysUtils,uOrganizacaoModel;
+
+type
+  TEnderecoModel = class(TObject)
+  private
+    FFID: string;
+    FFCODIGO_BANCO: string;
+    FFNOME_BANCO: string;
+    FFSIGLA_BANCO: string;
+    FFIDorganizacao: string;
+    FFOrganizacao: TOrganizacaoModel;
+
+
+
+  public
+    destructor Destroy; override;
+
+    property FID: string read getFFID write SetFID;
+    property FIDorganizacao: string read getFFIDorganizacao write SetFIDorganizacao;
+    property Forganizacao: TOrganizacaoModel read getFFOrganizacao write SetForganizacao;
+
+    property FFCODIGO_BANCO: string read getFFIDCIDADE write SetFIDCIDADE;
+    property FFNOME_BANCO: string read getFFCEP write SetFCEP;
+    property FFSIGLA_BANCO: string read getFFNUMERO write SetFNUMERO;
+
+
+      Constructor Create;
+
+
+  end;
+
+implementation
+
+end.

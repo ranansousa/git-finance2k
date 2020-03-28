@@ -1,0 +1,112 @@
+unit uFrmAlteraOrganizacao;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, uFrameOrganizacoes, uUtil, Vcl.StdCtrls,;
+
+type
+  TfrmAlteraOrganizacao = class(TForm)
+    frameOrg1: TframeOrg;
+    btn1: TButton;
+    procedure frameOrg1cbbOrgChange(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmAlteraOrganizacao: TfrmAlteraOrganizacao;
+
+implementation
+
+{$R *.dfm}
+
+procedure TfrmAlteraOrganizacao.frameOrg1cbbOrgChange(Sender: TObject);
+var
+  cnpj, pid: string;
+  indice: Integer;
+begin
+
+  try
+    acessoMenu(false);
+
+    if (cbxOrganizacoes.ItemIndex > (-1)) then
+    begin
+
+      indice := (cbxOrganizacoes.ItemIndex);
+      pid := FsListaIdOrganizacoes[indice];
+
+      if not (dmConexao.Conn.Connected) then
+      begin
+        dmConexao.conectarBanco;
+      end;
+
+      if (dmConexao.Conn.Connected) then
+      begin
+        dmOrganizacao.carregarDadosEmpresa(pid);
+        pid := dmOrganizacao.qryDadosEmpresa.FieldByName('ID_ORGANIZACAO').AsString;
+        cnpj := Trim(dmOrganizacao.qryDadosEmpresa.FieldByName('CNPJ').AsString);
+    //setando dados da organizacao selecionada
+        uUtil.TOrgAtual.setId(pid);
+        uUtil.TOrgAtual.setCNPJ(cnpj);
+        uUtil.TOrgAtual.setFantasia(dmOrganizacao.qryDadosEmpresa.FieldByName('FANTASIA').AsString);
+        uUtil.TOrgAtual.setRazaoSocial(dmOrganizacao.qryDadosEmpresa.FieldByName('RAZAO_SOCIAL').AsString);
+        uUtil.TOrgAtual.setSistemaContabil(dmOrganizacao.qryDadosEmpresa.FieldByName('SISTEMA_CONTABIL').AsString);
+
+        //setando os dados para envio de email
+         serverMail(uUtil.TOrgAtual.getId);
+
+        //esconde o login
+              pnlMain.Visible := true;
+              lblBoasVindas.Visible := False;
+              img1.Visible := False;
+              lbl1.Visible := False;
+              lbl2.Visible := False;
+              lbl3.Visible := False;
+
+
+//    lblPathSGBD.Caption := 'PATH BANCO ' + uUtil.TOrgAtual.getPathSGBD;
+        stat1.Panels[1].Text := 'USER : > ' + TUserAtual.getNameUser;
+        stat1.Panels[2].Text := 'ORG  : > ' + uUtil.TOrgAtual.getFantasia ;
+        stat1.Panels[3].Text := 'DATA : > ' + FormatDateTime('dd/mm/yyyy', uUtil.getDataServer);
+        stat1.Panels[4].Text := 'BANCO DE DADOS : > ' + uUtil.TOrgAtual.getPathSGBD ;
+        stat1.Panels[5].Text := '';
+
+        if not (uUtil.TOrgAtual.getSistemaContabil = '') then begin
+            stat1.Panels[5].Text := 'SISTEMA CONTÁBIL : > ' + uUtil.TOrgAtual.getSistemaContabil;
+        end;
+
+
+        if not (pid = '') then
+        begin
+          acessoMenu(true); // libera o menu principal
+        end
+        else
+        begin
+          acessoMenu(false);
+          stat1.Panels[1].Text := '';
+          stat1.Panels[2].Text := ' ';
+          stat1.Panels[3].Text := 'DATA : > ' + FormatDateTime('dd/mm/yyyy', dmOrganizacao.obterDataServidor);
+          stat1.Panels[5].Text := '';
+
+        end;
+
+      end;
+
+    end
+    else
+    begin
+      acessoMenu(false);
+      MessageDlg('Dados incorretos...', mtWarning, [mbOK], 0);
+    end;
+  except
+    on e: Exception do
+      MessageDlg('Problemas ao selecionar uma empresa...', mtWarning, [mbOK], 0);
+  end;
+
+end;
+
+end.

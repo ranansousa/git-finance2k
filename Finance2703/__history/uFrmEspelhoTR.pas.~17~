@@ -1,0 +1,309 @@
+unit uFrmEspelhoTR;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, uFrameTR, uDMOrganizacao, udmConexao, uUtil,
+  Vcl.StdCtrls, Vcl.Buttons, EEdBtn, ENumEd, cxGraphics, cxControls,uDMEspelhoTR,
+  cxLookAndFeels, cxLookAndFeelPainters, dxSkinsCore, dxSkinsDefaultPainters,
+  dxStatusBar, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
+  FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
+  FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet,
+  uTituloReceberModel, uTituloReceberDAO,
+  FireDAC.Comp.Client, frxClass, frxDBSet, Vcl.ComCtrls;
+
+type
+  TformEspelhoTR = class(TForm)
+    btnBuscar: TBitBtn;
+    edtValor: TEvNumEdit;
+    edtDescricao: TEvEditBtn;
+    lblDescricao: TLabel;
+    lbl1: TLabel;
+    btnFechar: TBitBtn;
+    btnImprimir: TBitBtn;
+    qryBusca: TFDQuery;
+    statStatusEsp: TStatusBar;
+    frameTR1: TframeTR;
+    procedure FormCreate(Sender: TObject);
+    procedure btnBuscarClick(Sender: TObject);
+    procedure btnFecharClick(Sender: TObject);
+    procedure btnImprimirClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure frameTR1cbbTRChange(Sender: TObject);
+  private
+    { Private declarations }
+     idOrganizacao : string;
+    FsListaIdTR : TStringList;
+    indexCombo :Integer;
+    pNumeroDoc, pId :string;
+
+
+    procedure limpaPanel;
+    procedure preencheStatus(posicalPanel: Integer; msg: string);
+    function obterTR(pIdOrganizacao, pidTR, pNumeroDoc: string): Boolean;
+    function obterIndiceLista(pId: string; lista: TStringList): Integer;
+  public
+    { Public declarations }
+
+   constructor Create(AOwner: TComponent; nDoc :String);  overload;
+   constructor Create(AOwner: TComponent; tituloEntrada :TTituloReceberModel ); overload;
+
+
+  end;
+
+var
+  formEspelhoTR: TformEspelhoTR;
+
+implementation
+
+{$R *.dfm}
+
+procedure TformEspelhoTR.btnFecharClick(Sender: TObject);
+begin
+  limpaPanel;
+  PostMessage(Self.Handle, WM_CLOSE, 0, 0);
+end;
+
+procedure TformEspelhoTR.btnImprimirClick(Sender: TObject);
+begin
+//pathRelatorio := uutil.TRathRelatorio.getContasPagarEspelho;
+
+ if (dmEspelhoTR.obterPorNumeroDocumento(idOrganizacao, pNumeroDoc)) then begin
+          if (qryBusca.RecordCount > 0) then  begin
+              preencheStatus(1,'Espelho pronto para ser impresso.');
+              dmEspelhoTR.exibirRelatorio(uutil.getDataServer, uutil.getDataServer);
+              limpaPanel;
+      end
+      else
+      begin
+        btnImprimir.Enabled := false;
+        limpaPanel;
+        preencheStatus(1,'Não foi possível imprmir.');
+        ShowMessage('Não existem dados para imprimir.');
+      end
+
+  end;
+end;
+
+  constructor TformEspelhoTR.Create(AOwner: TComponent; tituloEntrada: TTituloReceberModel);
+
+begin
+  inherited Create(AOwner);
+
+  FsListaIdTR := TStringList.Create;
+  FsListaIdTR.Clear;
+  frameTR1.cbbTR.Clear;
+
+  if uUtil.Empty(idOrganizacao) then begin idOrganizacao := uutil.TOrgAtual.getId;end;
+
+    if not (uutil.Empty(tituloEntrada.FnumeroDocumento)) then
+    begin
+
+      tituloEntrada := TTituloReceberDAO.obterPorNumeroDocumento(tituloEntrada);
+
+    end;
+
+    if not uutil.Empty(tituloEntrada.FID) then begin
+
+         pNumeroDoc := tituloEntrada.FnumeroDocumento;
+         pId  := tituloEntrada.FID;
+
+         frameTR1.cbbTR.Items.Add(pNumeroDoc);
+         FsListaIdTR.Add(pId);
+         frameTR1.cbbTR.ItemIndex := obterIndiceLista(pId, FsListaIdTR);
+
+         btnBuscar.Click;
+       //  btnImprimir.Click;
+
+    end else begin
+
+        frameTR1.obterTodos(idOrganizacao,frameTR1.cbbTR,FsListaIdTR);
+
+    end;
+
+end;
+
+
+function TformEspelhoTR.obterIndiceLista(pId: string;  lista: TStringList): Integer;
+var
+  I: Integer;
+begin
+ Result :=0;
+
+  for I := 0 to lista.Count-1 do begin
+    if(lista[I].Equals(pId)) then begin
+       Result := I;
+       Break;
+    end;
+
+  end;
+
+end;
+
+
+constructor TformEspelhoTR.Create(AOwner: TComponent; nDoc: String);
+var
+tituloEntrada :TTituloReceberModel;
+
+begin
+  inherited Create(AOwner);
+  tituloEntrada := TTituloReceberModel.Create;
+  if uUtil.Empty(idOrganizacao) then begin idOrganizacao := uutil.TOrgAtual.getId;end;
+
+  FsListaIdTR := TStringList.Create;
+  FsListaIdTR.Clear;
+  frameTR1.cbbTR.Clear;
+
+
+    if not (uutil.Empty(nDoc)) then
+    begin
+
+      tituloEntrada.FIDorganizacao := idOrganizacao;
+      tituloEntrada.FnumeroDocumento := nDoc;
+      tituloEntrada := TTituloReceberDAO.obterPorNumeroDocumento(tituloEntrada);
+
+    end;
+
+    if not uutil.Empty(tituloEntrada.FID) then begin
+
+         pNumeroDoc := tituloEntrada.FnumeroDocumento;
+         pId  := tituloEntrada.FID;
+
+         frameTR1.cbbTR.Items.Add(pNumeroDoc);
+         FsListaIdTR.Add(pId);
+         frameTR1.cbbTR.ItemIndex := obterIndiceLista(pId, FsListaIdTR);
+
+         btnBuscar.Click;
+         btnImprimir.Click;
+
+    end else begin
+
+        frameTR1.obterTodos(idOrganizacao,frameTR1.cbbTR,FsListaIdTR);
+
+    end;
+
+end;
+
+procedure TformEspelhoTR.btnBuscarClick(Sender: TObject);
+
+begin
+
+  if not uUtil.Empty(frameTR1.cbbTR.Text)  then
+  begin
+
+       if obterTR(idOrganizacao,pId,pNumeroDoc) then begin
+          preencheStatus(1,'Espelho pronto para ser impresso.');
+          edtValor.Text := CurrToStr(qryBusca.FieldByName('VALOR_NOMINAL').AsCurrency);
+          edtDescricao.Text :=       qryBusca.FieldByName('DESCRICAO').AsString;
+          btnImprimir.Enabled := True;
+       end;
+
+  end
+  else
+  begin
+      preencheStatus(1,'Precisa selecionar um número de documento..');
+      ShowMessage('Selecione um título ');
+  end;
+
+
+
+end;
+
+procedure TformEspelhoTR.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+
+  if  (Assigned(dmEspelhoTR)) then
+  begin
+    FreeAndNil(dmEspelhoTR);
+  end;
+
+
+end;
+
+procedure TformEspelhoTR.FormCreate(Sender: TObject);
+begin
+
+ idOrganizacao := uUtil.TOrgAtual.getId;
+ //frameTR1.obterTodos(idOrganizacao,frameTR1.cbbTR,FsListaIdTR);
+
+ if not (Assigned(dmOrganizacao)) then
+  begin
+    dmOrganizacao := TdmOrganizacao.Create(Self);
+  end;
+
+
+  if not(Assigned(dmEspelhoTR)) then
+  begin
+    dmEspelhoTR := TdmEspelhoTR.Create(Self);
+  end  ;
+
+  limpaPanel;
+
+end;
+
+ procedure TformEspelhoTR.frameTR1cbbTRChange(Sender: TObject);
+begin
+ if frameTR1.cbbTR.ItemIndex >0  then begin
+    indexCombo := frameTR1.cbbTR.ItemIndex;
+    pId := FsListaIdTR[indexCombo];
+    pNumeroDoc := frameTR1.cbbTR.Items[indexCombo];
+    preencheStatus(1,'Título selecionado.');
+
+ end else begin indexCombo :=0; end;
+end;
+
+procedure TformEspelhoTR.preencheStatus(posicalPanel :Integer; msg :string);
+ begin
+  statStatusEsp.Panels[posicalPanel].Text := msg;
+ end;
+
+
+ function TformEspelhoTR.obterTR(pIdOrganizacao, pidTR, pNumeroDoc :string) :Boolean;
+ var
+  cmdSql :string;
+  begin
+
+    dmConexao.conectarBanco;
+
+    try
+      if uUtil.Empty(pIdOrganizacao) then begin
+          pIdOrganizacao := uutil.TOrgAtual.getId;
+      end;
+
+
+    if not uUtil.Empty(pidTR) then
+    begin
+      try
+        qryBusca.Close;
+        qryBusca.Connection := dmConexao.conn;
+        qryBusca.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+        qryBusca.ParamByName('PIDTR').AsString := pidTR;
+        qryBusca.ParamByName('PNUMDOC').AsString := pNumeroDoc;
+        qryBusca.Open;
+      except
+        raise Exception.Create('Erro ao tentar consultar dados dos títulos.');
+      end;
+    end;
+    except
+    raise Exception.Create('Erro ao consultar o título :' + pNumeroDoc);
+    end;
+    preencheStatus(1,'A consulta retornou ' + IntToStr(qryBusca.RecordCount) + ' registros. ');
+    Result := not qryBusca.IsEmpty;
+
+  end;
+
+procedure TformEspelhoTR.limpaPanel;
+begin
+
+ preencheStatus(0,' Status : ');
+ preencheStatus(1,'Pronto');
+// frameTR1.cbbTR.ItemIndex :=0;
+ edtValor.Text := '0';
+ edtDescricao.Text := '';
+ btnImprimir.Enabled := false;
+
+end;
+
+
+end.

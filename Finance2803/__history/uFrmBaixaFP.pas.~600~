@@ -1,0 +1,1248 @@
+unit uFrmBaixaFP;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics, System.DateUtils,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, ENumEd, uUtil, Data.DB,udmConexao,uFrmBaixaFPInternet,uTPBaixaInternetModel,
+  cxGraphics, cxControls, cxLookAndFeels, cxLookAndFeelPainters, dxSkinsCore, uDMBaixaTP,uTPBaixaFPModel, uFormaPagamentoDAO,
+  dxSkinsDefaultPainters, FireDAC.Stan.Intf, FireDAC.Stan.Option, uContaBancariaChequeModel,uFrmBaixaFPCheque,   FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,uCedenteModel,
+  FireDAC.DApt.Intf, FireDAC.Comp.DataSet, FireDAC.Comp.Client, dxStatusBar, uTituloPagarModel,uTituloPagarDAO,  uFormaPagamentoModel,
+  Vcl.Grids, Vcl.DBGrids, uFrameFormaPagamento, Vcl.ComCtrls, uFrameGeneric, uTPBaixaDAO, uTPBaixaModel,uTPBaixaChequeModel,
+  uFrameResponsavel, dxBarBuiltInMenu,System.Generics.Collections, cxPC, uLoteContabilModel, uLoteContabilDAO,
+  uFrameTipoAcrescimo, uTipoAcrescimoModel,  uTipoAcrescimoDAO , uTPBaixaACModel,uFrmTituloPagarClone,uTituloPagarHistoricoDAO,uTituloPagarCentroCustoDAO,
+  uTPBaixaDEModel , uTipoDeducaoModel,  uTipoDeducaoDAO, FireDAC.Stan.Async,
+  FireDAC.DApt, uFrameTipoDeducao ;
+
+type
+  TfrmBaixaFP = class(TForm)
+    frmFormaPagto1: TfrmFormaPagto;
+    edtValorPago: TEvNumEdit;
+    lbl1: TLabel;
+    lbl2: TLabel;
+    btnSelect: TButton;
+    dbgrdFP: TDBGrid;
+    dxStatusBar: TdxStatusBar;
+    fdmFP: TFDMemTable;
+    dsGridFP: TDataSource;
+    btnDin: TButton;
+    btnCheque: TButton;
+    btnWEB: TButton;
+    btnLimpar: TButton;
+    btnCancelar: TButton;
+    edtDoc: TEdit;
+    cbbTipoPagto: TComboBox;
+    edtDescricao: TEdit;
+    edtVcto: TEdit;
+    edtParcela: TEdit;
+    edtValotTP: TEvNumEdit;
+    edtCedente: TEdit;
+    lbl3: TLabel;
+    lbl4: TLabel;
+    lbl5: TLabel;
+    lbl6: TLabel;
+    lbl7: TLabel;
+    lbl8: TLabel;
+    lbl9: TLabel;
+    dtpPagto: TDateTimePicker;
+    lbl10: TLabel;
+    frameResponsavel1: TframeResponsavel;
+    edtCNPJ: TEdit;
+    lbl11: TLabel;
+    cxpgcntrlFP: TcxPageControl;
+    tbTransfereFP: TcxTabSheet;
+    tbTransfereAC: TcxTabSheet;
+    tbTransfereDE: TcxTabSheet;
+    btnPagamento: TButton;
+    edtValorAC: TEvNumEdit;
+    dbgrdAC: TDBGrid;
+    dsGridAC: TDataSource;
+    fdmAC: TFDMemTable;
+    btnSelectTAC: TButton;
+    btnLimparAC: TButton;
+    dbgrdTAC: TDBGrid;
+    dsGridTA: TDataSource;
+    qryTodosTAC: TFDQuery;
+    frameTipoDeducao1: TframeTipoDeducao;
+    frameTipoAcrescimo1: TframeTipoAcrescimo;
+    edtValorDE: TEvNumEdit;
+    btnSelectTDE: TButton;
+    fdmDE: TFDMemTable;
+    dsGridDE: TDataSource;
+    dbgrdDE: TDBGrid;
+    dsGridTDE: TDataSource;
+    qryTodosTDE: TFDQuery;
+    dbgrdTDE: TDBGrid;
+    btnLimpaListaDE: TButton;
+    procedure FormCreate(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure btnSelectClick(Sender: TObject);
+    procedure btnDinClick(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure btnChequeClick(Sender: TObject);
+    procedure btnWEBClick(Sender: TObject);
+    procedure btnLimparClick(Sender: TObject);
+    procedure btnCancelarClick(Sender: TObject);
+    procedure cbbTipoPagtoChange(Sender: TObject);
+    procedure frameResponsavel1cbbcomboChange(Sender: TObject);
+    procedure dtpPagtoChange(Sender: TObject);
+    procedure tbTransfereFPShow(Sender: TObject);
+    procedure btnPagamentoClick(Sender: TObject);
+    procedure btnSelectTACClick(Sender: TObject);
+    procedure btnLimparACClick(Sender: TObject);
+    procedure btnSelectTDEClick(Sender: TObject);
+    procedure btnLimpaListaDEClick(Sender: TObject);
+    procedure tbTransfereACShow(Sender: TObject);
+    procedure tbTransfereDEShow(Sender: TObject);
+  private
+    { Private declarations }
+    baixaModel  :TTPBaixaModel;
+    FSListaIDResp, FSListaIDFP :TStringList;
+    FSListaIDTAC, FSListaIDTDE :TStringList;
+    pIdOrganizacao :string;
+    valorDevido :Currency;
+    totalFP, totalAC, totalDE : Currency;
+    cheque : TContaBancariaChequeModel;
+    tituloPagar :TTituloPagarModel;
+    //FListaFormasPagto: TObjectList<TTPBaixaFPModel>;
+    lote : TLoteContabilModel;
+    msg :string;
+    procedure createTable;
+    procedure removeFP(pIndice :Integer);
+    function  obterValorPago: Currency;
+    procedure validarValor;
+    procedure msgStatusBar(pPosicao: Integer; msg: string);
+    procedure limpar;
+    procedure limparForm;
+    procedure preencheForm(var pTP :TTituloPagarModel);
+    procedure limparAba(aba: TcxTabSheet);
+    procedure atualizaValoPagar;
+    function baixarTitulo(pBaixa: TTPBaixaModel): Boolean;
+    function  obterLoteContabil(pLote : TLoteContabilModel) : TLoteContabilModel;
+    procedure carregarCombos;
+    procedure insertClone(clone: TTituloPagarModel);
+    function atualizaParcela (pParcela :string; qtd :Integer) : string;
+
+
+  public
+    { Public declarations }
+  constructor Create (AOwner :TComponent; var pTitulo :TTituloPagarModel);
+
+  end;
+
+var
+  frmBaixa :TfrmBaixaFP ;
+
+implementation
+
+{$R *.dfm}
+
+{ TfrmBaixaFP2 }
+
+procedure TfrmBaixaFP.btnCancelarClick(Sender: TObject);
+var
+isFecha : Boolean;
+begin
+
+isFecha := True;
+
+  if uutil.Empty(tituloPagar.FregistroProvisao) then
+  begin
+   isFecha := False;
+
+    if MessageDlg('Se o título não for pago, será automaticamente provisionado. Deseja cancelar o pagamento? ', mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+    begin
+      tituloPagar := TTituloPagarDAO.obterPorID(tituloPagar);
+      tituloPagar.FregistroProvisao := tituloPagar.FID;
+      tituloPagar.FisProvisao := 1;
+      TTituloPagarDAO.Update(tituloPagar);
+
+      isFecha := True;
+
+    end;
+
+  end;
+
+ if isFecha then begin
+      btnLimpar.Click;
+      PostMessage(Self.Handle, WM_CLOSE, 0, 0);
+ end;
+
+end;
+
+procedure TfrmBaixaFP.btnChequeClick(Sender: TObject);
+var
+ posicao, I: Integer;
+begin
+      posicao := 0;
+
+      for I := 0 to FSListaIDFP.Count - 1 do
+      begin
+        if FSListaIDFP[I].Equals('CHEQUE') then
+        begin
+          posicao := I;
+          Break;
+        end;
+      end;
+
+      frmFormaPagto1.cbbcombo.ItemIndex := posicao;
+      btnSelect.Click;
+      btnCheque.Enabled := False;
+
+end;
+
+procedure TfrmBaixaFP.btnDinClick(Sender: TObject);
+var
+ posicao, I: Integer;
+begin
+      posicao := 0;
+
+      for I := 0 to FSListaIDFP.Count - 1 do
+      begin
+        if FSListaIDFP[I].Equals('ESPECIE') then
+        begin
+          posicao := I;
+          Break;
+        end;
+      end;
+
+      frmFormaPagto1.cbbcombo.ItemIndex := posicao;
+      btnSelect.Click;
+      btnDin.Enabled := False;
+
+end;
+
+procedure TfrmBaixaFP.btnLimpaListaDEClick(Sender: TObject);
+begin
+  edtValorDE.Value := 0;
+  frameTipoDeducao1.cbbcombo.ItemIndex := 0;
+
+  fdmDE.Open;
+  fdmDE.First;
+  while not fdmDE.Eof do
+  begin
+    fdmDE.Delete;
+    fdmDE.Next;
+  end;
+
+  baixaModel.listaDeducao.Clear;
+
+  dbgrdDE.Refresh;
+  valorDevido := valorDevido - totalDE;
+   msgStatusBar(2, 'Total de deduções');
+   msgStatusBar(3, formatfloat('R$ ,0.00', (totalDE)));
+  totalDE :=0;
+
+  atualizaValoPagar;
+
+end;
+
+procedure TfrmBaixaFP.btnLimparACClick(Sender: TObject);
+begin
+  edtValorAC.Value := 0;
+  frameTipoAcrescimo1.cbbcombo.ItemIndex := 0;
+
+  fdmAC.Open;
+  fdmAC.First;
+  while not fdmAC.Eof do
+  begin
+    fdmAC.Delete;
+    fdmAC.Next;
+  end;
+  baixaModel.listaAcrescimo.Clear;
+
+  dbgrdAC.Refresh;
+  valorDevido := valorDevido - totalAC;
+  msgStatusBar(2, 'Total de acréscimos');
+  msgStatusBar(3, formatfloat('R$ ,0.00', (totalAC)));
+
+  totalAC := 0;
+
+  atualizaValoPagar;
+
+end;
+
+
+procedure TfrmBaixaFP.btnLimparClick(Sender: TObject);
+begin
+ limpar;
+
+end;
+
+procedure TfrmBaixaFP.btnPagamentoClick(Sender: TObject);
+var
+tituloClone :TTituloPagarModel;
+ begin
+  try
+
+   if baixaModel.FtipoBaixa.Equals('PARCIAL') then begin
+    //clonar titulo com o novo
+
+      tituloClone :=  TTituloPagarModel.Create;
+      tituloClone.FID               := tituloPagar.FID;
+      tituloClone.FIDorganizacao    := tituloPagar.FIDorganizacao;
+      tituloClone.FvalorNominal     := (tituloPagar.FvalorNominal - totalFP);
+      tituloClone.FvalorAntecipado  := totalFP + tituloPagar.FvalorAntecipado;
+
+
+      frmTituloPagarClone := TFrmTituloPagarClone.Create(Self, tituloClone);
+      frmTituloPagarClone.ShowModal;
+      tituloClone := frmTituloPagarClone.getTitulo;
+
+      tituloClone.FvalorNominal;
+
+     // tituloClone.Fparcela          := atualizaParcela(tituloPagar.Fparcela, 2);
+     // tituloPagar.Fparcela          := atualizaParcela(tituloPagar.Fparcela, 0);
+
+
+      tituloPagar.FvalorNominal := baixaModel.FvalorPago;
+
+
+      try
+      insertClone(tituloClone);
+
+      except
+
+      raise Exception.Create('Erro ao tentar inserir o titulo clonado');
+
+
+      end;
+
+    end;
+
+
+
+   if baixaModel.FtipoBaixa.Equals('TOTAL') then begin
+
+    if baixaModel.FvalorPago <> valorDevido then
+    begin
+      ShowMessage('Valor pago está diferente do valor devido. Verifique!');
+    end;
+
+   end;
+
+
+    if TTPBaixaDAO.salvarBaixa(baixaModel, tituloPagar) then
+    begin
+      MessageDlg('Pagamento efetuado com sucesso!', mtInformation, [mbOK], 0) ;
+      btnLimpar.Click;
+      PostMessage(Self.Handle, WM_CLOSE, 0, 0);
+
+    end;
+
+  except
+    on e: Exception do
+      ShowMessage(e.Message + sLineBreak + 'Contate o administrador!');
+  end;
+
+end;
+
+///
+
+
+
+procedure TfrmBaixaFP.insertClone(clone :TTituloPagarModel);
+begin
+ dmConexao.conectarBanco;
+
+
+  try
+
+  dmConexao.conn.StartTransaction ;
+
+    //insetir o tp
+
+      TTituloPagarDAO.Insert(clone);
+   // inserir o historico
+      TTituloPagarHistoricoDAO.Insert(clone.listaHistorico[0]);
+   //  inserir o centro custo
+      TTituloPagarCentroCustoDAO.Insert(clone.listaCustos[0]);
+
+  dmConexao.conn.CommitRetaining;
+  except
+  raise Exception.Create('Erro ao tentar clonar um titulo ');
+
+  end;
+
+end;
+
+procedure TfrmBaixaFP.btnSelectClick(Sender: TObject);
+var
+chequePagto :TContaBancariaChequeModel;
+idFormaPagto :string;
+baixaCheque  : TTPBaixaChequeModel;
+baixaWWW      :TTPBaixaInternetModel;
+baixaFP      : TTPBaixaFPModel;
+formaPagto   : TFormaPagamentoModel;
+
+begin
+   tbTransfereAC.Enabled := False;
+   tbTransfereDE.Enabled := False;
+
+ if frmFormaPagto1.cbbcombo.ItemIndex >0 then begin
+    idFormaPagto := FSListaIDFP[frmFormaPagto1.cbbcombo.ItemIndex];
+
+    if idFormaPagto.Equals('CHEQUE') then
+    begin
+
+     formaPagto := TFormaPagamentoModel.Create;
+     formaPagto.FID := idFormaPagto;
+     formaPagto.FIDorganizacao := pIdOrganizacao;
+     formaPagto := TFormaPagamentoDAO.obterPorID(formaPagto);
+
+      chequePagto                 := TContaBancariaChequeModel.Create;
+      chequePagto.FIdOrganizacao  := pIdOrganizacao;
+      chequePagto.FValor          := edtValorPago.Value;
+      chequePagto.FPortador       := edtCedente.Text;
+      chequePagto.FIDresponsavel  := baixaModel.FIDResponsavel;
+
+      frmBaixaFPCheque := TfrmBaixaFPCheque.Create(Self, chequePagto);
+      frmBaixaFPCheque.ShowModal;
+      chequePagto := frmBaixaFPCheque.getCheque;
+   //   FreeAndNil(frmBaixaFPCheque);
+
+      if chequePagto.Fvalor > 0 then
+      begin
+        fdmFP.Open;
+        fdmFP.InsertRecord([frmFormaPagto1.cbbcombo.Text + ' ' + chequePagto.FNumero, edtValorPago.Value]);
+      end;
+
+      // TITULO_PAGAR_BAIXA_CHEQUE
+      baixaCheque                := TTPBaixaChequeModel.Create;
+      baixaCheque.FID            := dmConexao.obterNewID;
+      baixaCheque.FIDorganizacao := pIdOrganizacao;
+      baixaCheque.FIDTOB         := 'PAGTO EM CHEQUE';
+      baixaCheque.FIDTPBaixa     := baixaModel.FID;
+      baixaCheque.FCheque        := chequePagto;
+      baixaCheque.Fvalor         := chequePagto.FValor;
+      //doc + datas
+
+     // TITULO_PAGAR_BAIXA_FP
+     baixaFP := TTPBaixaFPModel.Create;
+     baixaFP.FID := dmConexao.obterNewID;
+     baixaFP.FIDorganizacao := pIdOrganizacao;
+     baixaFP.FFormaPagamento := formaPagto;
+     baixaFP.FValor := baixaCheque.Fvalor;
+     baixaFP.FIDTPBaixa := baixaModel.FID;
+
+      totalFP := totalFP + baixaFP.FValor ;
+
+     baixaModel.AdicionarFP(baixaFP); //coloca esse pagto dentro do model de baixa
+     baixaModel.FTPBaixaCheque := baixaCheque;   //seta o cheque na baixa
+    end;
+
+
+    if idFormaPagto.Equals('ESPECIE') then
+    begin
+
+     formaPagto := TFormaPagamentoModel.Create;
+     formaPagto.FID := idFormaPagto;
+     formaPagto.FIDorganizacao := pIdOrganizacao;
+     formaPagto := TFormaPagamentoDAO.obterPorID(formaPagto);
+
+      fdmFP.Open;
+      fdmFP.InsertRecord([frmFormaPagto1.cbbcombo.Text ,  edtValorPago.Value]);
+
+     // TITULO_PAGAR_BAIXA_FP
+     baixaFP := TTPBaixaFPModel.Create;
+     baixaFP.FID := dmConexao.obterNewID;
+     baixaFP.FIDorganizacao := pIdOrganizacao;
+     baixaFP.FFormaPagamento := formaPagto;
+     baixaFP.FValor := edtValorPago.Value; //ver isso
+     baixaFP.FIDTPBaixa := baixaModel.FID;
+
+     totalFP := totalFP + baixaFP.FValor;
+
+     baixaModel.AdicionarFP(baixaFP); //coloca esse pagto dentro do model de baixa
+
+    end;
+
+    if idFormaPagto.Equals('INTERNET BANK') then
+    begin
+
+     formaPagto := TFormaPagamentoModel.Create;
+     formaPagto.FID := idFormaPagto;
+     formaPagto.FIDorganizacao := pIdOrganizacao;
+     formaPagto := TFormaPagamentoDAO.obterPorID(formaPagto);
+
+     baixaWWW                       := TTPBaixaInternetModel.Create;
+     baixaWWW.FIDorganizacao        := pIdOrganizacao;
+     baixaWWW.FID                   := dmConexao.obterNewID;
+     baixaWWW.Fvalor                := edtValorPago.Value;
+     baixaWWW.FIDTPB                := baixaModel.FID;
+     baixaWWW.Fdetalhamento         := 'PG TP ' + tituloPagar.FnumeroDocumento ;
+     baixaWWW.FIDbancoDestino       := tituloPagar.FCedente.FIDbanco;
+     baixaWWW.FcontaDestino         := tituloPagar.FCedente.Fconta;
+     baixaWWW.FagenciaDestino       := tituloPagar.FCedente.Fagencia;
+     baixaWWW.FnomeCorrentista      := tituloPagar.FCedente.Fnome;
+     baixaWWW.Fpersonalidade        := tituloPagar.FCedente.Fpersonalidade;
+     baixaWWW.FCPCFCNPJCorrentista  := tituloPagar.FCedente.FcpfCnpj;
+     baixaWWW.FdataOperacao         := dtpPagto.DateTime;
+
+      frmBaixaFPInternet := TfrmBaixaFPInternet.Create(Self, baixaWWW);
+      frmBaixaFPInternet.ShowModal;
+      baixaWWW := frmBaixaFPInternet.getBaixaWWW;
+
+      if baixaWWW.Fvalor > 0 then
+      begin
+        fdmFP.Open;
+        fdmFP.InsertRecord([frmFormaPagto1.cbbcombo.Text, edtValorPago.Value]);
+      end;
+
+     // TITULO_PAGAR_BAIXA_FP
+     baixaFP := TTPBaixaFPModel.Create;
+     baixaFP.FID := dmConexao.obterNewID;
+     baixaFP.FIDorganizacao := pIdOrganizacao;
+     baixaFP.FFormaPagamento := formaPagto;
+     baixaFP.FValor := edtValorPago.Value; //ver isso
+     baixaFP.FIDTPBaixa := baixaModel.FID;
+
+     totalFP := totalFP + baixaFP.FValor;
+
+     baixaModel.AdicionarFP(baixaFP); //coloca esse pagto dentro do model de baixa
+     baixaModel.FTPBaixaWWW := baixaWWW;
+
+    end;
+
+  //  fdmFP.InsertRecord([frmFormaPagto1.cbbcombo.Text,edtValor.Value]);
+//    frmFormaPagto1.cbbcombo.DeleteSelected;
+    dbgrdFP.Refresh;
+    msgStatusBar(3, formatfloat('R$ ,0.00', (valorDevido)));
+    msgStatusBar(3, formatfloat('R$ ,0.00', (obterValorPago)));
+    frmFormaPagto1.cbbcombo.ItemIndex := 0;
+    edtValorPago.Clear;
+    Application.ProcessMessages;
+
+    edtValorPago.Value := ( valorDevido - obterValorPago );
+
+    if obterValorPago = valorDevido then begin
+
+      frmFormaPagto1.cbbcombo.Enabled :=False;
+      btnDin.Enabled :=False;
+      btnWEB.Enabled :=False;
+      btnCheque.Enabled :=False;
+      edtValorPago.Enabled :=False;
+
+    end;
+
+
+     //TPBAIXA
+   baixaModel.FvalorPago := totalFP; // ver se está pegando valor principal + ac + de
+
+
+
+ end;
+
+end;
+
+procedure TfrmBaixaFP.btnSelectTACClick(Sender: TObject);
+var
+tipoAC : TTipoAcrescimoModel;
+tpBaixaAC : TTPBaixaACModel;
+
+begin
+
+ if frameTipoAcrescimo1.cbbcombo.ItemIndex >0 then begin
+
+ if edtValorAC.Value > 0 then begin
+
+   totalAC := totalAC + edtValorAC.Value;
+
+   tipoAC := TTipoAcrescimoModel.Create;
+   tipoAC.FIDOrganizacao := pIdOrganizacao;
+   tipoAC.FID := frameTipoAcrescimo1.getComboID;
+   tipoAC := TTipoAcrescimoDAO.obterPorID(tipoAC);
+
+      begin
+        fdmAC.Open;
+        fdmAC.InsertRecord([frameTipoAcrescimo1.cbbcombo.Text , edtValorAC.Value]);
+      end;
+
+
+   tpBaixaAC                      := TTPBaixaACModel.Create;
+   tpBaixaAC.FID                  := dmConexao.obterNewID;
+   tpBaixaAC.FIDOrganizacao       := pIdOrganizacao;
+   tpBaixaAC.FIDtipoAcrescimo     := tipoAC.FID;
+   tpBaixaAC.FIDtituloPagarBaixa  := baixaModel.FID;
+   tpBaixaAC.Fvalor               := edtValorAC.Value;
+   tpBaixaAC.FtipoAcrescimo       := tipoAC;
+
+   baixaModel.AdicionarAC(tpBaixaAC);
+
+      dbgrdAC.Refresh;
+      msgStatusBar(2, 'Total de acréscimos');
+      msgStatusBar(3, formatfloat('R$ ,0.00', (totalAC)));
+
+      valorDevido := valorDevido + edtValorAC.Value;
+      msgStatusBar(1, formatfloat('R$ ,0.00', (valorDevido)));
+      frameTipoAcrescimo1.cbbcombo.ItemIndex := 0;
+      edtValorAC.Clear;
+      Application.ProcessMessages;
+
+ end;
+
+ end else begin  msgStatusBar(3,' Selecione um tipo acréscimo ou cancele a opção'); end;
+
+end;
+
+procedure TfrmBaixaFP.btnSelectTDEClick(Sender: TObject);
+var
+tipoDE : TTipoDeducaoModel;
+tpBaixaDE : TTPBaixaDEModel;
+
+begin
+
+ if frameTipoDeducao1.cbbcombo.ItemIndex >0 then begin
+
+ if edtValorDE.Value > 0 then begin
+        totalDE := totalDE + edtValorDE.Value;
+
+        tipoDE := TTipoDeducaoModel.Create;
+        tipoDE.FIDOrganizacao := pIdOrganizacao;
+        tipoDE.FID := frameTipoDeducao1.getComboID;
+        tipoDE := TTipoDeducaoDAO.obterPorID(tipoDE);
+
+        begin
+          fdmDE.Open;
+          fdmDE.InsertRecord([frameTipoDeducao1.cbbcombo.Text, edtValorDE.Value]);
+        end;
+
+         tpBaixaDE                      := TTPBaixaDEModel.Create;
+         tpBaixaDE.FID                  := dmConexao.obterNewID;
+         tpBaixaDE.FIDOrganizacao       := pIdOrganizacao;
+         tpBaixaDE.FIDtipoDeducao       := tipoDE.FID;
+         tpBaixaDE.FIDtituloPagarBaixa  := baixaModel.FID;
+         tpBaixaDE.Fvalor               := edtValorDE.Value;
+         tpBaixaDE.FtipoDeducao         := tipoDE;
+
+        baixaModel.AdicionarDE(tpBaixaDE);
+
+        dbgrdDE.Refresh;
+
+        msgStatusBar(2, 'Total de deduções');
+        msgStatusBar(3, formatfloat('R$ ,0.00', (totalDE)));
+
+        valorDevido := valorDevido - edtValorDE.Value;
+        msgStatusBar(1, formatfloat('R$ ,0.00', (valorDevido)));
+        frameTipoDeducao1.cbbcombo.ItemIndex := 0;
+        edtValorDE.Clear;
+        Application.ProcessMessages;
+
+ end;
+
+ end else begin  msgStatusBar(3,' Selecione um tipo dedução ou cancele a opção'); end;
+
+end;
+
+procedure TfrmBaixaFP.btnWEBClick(Sender: TObject);
+var
+ posicao, I: Integer;
+begin
+      posicao := 0;
+
+      for I := 0 to FSListaIDFP.Count - 1 do
+      begin
+        if FSListaIDFP[I].Equals('INTERNET BANK') then
+        begin
+          posicao := I;
+          Break;
+        end;
+      end;
+
+      frmFormaPagto1.cbbcombo.ItemIndex := posicao;
+      btnSelect.Click;
+      btnWEB.Enabled := False;
+
+
+end;
+
+procedure TfrmBaixaFP.cbbTipoPagtoChange(Sender: TObject);
+begin
+ msg := '';
+ tituloPagar.FIDTipoStatus := 'QUITADO';
+
+ if cbbTipoPagto.ItemIndex >= 0 then begin
+
+    baixaModel.FTipoBaixa := cbbTipoPagto.Text;
+ end;
+
+ if baixaModel.FtipoBaixa.Equals('PARCIAL')  then begin
+
+   tituloPagar.FIDTipoStatus := 'PARCIAL';
+
+ end;
+
+ if not uutil.Empty(tituloPagar.FIDLoteTPB)  then begin
+
+    cbbTipoPagto.ItemIndex := 0;
+    msg := 'O título está provisionado e foi exportado. O sistema não permite pagamento parcial.';
+    MessageDlg(msg, mtInformation,[mbOK],0);
+
+    tituloPagar.FIDTipoStatus := 'QUITADO';
+ end;
+
+
+ if not uutil.Empty(tituloPagar.FIDLoteContabil)  then begin
+
+   cbbTipoPagto.ItemIndex := 0;
+    msg := 'O titulo foi exportado. O sistema não permite pagamento parcial.';
+    MessageDlg(msg, mtInformation,[mbOK],0);
+
+    tituloPagar.FIDTipoStatus := 'QUITADO';
+ end;
+
+end;
+
+constructor TfrmBaixaFP.Create(AOwner: TComponent; var pTitulo :TTituloPagarModel);
+begin
+
+ inherited Create(AOwner);
+  createTable;
+  pIdOrganizacao := uutil.TOrgAtual.getId;
+
+  tituloPagar := TTituloPagarModel.Create;
+  tituloPagar := TTituloPagarDAO.obterPorID(pTitulo);
+
+  if uutil.Empty(tituloPagar.FID) then begin
+
+    tituloPagar := pTitulo;
+    tituloPagar.FdataPagamento := Now;
+    tituloPagar.FdataUltimaAtualizacao := Now;
+
+
+  end;
+
+  lote := TLoteContabilModel.Create;
+  lote.FIDorganizacao := tituloPagar.FIDorganizacao;
+  lote.FID := tituloPagar.FIDLoteContabil;
+  lote := obterLoteContabil(lote);
+
+  if uutil.Empty(lote.fid) then
+  begin
+    lote.FIDorganizacao := tituloPagar.FIDorganizacao;
+    lote.FID := tituloPagar.FIDLoteTPB;
+    lote := obterLoteContabil(lote);
+
+  end;
+
+
+
+  if not uUtil.Empty(tituloPagar.FID) then begin
+
+  tituloPagar.FdataUltimaAtualizacao := Now;
+  tituloPagar.FdataPagamento := Now;
+  tituloPagar.FdataUltimaAtualizacao := Now;
+
+    if tituloPagar.FdataRegistro < IncYear(tituloPagar.FdataEmissao, 2) then
+    begin
+      tituloPagar.FdataRegistro := pTitulo.FdataEmissao;
+
+    end;
+
+  tituloPagar.FIDTipoStatus  := 'QUITADO';
+
+
+
+   baixaModel                   := TTPBaixaModel.Create;
+   baixaModel.listaFormasPagto  := TObjectList<TTPBaixaFPModel>.Create;
+   baixaModel.listaFormasPagto.Clear;
+
+   baixaModel.listaAcrescimo    := TObjectList<TTPBaixaACModel>.Create;
+   baixaModel.listaAcrescimo.Clear;
+   baixaModel.listaDeducao      := TObjectList<TTPBaixaDEModel>.Create;
+   baixaModel.listaDeducao.Clear;
+
+   baixaModel.FID            := dmConexao.obterNewID;
+   baixaModel.FIDorganizacao := pIdOrganizacao;
+   baixaModel.FTituloPagar   := tituloPagar;
+   baixaModel.FIDtituloPagar := tituloPagar.FID;
+   baixaModel.FIDCentroCusto := tituloPagar.FIDCentroCusto;
+   baixaModel.FIDusuario     := uutil.TUserAtual.getUserId;
+   baixaModel.FTipoBaixa     := 'TOTAL';
+
+   preencheForm(tituloPagar);
+
+
+  end;
+
+  msgStatusBar(1,formatfloat('R$ ,0.00', (tituloPagar.FvalorNominal)));
+  edtValorPago.MinValue := 0.1;
+  edtValorPago.MaxValue := tituloPagar.FvalorNominal;
+  valorDevido := tituloPagar.FvalorNominal ;
+
+  carregarCombos;
+
+
+  edtValorPago.Value := (valorDevido);
+
+
+  cbbTipoPagto.ItemIndex := 0;
+  totalAC :=0;
+  totalFP :=0;
+  totalDE :=0;
+
+
+
+end;
+
+function  TfrmBaixaFP.obterLoteContabil(pLote : TLoteContabilModel) : TLoteContabilModel;
+begin
+ lote := TLoteContabilModel.Create;
+
+ lote := TLoteContabilDAO.obterPorMes(pLote);
+
+ Result := lote;
+
+end;
+
+procedure TfrmBaixaFP.preencheForm(var pTP :TTituloPagarModel);
+var
+cedente :TCedenteModel;
+qtdDateio : Integer;
+begin
+  qtdDateio := 0;
+
+  cedente := TCedenteModel.Create;
+  cedente := dmBaixaTP.obterCedente(pTP);
+
+  edtValotTP.Value  := pTP.FvalorNominal;
+  edtDoc.Text       := pTP.FnumeroDocumento;
+  edtDescricao.Text := pTP.Fdescricao;
+  edtVcto.Text      := DateToStr(pTP.FdataVencimento);
+  edtParcela.Text   := pTP.Fparcela;
+  edtCedente.Text   := cedente.Fnome;
+  edtCNPJ.Text      := cedente.FcpfCnpj;
+  dtpPagto.DateTime := pTP.FdataPagamento;
+
+  qtdDateio :=  pTP.listaHistorico.Count;
+
+  if qtdDateio = 1  then begin
+    qtdDateio :=  pTP.listaCustos.Count;
+  end;
+
+  if qtdDateio > 1 then begin
+
+    cbbTipoPagto.ItemIndex := 0;
+    cbbTipoPagto.Enabled := False;
+
+  end;
+
+   if not uUtil.Empty (lote.FID) then begin
+
+     edtDescricao.Text :=' LOTE CONTABIL ' + lote.Flote;
+
+  end;
+
+
+end;
+
+
+procedure TfrmBaixaFP.createTable;
+begin
+
+  if not Assigned(dmBaixaTP) then
+  begin
+    dmBaixaTP := TdmBaixaTP.Create(Self, pIdOrganizacao);
+  end;
+
+    fdmFP.FieldDefs.Add('DESCRICAO', ftString, 60, false);
+    fdmFP.FieldDefs.Add('VALOR', ftCurrency, 0, false);
+    fdmFP.FieldDefs.Add('ID_FORMA_PAGAMENTO', ftString, 36, false);
+    fdmFP.CreateDataSet;
+
+
+    fdmAC.FieldDefs.Add('DESCRICAO', ftString, 60, false);
+    fdmAC.FieldDefs.Add('VALOR', ftCurrency, 0, false);
+    fdmAC.FieldDefs.Add('ID_TIPO_ACRESCIMO', ftString, 36, false);
+    fdmAC.CreateDataSet;
+
+
+    fdmDE.FieldDefs.Add('DESCRICAO', ftString, 60, false);
+    fdmDE.FieldDefs.Add('VALOR', ftCurrency, 0, false);
+    fdmDE.FieldDefs.Add('ID_TIPO_DEDUCAO', ftString, 36, false);
+    fdmDE.CreateDataSet;
+
+end;
+
+
+procedure TfrmBaixaFP.dtpPagtoChange(Sender: TObject);
+var
+  validarData :Integer;
+begin
+
+  //se movimento < hoje = -1
+  // se movimento > hoje =  1
+  validarData := compareDate(dtpPagto.Date, now);
+
+  baixaModel.FdataRegistro := Now;
+  tituloPagar.FdataUltimaAtualizacao := Now;
+  tituloPagar.FdataPagamento := dtpPagto.Date;
+  tituloPagar.FIDTipoStatus  := 'QUITADO';
+
+  if validarData = 1 then
+  begin // a data do pagto é maior que a data de hoje
+
+    ShowMessage(' a data do pagamento não pode ser maior que a data de hoje...');
+    msgStatusBar(1, 'Data pagamento incorreta.');
+    dtpPagto.Date := Now;
+    dtpPagto.SetFocus;
+  end else begin
+   atualizaValoPagar;
+   msgStatusBar(1, CurrToStr(totalFP));
+  end;
+end;
+
+procedure TfrmBaixaFP.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+ if Assigned(dmBaixaTP) then
+  begin
+    FreeAndNil(dmBaixaTP);
+  end;
+
+ Action := caFree;
+end;
+
+
+procedure TfrmBaixaFP.msgStatusBar(pPosicao : Integer; msg :string);
+begin
+dxStatusBar.Panels[pPosicao].Text := msg;
+Application.ProcessMessages;
+end;
+
+
+procedure TfrmBaixaFP.FormCreate(Sender: TObject);
+begin
+
+ pIdOrganizacao := uutil.TOrgAtual.getId;
+
+  if not Assigned(dmBaixaTP) then
+  begin
+    dmBaixaTP := TdmBaixaTP.Create(Self, pIdOrganizacao);
+  end;
+
+  msgStatusBar(0, 'Valor devido ');
+  msgStatusBar(2, 'Valor pago ');
+
+
+  cxpgcntrlFP.ActivePageIndex :=0;
+
+  tbTransfereFP.Enabled := False;
+  tbTransfereAC.Enabled := False;
+  tbTransfereDE.Enabled := False;
+
+totalAC :=0;
+totalFP :=0;
+totalDE :=0;
+
+dtpPagto.DateTime := Now;
+
+end;
+
+procedure TfrmBaixaFP.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  case key of
+    VK_F6  : btnDin.Click;
+    VK_F7  : btnCheque.Click;
+    VK_F8  : btnWEB.Click;
+    VK_F10 : btnPagamento.Click;
+
+  end;
+end;
+
+procedure TfrmBaixaFP.frameResponsavel1cbbcomboChange(Sender: TObject);
+begin
+ if frameResponsavel1.cbbcombo.ItemIndex >0 then begin
+     baixaModel.FIDResponsavel := FSListaIDResp[frameResponsavel1.cbbcombo.ItemIndex];
+     tbTransfereFP.Enabled := True;
+
+   if cbbTipoPagto.ItemIndex = 0 then begin
+     tbTransfereAC.Enabled := True;
+     tbTransfereDE.Enabled := True;
+   end else begin
+     tbTransfereAC.Enabled := False;
+     tbTransfereDE.Enabled := False;
+     msgStatusBar(3, 'Pagamento parcial não pode ter dedução ou acréscimo.');
+
+   end;
+
+ end;
+end;
+
+
+function TfrmBaixaFP.obterValorPago: Currency;
+var
+total :Currency;
+  I: Integer;
+begin
+ total :=0;
+ fdmFP.Open;
+ fdmFP.First;
+ while not fdmFP.Eof do begin
+
+ total := total + fdmFP.FieldByName('VALOR').AsCurrency;
+
+ fdmFP.Next;
+ end;
+
+
+  Result := total;
+
+end;
+
+procedure TfrmBaixaFP.removeFP(pIndice: Integer);
+begin
+if pIndice >0 then begin
+     frmFormaPagto1.cbbcombo.DeleteSelected ;
+ end;
+
+end;
+
+procedure TfrmBaixaFP.tbTransfereACShow(Sender: TObject);
+begin
+ msgStatusBar(2, 'Total de acréscimos');
+ msgStatusBar(3, formatfloat('R$ ,0.00', (totalAC)));
+
+end;
+
+procedure TfrmBaixaFP.tbTransfereDEShow(Sender: TObject);
+begin
+      msgStatusBar(2, 'Total de deduções');
+      msgStatusBar(3, formatfloat('R$ ,0.00', (totalDE)));
+end;
+
+procedure TfrmBaixaFP.tbTransfereFPShow(Sender: TObject);
+begin
+   atualizaValoPagar;
+   msgStatusBar(2, 'Valor pago ');
+   msgStatusBar(3, '0');
+end;
+
+function TfrmBaixaFP.atualizaParcela(pParcela: string; qtd :Integer): string;
+var parcela :string;
+auxParcela :Integer;
+begin
+
+  auxParcela := StrToInt(uutil.SoNumeros(pParcela));
+
+
+ //parcela pode vir 1 ou pode x/x
+  if qtd = 0 then begin // atualiza o tp principal
+
+  if pParcela.Equals('1') then begin
+   //  parcela := '1/' + intoToStr(qtd);
+  end;
+
+  end;
+
+  if qtd > 0 then
+  begin // atualiza o tp clonado
+    if pParcela.Equals('1') then
+    begin
+      parcela := IntToStr(qtd) + '/' + IntToStr(qtd + 1);
+    end;
+
+    parcela := IntToStr(qtd) + '/' + IntToStr(auxParcela + 1);
+
+  end;
+
+  Result := parcela;
+end;
+
+procedure TfrmBaixaFP.atualizaValoPagar;
+begin
+
+edtValorPago.Value := (edtValotTP.Value +  totalAC) - totalDE;
+msgStatusBar(1, formatfloat('R$ ,0.00', (valorDevido)));
+
+end;
+
+procedure TfrmBaixaFP.validarValor;
+begin
+  btnSelect.Enabled := False;
+  frmFormaPagto1.Enabled := False;
+  edtValorPago.Enabled := False;
+
+  if obterValorPago < valorDevido then
+  begin
+
+    btnSelect.Enabled := True;
+    frmFormaPagto1.Enabled := True;
+    edtValorPago.Enabled := True;
+  end;
+
+end;
+
+
+procedure TfrmBaixaFP.carregarCombos;
+begin
+
+  frameTipoAcrescimo1.obterTodos(pIdOrganizacao, frameTipoAcrescimo1.cbbcombo, FSListaIDTAC);
+  frameTipoAcrescimo1.cbbcombo.Enabled := True;
+
+  frameTipoDeducao1.obterTodos(pIdOrganizacao, frameTipoDeducao1.cbbcombo, FSListaIDTDE);
+  frameTipoDeducao1.cbbcombo.Enabled := True;
+
+  frmFormaPagto1.obterTodos(pIdOrganizacao, frmFormaPagto1.cbbcombo, FSListaIDFP);
+  frmFormaPagto1.cbbcombo.Enabled := True;
+
+  frameResponsavel1.obterTodosAtivos(pIdOrganizacao, frameResponsavel1.cbbcombo, FSListaIDResp);
+
+  dbgrdTAC.DataSource.DataSet  := frameTipoAcrescimo1.preencheDBGrid(pIdOrganizacao);
+  dbgrdTDE.DataSource.DataSet  := frameTipoDeducao1.preencheDBGrid(pIdOrganizacao);
+
+
+end;
+
+
+procedure TfrmBaixaFP.limpar;
+begin
+     totalFP :=0;
+     totalAC :=0;
+     totalDE :=0;
+
+   baixaModel.listaFormasPagto.Clear;
+   tbTransfereAC.Enabled := True;
+   tbTransfereDE.Enabled := True;
+
+  fdmFP.Open;
+  fdmFP.First;
+  while not fdmFP.Eof do
+  begin
+    fdmFP.Delete;
+    fdmFP.Next;
+  end;
+
+  dbgrdFP.DataSource.DataSet.Close;
+  dbgrdFP.Refresh;
+  btnDin.Enabled := True;
+  btnCheque.Enabled := True;
+  btnWEB.Enabled := True;
+  msgStatusBar(3, '0');
+  carregarCombos;
+
+  edtValorPago.Value := (valorDevido);
+  msgStatusBar(0, 'Valor devido ');
+  msgStatusBar(2, 'Valor pago ');
+
+  cbbTipoPagto.ItemIndex := 0;
+
+  Application.ProcessMessages;
+  validarValor;
+
+end;
+
+procedure TfrmBaixaFP.limparForm;
+var
+ i: Integer;
+begin
+
+
+  for i := 0 to Self.ComponentCount - 1 do
+  begin
+    if Components[i] is TCustomEdit then
+    begin
+         (Components[i] as TCustomEdit).Clear;
+    end;
+
+    if Components[i] is TEdit then
+    begin
+         TEdit(Components[i]).Clear;
+    end;
+
+     if Components[i] is TComboBox then
+    begin
+       TComboBox(Components[i]).ItemIndex := 0;
+    end;
+
+   end;
+
+
+end;
+
+procedure TfrmBaixaFP.limparAba(aba :TcxTabSheet );
+var
+ j, i: Integer;
+begin
+ // limpa os componentes da aba q chegou
+
+  for i := 0 to Self.ComponentCount - 1 do
+  begin
+    if Components[i] is TCustomEdit then
+    begin
+       if TCustomEdit(Components[i]).Parent = aba then
+         (Components[i] as TCustomEdit).Clear;
+    end;
+
+    if Components[i] is TEdit then
+    begin
+      if TEdit(Components[i]).Parent = aba then
+         TEdit(Components[i]).Clear;
+    end;
+
+     if Components[i] is TComboBox then
+    begin
+       TComboBox(Components[i]).ItemIndex := 0;
+    if TComboBox(Components[i]).Parent = aba then
+      // TComboBox(Components[i]).Clear;
+      TComboBox(Components[i]).ItemIndex := 0;
+    end;
+
+   end;
+
+
+end;
+
+function TfrmBaixaFP.baixarTitulo( pBaixa :TTPBaixaModel) : Boolean;
+var
+qtdFP :Integer;
+ begin
+ dmConexao.conectarBanco;
+  qtdFP :=0; //indica apenas a quantidade de formas de pagamentos do tp
+  qtdFP := pBaixa.listaFormasPagto.Count ;
+
+
+  try
+    dmConexao.conn.StartTransaction;
+
+    //falta list a de AC e lista de DE
+
+
+    { baixa de TP pago em cheque
+    1 - altera o TP (DATA_ULTIMA_ATUALIZACAO, DATA_PAGAMENTO)
+    2 - salva o TPB
+    3 - salva o TPB_FP
+    4 - salva o TPB_Cheque
+    5 - altera o cheque ( ID_TIPO_STATUS, VALOR, DATA_EMISSAO, OBSERVACAO,PORTADOR,  DATA_PREVISAO_COMPENSACAO, QTD_IMPRESSAO )
+    6 - salvar CBD
+    }
+
+    if not uutil.Empty(pBaixa.FTPBaixaCheque.FID) then begin //o TP tem  pagto em cheque
+
+       TTPBaixaDAO.salvarBaixa(pBaixa, tituloPagar);
+
+        Inc(qtdFP);
+
+    end;
+
+
+
+
+
+    dmConexao.conn.CommitRetaining;
+
+  except
+    Result := False;
+    dmConexao.conn.RollbackRetaining;
+
+    raise Exception.Create('Erro ao tentar baixar o titulo : ' + pBaixa.FTituloPagar.FnumeroDocumento);
+
+  end;
+
+    Result := True;
+
+ end;
+
+
+
+end.
