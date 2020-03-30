@@ -1,0 +1,50 @@
+unit uTRBaixaDEModel;
+
+interface
+
+{
+CREATE TABLE TITULO_RECEBER_BAIXA_DE (
+    ID_TITULO_RECEBER_BAIXA_DE  VARCHAR(36) NOT NULL,
+    ID_ORGANIZACAO              VARCHAR(36) NOT NULL,
+    ID_TITULO_RECEBER_BAIXA     VARCHAR(36),
+    ID_TIPO_DEDUCAO             VARCHAR(36),
+    VALOR                       NUMERIC(10,2) NOT NULL,
+    CONTA_CONTABIL              VARCHAR(20),
+    DIGITO_CONTA_CONTABIL       VARCHAR(1)
+);
+
+
+
+}
+uses
+  Windows, Messages, Classes, SysUtils, uTipoDeducaoModel;
+
+type
+  TTRBaixaDEModel = class(TObject)
+  private
+    FFID :string ;
+    FFIDOrganizacao :string;
+    FFIDtipoDeducao :string;
+    FFIDtituloReceberBaixa: string;
+    FFvalor :Currency;
+    FFtipoDeducao :TTipoDeducaoModel;
+
+   public
+
+    property FID :string read FFID write SetFID;
+    property FIDOrganizacao :string read FFIDOrganizacao write SetFIdOrganizacao;
+    property FIDtipoDeducao: string read FFIDtipoDeducao write SetFIDtipoDeducao;
+    property FIDtituloReceberBaixa: string read FFIDtituloReceberBaixa write SetFIDtituloReceberBaixa;
+    property Fvalor: Currency read FFvalor write SetFvalor;
+    property FtipoDeducao: TTipoDeducaoModel read FFtipoDeducao write SetFtipoDeducao;
+
+
+
+
+    Constructor Create;
+
+
+  end;
+implementation
+
+end.
