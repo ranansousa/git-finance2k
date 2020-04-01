@@ -1,5 +1,0 @@
-object dmHistoricoConsulta: TdmHistoricoConsulta
-  OldCreateOrder = False
-  Height = 303
-  Width = 479
-end

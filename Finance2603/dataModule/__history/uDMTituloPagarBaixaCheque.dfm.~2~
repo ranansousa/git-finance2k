@@ -1,5 +1,0 @@
-object dtsTPBCheque: TdtsTPBCheque
-  OldCreateOrder = False
-  Height = 403
-  Width = 614
-end
