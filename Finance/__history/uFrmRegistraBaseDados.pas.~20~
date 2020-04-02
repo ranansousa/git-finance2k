@@ -1,0 +1,77 @@
+unit uFrmRegistraBaseDados;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons, Vcl.ExtCtrls,
+  uUtil;
+
+type
+  TfrmRegistraBaseDados = class(TForm)
+    edtOrigem: TLabeledEdit;
+    btnOrigem: TBitBtn;
+    btnSalvar: TBitBtn;
+    dlgOrigem: TOpenDialog;
+    Label2: TLabel;
+    edtIpServerBD: TEdit;
+    edtPortaBanco: TEdit;
+    Label1: TLabel;
+    btnVerIP: TBitBtn;
+    procedure btnOrigemClick(Sender: TObject);
+    procedure btnSalvarClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure btnVerIPClick(Sender: TObject);
+
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmRegistraBaseDados: TfrmRegistraBaseDados;
+
+implementation
+
+{$R *.dfm}
+
+procedure TfrmRegistraBaseDados.btnOrigemClick(Sender: TObject);
+begin
+  if dlgOrigem.Execute then
+  begin
+    edtOrigem.Text := dlgOrigem.FileName;
+  end;
+
+end;
+
+procedure TfrmRegistraBaseDados.btnSalvarClick(Sender: TObject);
+begin
+
+  GravarRegistros('Pempec Enterprise', 'Finance', 'PATH_BD', edtOrigem.Text);
+  GravarRegistros('Pempec Enterprise', 'Finance', 'PORTA_BD',
+    edtPortaBanco.Text);
+  GravarRegistros('Pempec Enterprise', 'Finance', 'IPSERVERBD',
+    edtIpServerBD.Text);
+  GravarRegistros('Pempec Enterprise', 'Finance', 'PATH_SERVER',
+    edtOrigem.Text);
+
+  ShowMessage('Base de dados registrada com sucesso. O sistema será fechado.');
+  Application.Terminate;
+
+end;
+
+procedure TfrmRegistraBaseDados.btnVerIPClick(Sender: TObject);
+begin
+  edtIpServerBD.Text := uUtil.GetIp;
+end;
+
+procedure TfrmRegistraBaseDados.FormClose(Sender: TObject;
+  var Action: TCloseAction);
+begin
+  Action := cafree;
+  Application.Terminate;
+end;
+
+end.

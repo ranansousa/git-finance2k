@@ -1,0 +1,71 @@
+unit uTipoDeducaoModel;
+
+interface
+
+{CREATE TABLE TIPO_DEDUCAO (
+    ID_TIPO_DEDUCAO  VARCHAR(36) NOT NULL,
+    ID_ORGANIZACAO   VARCHAR(36) NOT NULL,
+    ID_HISTORICO     VARCHAR(36),
+    DESCRICAO        VARCHAR(20) );
+}
+uses
+  Windows, Messages, Classes, SysUtils, uHistoricoModel;
+
+type
+  TTipoDeducaoModel = class(TObject)
+  private
+    FFID :string ;
+    FFIDOrganizcao :string;
+    FFIDhistorico :string;
+    FFDescricao: string;
+    FFhistorico :THistoricoModel;
+    procedure SetFDescricao(const Value: string);
+    procedure SetFhistorico(const Value: string);
+    procedure SetFIdHistorico(const Value: string);
+    procedure SetFIdOrganizacao(const Value: string);
+
+
+   public
+
+    property FIDOrganizacao :string read FFIDOrganizcao write SetFIdOrganizacao;
+    property FIDHistorico: string read FFIdHistorico write SetFIdHistorico;
+    property FDescricao: string read FFDescricao write SetFDescricao;
+    property Fhistorico: string read FFhistorico write SetFhistorico;
+
+
+
+    Constructor Create;
+
+
+  end;
+implementation
+
+
+{ TTipoDeducaoModel }
+
+constructor TTipoDeducaoModel.Create;
+begin
+  //
+end;
+
+procedure TTipoDeducaoModel.SetFDescricao(const Value: string);
+begin
+  FFDescricao := Value;
+end;
+
+procedure TTipoDeducaoModel.SetFhistorico(const Value: string);
+begin
+  FFhistorico := Value;
+end;
+
+procedure TTipoDeducaoModel.SetFIdHistorico(const Value: string);
+begin
+  FFIdHistorico := Value;
+end;
+
+procedure TTipoDeducaoModel.SetFIdOrganizacao(const Value: string);
+begin
+  FFIDOrganizcao := Value;
+end;
+
+end.
