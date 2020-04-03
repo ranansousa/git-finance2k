@@ -1,0 +1,68 @@
+object dmBaixaTP: TdmBaixaTP
+  OldCreateOrder = False
+  Height = 230
+  Width = 527
+  object qryPreencheGrid: TFDQuery
+    Connection = dmConexao.conn
+    FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.FmtDisplayDate = 'DD/MM/YYYY'
+    FormatOptions.FmtDisplayNumeric = '###,##0.00'
+    FormatOptions.FmtEditNumeric = '###,##0.00'
+    SQL.Strings = (
+      'SELECT TP.ID_TITULO_PAGAR,'
+      '       TP.NUMERO_DOCUMENTO AS DOC,       '
+      '       TP.ID_ORGANIZACAO,'
+      '       (H.descricao || '#39' '#39' ||  TP.DESCRICAO) AS DESCRICAO,'
+      '       TPB.VALOR_PAGO,'
+      '       TP.ID_CEDENTE,'
+      '       TP.data_pagamento,'
+      '       C.nome AS FORNECEDOR,'
+      '       TP.PARCELA,'
+      '       '
+      '       ORG.RAZAO_SOCIAL,'
+      '       ORG.SIGLA, '
+      '       ORG.FANTASIA,'
+      '       ORG.CNPJ,'
+      '       ORG.LOGRADOURO, '
+      '       ORG.COMPLEMENTO,'
+      '       ORG.NUMERO,'
+      '       ORG.CEP,'
+      '       E.DESCRICAO AS ESTADO,'
+      '       CID.CIDADE,'
+      '       B.BAIRRO'
+      ''
+      'FROM TITULO_PAGAR TP'
+      ''
+      
+        'LEFT OUTER JOIN TITULO_PAGAR_BAIXA TPB ON (TPB.id_titulo_pagar =' +
+        ' TP.id_titulo_pagar) AND (TPB.id_organizacao = TP.id_organizacao' +
+        ')'
+      
+        'LEFT OUTER JOIN CEDENTE C ON (C.id_cedente = TP.id_cedente) AND ' +
+        '(C.id_organizacao = TP.id_organizacao)'
+      
+        'LEFT OUTER JOIN HISTORICO H ON (H.id_historico =  TP.id_historic' +
+        'o) AND (H.id_organizacao = TP.id_organizacao)'
+      
+        'INNER JOIN ORGANIZACAO ORG ON (ORG.ID_ORGANIZACAO = TP.ID_ORGANI' +
+        'ZACAO) '
+      'INNER JOIN ESTADO E ON (E.ID_ESTADO = ORG.ID_ESTADO)'
+      'INNER JOIN CIDADE CID ON (CID.ID_CIDADE = ORG.ID_CIDADE)'
+      'INNER JOIN BAIRRO B ON (B.ID_BAIRRO = ORG.ID_BAIRRO)'
+      'WHERE ( TP.ID_ORGANIZACAO = :PIDORGANIZACAO )'
+      ' AND  ( TP.ID_TIPO_STATUS IN ('#39'PARCIAL'#39', '#39'QUITADO'#39') )'
+      ''
+      'ORDER BY TP.DATA_EMISSAO DESC, TP.VALOR_NOMINAL DESC'
+      ''
+      '')
+    Left = 399
+    Top = 120
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+end

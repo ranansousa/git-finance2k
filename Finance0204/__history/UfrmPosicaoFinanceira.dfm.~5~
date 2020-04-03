@@ -1,0 +1,61 @@
+object frmPosicaoFinanceira: TfrmPosicaoFinanceira
+  Left = 0
+  Top = 0
+  Caption = 'Posi'#231#227'o Financeira'
+  ClientHeight = 503
+  ClientWidth = 1063
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -16
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  Position = poDesktopCenter
+  PixelsPerInch = 144
+  TextHeight = 19
+  object dbgrd1: TDBGrid
+    Left = 1
+    Top = 1
+    Width = 746
+    Height = 372
+    Color = clMoneyGreen
+    Options = [dgEditing, dgTitles, dgColLines, dgRowLines, dgTabs]
+    TabOrder = 0
+    TitleFont.Charset = DEFAULT_CHARSET
+    TitleFont.Color = clWindowText
+    TitleFont.Height = -16
+    TitleFont.Name = 'Tahoma'
+    TitleFont.Style = []
+  end
+  object qryUpdatePanel: TFDQuery
+    FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.FmtDisplayDate = 'dd/mm/yyyy'
+    FormatOptions.FmtDisplayNumeric = '###,##0.00'
+    FormatOptions.FmtEditNumeric = '###,##0.00'
+    Left = 838
+    Top = 75
+  end
+  object ds1: TDataSource
+    Left = 840
+    Top = 163
+  end
+  object qryPreencheGridPanel: TFDQuery
+    FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.FmtDisplayDate = 'dd/mm/yyyy'
+    FormatOptions.FmtDisplayNumeric = '###,##0.00'
+    FormatOptions.FmtEditNumeric = '###,##0.00'
+    SQL.Strings = (
+      'SELECT * FROM PAINEL WHERE 1=1 ORDER BY CODIGO')
+    Left = 904
+    Top = 163
+  end
+  object qrySaldosPainel: TFDQuery
+    FormatOptions.AssignedValues = [fvFmtDisplayDate, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.FmtDisplayDate = 'dd/mm/yyyy'
+    FormatOptions.FmtDisplayNumeric = '###,##0.00'
+    FormatOptions.FmtEditNumeric = '###,##0.00'
+    Left = 984
+    Top = 163
+  end
+end
