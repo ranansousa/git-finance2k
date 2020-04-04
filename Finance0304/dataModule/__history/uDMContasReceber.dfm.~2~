@@ -1,0 +1,9 @@
+object dmContasReceber: TdmContasReceber
+  OldCreateOrder = False
+  Height = 317
+  Width = 561
+  object FDQuery1: TFDQuery
+    Left = 152
+    Top = 128
+  end
+end

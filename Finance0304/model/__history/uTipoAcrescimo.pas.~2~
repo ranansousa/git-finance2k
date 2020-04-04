@@ -1,0 +1,40 @@
+unit uTipoAcrescimo;
+
+interface
+
+{
+
+
+CREATE TABLE TIPO_ACRESCIMO (
+    ID_TIPO_ACRESCIMO  VARCHAR(36) NOT NULL,
+    ID_ORGANIZACAO     VARCHAR(36) NOT NULL,
+    ID_HISTORICO       VARCHAR(36),
+    DESCRICAO          VARCHAR(20)
+);
+
+
+
+
+
+
+}
+uses
+  Windows, Messages, Classes, SysUtils, uHistoricoModel;
+
+type
+  THistoricoModel = class(TObject)
+  private
+    FFID :string ;
+    FFIdOrganizcao :string;
+    FFIDhistorico :string;
+    FFDescricao: string;
+    FFhistorico :THistoricoModel;
+
+
+    Constructor Create;
+
+
+  end;
+implementation
+
+end.

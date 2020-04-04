@@ -1,0 +1,88 @@
+unit uTPBaixaInternetModel;
+
+
+{table
+
+
+CREATE TABLE TITULO_PAGAR_BAIXA_INTERNET (
+    ID_TITULO_PAGAR_BAIXA_INTERNET  VARCHAR(36) NOT NULL,
+    ID_ORGANIZACAO                  VARCHAR(36) NOT NULL,
+    ID_TITULO_PAGAR_BAIXA           VARCHAR(36),
+    ID_CONTA_BANCARIA               VARCHAR(36),
+    ID_TIPO_OPERACAO_BANCARIA       VARCHAR(36),
+    ID_BANCO_DESTINO                VARCHAR(36),
+    DETALHAMENTO                    VARCHAR(60) NOT NULL,
+    CONTA_DESTINO                   VARCHAR(20),
+    AGENCIA_DESTINO                 VARCHAR(10),
+    NOME_CORRENTISTA                VARCHAR(60),
+    PERSONALIDADE                   VARCHAR(2),
+    CPFCNPJ_CORRENTISTA             VARCHAR(20),
+    VALOR                           NUMERIC(10,2) NOT NULL,
+    DATA_OPERACAO                   DATE,
+
+);
+
+
+
+}
+interface
+
+
+uses
+  Windows, Messages, Classes, SysUtils,uOrganizacaoModel,System.Generics.Collections,
+  uTPBaixaDEModel,uTPBaixaDEDAO, uTPBaixaACModel,uTPBaixaACDAO, uTituloPagarModel,uTPBaixaChequeModel,uTPBaixaFPModel;
+
+type
+  TTPBaixaModel = class(TObject)
+  private
+    FFID: string;
+    FFIDorganizacao: string;
+    FFOrganizacao: TOrganizacaoModel;
+    FFIDTPB: string;
+    FFIDcontaBancariaOrigem: string;
+    FFIDTOB: string;
+    FFIDbancoDestino: string;
+    FFdetalhamento: string;
+    FFcontaDestino: string;
+    FFagenciaDestino: string;
+    FFnomeCorrentista: string;
+    FFpersonalidade: string;
+    FFCPCFCNPJCorrentista: string;
+    FFvalor: Currency;
+    FFdataOperacao: TDateTime;
+    procedure SetFFID(const Value: string);
+
+
+
+
+  public
+
+  property    FID: string read FFID write SetFFID;
+    property  FIDorganizacao: string  read FFIDorganizacao   write  SetFFIDorganizacao;
+    property  FOrganizacao: TOrganizacaoModel read  FFOrganizacao write SetFFOrganizacao;
+    property  FIDTPB: string  read     Set
+    property  FIDcontaBancariaOrigem: string  read     Set
+    property  FIDTOB: string  read     Set
+    property  FIDbancoDestino: string  read     Set
+    property  Fdetalhamento: string  read     Set
+    property  FcontaDestino: string  read     Set
+    property  FagenciaDestino: string  read     Set
+    property  FnomeCorrentista: string  read     Set
+    property  Fpersonalidade: string  read     Set
+    property  FCPCFCNPJCorrentista: string  read     Set
+    property  Fvalor: Currency;
+    property  FdataOperacao: TDateTime;
+
+
+    constructor Create;
+    destructor Destroy; override;
+
+  end;
+
+
+
+implementation
+
+
+
+end.

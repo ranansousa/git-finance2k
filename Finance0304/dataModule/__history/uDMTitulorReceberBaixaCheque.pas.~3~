@@ -1,0 +1,25 @@
+unit uDMTitulorReceberBaixaCheque;
+
+interface
+
+uses
+  System.SysUtils, System.Classes;
+
+type
+  TdmTRBCheque = class(TDataModule)
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  dmTRBCheque: TdmTRBCheque;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+
+{$R *.dfm}
+
+end.
