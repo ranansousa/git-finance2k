@@ -1,0 +1,85 @@
+unit uLoteContabilModel;
+
+interface
+{
+
+CREATE TABLE LOTE_CONTABIL (
+    ID_LOTE_CONTABIL  VARCHAR(36) NOT NULL,
+    ID_ORGANIZACAO    VARCHAR(36) NOT NULL,
+    LOTE              VARCHAR(30),
+    STATUS            VARCHAR(30),
+    TIPO_LANCAMENTO   VARCHAR(80),
+    TIPO_TABLE        VARCHAR(200),
+
+    DATA_REGISTRO     DATE,
+    DATA_ATUALIZACAO  DATE NOT NULL,
+    PERIODO_INICIAL   DATE,
+    PERIODO_FINAL     DATE,
+
+
+
+    QTD_REGISTROS     SMALLINT,
+    VALOR_DB          NUMERIC(10,2),
+    VALOR_CR          NUMERIC(10,2),
+    ID_USUARIO        NUMERIC(5,0)
+
+);
+
+
+
+}
+uses
+  Windows, Messages, Classes, SysUtils, uUsuarioModel, uOrganizacaoModel;
+
+type
+  TLoteContabilModel = class(TObject)
+  private
+
+    FFID: string;
+    FFIDorganizacao: string;
+    FFlote: string;
+    FFstatus: string;
+    FFtipoLancamento: string;
+    FFtipoTable: string;
+    FFIDusuario: string;
+    FFusuario: TUsuarioModel;
+    FFdataRegistro: TDateTime;
+    FFdataAtualizacao: TDateTime;
+    FFperiodoInicial: TDateTime;
+    FFperiodoFinal: TDateTime;
+    FFqtdRegistros: Integer;
+    FFvalorDB: Currency;
+    FFvalorCR: Currency;
+
+    public
+
+
+    property FID: string read getFFID   write   SetFFID ;
+    property FIDorganizacao: string read getFFIDorganizacao   write   SetFFIDorganizacao ;
+    property Flote: string read getFFlote   write   SetFFlote ;
+    property Fstatus: string read getFFstatus   write   SetFFstatus ;
+    property FtipoLancamento: string read getFFtipoLancamento   write   SetFFtipoLancamento ;
+    property FtipoTable: string read getFFtipoTable   write   SetFFtipoTable ;
+    property FIDusuario: string read getFFIDusuario   write   SetFFIDusuario ;
+    property Fusuario: TUsuarioModel read getFFusuario   write   SetFFusuario ;
+    property FdataRegistro: TDateTime read getFFdataRegistro   write   SetFFdataRegistro ;
+    property FdataAtualizacao: TDateTime read getFFdataAtualizacao   write   SetFFdataAtualizacao ;
+    property FperiodoInicial: TDateTime read getFFperiodoInicial   write   SetFFperiodoInicial ;
+    property FperiodoFinal: TDateTime read getFFperiodoFinal   write   SetFFperiodoFinal ;
+    property FqtdRegistros: Integer read getFFqtdRegistros   write   SetFFqtdRegistros ;
+    property FvalorDB: Currency read getFFvalorDB   write   SetFFvalorDB ;
+    property FvalorCR: Currency read getFFvalorCR   write   SetFFvalorCR ;
+
+    constructor Create;
+    destructor Destroy; override;
+
+  end;
+
+
+
+
+
+
+implementation
+
+end.
