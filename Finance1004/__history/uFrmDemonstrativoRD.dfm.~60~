@@ -1,0 +1,456 @@
+object frmDemonstrativoRD: TfrmDemonstrativoRD
+  Left = 0
+  Top = 0
+  Caption = 'Demonstrativo de Receitas e Despesas por Centro de Custos'
+  ClientHeight = 754
+  ClientWidth = 828
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  Position = poDesktopCenter
+  OnClose = FormClose
+  OnCreate = FormCreate
+  PixelsPerInch = 96
+  TextHeight = 13
+  object lbl1: TLabel
+    Left = 8
+    Top = 312
+    Width = 176
+    Height = 13
+    Caption = 'RECEITAS POR CENTRO DE CUSTOS'
+  end
+  object lbl2: TLabel
+    Left = 420
+    Top = 312
+    Width = 177
+    Height = 13
+    Caption = 'DESPESAS POR CENTRO DE CUSTOS'
+  end
+  inline frmPeriodo1: TfrmPeriodo
+    Left = 8
+    Top = 146
+    Width = 281
+    Height = 57
+    TabOrder = 0
+    ExplicitLeft = 8
+    ExplicitTop = 146
+    ExplicitWidth = 281
+    ExplicitHeight = 57
+    inherited lbl1: TLabel
+      Top = 3
+      ExplicitTop = 3
+    end
+    inherited lbl2: TLabel
+      Top = 3
+      ExplicitTop = 3
+    end
+    inherited dtpDataInicial: TDateTimePicker
+      Top = 22
+      ExplicitTop = 22
+    end
+    inherited dtpDataFinal: TDateTimePicker
+      Top = 22
+      ExplicitTop = 22
+    end
+  end
+  object dbgrdReceitas: TDBGrid
+    Left = 6
+    Top = 343
+    Width = 400
+    Height = 377
+    DataSource = dsReceitas
+    TabOrder = 1
+    TitleFont.Charset = DEFAULT_CHARSET
+    TitleFont.Color = clWindowText
+    TitleFont.Height = -11
+    TitleFont.Name = 'Tahoma'
+    TitleFont.Style = []
+    Columns = <
+      item
+        Expanded = False
+        FieldName = 'CENTRO_CUSTOS'
+        Title.Caption = 'CENTRO DE CUSTOS'
+        Width = 275
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'VALOR_RECEITA'
+        Title.Caption = 'TOTAL DAS RECEITAS'
+        Width = 90
+        Visible = True
+      end>
+  end
+  object dbgrdDespesas: TDBGrid
+    Left = 420
+    Top = 343
+    Width = 400
+    Height = 377
+    DataSource = dsDespesas
+    TabOrder = 2
+    TitleFont.Charset = DEFAULT_CHARSET
+    TitleFont.Color = clWindowText
+    TitleFont.Height = -11
+    TitleFont.Name = 'Tahoma'
+    TitleFont.Style = []
+    Columns = <
+      item
+        Expanded = False
+        FieldName = 'CENTRO_CUSTOS'
+        Title.Caption = 'CENTRO  DE CUSTOS'
+        Width = 275
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'VALOR_DESPESA'
+        Title.Caption = 'TOTAL DAS DESPESAS'
+        Width = 90
+        Visible = True
+      end>
+  end
+  object btnConfirma: TButton
+    Left = 291
+    Top = 226
+    Width = 141
+    Height = 25
+    Caption = 'Consultar'
+    TabOrder = 3
+    OnClick = btnConfirmaClick
+  end
+  object btnImprimir: TButton
+    Left = 484
+    Top = 226
+    Width = 141
+    Height = 25
+    Caption = 'Imprimir'
+    TabOrder = 4
+    OnClick = btnImprimirClick
+  end
+  object edtValorDespesa: TEdit
+    Left = 611
+    Top = 312
+    Width = 190
+    Height = 24
+    Alignment = taRightJustify
+    Enabled = False
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clRed
+    Font.Height = -13
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+    TabOrder = 5
+  end
+  object edtValorReceita: TEdit
+    Left = 200
+    Top = 312
+    Width = 190
+    Height = 24
+    Alignment = taRightJustify
+    Enabled = False
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clBlue
+    Font.Height = -13
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+    TabOrder = 6
+  end
+  object dxRibbon1: TdxRibbon
+    Left = 0
+    Top = 0
+    Width = 828
+    Height = 125
+    BarManager = dxBarManager1
+    ColorSchemeName = 'UserSkin'
+    Contexts = <>
+    TabOrder = 7
+    TabStop = False
+    object dxRibbon1Tab1: TdxRibbonTab
+      Active = True
+      Caption = 'Demonstrativo '
+      Groups = <
+        item
+          ToolbarName = 'dxBarManager1Bar1'
+        end
+        item
+          ToolbarName = 'dxBarManager1Bar2'
+        end
+        item
+          ToolbarName = 'dxBarManager1Bar3'
+        end
+        item
+          ToolbarName = 'dxBarManager1Bar4'
+        end>
+      Index = 0
+    end
+  end
+  object dxStatusBar: TdxStatusBar
+    Left = 0
+    Top = 734
+    Width = 828
+    Height = 20
+    Panels = <
+      item
+        PanelStyleClassName = 'TdxStatusBarTextPanelStyle'
+      end
+      item
+        PanelStyleClassName = 'TdxStatusBarTextPanelStyle'
+      end
+      item
+        PanelStyleClassName = 'TdxStatusBarTextPanelStyle'
+      end
+      item
+        PanelStyleClassName = 'TdxStatusBarTextPanelStyle'
+      end>
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ExplicitLeft = -66
+    ExplicitTop = 555
+    ExplicitWidth = 894
+  end
+  object dxStatusBar1: TdxStatusBar
+    Left = 0
+    Top = 714
+    Width = 828
+    Height = 20
+    Panels = <
+      item
+        PanelStyleClassName = 'TdxStatusBarTextPanelStyle'
+      end
+      item
+        PanelStyleClassName = 'TdxStatusBarTextPanelStyle'
+      end
+      item
+        PanelStyleClassName = 'TdxStatusBarTextPanelStyle'
+      end
+      item
+        PanelStyleClassName = 'TdxStatusBarTextPanelStyle'
+      end>
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ExplicitLeft = -66
+    ExplicitTop = 555
+    ExplicitWidth = 894
+  end
+  object dsReceitas: TDataSource
+    DataSet = dmRD.qryReceitas
+    Left = 173
+    Top = 432
+  end
+  object dsDespesas: TDataSource
+    DataSet = dmRD.qryDespesas
+    Left = 544
+    Top = 432
+  end
+  object dxBarManager1: TdxBarManager
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = 'Segoe UI'
+    Font.Style = []
+    Categories.Strings = (
+      'Default')
+    Categories.ItemsVisibles = (
+      2)
+    Categories.Visibles = (
+      True)
+    PopupMenuLinks = <>
+    UseSystemFont = True
+    Left = 744
+    Top = 40
+    PixelsPerInch = 96
+    object dxBarManager1Bar1: TdxBar
+      Caption = 'Custom 1'
+      CaptionButtons = <>
+      DockedLeft = 0
+      DockedTop = 0
+      FloatLeft = 864
+      FloatTop = 8
+      FloatClientWidth = 0
+      FloatClientHeight = 0
+      ItemLinks = <
+        item
+          Visible = True
+          ItemName = 'dtpDataInicial'
+        end
+        item
+          Visible = True
+          ItemName = 'dtpDataFinal'
+        end
+        item
+          Position = ipBeginsNewColumn
+          Visible = True
+          ItemName = 'dxBarConsulta'
+        end>
+      OneOnRow = True
+      Row = 3
+      UseOwnFont = False
+      Visible = True
+      WholeRow = False
+    end
+    object dxBarManager1Bar2: TdxBar
+      Caption = 'Custom 2'
+      CaptionButtons = <>
+      DockedLeft = 254
+      DockedTop = 0
+      FloatLeft = 864
+      FloatTop = 8
+      FloatClientWidth = 0
+      FloatClientHeight = 0
+      ItemLinks = <>
+      OneOnRow = True
+      Row = 2
+      UseOwnFont = False
+      Visible = True
+      WholeRow = False
+    end
+    object dxBarManager1Bar3: TdxBar
+      Caption = 'Custom 3'
+      CaptionButtons = <>
+      DockedLeft = 314
+      DockedTop = 0
+      FloatLeft = 864
+      FloatTop = 8
+      FloatClientWidth = 0
+      FloatClientHeight = 0
+      ItemLinks = <>
+      OneOnRow = True
+      Row = 1
+      UseOwnFont = False
+      Visible = True
+      WholeRow = False
+    end
+    object dxBarManager1Bar4: TdxBar
+      Caption = 'Sair'
+      CaptionButtons = <>
+      DockedLeft = 374
+      DockedTop = 0
+      FloatLeft = 864
+      FloatTop = 8
+      FloatClientWidth = 0
+      FloatClientHeight = 0
+      ItemLinks = <
+        item
+          Visible = True
+          ItemName = 'dxBarFechar'
+        end>
+      OneOnRow = True
+      Row = 0
+      UseOwnFont = False
+      Visible = True
+      WholeRow = False
+    end
+    object dxBarFechar: TdxBarLargeButton
+      Caption = 'Fechar'
+      Category = 0
+      Hint = 'Fechar'
+      Visible = ivAlways
+      OnClick = dxBarFecharClick
+    end
+    object dtpDataInicial: TdxBarDateCombo
+      Align = iaRight
+      Caption = 'In'#237'cio'
+      Category = 0
+      Hint = 'Informe a data de in'#237'cio'
+      Visible = ivAlways
+      Glyph.SourceDPI = 96
+      Glyph.Data = {
+        424D360400000000000036000000280000001000000010000000010020000000
+        000000000000C40E0000C40E00000000000000000000FF00FFFFFF00FFFFFF00
+        FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
+        FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
+        FFFFFF00FFFF000000FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FF000000FF000000FFFF00FFFFFF00FFFFFF00FFFFFF00
+        FFFFFF00FFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FFFF00FFFF000000FF000000FF0000
+        00FF000000FF000000FFFFFFFFFF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FFFFFFFFFF000000FFFF00FFFF000000FFFFFFFFFFFFFF
+        FFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FFFF00FFFF000000FFFFFFFFFF0000
+        00FF000000FF000000FFFFFFFFFFFFFFFFFFFFFFFFFF000080FF000080FFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FFFF00FFFF000000FFFFFFFFFFFFFF
+        FFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFF000080FF000080FFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FFFF00FFFF000000FFFFFFFFFFFFFF
+        FFFF000080FF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000080FF0000
+        80FFFFFFFFFFFFFFFFFFFFFFFFFF000000FFFF00FFFF000000FFFFFFFFFFFFFF
+        FFFF000080FF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0000
+        80FF000080FFFFFFFFFFFFFFFFFF000000FFFF00FFFF000000FFFFFFFFFFFFFF
+        FFFF000080FF000000FFFFFFFFFFFFFFFFFF000080FF000080FF000080FF0000
+        80FF000080FFFFFFFFFFFFFFFFFF000000FFFF00FFFF000000FFFFFFFFFFFFFF
+        FFFF000080FF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FFFF00FFFF000000FFFFFFFFFFFFFF
+        FFFF000080FF000000FF800000FF800000FF800000FF800000FF800000FF8000
+        00FF800000FF800000FF800000FF000000FFFF00FFFF000000FFFFFFFFFFFFFF
+        FFFFFFFFFFFF000000FF800000FF800000FF800000FF800000FF800000FF8000
+        00FF800000FF800000FF800000FF000000FFFF00FFFF000000FF800000FF8000
+        00FF800000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FF000000FF000000FFFF00FFFF000000FF800000FF8000
+        00FF800000FF800000FF800000FF800000FF800000FF800000FF800000FF0000
+        00FFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF000000FF000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+        00FFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF}
+    end
+    object dtpDataFinal: TdxBarDateCombo
+      Align = iaRight
+      Caption = 'Final'
+      Category = 0
+      Hint = 'Final'
+      Visible = ivAlways
+      Glyph.SourceDPI = 96
+      Glyph.Data = {
+        424D360400000000000036000000280000001000000010000000010020000000
+        000000000000C40E0000C40E00000000000000000000FF00FFFFFF00FFFFFF00
+        FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
+        FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
+        FFFFFF00FFFF000000FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FF000000FF000000FFFF00FFFFFF00FFFFFF00FFFFFF00
+        FFFFFF00FFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FFFF00FFFF000000FF000000FF0000
+        00FF000000FF000000FFFFFFFFFF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FFFFFFFFFF000000FFFF00FFFF000000FFFFFFFFFFFFFF
+        FFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FFFF00FFFF000000FFFFFFFFFF0000
+        00FF000000FF000000FFFFFFFFFFFFFFFFFFFFFFFFFF000080FF000080FFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FFFF00FFFF000000FFFFFFFFFFFFFF
+        FFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFFFFFFFFFF000080FF000080FFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FFFF00FFFF000000FFFFFFFFFFFFFF
+        FFFF000080FF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000080FF0000
+        80FFFFFFFFFFFFFFFFFFFFFFFFFF000000FFFF00FFFF000000FFFFFFFFFFFFFF
+        FFFF000080FF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0000
+        80FF000080FFFFFFFFFFFFFFFFFF000000FFFF00FFFF000000FFFFFFFFFFFFFF
+        FFFF000080FF000000FFFFFFFFFFFFFFFFFF000080FF000080FF000080FF0000
+        80FF000080FFFFFFFFFFFFFFFFFF000000FFFF00FFFF000000FFFFFFFFFFFFFF
+        FFFF000080FF000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFF000000FFFF00FFFF000000FFFFFFFFFFFFFF
+        FFFF000080FF000000FF800000FF800000FF800000FF800000FF800000FF8000
+        00FF800000FF800000FF800000FF000000FFFF00FFFF000000FFFFFFFFFFFFFF
+        FFFFFFFFFFFF000000FF800000FF800000FF800000FF800000FF800000FF8000
+        00FF800000FF800000FF800000FF000000FFFF00FFFF000000FF800000FF8000
+        00FF800000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+        00FF000000FF000000FF000000FF000000FFFF00FFFF000000FF800000FF8000
+        00FF800000FF800000FF800000FF800000FF800000FF800000FF800000FF0000
+        00FFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF000000FF000000FF0000
+        00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+        00FFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF}
+    end
+    object dxBarConsulta: TdxBarButton
+      Caption = '     Consulta      '
+      Category = 0
+      Hint = 'Consulta os dados'
+      Visible = ivAlways
+      OnClick = dxBarConsultaClick
+    end
+  end
+end

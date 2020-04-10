@@ -1,0 +1,180 @@
+unit uFrameCheque;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,udmConexao, uUtil,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
+  FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, uContaBancariaChequeModel,
+  FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
+  FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet,
+  FireDAC.Comp.Client;
+
+type
+  TframeCheque = class(TFrame)
+    cbbCheque: TComboBox;
+    lbl1: TLabel;
+    qryObterTodos: TFDQuery;
+    qryChequePorID: TFDQuery;
+    qryChequePorNumero: TFDQuery;
+  private
+    { Private declarations }
+    idOrganizacao : string;
+    FsListaIdCheques : TStringList;
+  public
+    { Public declarations }
+    function obterTodosPorStatus(pIdContaBancaria, pStatus: string; var combo: TComboBox;   var listaID: TStringList): boolean;
+    function obterChequePorID (pIdContaBancaria, pIdCheque : string): TContaBancariaChequeModel;
+    function obterChequePorNumero (pIdContaBancaria, pNUmeroCheque : string): TContaBancariaChequeModel;
+
+  end;
+
+implementation
+
+{$R *.dfm}
+
+function TframeCheque.obterChequePorID(pIdContaBancaria,  pIdCheque: string): TContaBancariaChequeModel;
+var
+cheque : TContaBancariaChequeModel;
+
+begin
+   cheque :=TContaBancariaChequeModel.Create;
+   cheque.FIDorganizacao := uutil.TOrgAtual.getId;
+   cheque.FID := pIdCheque;
+
+
+
+
+   idOrganizacao := TOrgAtual.getId;
+   dmConexao.conectarBanco;
+
+   try
+
+    qryChequePorID.Close;
+    qryChequePorID.Connection := dmConexao.conn;
+    qryChequePorID.ParamByName('PIDCONTA').AsString := pIdContaBancaria;
+    qryChequePorID.ParamByName('PIDORGANIZACAO').AsString := idOrganizacao;
+    qryChequePorID.ParamByName('PIDCHEQUE').AsString := pIdCheque;
+
+    // qryChequePorID.Open;
+
+     if not  qryChequePorID.IsEmpty then begin
+      cheque.FID                      := (qryChequePorID.FieldByName('id_conta_bancaria_cheque').AsString);
+      cheque.FIDorganizacao           := (qryChequePorID.FieldByName('id_organizacao').AsString);
+      cheque.FIDcontaBancaria         := (qryChequePorID.FieldByName('id_conta_bancaria').AsString);
+      cheque.FIDresponsavel           := (qryChequePorID.FieldByName('id_funcionario').AsString);
+      cheque.FIDtipoStatus            := (qryChequePorID.FieldByName('id_tipo_status').AsString);
+      cheque.FNumero                  := (qryChequePorID.FieldByName('numero_cheque').AsString);
+      cheque.Fobservacao              := (qryChequePorID.FieldByName('observacao').AsString);
+      cheque.Fportador                := (qryChequePorID.FieldByName('portador').AsString);
+      cheque.FIDusuario               := (qryChequePorID.FieldByName('id_usuario').AsString);
+      cheque.FdataPrevisaoCompensacao := (qryChequePorID.FieldByName('data_previsao_compensacao').AsDateTime);
+      cheque.FdataEstorno             := (qryChequePorID.FieldByName('data_estorno').AsDateTime);
+      cheque.FdataRegistro            := (qryChequePorID.FieldByName('data_registro').AsDateTime);
+      cheque.FdataEmissao             := (qryChequePorID.FieldByName('data_emissao').AsDateTime);
+      cheque.FdataCompensacao         := (qryChequePorID.FieldByName('data_compensacao').AsDateTime);
+      cheque.Fvalor                   := (qryChequePorID.FieldByName('valor').AsCurrency);
+      cheque.FqtdImpressao            := (qryChequePorID.FieldByName('qtd_impressao').AsInteger);
+
+     end;
+
+
+   except
+   raise Exception.Create('Erro ao obter cheque por ID');
+
+   end;
+
+   Result := cheque;
+end;
+
+function TframeCheque.obterChequePorNumero(pIdContaBancaria, pNUmeroCheque: string): TContaBancariaChequeModel;
+var
+cheque : TContaBancariaChequeModel;
+
+begin
+   cheque :=TContaBancariaChequeModel.Create;
+   idOrganizacao := TOrgAtual.getId;
+   dmConexao.conectarBanco;
+
+   try
+
+    qryChequePorNumero.Close;
+    qryChequePorNumero.Connection := dmConexao.conn;
+    qryChequePorNumero.ParamByName('PIDCONTA').AsString := pIdContaBancaria;
+    qryChequePorNumero.ParamByName('PIDORGANIZACAO').AsString := idOrganizacao;
+    qryChequePorNumero.ParamByName('CHEQUE').AsString := pNUmeroCheque;
+
+    qryChequePorNumero.Open;
+
+     if not  qryChequePorNumero.IsEmpty then begin
+      cheque.FIdCheque                := (qryChequePorID.FieldByName('id_conta_bancaria_cheque').AsString);
+      cheque.FIdOrganizacao           := (qryChequePorID.FieldByName('id_organizacao').AsString);
+      cheque.FIdContaBancaria         := (qryChequePorID.FieldByName('id_conta_bancaria').AsString);
+      cheque.FIdFuncionario           := (qryChequePorID.FieldByName('id_funcionario').AsString);
+      cheque.FIdTipoStatus            := (qryChequePorID.FieldByName('id_tipo_status').AsString);
+      cheque.FNumeroCheque            := (qryChequePorID.FieldByName('numero_cheque').AsString);
+      cheque.FObservacao              := (qryChequePorID.FieldByName('observacao').AsString);
+      cheque.FPortador                := (qryChequePorID.FieldByName('portador').AsString);
+      cheque.FIdUsuario               := (qryChequePorID.FieldByName('id_usuario').AsString);
+      cheque.FDataPrevisaoCompensacao := (qryChequePorID.FieldByName('data_previsao_compensacao').AsDateTime);
+      cheque.FDataEstorno             := (qryChequePorID.FieldByName('data_estorno').AsDateTime);
+      cheque.FDataRegistro            := (qryChequePorID.FieldByName('data_registro').AsDateTime);
+      cheque.FDataEmissao             := (qryChequePorID.FieldByName('data_emissao').AsDateTime);
+      cheque.FDataCompensacao         := (qryChequePorID.FieldByName('data_compensacao').AsDateTime);
+      cheque.FValor                   := (qryChequePorID.FieldByName('valor').AsCurrency);
+      cheque.FQtdImpressao            := (qryChequePorID.FieldByName('qtd_impressao').AsInteger);
+
+     end;
+
+
+   except
+   raise Exception.Create('Erro ao obter cheque por ID');
+
+   end;
+
+   Result := cheque;
+end;
+
+function TframeCheque.obterTodosPorStatus(pIdContaBancaria,pStatus: string; var combo: TComboBox;
+  var listaID: TStringList): boolean;
+
+begin
+
+ dmConexao.conectarBanco;
+ idOrganizacao := TOrgAtual.getId;
+
+  listaID := TStringList.Create;
+  listaID.Clear;
+  listaID.Add('Sem ID');
+   combo.Clear;
+   combo.Items.Add('<<< Selecione um Cheque  >>>');
+
+   qryObterTodos.Close;
+   qryObterTodos.Connection := dmConexao.conn;
+   qryObterTodos.ParamByName('PIDCONTA').AsString := pIdContaBancaria;
+   qryObterTodos.ParamByName('PIDORGANIZACAO').AsString := idOrganizacao;
+   qryObterTodos.ParamByName('PIDSTATUS').AsString := pStatus;
+   qryObterTodos.Open;
+   qryObterTodos.Last;
+
+
+   if not qryObterTodos.IsEmpty then begin
+          qryObterTodos.First;
+
+      while not qryObterTodos.Eof do
+        begin
+          combo.Items.Add(qryObterTodos.FieldByName('CHEQUE').AsString);
+          listaID.Add(qryObterTodos.FieldByName('ID').AsString);
+          qryObterTodos.Next;
+        end;
+
+      combo.ItemIndex := 0;
+
+   end;
+
+   Result := not qryObterTodos.IsEmpty;
+
+end;
+
+
+end.

@@ -1,0 +1,46 @@
+unit uTipoOperacaoBancariaModel;
+
+interface
+{
+
+CREATE TABLE TIPO_OPERACAO_BANCARIA (
+    ID_TIPO_OPERACAO_BANCARIA  VARCHAR(36) NOT NULL,
+    ID_ORGANIZACAO             VARCHAR(36) NOT NULL,
+    DESCRICAO                  VARCHAR(30) NOT NULL,
+    TIPO                       INTEGER,
+    CODIGO                     INTEGER,
+    ID_CONTA_CONTABIL          VARCHAR(36)
+
+); }
+uses
+  Windows, Messages, Classes, SysUtils,uContaContabilModel, uOrganizacaoModel;
+
+type
+  TTipoOperacaoBancariaModel = class(TObject)
+  private
+
+    FFID: String;
+    FFIDorganizacao: string;
+    FFdescricao :string;
+    FFIDcontaContabil :string;
+    FFcontaContabil :TContaContabilModel;
+    FFtipo :Integer;
+    FFcodigo :Integer;
+
+    public
+
+
+
+
+
+
+
+    constructor Create;
+    destructor Destroy; override;
+  end;
+
+
+implementation
+
+
+end.
