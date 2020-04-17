@@ -1,0 +1,55 @@
+unit uTituloPagarCentroCustoModel;
+
+interface
+
+{
+
+
+CREATE TABLE TITULO_PAGAR_RATEIO_CC (
+    ID_TITULO_PAGAR_RATEIO_CC  VARCHAR(36) NOT NULL,
+    ID_ORGANIZACAO             VARCHAR(36) NOT NULL,
+    ID_CENTRO_CUSTO            VARCHAR(36),
+    ID_TITULO_PAGAR            VARCHAR(36),
+    VALOR                      NUMERIC(10,2)
+);
+
+
+}
+
+
+
+uses
+  Windows, Dialogs, Messages, Classes, SysUtils;
+
+type
+  TTituloPagarCentroCustoModel = class(TObject)
+  private
+
+    FFID: string;
+    FFIDorganizacao: string;
+    FFIDCentroCusto: string;
+    FFIDTP: string;
+    FFvalor : Currency;
+
+
+    public
+
+
+    property FID: string                    read FFID                     write SetFFID  ;
+    property FIDorganizacao: string         read FFIDorganizacao          write SetFFIDorganizacao  ;
+    property FIDCentroCusto: string         read FFIDCentroCusto            write SetFFIDCentroCusto  ;
+    property FIDTP: string                  read FFIDTP                   write SetFFIDTP  ;
+    property Fvalor : Currency              read FFvalor                  write SetFFvalor  ;
+
+
+
+   constructor Create;
+
+
+
+
+  end;
+
+implementation
+
+end.

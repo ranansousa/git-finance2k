@@ -1,0 +1,22 @@
+object framePB: TframePB
+  Left = 0
+  Top = 0
+  Width = 233
+  Height = 54
+  TabOrder = 0
+  object lblProgressBar: TLabel
+    Left = 3
+    Top = 0
+    Width = 124
+    Height = 13
+    Caption = 'Progresso da  Exporta'#231#227'o'
+  end
+  object pb1: TProgressBar
+    Left = 3
+    Top = 14
+    Width = 222
+    Height = 27
+    MarqueeInterval = 5
+    TabOrder = 0
+  end
+end

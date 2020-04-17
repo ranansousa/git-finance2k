@@ -1,0 +1,51 @@
+unit uTPBaixaACModel;
+
+interface
+
+{
+
+CREATE TABLE TITULO_PAGAR_BAIXA_AC (
+    ID_TITULO_PAGAR_BAIXA_AC  VARCHAR(36) NOT NULL,
+    ID_ORGANIZACAO            VARCHAR(36) NOT NULL,
+    ID_TITULO_PAGAR_BAIXA     VARCHAR(36),
+    ID_TIPO_ACRESCIMO         VARCHAR(36),
+    VALOR                     NUMERIC(10,2) NOT NULL,
+
+);
+
+}
+uses
+  Windows, Messages, Classes, SysUtils,uTPBaixaModel, uTipoAcrescimoModel;
+
+type
+  TTPBaixaACModel = class(TObject)
+  private
+    FFID :string ;
+    FFIDOrganizacao :string;
+    FFIDtipoAcrescimo :string;
+    FFIDtituloPagarBaixa: string;
+    FFvalor :Currency;
+    FFtipoAcrescimo :TTipoAcrescimoModel;
+    FFtituloPagarBaixa: TTPBaixaModel;
+
+
+
+   public
+
+    property FID :string read FFID write SetFID;
+    property FIDOrganizacao :string read FFIDOrganizacao write SetFIdOrganizacao;
+    property FIDtipoAcrescimo: string read FFIDtipoAcrescimo write SetFIDtipoAcrescimo;
+    property FIDtituloPagarBaixa: string read FFIDtituloPagarBaixa write SetFIDtituloPagarBaixa;
+    property Fvalor: Currency read FFvalor write SetFvalor;
+
+    property Fhistorico: THistoricoModel read FFhistorico write SetFhistorico;
+
+
+
+    Constructor Create;
+
+
+  end;
+implementation
+
+end.
