@@ -1,0 +1,5 @@
+object dmTRBDeducao: TdmTRBDeducao
+  OldCreateOrder = False
+  Height = 475
+  Width = 503
+end
