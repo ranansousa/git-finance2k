@@ -1,0 +1,46 @@
+object frmSkin: TfrmSkin
+  Left = 0
+  Top = 0
+  Caption = 'Skin'
+  ClientHeight = 759
+  ClientWidth = 323
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  PixelsPerInch = 96
+  TextHeight = 13
+  object redt1: TRichEdit
+    Left = 0
+    Top = 0
+    Width = 323
+    Height = 759
+    Align = alClient
+    Font.Charset = ANSI_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    Lines.Strings = (
+      '')
+    ParentFont = False
+    TabOrder = 0
+    Zoom = 100
+    ExplicitLeft = 64
+    ExplicitTop = -24
+    ExplicitWidth = 727
+    ExplicitHeight = 481
+  end
+  object fllst1: TFileListBox
+    Left = 56
+    Top = 8
+    Width = 201
+    Height = 721
+    ItemHeight = 13
+    TabOrder = 1
+    OnClick = fllst1Click
+  end
+end

@@ -1,0 +1,275 @@
+unit uFrmBaixaTRFPInternet;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics, udmConexao,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, uFrameContaBancaria, uUtil, uSacadoModel, uSacadoDAO, uTituloReceberModel, uTituloReceberDAO,
+  Vcl.StdCtrls, ENumEd, uTRBaixaInternetModel, System.DateUtils, uTipoOperacaoBancariaModel, uTipoOperacaoBancariaDAO, Vcl.ComCtrls,
+  uFrameBanco;
+
+type
+  TfrmBaixaTRFPInternet = class(TForm)
+    frmContaBancaria1: TfrmContaBancaria;
+    edtValor: TEvNumEdit;
+    lbl1: TLabel;
+    dtpEmissao: TDateTimePicker;
+    lbl2: TLabel;
+    edtPortador: TEdit;
+    lbl3: TLabel;
+    btnConfirmaCh: TButton;
+    btnCancelar: TButton;
+    frmBanco1: TfrmBanco;
+    edtAgencia: TEdit;
+    edtConta: TEdit;
+    lbl4: TLabel;
+    lbl5: TLabel;
+    lbl6: TLabel;
+    lbl7: TLabel;
+    cbbPersonalidade: TComboBox;
+    edtCNPJCPF: TEdit;
+    lblCPFCNPJ: TLabel;
+    edtDetalhamento: TEdit;
+    lbl8: TLabel;
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure frmContaBancaria1cbbContaChange(Sender: TObject);
+    procedure btnConfirmaChClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure btnCancelarClick(Sender: TObject);
+    procedure cbbPersonalidadeChange(Sender: TObject);
+    procedure frmBanco1cbbBancoChange(Sender: TObject);
+
+
+  private
+    { Private declarations }
+
+   FsListaPersonalidade, FSListaIDConta, FSListaIDBanco :TStringList;
+    idPersonalidade,idTRB,  idTOB, idBanco, iDConta,  pIdOrganizcacao : string;
+    pValor :Currency;
+    baixaWWWAux : TTRBaixaInternetModel;
+
+    procedure preencheComboPersonalidade;
+    function obterIndiceBanco(pIdBanco: string): Integer;
+  public
+    { Public declarations }
+    function getBaixaWWW: TTRBaixaInternetModel;
+    constructor Create(AOwner: TComponent; var baixaWWW: TTRBaixaInternetModel );
+
+  end;
+
+var
+  frmBaixaTRFPInternet: TfrmBaixaTRFPInternet;
+
+implementation
+
+{$R *.dfm}
+
+{ TfrmBaixaFPCheque }
+
+function TfrmBaixaTRFPInternet.getBaixaWWW: TTRBaixaInternetModel;
+begin
+  Result := baixaWWWAux;
+end;
+
+
+procedure TfrmBaixaTRFPInternet.btnCancelarClick(Sender: TObject);
+begin
+  baixaWWWAux := TTRBaixaInternetModel.Create;
+  baixaWWWAux.FID :='';
+  baixaWWWAux.Fvalor :=0;
+  baixaWWWAux.FIDTRB := '';
+
+ idTOB :='';
+ idBanco := '';
+ iDConta := '';
+ LimpaTela(Self);
+ PostMessage(Self.Handle, WM_CLOSE, 0, 0);
+end;
+
+procedure TfrmBaixaTRFPInternet.btnConfirmaChClick(Sender: TObject);
+begin
+
+
+       baixaWWWAux := TTRBaixaInternetModel.Create;
+       baixaWWWAux.FIDTOB                   := idTOB;
+       baixaWWWAux.FIDorganizacao           := pIdOrganizcacao;
+       baixaWWWAux.Fvalor                   := edtValor.Value;
+       baixaWWWAux.Fdetalhamento            := edtDetalhamento.Text;
+       baixaWWWAux.FIDbancoDestino          := idBanco;
+       baixaWWWAux.FcontaDestino            := edtConta.Text;
+       baixaWWWAux.FagenciaDestino          := edtAgencia.Text;
+       baixaWWWAux.FnomeCorrentista         := edtPortador.Text;
+       baixaWWWAux.Fpersonalidade           := idPersonalidade;
+       baixaWWWAux.FCPCFCNPJCorrentista     := edtCNPJCPF.Text;
+       baixaWWWAux.FdataOperacao            := dtpEmissao.DateTime;
+       baixaWWWAux.FIDcontaBancaria         := iDConta;
+       baixaWWWAux.FID                      := dmConexao.obterNewID;
+       baixaWWWAux.FIDTRB                   := idTRB;
+
+
+
+ PostMessage(Self.Handle, WM_CLOSE, 0, 0);
+
+end;
+
+procedure TfrmBaixaTRFPInternet.cbbPersonalidadeChange(Sender: TObject);
+begin
+  if cbbPersonalidade.ItemIndex > 0 then
+  begin
+    edtCNPJCPF.Enabled := true;
+    idPersonalidade := FsListaPersonalidade[cbbPersonalidade.ItemIndex];
+
+    lblCPFCNPJ.Caption := 'CPF';
+
+    if idPersonalidade = 'PJ' then
+    begin
+      lblCPFCNPJ.Caption := 'CNPJ';
+    end;
+
+  end;
+end;
+
+constructor TfrmBaixaTRFPInternet.Create(AOwner: TComponent; var baixaWWW: TTRBaixaInternetModel );
+var
+tipoTOB : TTipoOperacaoBancariaModel;
+ indiceBanco : Integer;
+begin
+  inherited Create(AOwner);
+    idPersonalidade :=baixaWWW.Fpersonalidade;
+    idTRB := baixaWWW.FIDTRB;
+    baixaWWWAux := baixaWWW;
+    preencheComboPersonalidade;
+
+
+    idBanco               := baixaWWW.FIDbancoDestino;
+    pValor                := baixaWWW.Fvalor;
+    pIdOrganizcacao       := baixaWWW.FIDorganizacao;
+    edtPortador.Text      := baixaWWW.FnomeCorrentista;
+    edtAgencia.Text       := baixaWWW.FagenciaDestino;
+    edtConta.Text         := baixaWWW.FcontaDestino;
+    edtCNPJCPF.Text       := baixaWWW.FCPCFCNPJCorrentista;
+    edtDetalhamento.Text  := baixaWWW.Fdetalhamento;
+    edtValor.Value        := pValor;
+
+    FSListaIDConta        := TStringList.Create;
+    FsListaPersonalidade  := TStringList.Create;
+    FSListaIDConta        := TStringList.Create;
+    FSListaIDBanco        := TStringList.Create;
+
+     idTOB := 'PAGTO VIA BANK-LINE';
+     tipoTOB := TTipoOperacaoBancariaModel.Create;
+     tipoTOB.FIDorganizacao := pIdOrganizcacao;
+     tipoTOB.FID := idTOB;
+     tipoTOB := TTipoOperacaoBancariaDAO.obterPorID(tipoTOB);
+     dtpEmissao.DateTime := baixaWWW.FdataOperacao;
+     dtpEmissao.Enabled := False;
+
+
+    frmContaBancaria1.obterTodos(pIdOrganizcacao, frmContaBancaria1.cbbConta,FSListaIDConta );
+    frmBanco1.obterTodos(pIdOrganizcacao,frmBanco1.cbbBanco,FSListaIDBanco  );
+    btnConfirmaCh.Enabled := False;
+
+
+   if not uUtil.Empty(idBanco) then begin
+    indiceBanco := obterIndiceBanco(idBanco);
+    frmBanco1.cbbBanco.ItemIndex := indiceBanco;
+   end;
+
+   // Self.Close;
+
+end;
+
+
+ function TfrmBaixaTRFPInternet.obterIndiceBanco(pIdBanco :string) :Integer;
+var
+ rsp, I: Integer;
+ begin
+   rsp := 0;
+  for I := 0 to FSListaIDBanco.Count - 1 do
+  begin
+
+    if FSListaIDBanco[I].Equals(pIdBanco) then
+    begin
+      rsp := I;
+      Break
+    end;
+
+  end;
+
+    Result := rsp;
+
+ end;
+
+
+procedure TfrmBaixaTRFPInternet.FormClose(Sender: TObject;
+  var Action: TCloseAction);
+begin
+   Action := caFree;
+end;
+
+
+procedure TfrmBaixaTRFPInternet.FormCreate(Sender: TObject);
+begin
+btnConfirmaCh.Enabled := False;
+
+preencheComboPersonalidade;
+ idTOB := 'PAGTO VIA BANK-LINE';
+
+
+end;
+
+procedure TfrmBaixaTRFPInternet.frmBanco1cbbBancoChange(Sender: TObject);
+begin
+ if frmBanco1.cbbBanco.ItemIndex >0 then begin
+    idBanco := FSListaIDBanco[frmBanco1.cbbBanco.ItemIndex];
+ end;
+end;
+
+procedure TfrmBaixaTRFPInternet.frmContaBancaria1cbbContaChange(Sender: TObject);
+begin
+
+ if frmContaBancaria1.cbbConta.ItemIndex > 0 then
+  begin
+      iDConta := FslistaIdConta[frmContaBancaria1.cbbConta.ItemIndex];
+      btnConfirmaCh.Enabled := True;
+  end else   begin    btnConfirmaCh.Enabled := False; end ;
+
+end;
+
+
+procedure TfrmBaixaTRFPInternet.preencheComboPersonalidade;
+begin
+
+  FsListaPersonalidade :=TStringList.Create;
+  FsListaPersonalidade.Clear;
+  FsListaPersonalidade.Add('0');
+  FsListaPersonalidade.Add('PF');
+  FsListaPersonalidade.Add('PJ');
+
+
+  cbbPersonalidade.Clear;
+  cbbPersonalidade.Items.Add(' >>Selecione<<');
+  cbbPersonalidade.Items.Add('P. Fisica');
+  cbbPersonalidade.Items.Add('P. Juridica');
+
+  cbbPersonalidade.ItemIndex := 0;
+  lblCPFCNPJ.Caption := 'CPF';
+
+  if idPersonalidade = 'PF' then
+  begin
+    cbbPersonalidade.ItemIndex := 1;
+  end;
+
+  if idPersonalidade = 'PJ' then
+  begin
+    cbbPersonalidade.ItemIndex := 2;
+    lblCPFCNPJ.Caption := 'CNPJ';
+  end;
+
+
+
+end;
+
+end.
+
+
