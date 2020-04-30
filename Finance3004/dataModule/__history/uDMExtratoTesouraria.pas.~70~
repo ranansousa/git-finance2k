@@ -1,0 +1,335 @@
+unit uDMExtratoTesouraria;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, udmConexao, uUtil, FireDAC.Stan.Intf, System.DateUtils,
+  FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
+  FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
+  Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, frxClass, frxDBSet;
+
+type
+  TdmExtratoTesouraria = class(TDataModule)
+    qryObterTC: TFDQuery;
+    qrySaldoAnteriorTC: TFDQuery;
+    qrySaldoAnteriorTD: TFDQuery;
+    qryObterTD: TFDQuery;
+    qryDeletaTemp: TFDQuery;
+    qryInsereTemp: TFDQuery;
+    qryExtrato: TFDQuery;
+    procedure DataModuleCreate(Sender: TObject);
+  private
+    { Private declarations }
+   pIdUsuario, pIdOrganizancao :string;
+   function obterSaldoAnteriorTC(pOrganizacao :string; pDataInicio :TDate) :Currency;
+    function obterSaldoAnteriorTD(pOrganizacao: string; pDataInicio: TDate): Currency;
+    function obterTD(pOrganizacao: string; pDataInicio,
+      pDataFinal: TDate): TFDQuery;
+    function insereLancamentoTemp(pData: TDate; pDetalhe, pTipo: string;
+      pValor: Currency): Boolean;
+
+    function montarTabelaTemp(pData: TDate; pDetalhe, pTipo: string;
+      pValor: Currency): Boolean;
+
+  public
+    { Public declarations }
+    function limpaTabelaTemp: Boolean;
+    function obterSaldoAnterior(pOrganizacao: string; pDataInicio: TDate): Currency;
+    function obterTC( pOrganizacao: string; pDataInicio, pDataFinal: TDate): TFDQuery;
+    function obterExtrato( pOrganizacao: string; pDataInicio, pDataFinal: TDate): Boolean;
+
+
+  end;
+
+var
+  dmExtratoTesouraria: TdmExtratoTesouraria;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+
+{$R *.dfm}
+
+procedure TdmExtratoTesouraria.DataModuleCreate(Sender: TObject);
+begin
+
+ pIdOrganizancao := UUtil.TOrgAtual.getId;
+ pIdUsuario :=uutil.TUserAtual.getUserId;
+
+end;
+
+
+function TdmExtratoTesouraria.obterExtrato(pOrganizacao: string; pDataInicio,  pDataFinal: TDate): Boolean;
+var
+vlrSaldoAnterior : Currency;
+tipoSaldo : String;
+begin
+  dmConexao.conectarBanco;
+  vlrSaldoAnterior :=0;
+  tipoSaldo := 'D';
+
+  vlrSaldoAnterior :=  obterSaldoAnterior(pOrganizacao,pDataInicio);
+  if vlrSaldoAnterior > 0 then begin
+    tipoSaldo :='C';
+  end;
+
+  obterTC(pOrganizacao,pDataInicio,pDataFinal ) ;
+  obterTD(pOrganizacao,pDataInicio,pDataFinal ) ;
+ if  montarTabelaTemp( incDay(pDataInicio, -1) ,'SALDO ANTERIOR DA TESOURARIA  ' , tipoSaldo, vlrSaldoAnterior)  then begin
+     qryExtrato.Close;
+     qryExtrato.Connection := dmConexao.conn;
+     qryExtrato.Open;
+ end;
+
+
+  Result := not qryExtrato.IsEmpty;
+
+end;
+
+function TdmExtratoTesouraria.obterSaldoAnterior(pOrganizacao: string; pDataInicio: TDate): Currency;
+begin
+
+ Result := (obterSaldoAnteriorTC(pOrganizacao,pDataInicio) - obterSaldoAnteriorTD(pOrganizacao,pDataInicio) );
+
+end;
+
+function TdmExtratoTesouraria.obterSaldoAnteriorTC(pOrganizacao: string;   pDataInicio: TDate): Currency;
+  var
+  pSaldo :Currency;
+begin
+ pSaldo := 0;
+  dmConexao.conectarBanco;
+   try
+
+     qrySaldoAnteriorTC.Close;
+     qrySaldoAnteriorTC.Connection := dmConexao.conn;
+     qrySaldoAnteriorTC.ParamByName('PIDORGANIZACAO').AsString := pOrganizacao;
+     qrySaldoAnteriorTC.ParamByName('DTDATAINICIAL').AsDate := pDataInicio;
+     qrySaldoAnteriorTC.Open;
+
+     pSaldo := qrySaldoAnteriorTC.FieldByName('VALOR').AsCurrency;
+
+   except
+   raise Exception.Create('Erro ao obter Saldo anterior TC.');
+
+   end;
+
+ Result := pSaldo;
+
+end;
+
+
+function TdmExtratoTesouraria.obterSaldoAnteriorTD(pOrganizacao: string;   pDataInicio: TDate): Currency;
+  var
+  pSaldo :Currency;
+begin
+ pSaldo := 0;
+  dmConexao.conectarBanco;
+   try
+
+     qrySaldoAnteriorTD.Close;
+     qrySaldoAnteriorTD.Connection := dmConexao.conn;
+     qrySaldoAnteriorTD.ParamByName('PIDORGANIZACAO').AsString := pOrganizacao;
+     qrySaldoAnteriorTD.ParamByName('DTDATAINICIAL').AsDate := pDataInicio;
+     qrySaldoAnteriorTD.Open;
+
+     pSaldo := qrySaldoAnteriorTD.FieldByName('VALOR').AsCurrency;
+
+   except
+   raise Exception.Create('Erro ao obter Saldo anterior TD.');
+
+   end;
+
+ Result := pSaldo;
+
+end;
+
+
+function TdmExtratoTesouraria.obterTC(pOrganizacao: string; pDataInicio,
+  pDataFinal: TDate): TFDQuery;
+begin
+ dmConexao.conectarBanco;
+
+
+ try
+     qryObterTC.Close;
+     qryObterTC.Connection := dmConexao.conn;
+     qryObterTC.ParamByName('PIDORGANIZACAO').AsString := pOrganizacao;
+     qryObterTC.ParamByName('DTDATAINICIAL').AsDate := pDataInicio;
+     qryObterTC.ParamByName('DTDATAFINAL').AsDate := pDataFinal;
+     qryObterTC.Open;
+
+ except
+ raise Exception.Create('Erro ao obter TC');
+ end;
+
+ Result := qryObterTC;
+
+end;
+
+
+
+function TdmExtratoTesouraria.obterTD(pOrganizacao: string; pDataInicio, pDataFinal: TDate): TFDQuery;
+begin
+ dmConexao.conectarBanco;
+
+
+ try
+     qryObterTD.Close;
+     qryObterTD.Connection := dmConexao.conn;
+     qryObterTD.ParamByName('PIDORGANIZACAO').AsString := pOrganizacao;
+     qryObterTD.ParamByName('DTDATAINICIAL').AsDate := pDataInicio;
+     qryObterTD.ParamByName('DTDATAFINAL').AsDate := pDataFinal;
+     qryObterTD.Open;
+
+ except
+ raise Exception.Create('Erro ao obter TD');
+ end;
+
+ Result := qryObterTD;
+
+end;
+
+
+function TdmExtratoTesouraria.montarTabelaTemp(pData: TDate; pDetalhe,  pTipo: string; pValor: Currency) :Boolean;
+var
+cheque :string;
+rstaux : Boolean;
+begin
+  limpaTabelaTemp;
+  cheque :='';
+    //fazer primeiro o insert do saldo anterior. Dados na assinatura
+  rstAux := insereLancamentoTemp(pData, pDetalhe, pTipo, pValor); //SALDO ANTERIOR
+
+
+    // enviar os dados dos lancamentos creditos
+     if qryObterTC.RecordCount > 0  then begin
+        qryObterTC.First;
+
+         while  (not qryObterTC.Eof) do begin
+
+          pData    := qryObterTC.FieldByName('DATA_MOVIMENTO').AsDateTime;
+          pTipo    := qryObterTC.FieldByName('TIPO_LANCAMENTO').AsString;
+          pValor   := qryObterTC.FieldByName('VALOR').AsCurrency;
+
+          pDetalhe := qryObterTC.FieldByName('DESCRICAO').AsString + ' ' +
+                      qryObterTC.FieldByName('DSC_HIST').AsString + '  IDENT.  ' +
+                      qryObterTC.FieldByName('NUMERO_DOCUMENTO').AsString + ' ' +
+                      qryObterTC.FieldByName('DOCUMENTO').AsString + ' ' +
+                      qryObterTC.FieldByName('DSC_TITULO').AsString + ' ';
+
+
+                cheque :=  qryObterTC.FieldByName('CHEQUE_RECEBIDO').AsString ;
+
+            if (not uutil.Empty (cheque)) then begin
+
+
+                pDetalhe := qryObterTC.FieldByName('DESCRICAO').AsString + ' ' +
+                            qryObterTC.FieldByName('DSC_HIST').AsString + '  IDENT.  ' +
+                            qryObterTC.FieldByName('NUMERO_DOCUMENTO').AsString + ' ' +
+                            qryObterTC.FieldByName('DOCUMENTO').AsString + ' ' +
+                            qryObterTC.FieldByName('DSC_TITULO').AsString + ' ' +
+                            qryObterTC.FieldByName('CHEQUE_RECEBIDO').AsString + ' LOTE DEPOSITO > ' +
+                            qryObterTC.FieldByName('LOTE').AsString ;
+
+             end;
+
+            insereLancamentoTemp(pData, UpperCase(pDetalhe), pTipo, pValor);
+
+            qryObterTC.Next;
+
+         end;
+     end;
+
+
+     // enviar os dados dos lancamentos debitos
+      if qryObterTD.RecordCount >0  then begin
+        qryObterTD.First;
+         while  (not qryObterTD.Eof) do begin
+
+          pData    := qryObterTD.FieldByName('data_movimento').AsDateTime;
+          pTipo    := qryObterTD.FieldByName('TIPO_LANCAMENTO').AsString;
+          pValor   := qryObterTD.FieldByName('VALOR').AsCurrency;
+          pDetalhe := qryObterTD.FieldByName('DESCRICAO').AsString + '  IDENT  ' +
+                      qryObterTD.FieldByName('NUMERO_DOCUMENTO').AsString + ' ' +
+                      qryObterTD.FieldByName('DSC_DOC').AsString + ' ' +
+                      qryObterTD.FieldByName('FORNECEDOR').AsString + '  ' ;
+
+            insereLancamentoTemp(pData, UpperCase(pDetalhe), pTipo, pValor);
+
+            qryObterTD.Next;
+
+         end;
+     end;
+
+      Result := rstaux;
+end;
+
+function TdmExtratoTesouraria.limpaTabelaTemp: Boolean;
+var
+sucesso : Boolean;
+begin
+  dmConexao.conectarBanco;
+  sucesso := False;
+
+  if not dmConexao.conn.InTransaction then
+    dmConexao.conn.StartTransaction;
+
+  try
+
+    qryDeletaTemp.Close;
+    qryDeletaTemp.ExecSQL;
+
+    if qryDeletaTemp.RowsAffected >0  then begin sucesso := True; end;
+
+        Result := sucesso;
+
+    if dmConexao.conn.InTransaction then
+      dmConexao.conn.CommitRetaining;
+
+  except
+    if dmConexao.conn.InTransaction then
+      dmConexao.conn.RollbackRetaining;
+
+    Result := sucesso;
+    raise Exception.Create('Erro ao tentar limpar a tabela temporária...');
+
+  end;
+
+end;
+
+function TdmExtratoTesouraria.insereLancamentoTemp(pData: TDate; pDetalhe,  pTipo: string; pValor: Currency): Boolean;
+  VAR
+  comando :string;
+  begin
+    dmConexao.conectarBanco;
+
+    comando := ' INSERT INTO TEMP_EXTRATO (DATA, DETALHAMENTO, TIPO, VALOR) ' +
+               ' VALUES (:PDATA, :PDETALHE, :PTIPO, :PVALOR) ' ;
+
+    try
+
+          qryInsereTemp.Close;
+          qryInsereTemp.Connection := dmConexao.conn;
+          qryInsereTemp.SQL.Clear;
+          qryInsereTemp.SQL.Add(comando);
+          qryInsereTemp.ParamByName('PDATA').AsDate      := pData;
+          qryInsereTemp.ParamByName('PDETALHE').AsString := pDetalhe;
+          qryInsereTemp.ParamByName('PTIPO').AsString    := pTipo;
+          qryInsereTemp.ParamByName('PVALOR').AsCurrency := pValor;
+
+          qryInsereTemp.ExecSQL;
+          dmConexao.conn.CommitRetaining;
+
+      Result := System.True;
+
+    except
+      dmConexao.conn.RollbackRetaining;
+    raise Exception.Create('Erro ao tentar montar a tabela temporária...');
+
+    end;
+end;
+
+
+
+end.

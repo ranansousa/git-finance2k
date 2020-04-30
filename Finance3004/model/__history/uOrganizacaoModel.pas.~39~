@@ -1,0 +1,158 @@
+unit uOrganizacaoModel;
+
+
+interface
+{ table
+
+
+
+CREATE TABLE ORGANIZACAO (
+    ID_ORGANIZACAO       VARCHAR(36) NOT NULL,
+    RAZAO_SOCIAL         VARCHAR(50) NOT NULL,
+    SIGLA                VARCHAR(10) NOT NULL,
+    FANTASIA             VARCHAR(50),
+    CNPJ                 VARCHAR(20) NOT NULL,
+    INSCRICAO_ESTADUAL   VARCHAR(20) NOT NULL,
+    INSCRICAO_MUNICIPAL  VARCHAR(20) NOT NULL,
+    LOGRADOURO           VARCHAR(60),
+    COMPLEMENTO          VARCHAR(60),
+    NUMERO               VARCHAR(6),
+    CEP                  VARCHAR(10),
+    ID_ESTADO            VARCHAR(36),
+    ID_CIDADE            VARCHAR(36),
+    ID_BAIRRO            VARCHAR(36),
+    NAMESERVERBD         VARCHAR(60) NOT NULL,
+    IPSERVERBD           VARCHAR(60) NOT NULL,
+    SISTEMA_CONTABIL     VARCHAR(60),
+    SERIAL_HD            VARCHAR(60),
+    SERIAL_CLIENTE       VARCHAR(60),
+    LICENCA              VARCHAR(60),
+    SOCKET_WEB           VARCHAR(60),
+    CODIGO_WEB           VARCHAR(60),
+    CODINOME             VARCHAR(60),
+    HOST_NAME            VARCHAR(60),
+    HOST_IP              VARCHAR(60),
+    VERSAO               VARCHAR(30),
+    DATA_ATUALIZACAO     DATE,
+    FLAG_HST             SMALLINT,
+    SN1                  VARCHAR(80),
+    SN2                  VARCHAR(80),
+    SN3                  VARCHAR(80),
+    ATIVA                SMALLINT DEFAULT 1
+);
+
+}
+
+uses
+  Windows, Messages, Classes, SysUtils;
+
+
+type
+  TOrganizacaoModel = class
+  private
+
+    FFID: string;
+    FFRazaoSocial: string;
+    FFSigla: string;
+    FFFantasia: string;
+    FFCNPJ: string;
+    FFVersao: string;
+
+    FFINSCRICAO_ESTADUAL   : string ;
+    FFINSCRICAO_MUNICIPAL  : string ;
+    FFLOGRADOURO           : string ;
+    FFCOMPLEMENTO          : string ;
+    FFNUMERO               : string ;
+    FFCEP                  : string ;
+    FFIDESTADO            : string ;
+    FFIDCIDADE            : string ;
+    FFIDBAIRRO            : string ;
+    FFNAMESERVERBD         : string ;
+    FFIPSERVERBD           : string ;
+    FFSISTEMA_CONTABIL     : string ;
+    FFSERIAL_HD            : string ;
+    FFSERIAL_CLIENTE       : string ;
+    FFLICENCA              : string ;
+    FFSOCKET_WEB           : string ;
+    FFCODIGO_WEB           : string ;
+    FFCODINOME             : string ;
+    FFHOST_NAME            : string ;
+    FFHOST_IP              : string ;
+    FFSN1                  : string ;
+    FFSN2                  : string ;
+    FFSN3                  : string ;
+    FFDATA_ATUALIZACAO     :TDateTime;
+    FFFLAG_HST             :Integer;
+    FFATIVA                :Integer;
+
+
+    procedure SetFID(const Value: string);
+    procedure SetFCNPJ(const Value: string);
+    procedure SetFFantasia(const Value: string);
+    procedure SetFRazaoSocial(const Value: string);
+    procedure SetFSigla(const Value: string);
+    procedure SetFVersao(const Value: string);
+
+  public
+    // atibutos e métodos públicos
+    property FID: string read FFID write SetFID;
+    property FRazaoSocial: string read FFRazaoSocial write SetFFRazaoSocial;
+    property FSigla: string read FFSigla write SetFFSigla;
+    property FFantasia: string read FFFantasia write SetFFantasia;
+    property FCNPJ: string read FFCNPJ write SetFFCNPJ;
+    property FVersao: string read FFVersao write SetFFVersao;
+    property FINSCRICAO_ESTADUAL   : string  read FFINSCRICAO_ESTADUAL    write SetFFINSCRICAO_ESTADUAL   ;
+    property FINSCRICAO_MUNICIPAL  : string  read FFINSCRICAO_MUNICIPAL    write SetFFINSCRICAO_MUNICIPAL   ;
+    property FLOGRADOURO           : string  read FFLOGRADOURO    write SetFFLOGRADOURO   ;
+    property FCOMPLEMENTO          : string  read FFCOMPLEMENTO    write SetFFCOMPLEMENTO   ;
+    property FNUMERO               : string  read FFNUMERO    write SetFFNUMERO   ;
+    property FCEP                  : string  read FFCEP    write SetFFCEP   ;
+    property FIDESTADO             : string  read FFIDESTADO    write SetFFIDESTADO   ;
+    property FIDCIDADE             : string  read FFIDCIDADE    write SetFFIDCIDADE   ;
+    property FIDBAIRRO             : string  read FFIDBAIRRO    write SetFFIDBAIRRO   ;
+    property FNAMESERVERBD         : string  read FFNAMESERVERBD    write SetFFNAMESERVERBD   ;
+    property FIPSERVERBD           : string  read FFIPSERVERBD    write SetFFIPSERVERBD   ;
+    property FSISTEMA_CONTABIL     : string  read FFSISTEMA_CONTABIL    write SetFFSISTEMA_CONTABIL   ;
+    property FSERIAL_HD            : string  read FFSERIAL_HD    write SetFFSERIAL_HD   ;
+    property FSERIAL_CLIENTE       : string  read FFSERIAL_CLIENTE    write SetFFSERIAL_CLIENTE   ;
+    property FLICENCA              : string  read FFLICENCA    write SetFFLICENCA   ;
+    property FSOCKET_WEB           : string  read FFSOCKET_WEB    write SetFFSOCKET_WEB   ;
+    property FCODIGO_WEB           : string  read FFCODIGO_WEB    write SetFFCODIGO_WEB   ;
+    property FCODINOME             : string  read FFCODINOME    write SetFFCODINOME   ;
+    property FHOST_NAME            : string  read FFHOST_NAME    write SetFFHOST_NAME   ;
+    property FHOST_IP              : string  read FFHOST_IP    write SetFFHOST_IP   ;
+    property FSN1                  : string  read FFSN1    write SetFFSN1   ;
+    property FSN2                  : string  read FFSN2    write SetFFSN2   ;
+    property FSN3                  : string  read FFSN3    write SetFFSN3   ;
+    property FDATA_ATUALIZACAO     :TDateTime read FFDATA_ATUALIZACAO    write SetFFDATA_ATUALIZACAO   ;
+    property FFLAG_HST             :Integer read FFFLAG_HST    write SetFFFLAG_HST   ;
+    property FATIVA                :Integer read FFATIVA       write SetFFATIVA   ;
+
+
+
+    constructor Create;
+    destructor Destroy; override;
+
+  end;
+
+implementation
+{ TOrganizacao }
+
+
+constructor TOrganizacaoModel.Create;
+begin
+// ver o que por aqui
+end;
+
+destructor TOrganizacaoModel.Destroy;
+begin
+  inherited;
+end;
+
+
+
+
+
+
+
+end.

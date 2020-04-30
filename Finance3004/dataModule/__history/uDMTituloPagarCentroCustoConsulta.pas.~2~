@@ -1,0 +1,25 @@
+unit uDMTituloPagarCentroCustoConsulta;
+
+interface
+
+uses
+  System.SysUtils, System.Classes;
+
+type
+  TdmTPCentroCustoConsulta = class(TDataModule)
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  dmTPCentroCustoConsulta: TdmTPCentroCustoConsulta;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+
+{$R *.dfm}
+
+end.
