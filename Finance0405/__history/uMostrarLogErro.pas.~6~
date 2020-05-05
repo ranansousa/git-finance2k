@@ -1,0 +1,38 @@
+unit uMostrarLogErro;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, uPempecExceptions, uUtil;
+
+type
+  TfrmMostrarLogErro = class(TForm)
+    Memo: TMemo;
+    procedure FormCreate(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmMostrarLogErro: TfrmMostrarLogErro;
+
+implementation
+
+{$R *.dfm}
+//metodo OnException do  componente TApplicationEvents
+
+//Para exibir os erros
+
+procedure TfrmMostrarLogErro.FormCreate(Sender: TObject);
+begin
+ // Carrega novamente o arquivo de log no Memo
+
+  if FileExists(GetCurrentDir + '\LogExcecoes.txt') then
+    Memo.Lines.LoadFromFile(GetCurrentDir + '\LogExcecoes.txt');
+
+end;
+
+end.

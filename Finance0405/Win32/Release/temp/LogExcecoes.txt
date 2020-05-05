@@ -1,0 +1,9 @@
+Data/Hora.......: 04/05/2020 19:01:11
+Mensagem........: 'A' is not a valid integer value
+Classe Exceção..: EConvertError
+Formulário......: FrmPrincipal
+Unit............: uFrmExportacao
+Controle Visual.: FrmPrincipal
+Usuario.........: Ranan Sousa
+Versão Windows..: Windows 7
+----------------------------------------------------------------------

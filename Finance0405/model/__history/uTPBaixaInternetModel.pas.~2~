@@ -1,0 +1,58 @@
+unit uTPBaixaInternetModel;
+
+
+{table
+
+
+CREATE TABLE TITULO_PAGAR_BAIXA_INTERNET (
+    ID_TITULO_PAGAR_BAIXA_INTERNET  VARCHAR(36) NOT NULL,
+    ID_ORGANIZACAO                  VARCHAR(36) NOT NULL,
+    ID_TITULO_PAGAR_BAIXA           VARCHAR(36),
+    ID_CONTA_BANCARIA               VARCHAR(36),
+    ID_TIPO_OPERACAO_BANCARIA       VARCHAR(36),
+    ID_BANCO_DESTINO                VARCHAR(36),
+    DETALHAMENTO                    VARCHAR(60) NOT NULL,
+    CONTA_DESTINO                   VARCHAR(20),
+    AGENCIA_DESTINO                 VARCHAR(10),
+    NOME_CORRENTISTA                VARCHAR(60),
+    PERSONALIDADE                   VARCHAR(2),
+    CPFCNPJ_CORRENTISTA             VARCHAR(20),
+    VALOR                           NUMERIC(10,2) NOT NULL,
+    DATA_OPERACAO                   DATE,
+
+);
+
+
+
+}
+interface
+
+
+uses
+  Windows, Messages, Classes, SysUtils,uOrganizacaoModel,System.Generics.Collections,
+  uTPBaixaDEModel,uTPBaixaDEDAO, uTPBaixaACModel,uTPBaixaACDAO, uTituloPagarModel,uTPBaixaChequeModel,uTPBaixaFPModel;
+
+type
+  TTPBaixaModel = class(TObject)
+  private
+    FFID: string;
+    FFIDorganizacao: string;
+    FFOrganizacao: TOrganizacaoModel;
+
+    FFIDCentroCusto: string;
+    FFTituloPagar: TTituloPagarModel;
+
+  public
+
+
+
+    constructor Create;
+    destructor Destroy; override;
+
+  end;
+
+
+
+implementation
+
+end.
