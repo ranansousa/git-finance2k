@@ -1,0 +1,25 @@
+inherited frmBairro: TfrmBairro
+  Width = 335
+  Height = 142
+  ExplicitWidth = 335
+  ExplicitHeight = 142
+  inherited lblID: TLabel
+    Left = 19
+    Top = 30
+    ExplicitLeft = 19
+    ExplicitTop = 30
+  end
+  inherited cbbcombo: TComboBox
+    Left = 12
+    Width = 229
+    ExplicitLeft = 12
+    ExplicitWidth = 229
+  end
+  inherited qryObterPorID: TFDQuery
+    Top = 24
+  end
+  inherited qryObterTodos: TFDQuery
+    Left = 128
+    Top = 24
+  end
+end

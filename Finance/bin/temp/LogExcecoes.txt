@@ -1,0 +1,19 @@
+Data/Hora.......: 07/05/2020 11:16:22
+Mensagem........: Integer overflow
+Classe Exceção..: EIntOverflow
+Formulário......: FrmPrincipal
+Unit............: cxPC
+Controle Visual.: cbxUsuario
+Usuario.........: Ranan Sousa
+Versão Windows..: Windows 7
+----------------------------------------------------------------------
+Data/Hora.......: 07/05/2020 19:44:25
+Mensagem........: Error connecting with SSL.
+error:1409442E:SSL routines:SSL3_READ_BYTES:tlsv1 alert protocol version
+Classe Exceção..: EIdOSSLUnderlyingCryptoError
+Formulário......: frmInfoUpdate
+Unit............: Vcl.ExtCtrls
+Controle Visual.: Button1
+Usuario.........: RANAN SOUSA
+Versão Windows..: Windows 7
+----------------------------------------------------------------------

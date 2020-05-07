@@ -1,0 +1,122 @@
+object dmRelTPDetalhado: TdmRelTPDetalhado
+  OldCreateOrder = False
+  Height = 443
+  Width = 621
+  object frxDBTitulosPorFornecedor: TfrxDBDataset
+    UserName = 'titulos'
+    CloseDataSource = False
+    FieldAliases.Strings = (
+      'ID_TITULO_PAGAR=ID_TITULO_PAGAR'
+      'ID_ORGANIZACAO=ID_ORGANIZACAO'
+      'ID_HISTORICO=ID_HISTORICO'
+      'ID_CEDENTE=ID_CEDENTE'
+      'ID_TIPO_COBRANCA=ID_TIPO_COBRANCA'
+      'ID_RESPONSAVEL=ID_RESPONSAVEL'
+      'ID_LOCAL_PAGAMENTO=ID_LOCAL_PAGAMENTO'
+      'ID_TIPO_STATUS=ID_TIPO_STATUS'
+      'ID_CENTRO_CUSTO=ID_CENTRO_CUSTO'
+      'ID_TITULO_GERADOR=ID_TITULO_GERADOR'
+      'ID_NOTA_FISCAL_ENTRADA=ID_NOTA_FISCAL_ENTRADA'
+      'NUMERO_DOCUMENTO=NUMERO_DOCUMENTO'
+      'DESCRICAO=DESCRICAO'
+      'DATA_REGISTRO=DATA_REGISTRO'
+      'DATA_EMISSAO=DATA_EMISSAO'
+      'DATA_PROTOCOLO=DATA_PROTOCOLO'
+      'DATA_VENCIMENTO=DATA_VENCIMENTO'
+      'DATA_PAGAMENTO=DATA_PAGAMENTO'
+      'PREVISAO_CARTORIO=PREVISAO_CARTORIO'
+      'VALOR_NOMINAL=VALOR_NOMINAL'
+      'MOEDA=MOEDA'
+      'CARTEIRA=CARTEIRA'
+      'CODIGO_BARRAS=CODIGO_BARRAS'
+      'CONTRATO=CONTRATO'
+      'PARCELA=PARCELA'
+      'OBSERVACAO=OBSERVACAO'
+      'VALOR_ANTECIPADO=VALOR_ANTECIPADO'
+      'ID_USUARIO=ID_USUARIO'
+      'CONTA_CONTABIL_DEBITO=CONTA_CONTABIL_DEBITO'
+      'DIGITO_CONTA_CONTABIL_CREDITO=DIGITO_CONTA_CONTABIL_CREDITO'
+      'CONTA_CONTABIL_CREDITO=CONTA_CONTABIL_CREDITO'
+      'DIGITO_CONTA_CONTABIL_DEBITO=DIGITO_CONTA_CONTABIL_DEBITO'
+      'ID_LOTE_PAGAMENTO=ID_LOTE_PAGAMENTO'
+      'DATA_ULTIMA_ATUALIZACAO=DATA_ULTIMA_ATUALIZACAO'
+      'ID_LOTE_CONTABIL=ID_LOTE_CONTABIL'
+      'ID_CONTA_CONTABIL_CREDITO=ID_CONTA_CONTABIL_CREDITO'
+      'ID_CONTA_CONTABIL_DEBITO=ID_CONTA_CONTABIL_DEBITO'
+      'IS_PROVISAO=IS_PROVISAO'
+      'REGISTRO_PROVISAO=REGISTRO_PROVISAO'
+      'ID_CONTA_BANCARIA_CHEQUE=ID_CONTA_BANCARIA_CHEQUE')
+    DataSource = dmContasPagar.dtsTitulosPagarAll
+    BCDToCurrency = False
+    Left = 288
+    Top = 248
+  end
+  object frxCedente: TfrxDBDataset
+    UserName = 'cedente'
+    CloseDataSource = False
+    FieldAliases.Strings = (
+      'ID_CEDENTE=ID_CEDENTE'
+      'NOME=NOME'
+      'CNPJ=CNPJ'
+      'ID_TIPO_CEDENTE=ID_TIPO_CEDENTE'
+      'ID_CONTATO=ID_CONTATO'
+      'PERSONALIDADE=PERSONALIDADE'
+      'STATUS=STATUS'
+      'CONTA_BANCARIA=CONTA_BANCARIA'
+      'AGENCIA=AGENCIA'
+      'ID_BANCO=ID_BANCO'
+      'BANCO=BANCO'
+      'DATA_REGISTRO=DATA_REGISTRO'
+      'CODIGO=CODIGO'
+      'TELEFONE=TELEFONE'
+      'EMAIL=EMAIL'
+      'CELULAR=CELULAR')
+    DataSet = dmCedenteConsulta.qryObterCedentePorID
+    BCDToCurrency = False
+    Left = 184
+    Top = 248
+  end
+  object DTSTituloPorCedente: TDataSource
+    DataSet = dmCedenteConsulta.qryObterCedentePorID
+    OnDataChange = DTSTituloPorCedenteDataChange
+    Left = 176
+    Top = 312
+  end
+  object frxPDFExport1: TfrxPDFExport
+    UseFileCache = True
+    ShowProgress = True
+    OverwritePrompt = False
+    DataOnly = False
+    PrintOptimized = False
+    Outline = False
+    Background = False
+    HTMLTags = True
+    Quality = 95
+    Transparency = False
+    Author = 'FastReport'
+    Subject = 'FastReport PDF export'
+    ProtectionFlags = [ePrint, eModify, eCopy, eAnnot]
+    HideToolbar = False
+    HideMenubar = False
+    HideWindowUI = False
+    FitWindow = False
+    CenterWindow = False
+    PrintScaling = False
+    PdfA = False
+    Left = 288
+    Top = 312
+  end
+  object frxCSVExport1: TfrxCSVExport
+    UseFileCache = True
+    ShowProgress = True
+    OverwritePrompt = False
+    DataOnly = False
+    Separator = ';'
+    OEMCodepage = False
+    UTF8 = False
+    NoSysSymbols = True
+    ForcedQuotes = False
+    Left = 376
+    Top = 312
+  end
+end
