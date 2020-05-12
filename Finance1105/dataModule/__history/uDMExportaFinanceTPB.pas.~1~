@@ -1,0 +1,25 @@
+unit uDMExportaFinanceTPB;
+
+interface
+
+uses
+  System.SysUtils, System.Classes;
+
+type
+  TdmExportFinanceTPB = class(TDataModule)
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  dmExportFinanceTPB: TdmExportFinanceTPB;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+
+{$R *.dfm}
+
+end.
