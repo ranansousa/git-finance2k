@@ -66,8 +66,8 @@ object frmEstornaCheque: TfrmEstornaCheque
     Caption = 'Portador'
   end
   object lblIDTP: TLabel
-    Left = 720
-    Top = 277
+    Left = 820
+    Top = 245
     Width = 33
     Height = 13
     Caption = 'lblIDTP'
@@ -82,8 +82,8 @@ object frmEstornaCheque: TfrmEstornaCheque
     Visible = False
   end
   object lblIDCHEQUE: TLabel
-    Left = 720
-    Top = 296
+    Left = 722
+    Top = 245
     Width = 62
     Height = 13
     Caption = 'lblIDCHEQUE'
@@ -126,6 +126,13 @@ object frmEstornaCheque: TfrmEstornaCheque
     Width = 63
     Height = 13
     Caption = 'Data estorno'
+  end
+  object Label2: TLabel
+    Left = 415
+    Top = 252
+    Width = 58
+    Height = 13
+    Caption = 'Observa'#231#227'o'
   end
   inline frmContaBancaria1: TfrmContaBancaria
     Left = 8
@@ -362,6 +369,14 @@ object frmEstornaCheque: TfrmEstornaCheque
       Left = 104
       Top = 24
     end
+  end
+  object edtObs: TEdit
+    Left = 414
+    Top = 271
+    Width = 439
+    Height = 21
+    Enabled = False
+    TabOrder = 17
   end
   object qryObterCheque: TFDQuery
     Connection = dmConexao.conn

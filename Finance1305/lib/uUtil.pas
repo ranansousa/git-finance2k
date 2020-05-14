@@ -92,6 +92,7 @@ type
     class function proximoDiaUtil (dData :TDateTime) :TDateTime;
     class function retornaPrimeiroNome(nome :string): string;
     class function retiraAcento(Str:String):String;  //uso framecedente
+    class function formatCurToReal(valor : Currency) :string;
 
 
   end;
@@ -144,6 +145,8 @@ type
     class function getRelatorioSaldos: string;
     class function getListaHistoricos:String;
     class function getDemontrativoRDSintetico:string;
+    class function getRelatorioDespesasCC:string;
+
     class function getRelatorioTransferencias:string;
     class function getRelatorioTransfBancoCaixa:string;
     class function getNameFileExportPDF(pPasta, pTipoRel :string):string;
@@ -1773,9 +1776,6 @@ begin
   end;
 
 
-
-
-
 class function TPathRelatorio.getContasReceberEspelho: string;
 begin
 Result := getPathRelatorios + 'relEspelhoTituloReceber.fr3';
@@ -1785,6 +1785,8 @@ class function TPathRelatorio.getDemontrativoRDSintetico: string;
 begin
  Result := getPathRelatorios + 'relDemonstrativoRDSintetico.fr3';
 end;
+
+
 
 class function TPathRelatorio.getExtratoBancario (tipo:Integer): string;
 begin
@@ -1828,6 +1830,11 @@ end;
 class function TPathRelatorio.getReciboTR: string;
 begin
      Result :=  getPathRelatorios + 'reciboTR.fr3';
+end;
+
+class function TPathRelatorio.getRelatorioDespesasCC: string;
+begin
+  Result :=  getPathRelatorios + 'relDespesasPorCentroCusto.fr3';
 end;
 
 class function TPathRelatorio.getRelatorioExportacao: string;
@@ -1994,6 +2001,13 @@ begin
       Copy(Result, 6, 3);
 end;
 
+
+class function TFormat.formatCurToReal(valor: Currency): string;
+begin
+
+ Result :=   FormatCurr('R$ ###,##0.00', valor);
+
+end;
 
 class function TFormat.formatelefone(numtexto: string): string;
 begin

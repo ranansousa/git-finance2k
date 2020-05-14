@@ -14,6 +14,9 @@ uses
 
   const
    pTable : string = 'CENTRO_CUSTO';
+    pCampoPesquisa : string = 'DESCRICAO';
+    pCampoID : string = 'ID_CENTRO_CUSTO';
+
 
 
 
@@ -29,7 +32,7 @@ type
     {métodos CRUD (Create, Read, Update e Delete)
     para manipulação dos dados}
     class function combo(var combo: TComboBox; var listaID: TStringList) :Boolean;
-    class function comboDxBar(var combo: TdxBarCombo; var listaID: TStringList):Boolean;
+    class function comboGenerico(var comboDX: TdxBarCombo; var listaID: TStringList):Boolean;
 
 
 
@@ -82,9 +85,9 @@ end;
 class function TCentroCustoDAO.Delete(value: TCentroCustoModel): Boolean;
 var
 qryDelete : TFDQuery;
-xResp :Boolean;
+sucesso :Boolean;
 begin
- xResp := False;
+ sucesso := False;
  dmConexao.conectarBanco;
  try
 
@@ -98,17 +101,20 @@ begin
   qryDelete.ParamByName('PID').AsString := value.FID;
 
   qryDelete.ExecSQL;
-  xResp := True;
+  if qryDelete.RowsAffected >0  then begin
+
+  sucesso := True;
+  end;
 
   dmConexao.conn.CommitRetaining;
 
  except
- xResp := False;
+ sucesso := False;
  raise Exception.Create('Erro ao tentar DELETAR ' + pTable);
 
  end;
 
-  Result := xResp;
+  Result := sucesso;
 end;
 
 class function TCentroCustoDAO.getModel(query: TFDQuery): TCentroCustoModel;
@@ -274,15 +280,19 @@ begin
 
 end;
 
-class function TCentroCustoDAO.comboDxBar(var combo: TdxBarCombo; var listaID: TStringList):Boolean;
+class function TCentroCustoDAO.comboGenerico(var comboDX: TdxBarCombo; var listaID: TStringList):Boolean;
 var
 qry :TFDQuery;
+
+cmdSql :string;
 begin
+   cmdSql := 'SELECT  C.'+ pCampoPesquisa + ' , C.'+ pCampoID + ' FROM  '+pTable + ' C WHERE C.ID_ORGANIZACAO = :PIDORGANIZACAO ';
   qry := TFDQuery.Create(nil);
   qry.Close;
   qry.Connection := dmConexao.conn;
   qry.SQL.Clear;
-  qry.SQL.Add('SELECT C.ID_CENTRO_CUSTO, C.DESCRICAO FROM CENTRO_CUSTO C WHERE C.ID_ORGANIZACAO = :PIDORGANIZACAO  ORDER BY C.DESCRICAO ');
+ // qry.SQL.Add('SELECT C.ID_CENTRO_CUSTO, C.DESCRICAO FROM CENTRO_CUSTO C WHERE C.ID_ORGANIZACAO = :PIDORGANIZACAO  ORDER BY C.DESCRICAO ');
+  qry.SQL.Add(cmdSql);
   qry.ParamByName('PIDORGANIZACAO').AsString := UUTIL.TOrgAtual.getId;
   qry.Open;
   qry.First;
@@ -290,23 +300,23 @@ begin
   listaID := TStringList.Create;
   listaID.Clear;
   listaID.Add('Sem ID');
-  combo.Items.Clear;
-  combo.Items.Add('<<< Selecione  >>>');
-
+  comboDX.Items.Clear;
+  comboDX.Items.Add('<<< Selecione  >>>');
 
   while not qry.Eof do
   begin
-    combo.Items.Add(qry.FieldByName('DESCRICAO').AsString);
-    listaID.Add(qry.FieldByName('ID_CENTRO_CUSTO').AsString);
+      // combo.Items.Add(qry.FieldByName('DESCRICAO').AsString);
+   // listaID.Add(qry.FieldByName('ID_CENTRO_CUSTO').AsString);
+      comboDX.Items.Add(qry.FieldByName(pCampoPesquisa).AsString);
+      listaID.Add(qry.FieldByName(pCampoID).AsString);
+
     qry.Next;
   end;
 
   qry.Close;
-  combo.ItemIndex := 0;
+  comboDX.ItemIndex := 0;
 
-    Result := not qry.IsEmpty;
-
-
+  Result := not qry.IsEmpty;
 
 end;
 

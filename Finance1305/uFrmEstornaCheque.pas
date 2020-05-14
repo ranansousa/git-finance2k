@@ -59,6 +59,8 @@ type
     Label1: TLabel;
     dtpEstorna: TDateTimePicker;
     frameResponsavel1: TframeResponsavel;
+    edtObs: TEdit;
+    Label2: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure frmContaBancaria1cbbContaChange(Sender: TObject);
     procedure cbbchequeChange(Sender: TObject);
@@ -124,11 +126,13 @@ begin
 
 
 
-      medtDataEmissao.Text := DateToStr(qryObterCheque.FieldByName('DATA_EMISSAO').AsDateTime);
+      medtDataEmissao.Text  := DateToStr(qryObterCheque.FieldByName('DATA_EMISSAO').AsDateTime);
 //           dtEstorno := qryObterCheque.FieldByName('DATA_ESTORNO').AsDateTime;
-      medtCompensado.Text := DateToStr(qryObterCheque.FieldByName('DATA_COMPENSACAO').AsDateTime);
-      medtvalor.Text := FormatFloat('R$ ,0.00', qryObterCheque.FieldByName('VALOR').AsCurrency);
-      edtPortador.Text := qryObterCheque.FieldByName('PORTADOR').AsString;
+      medtCompensado.Text   := DateToStr(qryObterCheque.FieldByName('DATA_COMPENSACAO').AsDateTime);
+      medtvalor.Text        := FormatFloat('R$ ,0.00', qryObterCheque.FieldByName('VALOR').AsCurrency);
+      edtPortador.Text      := qryObterCheque.FieldByName('PORTADOR').AsString;
+      edtObs.Text           := qryObterCheque.FieldByName('OBSERVACAO').AsString;
+
       dxBarBtnEstornar.Enabled := True;
 
       dtpEstorna.Date := uUtil.TFormat.proximoDiaUtil(Now);
@@ -396,13 +400,16 @@ var
 contaContabil : TContaContabilModel;
 iDContaBancaria :string;
 begin
-   indice :=0;
+   indice := frmContaBancaria1.cbbConta.ItemIndex;
    contaContabil := TContaContabilModel.Create;
+
+
+  if indice > 0 then begin
+
    indice :=frmContaBancaria1.cbbConta.ItemIndex;
    iDContaBancaria := FsListaIdContas[indice];
    cbbcheque.Enabled := True;
 
-  if indice > 0 then begin
       //pegar a conta contabil
      contaContabil := frmContaBancaria1.getContaContabil(pIdOrganizacao, iDContaBancaria);
      if not (uutil.Empty(contaContabil.FConta)) then begin

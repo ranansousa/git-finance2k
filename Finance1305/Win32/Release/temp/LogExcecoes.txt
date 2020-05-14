@@ -1,0 +1,45 @@
+Data/Hora.......: 07/05/2020 18:50:06
+Mensagem........: HTTP/1.1 301 Moved Permanently
+Classe Exceção..: EIdHTTPProtocolException
+Formulário......: frmInfoUpdate
+Unit............: Vcl.ExtCtrls
+Controle Visual.: btnDown
+Usuario.........: RANAN SOUSA
+Versão Windows..: Windows 7
+----------------------------------------------------------------------
+Data/Hora.......: 07/05/2020 18:52:52
+Mensagem........: HTTP/1.1 301 Moved Permanently
+Classe Exceção..: EIdHTTPProtocolException
+Formulário......: frmInfoUpdate
+Unit............: Vcl.ExtCtrls
+Controle Visual.: btnDown
+Usuario.........: RANAN SOUSA
+Versão Windows..: Windows 7
+----------------------------------------------------------------------
+Data/Hora.......: 07/05/2020 18:52:54
+Mensagem........: Access violation at address 00A92F2C in module 'Finance.exe'. Read of address 00000150
+Classe Exceção..: EAccessViolation
+Formulário......: frmInfoUpdate
+Unit............: Vcl.ExtCtrls
+Controle Visual.: btnDown
+Usuario.........: RANAN SOUSA
+Versão Windows..: Windows 7
+----------------------------------------------------------------------
+Data/Hora.......: 12/05/2020 20:06:05
+Mensagem........: Erro ao tentar alterar CONTA_BANCARIA
+Classe Exceção..: Exception
+Formulário......: frmManterContaBancaria
+Unit............: dxBar
+Controle Visual.: edtSaldoInicial
+Usuario.........: RANAN SOUSA
+Versão Windows..: Windows 7
+----------------------------------------------------------------------
+Data/Hora.......: 12/05/2020 20:06:11
+Mensagem........: Erro ao tentar alterar CONTA_BANCARIA
+Classe Exceção..: Exception
+Formulário......: frmManterContaBancaria
+Unit............: dxBar
+Controle Visual.: edtContaBancaria
+Usuario.........: RANAN SOUSA
+Versão Windows..: Windows 7
+----------------------------------------------------------------------

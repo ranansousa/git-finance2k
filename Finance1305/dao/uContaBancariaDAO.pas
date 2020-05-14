@@ -7,7 +7,13 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, FireDAC.Stan.Intf, FireDAC.Stan.Option, uBancoDAO, uBancoModel,
   FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,uContaContabilModel,uContaContabilDAO,
   FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB, uContaBancariaModel, udmConexao, uUtil,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client;
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client,
+  dxBar, Vcl.ComCtrls,   Vcl.StdCtrls   ;
+
+  const
+    pTable : string = 'CONTA_BANCARIA';
+    pCampoPesquisa : string = 'CONTA';
+    pCampoID : string = 'ID_CONTA_BANCARIA';
 
 type
  TContaBancariaDAO = class
@@ -18,6 +24,9 @@ type
   public
     {métodos CRUD (Create, Read, Update e Delete)
     para manipulação dos dados}
+    class function combo(var combo: TComboBox; var listaID: TStringList) :Boolean;
+    class function comboDxBar(var combo: TdxBarCombo; var listaID: TStringList):Boolean;
+
     class function Insert(value :TContaBancariaModel): Boolean;
     class function obterPorID(value :TContaBancariaModel): TContaBancariaModel;
     class function Update(value :TContaBancariaModel): Boolean;
@@ -118,9 +127,10 @@ begin
     cmdSql := ' INSERT INTO CONTA_BANCARIA ' +
               ' (ID_CONTA_BANCARIA, ID_ORGANIZACAO, ID_BANCO, CONTA_INTERNA,'+
               ' CONTA, AGENCIA, OBSERVACAO, TITULAR, LIMITE_CREDITO, SALDO_INICIAL, '+
-              ' DEPENDENTE, CONTA_CONTABIL, DIGITO_CONTA_CONTABIL, '+
               ' ID_USUARIO, ID_CONTA_CONTABIL, ATIVO) '+
-              ' VALUES ()' ;
+              ' VALUES (:PID,:PIDORGANIZACAO,:PID_BANCO,:PCONTA_INTERNA, '+
+              ' :PCONTA, :PAGENCIA, :POBS, :PTITULAR, :PLIMITE, :PSALDO, '+
+              ' :PID_USUARIO, :PID_CONTA_CONTABIL, :PATIVO  ) ';
 
 
     qryUpdate := TFDQuery.Create(nil);
@@ -134,11 +144,11 @@ begin
     qryUpdate.ParamByName('PCONTA').AsString := value.Fconta;
     qryUpdate.ParamByName('POBS').AsString := value.Fobservacao;
     qryUpdate.ParamByName('PTITULAR').AsString := value.Ftitular;
-    qryUpdate.ParamByName('PDEPENDENTE').AsString := value.Fdependente;
+  //  qryUpdate.ParamByName('PDEPENDENTE').AsString := value.Fdependente;
     qryUpdate.ParamByName('PID_BANCO').AsString := value.FIDbanco;
     qryUpdate.ParamByName('PID_USUARIO').AsString := value.FIDusuario;
     qryUpdate.ParamByName('PID_CONTA_CONTABIL').AsString := value.FIDcontaContabil;
-    qryUpdate.ParamByName('PCONTA_INTERNA').AsString := value.FcontaInterna;
+  //  qryUpdate.ParamByName('PCONTA_INTERNA').AsString := value.FcontaInterna;
     qryUpdate.ParamByName('PSALDO').AsCurrency := value.FsaldoInicial;
     qryUpdate.ParamByName('PLIMITE').AsCurrency := value.FlimiteCredito;
     qryUpdate.ParamByName('PATIVO').AsInteger := value.Fativo;
@@ -244,4 +254,83 @@ begin
 
   Result := System.True;
 end;
+
+
+
+class function TContaBancariaDAO.comboDxBar(var combo: TdxBarCombo; var listaID: TStringList):Boolean;
+var
+qry :TFDQuery;
+begin
+  qry := TFDQuery.Create(nil);
+  qry.Close;
+  qry.Connection := dmConexao.conn;
+  qry.SQL.Clear;
+  qry.SQL.Add('SELECT C.ID_CENTRO_CUSTO, C.DESCRICAO FROM CENTRO_CUSTO C WHERE C.ID_ORGANIZACAO = :PIDORGANIZACAO  ORDER BY C.DESCRICAO ');
+  qry.ParamByName('PIDORGANIZACAO').AsString := UUTIL.TOrgAtual.getId;
+  qry.Open;
+  qry.First;
+
+  listaID := TStringList.Create;
+  listaID.Clear;
+  listaID.Add('Sem ID');
+  combo.Items.Clear;
+  combo.Items.Add('<<< Selecione  >>>');
+
+
+  while not qry.Eof do
+  begin
+    combo.Items.Add(qry.FieldByName('DESCRICAO').AsString);
+    listaID.Add(qry.FieldByName('ID_CENTRO_CUSTO').AsString);
+    qry.Next;
+  end;
+
+  qry.Close;
+  combo.ItemIndex := 0;
+
+    Result := not qry.IsEmpty;
+
+
+
+end;
+
+
+class function TContaBancariaDAO.combo(var combo: TComboBox; var listaID: TStringList) :Boolean;
+var
+qry :TFDQuery;
+
+begin
+  qry := TFDQuery.Create(nil);
+  qry.Close;
+  qry.Connection := dmConexao.conn;
+  qry.SQL.Clear;
+  qry.SQL.Add('SELECT  C.'+pCampoPesquisa + 'C.'+pCampoID + ' FROM  '+pTable + ' C WHERE C.ID_ORGANIZACAO = :PIDORGANIZACAO ');
+  qry.ParamByName('PIDORGANIZACAO').AsString := UUTIL.TOrgAtual.getId;
+  qry.Open;
+  qry.First;
+
+  listaID := TStringList.Create;
+  listaID.Clear;
+  listaID.Add('Sem ID');
+  combo.Clear;
+  combo.Items.Add('<<< Selecione  >>>');
+
+
+  while not qry.Eof do
+  begin
+    combo.Items.Add(qry.FieldByName(pCampoPesquisa).AsString);
+    listaID.Add(qry.FieldByName(pCampoID).AsString);
+    qry.Next;
+  end;
+
+  qry.Close;
+  combo.ItemIndex := 0;
+
+  Result := not qry.IsEmpty;
+
+
+end;
+
+
+
+
 end.

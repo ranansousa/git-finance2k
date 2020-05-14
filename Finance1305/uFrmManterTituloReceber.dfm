@@ -228,7 +228,7 @@ object frmManterTituloReceber: TfrmManterTituloReceber
         Top = 122
         Width = 160
         Height = 31
-        TabOrder = 6
+        TabOrder = 5
         ExplicitLeft = 651
         ExplicitTop = 122
         ExplicitWidth = 160
@@ -248,7 +248,7 @@ object frmManterTituloReceber: TfrmManterTituloReceber
         Top = 254
         Width = 265
         Height = 36
-        TabOrder = 15
+        TabOrder = 14
         ExplicitLeft = 17
         ExplicitTop = 254
         ExplicitWidth = 265
@@ -282,7 +282,7 @@ object frmManterTituloReceber: TfrmManterTituloReceber
         Top = 170
         Width = 278
         Height = 58
-        TabOrder = 9
+        TabOrder = 12
         ExplicitLeft = 555
         ExplicitTop = 170
         ExplicitWidth = 278
@@ -324,7 +324,7 @@ object frmManterTituloReceber: TfrmManterTituloReceber
         AutoSize = False
         Color = cl3DLight
         Enabled = False
-        TabOrder = 20
+        TabOrder = 22
       end
       object BtnGerarDOC: TBitBtn
         Left = 17
@@ -332,7 +332,7 @@ object frmManterTituloReceber: TfrmManterTituloReceber
         Width = 228
         Height = 25
         Caption = 'Gerar n'#250'mero documento'
-        TabOrder = 4
+        TabOrder = 1
         OnClick = BtnGerarDOCClick
       end
       object edtCEDConta: TEdit
@@ -345,7 +345,7 @@ object frmManterTituloReceber: TfrmManterTituloReceber
         AutoSize = False
         Color = cl3DLight
         Enabled = False
-        TabOrder = 2
+        TabOrder = 16
       end
       object edtCEDReduz: TEdit
         Left = 412
@@ -357,7 +357,7 @@ object frmManterTituloReceber: TfrmManterTituloReceber
         AutoSize = False
         Color = cl3DLight
         Enabled = False
-        TabOrder = 3
+        TabOrder = 17
       end
       object edtHISTConta: TEdit
         Left = 17
@@ -369,7 +369,7 @@ object frmManterTituloReceber: TfrmManterTituloReceber
         AutoSize = False
         Color = cl3DLight
         Enabled = False
-        TabOrder = 16
+        TabOrder = 18
       end
       object edtHISTReduz: TEdit
         Left = 113
@@ -381,7 +381,7 @@ object frmManterTituloReceber: TfrmManterTituloReceber
         AutoSize = False
         Color = cl3DLight
         Enabled = False
-        TabOrder = 18
+        TabOrder = 20
       end
       object edtCodigoHist: TEdit
         Left = 197
@@ -393,7 +393,7 @@ object frmManterTituloReceber: TfrmManterTituloReceber
         AutoSize = False
         Color = cl3DLight
         Enabled = False
-        TabOrder = 17
+        TabOrder = 19
       end
       object edtDescricao: TEdit
         Tag = 1
@@ -401,7 +401,7 @@ object frmManterTituloReceber: TfrmManterTituloReceber
         Top = 128
         Width = 334
         Height = 21
-        TabOrder = 8
+        TabOrder = 7
         Text = 'edtDescricao'
       end
       object dtPagamento: TDateTimePicker
@@ -412,7 +412,7 @@ object frmManterTituloReceber: TfrmManterTituloReceber
         Height = 21
         Date = 43867.433759675930000000
         Time = 43867.433759675930000000
-        TabOrder = 11
+        TabOrder = 9
         OnChange = dtPagamentoChange
       end
       object dtProtocolo: TDateTimePicker
@@ -423,7 +423,7 @@ object frmManterTituloReceber: TfrmManterTituloReceber
         Height = 21
         Date = 43867.433759675930000000
         Time = 43867.433759675930000000
-        TabOrder = 13
+        TabOrder = 11
       end
       object dtEmissao: TDateTimePicker
         Tag = 1
@@ -433,7 +433,7 @@ object frmManterTituloReceber: TfrmManterTituloReceber
         Height = 21
         Date = 43867.433759675930000000
         Time = 43867.433759675930000000
-        TabOrder = 12
+        TabOrder = 10
       end
       object edtParcela: TEdit
         Tag = 1
@@ -441,7 +441,7 @@ object frmManterTituloReceber: TfrmManterTituloReceber
         Top = 128
         Width = 121
         Height = 21
-        TabOrder = 7
+        TabOrder = 6
         Text = 'edtParcela'
       end
       object edtStatus: TEdit
@@ -451,7 +451,7 @@ object frmManterTituloReceber: TfrmManterTituloReceber
         Height = 21
         Color = 16776176
         Enabled = False
-        TabOrder = 10
+        TabOrder = 8
         Text = 'edtStatus'
       end
       object edtValorAntecipado: TEvNumEdit
@@ -516,7 +516,7 @@ object frmManterTituloReceber: TfrmManterTituloReceber
           FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
           FF00}
         ParentFont = False
-        TabOrder = 0
+        TabOrder = 15
       end
       object edtValorMainTP: TEvNumEdit
         Tag = 1
@@ -570,7 +570,7 @@ object frmManterTituloReceber: TfrmManterTituloReceber
           FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
           FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
           FF00}
-        TabOrder = 1
+        TabOrder = 3
         OnChange = edtValorMainTPChange
       end
       inline frameCentroCusto1: TframeCentroCusto
@@ -578,7 +578,7 @@ object frmManterTituloReceber: TfrmManterTituloReceber
         Top = 250
         Width = 265
         Height = 31
-        TabOrder = 14
+        TabOrder = 13
         ExplicitLeft = 555
         ExplicitTop = 250
         inherited cbbcombo: TComboBox
@@ -594,7 +594,7 @@ object frmManterTituloReceber: TfrmManterTituloReceber
         Top = 81
         Width = 160
         Height = 35
-        TabOrder = 5
+        TabOrder = 4
         ExplicitLeft = 653
         ExplicitTop = 81
         ExplicitWidth = 160
@@ -614,14 +614,14 @@ object frmManterTituloReceber: TfrmManterTituloReceber
         AutoSize = False
         Color = cl3DLight
         Enabled = False
-        TabOrder = 19
+        TabOrder = 21
       end
       inline frameSacado1: TframeSacado
         Left = 256
         Top = 17
         Width = 265
         Height = 35
-        TabOrder = 21
+        TabOrder = 2
         ExplicitLeft = 256
         ExplicitTop = 17
         ExplicitWidth = 265
@@ -640,7 +640,7 @@ object frmManterTituloReceber: TfrmManterTituloReceber
         Top = 20
         Width = 228
         Height = 41
-        TabOrder = 22
+        TabOrder = 0
         ExplicitLeft = 17
         ExplicitTop = 20
         ExplicitWidth = 228

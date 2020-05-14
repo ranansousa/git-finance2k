@@ -7791,7 +7791,6 @@ object FrmPrincipal: TFrmPrincipal
       Index = 2
     end
     object menuContaBancaria: TdxRibbonTab
-      Active = True
       Caption = 'Concilia'#231#227'o Banc'#225'ria'
       Groups = <
         item
@@ -7808,6 +7807,7 @@ object FrmPrincipal: TFrmPrincipal
       Index = 3
     end
     object dxRibbonRel: TdxRibbonTab
+      Active = True
       Caption = 'Relat'#243'rios'
       Groups = <
         item

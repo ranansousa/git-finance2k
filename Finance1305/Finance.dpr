@@ -306,7 +306,5 @@ begin
   Application.CreateForm(TdmConexao, dmConexao);
   Application.CreateForm(TdmUsuarioConsulta, dmUsuarioConsulta);
   Application.CreateForm(TFMostraErros, FMostraErros);
-  Application.CreateForm(TfrmEnviaMail, frmEnviaMail);
-  Application.CreateForm(TfrmDemonstrativoDespesasCC, frmDemonstrativoDespesasCC);
   Application.Run;
 end.

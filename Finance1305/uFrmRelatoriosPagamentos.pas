@@ -301,6 +301,7 @@ end;
 
 procedure TfrmRelatorioPagamentos.dxBarBtnImprimirClick(Sender: TObject);
 begin
+
  if validarFormulario then
   begin
 
