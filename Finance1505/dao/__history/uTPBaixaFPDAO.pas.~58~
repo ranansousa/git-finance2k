@@ -1,0 +1,223 @@
+unit uTPBaixaFPDAO;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics, System.Generics.Collections,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, FireDAC.Stan.Intf, FireDAC.Stan.Option, uTPBaixaModel,
+  FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,  uTPBaixaFPModel,uFormaPagamentoModel,
+  FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB, udmConexao, uUtil,uFormaPagamentoDAO,
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client;
+
+type
+ TTPBaixaFPDAO = class
+  private
+    class function getTPBFP (query :TFDQuery) : TTPBaixaFPModel;
+  public
+    {métodos CRUD (Create, Read, Update e Delete)
+    para manipulação dos dados}
+
+    class function Insert(value :TTPBaixaFPModel): Boolean;
+    class function obterPorID (value :TTPBaixaFPModel): TTPBaixaFPModel;
+    class function Delete(value :TTPBaixaFPModel): Boolean;
+    class function deleteTodosPorTPB(value :TTPBaixaFPModel): Boolean;
+ //   class function obterPorBaixa(value :TTPBaixaModel): TObjectList<TTPBaixaFPModel>;
+
+
+
+
+//    class function Update(value :TTPBaixaModel): Boolean; //não permite alterar
+
+  end;
+
+
+implementation
+
+{ TTPBaixaFPDAO }
+
+class function TTPBaixaFPDAO.Delete(value: TTPBaixaFPModel): Boolean;
+var
+  qryDelete: TFDQuery;
+  xResp: Boolean;
+begin
+  xResp := False;
+  dmConexao.conectarBanco;
+  try
+
+    qryDelete := TFDQuery.Create(nil);
+    qryDelete.Close;
+    qryDelete.Connection := dmConexao.conn;
+    qryDelete.SQL.Clear;
+    qryDelete.SQL.Add('DELETE FROM TITULO_PAGAR_BAIXA_FP  ');
+    qryDelete.SQL.Add('WHERE ID_ORGANIZACAO = :PIDORGANIZACAO  AND  ID_TITULO_PAGAR_BAIXA_FP = :PID ');
+    qryDelete.ParamByName('PIDORGANIZACAO').AsString := value.FIDorganizacao;
+    qryDelete.ParamByName('PID').AsString := value.FID;
+
+    qryDelete.ExecSQL;
+    xResp := True;
+    //o comit fica na transacao
+
+  except
+    xResp := False;
+    raise Exception.Create('Erro ao tentar DELETAR TITULO_PAGAR_BAIXA_FP');
+
+  end;
+
+  Result := xResp;
+end;
+
+
+
+class function TTPBaixaFPDAO.deleteTodosPorTPB(value: TTPBaixaFPModel): Boolean;
+var
+  qryDelete: TFDQuery;
+  sucesso: Boolean;
+begin
+  sucesso := False;
+  dmConexao.conectarBanco;
+  try
+
+    qryDelete := TFDQuery.Create(nil);
+    qryDelete.Close;
+    qryDelete.Connection := dmConexao.conn;
+    qryDelete.SQL.Clear;
+    qryDelete.SQL.Add('DELETE FROM TITULO_PAGAR_BAIXA_FP  ');
+    qryDelete.SQL.Add('WHERE ID_ORGANIZACAO = :PIDORGANIZACAO  AND  ID_TITULO_PAGAR_BAIXA = :PID ');
+    qryDelete.ParamByName('PIDORGANIZACAO').AsString := value.FIDorganizacao;
+    qryDelete.ParamByName('PID').AsString := value.FIDTPBaixa;
+
+    qryDelete.ExecSQL;
+    if qryDelete.RowsAffected >0 then begin sucesso := True; dmConexao.conn.CommitRetaining; end;
+
+
+
+  except
+    sucesso := False;
+    raise Exception.Create('Erro ao tentar DELETAR TITULO_PAGAR_BAIXA_FP');
+
+  end;
+
+  Result := sucesso;
+end;
+
+class function TTPBaixaFPDAO.getTPBFP(query: TFDQuery): TTPBaixaFPModel;
+var
+tpbFP: TTPBaixaFPModel;
+fp :TFormaPagamentoModel;
+begin
+     tpbFP  := TTPBaixaFPModel.Create;
+     fp     := TFormaPagamentoModel.Create;
+ try
+  if not query.IsEmpty then begin
+
+      tpbFP.FID                     := query.FieldByName('ID_TITULO_PAGAR_BAIXA_FP').AsString;
+      tpbFP.FIDorganizacao          := query.FieldByName('ID_ORGANIZACAO').AsString;
+      tpbFP.FIDTPBaixa              := query.FieldByName('ID_TITULO_PAGAR_BAIXA').AsString;
+      tpbFP.FValor                  := query.FieldByName('VALOR').AsCurrency;
+      fp.FID :=    query.FieldByName('ID_FORMA_PAGAMENTO').AsString;
+      fp.FIDorganizacao :=tpbFP.FIDorganizacao;
+
+    try
+      tpbFP.FFormaPagamento := TFormaPagamentoDAO.obterPorID(fp);
+    except
+      raise Exception.Create('Erro ao tentar obter FP por TPB');
+
+    end;
+
+
+  end;
+
+ except
+ raise Exception.Create('Erro ao obter TPBFP');
+
+
+ end;
+
+
+  Result := tpbFP;
+
+end;
+class function TTPBaixaFPDAO.Insert(value: TTPBaixaFPModel): Boolean;
+var
+qryInsert : TFDQuery;
+cmdSql :string;
+sucesso : Boolean;
+begin
+sucesso := False;
+qryInsert := TFDQuery.Create(nil);
+
+dmConexao.conectarBanco;
+  try
+
+ cmdSql := ' INSERT INTO TITULO_PAGAR_BAIXA_FP '+
+           ' (ID_TITULO_PAGAR_BAIXA_FP, ID_ORGANIZACAO, ID_TITULO_PAGAR_BAIXA, '+
+           ' ID_FORMA_PAGAMENTO, VALOR ) '+
+           ' VALUES (:PID,:PIDORGANIZACAO,:PIDTITULO_PAGAR_BAIXA, ' +
+           ' :PID_FORMA_PAGAMENTO,:PVALOR )' ;
+
+
+    qryInsert.Close;
+    qryInsert.Connection := dmConexao.conn;
+    qryInsert.SQL.Clear;
+    qryInsert.SQL.Add(cmdSql);
+    qryInsert.ParamByName('PID').AsString                    := value.FID;
+    qryInsert.ParamByName('PIDTITULO_PAGAR_BAIXA').AsString  := value.FIDTPBaixa;
+    qryInsert.ParamByName('PIDORGANIZACAO').AsString         := value.FIDorganizacao;
+    qryInsert.ParamByName('PID_FORMA_PAGAMENTO').AsString := value.FFormaPagamento.FID;
+    qryInsert.ParamByName('PVALOR').AsCurrency := value.FValor;
+
+    qryInsert.ExecSQL;
+
+     if qryInsert.RowsAffected >0 then begin
+
+        sucesso := True;
+     end;
+
+    Result := sucesso;
+
+  finally
+    if Assigned(qryInsert) then
+    begin
+      FreeAndNil(qryInsert);
+    end;
+  end;
+
+
+end;
+
+class function TTPBaixaFPDAO.obterPorID( value: TTPBaixaFPModel): TTPBaixaFPModel;
+var
+qryPesquisa : TFDQuery;
+cmdSql:string;
+tpbFPModel: TTPBaixaFPModel;
+begin
+dmConexao.conectarBanco;
+try
+
+  qryPesquisa := TFDQuery.Create(nil);
+  qryPesquisa.Close;
+  qryPesquisa.Connection := dmConexao.conn;
+  qryPesquisa.SQL.Clear;
+  qryPesquisa.SQL.Add('SELECT ID_TITULO_PAGAR_BAIXA_FP, ID_ORGANIZACAO, '  );
+  qryPesquisa.SQL.Add('ID_TITULO_PAGAR_BAIXA, ID_FORMA_PAGAMENTO, VALOR '  );
+  qryPesquisa.SQL.Add('FROM TITULO_PAGAR_BAIXA_FP  '  );
+  qryPesquisa.SQL.Add('WHERE ID_ORGANIZACAO = :PIDORGANIZACAO  AND  ID_TITULO_PAGAR_BAIXA_FP = :PID '  );
+
+  qryPesquisa.ParamByName('PIDORGANIZACAO').AsString := value.FIDorganizacao;
+  qryPesquisa.ParamByName('PID').AsString := value.FID;
+  qryPesquisa.Open;
+
+  if not qryPesquisa.IsEmpty then begin
+      tpbFPModel   := TTPBaixaFPModel.Create;
+      tpbFPModel   := getTPBFP(qryPesquisa) ;
+  end;
+except
+raise Exception.Create('Erro ao tentar obter TPBaixaFP ');
+
+end;
+
+ Result := tpbFPModel;
+end;
+
+
+end.

@@ -1,0 +1,72 @@
+unit uTipoAcrescimoModel;
+
+interface
+
+{
+CREATE TABLE TIPO_ACRESCIMO (
+    ID_TIPO_ACRESCIMO  VARCHAR(36) NOT NULL,
+    ID_ORGANIZACAO     VARCHAR(36) NOT NULL,
+    ID_HISTORICO       VARCHAR(36),
+    DESCRICAO          VARCHAR(20)
+);
+}
+uses
+  Windows, Messages, Classes, SysUtils, uHistoricoModel;
+
+type
+  TTipoAcrescimoModel = class(TObject)
+  private
+    FFID :string ;
+    FFIDOrganizcao :string;
+    FFIDhistorico :string;
+    FFDescricao: string;
+    FFhistorico :THistoricoModel;
+    procedure SetFDescricao(const Value: string);
+
+
+    procedure SetFIdHistorico(const Value: string);
+    procedure SetFIdOrganizacao(const Value: string);
+
+   public
+
+    property FIDOrganizacao :string read FFIDOrganizcao write SetFIdOrganizacao;
+    property FIDHistorico: string read FFIdHistorico write SetFIdHistorico;
+    property FDescricao: string read FFDescricao write SetFDescricao;
+    property Fhistorico: THistoricoModel read FFhistorico write SetFhistorico;
+
+
+
+    Constructor Create;
+
+
+  end;
+implementation
+
+{ TTipoAcrescimoModel }
+
+constructor TTipoAcrescimoModel.Create;
+begin
+//
+end;
+
+procedure TTipoAcrescimoModel.SetFDescricao(const Value: string);
+begin
+  FFDescricao := Value;
+end;
+
+procedure TTipoAcrescimoModel.SetFhistorico(const Value: string);
+begin
+  FFhistorico := Value;
+end;
+
+procedure TTipoAcrescimoModel.SetFIdHistorico(const Value: string);
+begin
+  FFIdHistorico := Value;
+end;
+
+procedure TTipoAcrescimoModel.SetFIdOrganizacao(const Value: string);
+begin
+  FFIDOrganizcao := Value;
+end;
+
+end.

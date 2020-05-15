@@ -1,0 +1,112 @@
+unit uEstadoModel;
+
+
+interface
+ {
+CREATE TABLE ESTADO (
+    ID_ESTADO  VARCHAR(50) NOT NULL,
+    SIGLA      VARCHAR(2),
+    DESCRICAO  VARCHAR(50)
+);
+
+
+
+}
+
+uses
+  Windows, Messages, Classes, SysUtils,uOrganizacaoModel;
+
+type
+  TContatoModel = class(TObject)
+  private
+    FFID: string;
+    FFdescricao :string;
+    FFsigla :string;
+
+    FFnovo : Boolean;
+
+
+  public
+
+    property FID: string read FFID write SetFID;
+    property Fsigla: string read FFsigla write SetFFsigla;
+    property Fdescricao: string read FFdescricao write SetFFdescricao;
+
+    property Fnovo :Boolean                         read FFnovo                write FFnovo; //define se é novo ou já existe.
+
+      Constructor Create;
+
+  end;
+
+implementation
+
+{ TContatoModel }
+
+constructor TContatoModel.Create;
+begin
+
+end;
+function TContatoModel.getFFCelular: string;
+begin
+   Result := FFCelular;
+end;
+
+
+function TContatoModel.getFFID: string;
+begin
+  Result := FFID;
+end;
+
+
+function TContatoModel.getFFEmail: string;
+begin
+   Result := FFEmail;
+end;
+
+function TContatoModel.getFFIDorganizacao: string;
+begin
+  Result := FFIDorganizacao;
+end;
+
+function TContatoModel.getFFOrganizacao: TOrganizacaoModel;
+begin
+ Result := FFOrganizacao;
+end;
+
+function TContatoModel.getFFTelefone: string;
+begin
+Result := FFTelefone;
+end;
+
+
+procedure TContatoModel.SetFCelular(const Value: string);
+begin
+    FFCelular :=Value;
+end;
+
+procedure TContatoModel.SetFID(const Value: string);
+begin
+   FFID :=Value;
+end;
+
+procedure TContatoModel.SetFEmail(const Value: string);
+begin
+  FFEmail :=Value;
+end;
+
+procedure TContatoModel.SetFIDorganizacao(const Value: string);
+begin
+   FFIDorganizacao :=Value;
+end;
+
+procedure TContatoModel.SetFTelefone(const Value: string);
+begin
+   FFTelefone :=Value;
+end;
+
+procedure TContatoModel.SetForganizacao(const Value: TOrganizacaoModel);
+begin
+   FFOrganizacao :=Value;
+end;
+
+end.

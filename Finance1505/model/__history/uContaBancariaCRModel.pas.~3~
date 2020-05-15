@@ -1,0 +1,357 @@
+unit uContaBancariaCRModel;
+
+interface
+{
+ TABLE
+
+
+CREATE TABLE CONTA_BANCARIA_CREDITO (
+    ID_CONTA_BANCARIA_CREDITO      VARCHAR(36) NOT NULL,
+    ID_ORGANIZACAO                 VARCHAR(36) NOT NULL,
+    ID_CONTA_BANCARIA              VARCHAR(36),
+    ID_TIPO_OPERACAO_BANCARIA      VARCHAR(36),
+    ID_RESPONSAVEL                 VARCHAR(36),
+    ID_TITULO_RECEBER              VARCHAR(36),
+    ID_LOTE_CONTABIL               VARCHAR(36),
+    ID_LOTE_DEPOSITO               VARCHAR(36),
+    ID_USUARIO                     NUMERIC(5,0),
+    IDENTIFICACAO                  VARCHAR(36),
+    TIPO_LANCAMENTO                VARCHAR(1) NOT NULL,
+    OBSERVACAO                     VARCHAR(250),
+    DESCRICAO                      VARCHAR(150),
+    VALOR                          NUMERIC(10,2) NOT NULL,
+    DATA_MOVIMENTO                 DATE NOT NULL,
+    DATA_REGISTRO                  DATE NOT NULL,  );    }
+
+uses
+  Windows, Messages, Classes, SysUtils,uContaBancariaModel,uLoteContabilModel, uFuncionarioModel,
+  uTituloPagarModel,uTipoOperacaoBancariaModel,uUsuarioModel, uOrganizacaoModel;
+
+type
+  TContaBancariaDBModel = class(TObject)
+  private
+    FFID: string;
+    FFIDorganizacao: string;
+    FFIDResponsavel: string;
+    FFIDTOB: string;
+    FFIDcontaBancaria: string;
+    FFIDTR: string; //titulo pagar
+    FFIDloteDeposito: string;
+    FFIDloteContabil: string;
+    FFIDusuario: string;
+    FFtipoLancamento: string;
+    FFobservacao: string;
+    FFdescricao: string;
+    FFidentificacao: string;
+    FFvalor: Currency;
+    FFdataRegistro: TDateTime;
+    FFdataMovimento: TDateTime;
+
+   //Objetos
+       FFOrganizacao      : TOrganizacaoModel;
+       FFcontaBancaria    : TContaBancariaModel;
+       FFtipoOperacao     : TTipoOperacaoBancariaModel;
+       FFresponsavel      : TFuncionarioModel;
+//       FFtituloReceber     : TTituloPagarModel;
+       FFloteContabil     : TLoteContabilModel;
+//       FFloteDeposito     :TloteDepositoModel;
+       FFusuario          : TUsuarioModel;
+
+
+
+  public
+
+    property FID: string read getFFID write SetFID;
+    property FIDorganizacao: string read getFFIDorganizacao write SetFIDorganizacao;
+    property FIDusuario: string read getFFIDusuario write SetFIDusuario;
+    property FIDResponsavel: string read getFFIDResponsavel write SetFIDResponsavel;
+    property FIDTOB: string read getFFIDTOB write SetFIDTOB;
+    property FIDcontaBancaria: string read getFFIDcontaBancaria write SetFIDcontaBancaria;
+
+    property FIDTR: string read getFFIDTR write SetFIDTR;
+
+
+    property FIDCheque: string read getFFIDCheque write SetFIDCheque;
+    property FIDloteContabil: string read getFFIDloteContabil write SetFIDloteContabil;
+    property FtipoLancamento: string read getFFtipoLancamento write SetFtipoLancamento;
+    property Fdescricao: string read getFFdescricao write SetFdescricao;
+    property Fobservacao: string read getFFobservacao write SetFobservacao;
+    property Fidentificacao: string read getFFidentificacao write SetFidentificacao;
+    property Fvalor: Currency read getFFvalor write SetFvalor;
+    property FdataRegistro: TDateTime read getFFdataRegistro write SetFdataRegistro;
+    property FdataMovimento: TDateTime read getFFdataMovimento write SetFdataMovimento;
+
+     //Objetos
+       property Forganizacao      : TOrganizacaoModel read getFFOrganizacao write SetForganizacao;
+       property FcontaBancaria    : TContaBancariaModel  read getFFcontaBancaria   write   SetFFcontaBancaria  ;
+       property FtipoOperacao     : TTipoOperacaoBancariaModel  read getFFtipoOperacao   write   SetFFtipoOperacao  ;
+       property Fresponsavel      : TFuncionarioModel  read getFFresponsavel   write   SetFFresponsavel  ;
+       property FtituloPagar      : TTituloPagarModel  read getFFtituloPagar   write   SetFFtituloPagar  ;
+       property Fcheque           : TContaBancariaChequeModel  read getFFcheque   write   SetFFcheque  ;
+       property FloteContabil     : TLoteContabilModel  read getFFloteContabil   write   SetFFloteContabil  ;
+       property Fusuario          : TUsuarioModel  read getFFusuario   write   SetFFusuario  ;
+
+    constructor Create;
+    destructor Destroy; override;
+
+  end;
+
+implementation
+
+{ TContaBancariaDBModel }
+
+constructor TContaBancariaDBModel.Create;
+begin
+
+end;
+
+destructor TContaBancariaDBModel.Destroy;
+begin
+
+  inherited;
+end;
+
+
+function TContaBancariaDBModel.getFFcheque: TContaBancariaChequeModel;
+begin
+   Result :=  FFcheque;
+end;
+
+function TContaBancariaDBModel.getFFcontaBancaria: TContaBancariaModel;
+begin
+   Result :=  FFcontaBancaria;
+end;
+
+function TContaBancariaDBModel.getFFdataMovimento: TDateTime;
+begin
+  Result := FFdataMovimento;
+end;
+
+function TContaBancariaDBModel.getFFdataRegistro: TDateTime;
+begin
+    Result := FFdataRegistro;
+end;
+
+function TContaBancariaDBModel.getFFdescricao: string;
+begin
+     Result := FFdescricao;
+end;
+
+function TContaBancariaDBModel.getFFID: string;
+begin
+      Result := FFID;
+end;
+
+function TContaBancariaDBModel.getFFIDCheque: string;
+begin
+       Result := FFIDCheque;
+end;
+
+function TContaBancariaDBModel.getFFIDcontaBancaria: string;
+begin
+       Result := FFIDcontaBancaria;
+end;
+
+function TContaBancariaDBModel.getFFidentificacao: string;
+begin
+       Result := FFidentificacao;
+end;
+
+function TContaBancariaDBModel.getFFIDloteContabil: string;
+begin
+      Result := FFIDloteContabil;
+end;
+
+function TContaBancariaDBModel.getFFIDorganizacao: string;
+begin
+        Result := FFIDorganizacao;
+end;
+
+function TContaBancariaDBModel.getFFIDResponsavel: string;
+begin
+        Result := FFIDResponsavel;
+end;
+
+function TContaBancariaDBModel.getFFIDTOB: string;
+begin
+       Result := FFIDTOB;
+end;
+
+function TContaBancariaDBModel.getFFIDTP: string;
+begin
+       Result := FFIDTP;
+end;
+
+function TContaBancariaDBModel.getFFIDusuario: string;
+begin
+      Result := FFIDusuario;
+end;
+
+function TContaBancariaDBModel.getFFloteContabil: TLoteContabilModel;
+begin
+   Result :=  FFloteContabil;
+end;
+
+function TContaBancariaDBModel.getFFobservacao: string;
+begin
+        Result := FFobservacao;
+end;
+
+function TContaBancariaDBModel.getFFOrganizacao: TOrganizacaoModel;
+begin
+        Result := FFOrganizacao;
+end;
+
+function TContaBancariaDBModel.getFFresponsavel: TFuncionarioModel;
+begin
+   Result :=  FFresponsavel;
+end;
+
+function TContaBancariaDBModel.getFFtipoLancamento: string;
+begin
+         Result := FFtipoLancamento;
+end;
+
+function TContaBancariaDBModel.getFFtipoOperacao: TTipoOperacaoBancariaModel;
+begin
+   Result :=  FFtipoOperacao;
+end;
+
+function TContaBancariaDBModel.getFFtituloPagar: TTituloPagarModel;
+begin
+    Result :=  FFtituloPagar
+end;
+
+function TContaBancariaDBModel.getFFusuario: TUsuarioModel;
+begin
+  Result :=  FFusuario;
+end;
+
+function TContaBancariaDBModel.getFFvalor: Currency;
+begin
+       Result := FFvalor;
+end;
+
+procedure TContaBancariaDBModel.SetFdataMovimento(const Value: TDateTime);
+begin
+  FFdataMovimento := Value;
+end;
+
+procedure TContaBancariaDBModel.SetFdataRegistro(const Value: TDateTime);
+begin
+     FFdataRegistro := Value;
+end;
+
+procedure TContaBancariaDBModel.SetFdescricao(const Value: string);
+begin
+    FFdescricao := Value;
+end;
+
+procedure TContaBancariaDBModel.SetFFcheque( const Value: TContaBancariaChequeModel);
+begin
+   FFcheque :=  Value;
+end;
+
+procedure TContaBancariaDBModel.SetFFcontaBancaria( const Value: TContaBancariaModel);
+begin
+     FFcontaBancaria :=  Value;
+end;
+
+procedure TContaBancariaDBModel.SetFFloteContabil( const Value: TLoteContabilModel);
+begin
+     FFloteContabil :=  Value;
+end;
+
+procedure TContaBancariaDBModel.SetFFresponsavel(const Value: TFuncionarioModel);
+begin
+     FFresponsavel :=  Value;
+end;
+
+procedure TContaBancariaDBModel.SetFFtipoOperacao( const Value: TTipoOperacaoBancariaModel);
+begin
+    FFtipoOperacao :=  Value;
+end;
+
+procedure TContaBancariaDBModel.SetFFtituloPagar( const Value: TTituloPagarModel);
+begin
+    FFtituloPagar :=  Value;
+end;
+
+procedure TContaBancariaDBModel.SetFFusuario(const Value: TUsuarioModel);
+begin
+     FFusuario :=  Value;
+end;
+
+procedure TContaBancariaDBModel.SetFID(const Value: string);
+begin
+     FFID := Value;
+end;
+
+procedure TContaBancariaDBModel.SetFIDCheque(const Value: string);
+begin
+     FFIDCheque := Value;
+end;
+
+procedure TContaBancariaDBModel.SetFIDcontaBancaria(const Value: string);
+begin
+   FFIDcontaBancaria := Value;
+end;
+
+procedure TContaBancariaDBModel.SetFidentificacao(const Value: string);
+begin
+    FFidentificacao := Value;
+end;
+
+procedure TContaBancariaDBModel.SetFIDloteContabil(const Value: string);
+begin
+     FFIDloteContabil := Value;
+end;
+
+procedure TContaBancariaDBModel.SetFIDorganizacao(const Value: string);
+begin
+    FFIDorganizacao := Value;
+end;
+
+procedure TContaBancariaDBModel.SetFIDResponsavel(const Value: string);
+begin
+  FFIDResponsavel := Value;
+end;
+
+procedure TContaBancariaDBModel.SetFIDTOB(const Value: string);
+begin
+  FFIDTOB := Value;
+end;
+
+procedure TContaBancariaDBModel.SetFIDTP(const Value: string);
+begin
+  FFIDTP := Value;
+
+end;
+
+procedure TContaBancariaDBModel.SetFIDusuario(const Value: string);
+begin
+   FFIDusuario := Value;
+end;
+
+procedure TContaBancariaDBModel.SetFobservacao(const Value: string);
+begin
+    FFobservacao := Value;
+end;
+
+procedure TContaBancariaDBModel.SetForganizacao(const Value: TOrganizacaoModel);
+begin
+     FFOrganizacao := Value;
+end;
+
+procedure TContaBancariaDBModel.SetFtipoLancamento(const Value: string);
+begin
+  FFtipoLancamento := Value;
+end;
+
+procedure TContaBancariaDBModel.SetFvalor(const Value: Currency);
+begin
+     FFvalor := Value;
+end;
+
+
+end.
