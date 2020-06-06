@@ -1,0 +1,340 @@
+object frmCreateOrg: TfrmCreateOrg
+  Left = 0
+  Top = 0
+  Caption = 'Pempec Enterprise Organiza'#231#245'es'
+  ClientHeight = 568
+  ClientWidth = 682
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  Position = poDesktopCenter
+  OnCreate = FormCreate
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Label1: TLabel
+    Left = 8
+    Top = 138
+    Width = 60
+    Height = 13
+    Caption = 'Raz'#227'o Social'
+  end
+  object Label2: TLabel
+    Left = 358
+    Top = 138
+    Width = 41
+    Height = 13
+    Caption = 'Fantasia'
+  end
+  object Label3: TLabel
+    Left = 46
+    Top = 178
+    Width = 22
+    Height = 13
+    Caption = 'Sigla'
+  end
+  object Label4: TLabel
+    Left = 208
+    Top = 178
+    Width = 20
+    Height = 13
+    Caption = 'Tipo'
+  end
+  object lblCNPJ: TLabel
+    Left = 374
+    Top = 178
+    Width = 25
+    Height = 13
+    Caption = 'CNPJ'
+  end
+  object Label5: TLabel
+    Left = 0
+    Top = 218
+    Width = 68
+    Height = 13
+    Caption = 'Insc. Estadual'
+  end
+  object Label6: TLabel
+    Left = 339
+    Top = 218
+    Width = 70
+    Height = 13
+    Caption = 'Insc. Municipal'
+  end
+  object dxRibbon1: TdxRibbon
+    Left = 0
+    Top = 0
+    Width = 682
+    Height = 126
+    BarManager = dxBarManager1
+    ColorSchemeName = 'Blue'
+    Contexts = <>
+    TabOrder = 7
+    TabStop = False
+    object dxRibbon1Tab1: TdxRibbonTab
+      Active = True
+      Caption = 'Manuten'#231#227'o de Organiza'#231#227'o'
+      Groups = <
+        item
+          ToolbarName = 'dxBarManager1Bar2'
+        end
+        item
+          ToolbarName = 'dxBarManager1Bar1'
+        end
+        item
+          ToolbarName = 'dxBarManager1Bar3'
+        end>
+      Index = 0
+    end
+  end
+  object edtRazao: TEdit
+    Tag = 1
+    Left = 82
+    Top = 135
+    Width = 250
+    Height = 21
+    MaxLength = 49
+    TabOrder = 0
+  end
+  object cbxTipo: TComboBox
+    Left = 240
+    Top = 175
+    Width = 92
+    Height = 21
+    TabOrder = 3
+    Text = 'PJ'
+    OnChange = cbxTipoChange
+    Items.Strings = (
+      'PJ'
+      'PF')
+  end
+  object edtFantasia: TEdit
+    Tag = 1
+    Left = 416
+    Top = 135
+    Width = 250
+    Height = 21
+    MaxLength = 49
+    TabOrder = 1
+  end
+  object edtSigla: TEdit
+    Tag = 1
+    Left = 82
+    Top = 178
+    Width = 70
+    Height = 21
+    Hint = 'Informe uma sigla com at'#233' 10 letras, sem espa'#231'o.'
+    MaxLength = 10
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 2
+  end
+  object edtCNPJ: TEdit
+    Tag = 1
+    Left = 416
+    Top = 175
+    Width = 250
+    Height = 21
+    Hint = 'Requer um CNPJ real. '
+    MaxLength = 20
+    TabOrder = 4
+    OnChange = edtCNPJChange
+    OnExit = edtCNPJExit
+  end
+  object edtEstadual: TEdit
+    Tag = 1
+    Left = 82
+    Top = 215
+    Width = 250
+    Height = 21
+    MaxLength = 20
+    TabOrder = 5
+  end
+  object edtMunicipal: TEdit
+    Tag = 1
+    Left = 416
+    Top = 215
+    Width = 250
+    Height = 21
+    MaxLength = 20
+    TabOrder = 6
+  end
+  object dxStatusBar: TdxStatusBar
+    Left = 0
+    Top = 548
+    Width = 682
+    Height = 20
+    Panels = <
+      item
+        PanelStyleClassName = 'TdxStatusBarTextPanelStyle'
+        Width = 200
+      end
+      item
+        PanelStyleClassName = 'TdxStatusBarTextPanelStyle'
+        Width = 500
+      end>
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+  end
+  object phHistorico: TcxPageControl
+    Left = 0
+    Top = 304
+    Width = 682
+    Height = 244
+    Align = alBottom
+    TabOrder = 9
+    Properties.ActivePage = cxTabSheet3
+    Properties.CustomButtons.Buttons = <>
+    ClientRectBottom = 244
+    ClientRectRight = 682
+    ClientRectTop = 24
+    object pgTOB: TcxTabSheet
+      Caption = 'Opera'#231#245'es Banc'#225'rias'
+      ImageIndex = 0
+    end
+    object pgCentroCusto: TcxTabSheet
+      Caption = 'Centro Custo'
+      ImageIndex = 1
+    end
+    object cxTabSheet3: TcxTabSheet
+      Caption = 'Hist'#243'ricos b'#225'sicos'
+      ImageIndex = 2
+      object Memo: TMemo
+        Left = 24
+        Top = 16
+        Width = 529
+        Height = 89
+        Lines.Strings = (
+          'Memo')
+        TabOrder = 0
+      end
+    end
+  end
+  object Panel1: TPanel
+    Left = 0
+    Top = 256
+    Width = 700
+    Height = 15
+    BorderStyle = bsSingle
+    TabOrder = 10
+  end
+  object dxBarManager1: TdxBarManager
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = 'Segoe UI'
+    Font.Style = []
+    Categories.Strings = (
+      'Default')
+    Categories.ItemsVisibles = (
+      2)
+    Categories.Visibles = (
+      True)
+    PopupMenuLinks = <>
+    UseSystemFont = True
+    Left = 536
+    Top = 48
+    PixelsPerInch = 96
+    object dxBarManager1Bar1: TdxBar
+      Caption = 'Config'
+      CaptionButtons = <>
+      DockedLeft = 59
+      DockedTop = 0
+      FloatLeft = 669
+      FloatTop = 8
+      FloatClientWidth = 0
+      FloatClientHeight = 0
+      ItemLinks = <
+        item
+          Visible = True
+          ItemName = 'dxBarBtnHst'
+        end>
+      OneOnRow = False
+      Row = 0
+      UseOwnFont = False
+      Visible = True
+      WholeRow = False
+    end
+    object dxBarManager1Bar2: TdxBar
+      Caption = 'Cadastrar'
+      CaptionButtons = <>
+      DockedLeft = 0
+      DockedTop = 0
+      FloatLeft = 669
+      FloatTop = 8
+      FloatClientWidth = 0
+      FloatClientHeight = 0
+      ItemLinks = <
+        item
+          Visible = True
+          ItemName = 'dxBarBtnNovo'
+        end>
+      OneOnRow = False
+      Row = 0
+      UseOwnFont = False
+      Visible = True
+      WholeRow = False
+    end
+    object dxBarManager1Bar3: TdxBar
+      Caption = 'Fechar'
+      CaptionButtons = <>
+      DockedLeft = 137
+      DockedTop = 0
+      FloatLeft = 669
+      FloatTop = 8
+      FloatClientWidth = 0
+      FloatClientHeight = 0
+      ItemLinks = <
+        item
+          Visible = True
+          ItemName = 'dxBarBtnSair'
+        end>
+      OneOnRow = False
+      Row = 0
+      UseOwnFont = False
+      Visible = True
+      WholeRow = False
+    end
+    object dxBarBtnSair: TdxBarLargeButton
+      Caption = 'Fechar'
+      Category = 0
+      Hint = 'Fechar'
+      Visible = ivAlways
+      OnClick = dxBarBtnSairClick
+    end
+    object dxBarBtnNovo: TdxBarLargeButton
+      Caption = 'Nova'
+      Category = 0
+      Hint = 'Nova'
+      Visible = ivAlways
+      OnClick = dxBarBtnNovoClick
+    end
+    object dxBarBtnHst: TdxBarLargeButton
+      Caption = 'Hist'#243'ricos '
+      Category = 0
+      Hint = 'Hist'#243'ricos '
+      Visible = ivAlways
+      OnClick = dxBarBtnHstClick
+    end
+  end
+  object PempecMsg: TEvMsgDlg
+    ButtonFont.Charset = DEFAULT_CHARSET
+    ButtonFont.Color = clWindowText
+    ButtonFont.Height = -11
+    ButtonFont.Name = 'Tahoma'
+    ButtonFont.Style = []
+    MessageFont.Charset = DEFAULT_CHARSET
+    MessageFont.Color = clWindowText
+    MessageFont.Height = -11
+    MessageFont.Name = 'Tahoma'
+    MessageFont.Style = []
+    Left = 432
+    Top = 56
+  end
+end

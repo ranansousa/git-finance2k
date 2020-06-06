@@ -1,0 +1,2 @@
+D:\mega\desenvolvimento\Delphi\Finance\uFrmBackup.pas
+  Interface Uses: cxLookAndFeelPainters,cxLookAndFeels,dxRibbonCustomizationForm,dxRibbonSkins,dxSkinsCore,dxSkinsDefaultPainters,FireDAC.DApt,FireDAC.DApt.Intf,FireDAC.DatS,FireDAC.Phys,FireDAC.Phys.FBDef,FireDAC.Phys.Intf,FireDAC.Stan.Async,FireDAC.Stan.Def,FireDAC.Stan.Error,FireDAC.Stan.Intf,FireDAC.Stan.Option,FireDAC.UI.Intf,FireDAC.VCLUI.Error,FireDAC.VCLUI.Wait,IdAntiFreezeBase,IdBaseComponent,IdComponent,IdIOHandler,IdIOHandlerSocket,IdIOHandlerStack,IdSSL,IdTCPClient,IdTCPConnection,Vcl.IdAntiFreeze

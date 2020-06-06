@@ -1,0 +1,102 @@
+unit uNotaFiscalEntradaModel;
+
+interface
+
+{
+CREATE TABLE NOTA_FISCAL_ENTRADA (
+    ID_NOTA_FISCAL_ENTRADA  VARCHAR(36) NOT NULL,
+    ID_ORGANIZACAO          VARCHAR(36) NOT NULL,
+    ID_RESPONSAVEL          VARCHAR(36),
+    ID_TIPO_NOTA_FISCAL     VARCHAR(36),
+    ID_USUARIO              NUMERIC(5,0),
+
+    NUMERO                  VARCHAR(20),
+    DESCRICAO               VARCHAR(150),
+    OBSERVACAO              VARCHAR(200),
+    SERIE                   VARCHAR(2),
+    SUB_SERIE               VARCHAR(2),
+    ALIQUOTA_ISS            VARCHAR(5),
+
+    DATA_RETENCAO_ISS       DATE,
+    DATA_REGISTRO           DATE,
+    DATA_EMISSAO            DATE,
+    DATA_PROTOCOLO          DATE,
+
+    VALOR                   NUMERIC(10,2),
+    VALOR_ISS               NUMERIC(10,2),
+    BASE_CALCULO_ISS        NUMERIC(10,2),
+
+);
+}
+
+uses
+  Windows, Messages, Classes, SysUtils, uTipoNotaFiscalModel, uFuncionarioModel, uUsuarioModel, uOrganizacaoModel;
+
+type
+  TNotaFiscalEntradaModel = class(TObject)
+  private
+
+    FFID: string;
+    FFIDorganizacao: string;
+    FFIDresponsavel :string;
+    FFIDtipoNotaFiscal :String;
+    FFIDusuario :Integer;
+    FFnumero :string;
+    FFdescricao :string;
+    FFobservacao :string;
+    FFserie :string;
+    FFsubSerie :string;
+    FFaliquotaISS :string;
+
+    FFdataRetenncaoISS :TDate;
+    FFdataRegistro :TDate;
+    FFdataEmissao :TDate;
+    FFdataProtocolo :TDate;
+
+    FFvalor :Currency;
+    FFvalorISS :Currency;
+    FFbaseCalculoISS :Currency;
+
+    FForganizacao :TOrganizacaoModel;
+    FFresponsavel :TFuncionarioModel;
+    FFtipoNotaFiscal :TTipoNotaFiscalModel;
+    FFusuario :TUsuarioModel;
+
+
+    public
+
+    property FID: string                            read FFID                   write SetFFID ;
+    property FIDorganizacao: string                 read FFIDorganizacao        write SetFFIDorganizacao      ;
+    property FIDresponsavel :string                 read FFIDresponsavel        write SetFFIDresponsavel      ;
+    property FIDtipoNotaFiscal :String              read FFIDtipoNotaFiscal     write SetFFIDtipoNotaFiscal      ;
+    property FIDusuario :Integer                    read FFIDusuario            write SetFFIDusuario      ;
+    property Fnumero :string                        read FFnumero               write SetFFnumero      ;
+    property Fdescricao :string                     read FFdescricao            write SetFFdescricao      ;
+    property Fobservacao :string                    read FFobservacao           write SetFFobservacao      ;
+    property Fserie :string                         read FFserie                write SetFFserie      ;
+    property FsubSerie :string                      read FFsubSerie             write SetFFsubSerie      ;
+    property FaliquotaISS :string                   read FFaliquotaISS          write SetFFaliquotaISS      ;
+    property FdataRetenncaoISS :TDate               read FFdataRetenncaoISS     write SetFFdataRetenncaoISS      ;
+    property FdataRegistro :TDate                   read FFdataRegistro         write SetFFdataRegistro      ;
+    property FdataEmissao :TDate                    read FFdataEmissao          write SetFFdataEmissao      ;
+    property FdataProtocolo :TDate                  read FFdataProtocolo        write SetFFdataProtocolo      ;
+    property Fvalor :Currency                       read FFvalor                write SetFFvalor      ;
+    property FvalorISS :Currency                    read FFvalorISS             write SetFFvalorISS      ;
+    property FbaseCalculoISS :Currency              read FFbaseCalculoISS       write SetFFbaseCalculoISS      ;
+    property Forganizacao :TOrganizacaoModel        read FForganizacao          write SetFForganizacao      ;
+    property Fresponsavel :TFuncionarioModel        read FFresponsavel          write SetFFresponsavel      ;
+    property FtipoNotaFiscal :TTipoNotaFiscalModel  read FFtipoNotaFiscal       write SetFFtipoNotaFiscal      ;
+    property Fusuario :TUsuarioModel                read FFusuario              write SetFFusuario      ;
+
+
+   constructor Create(AOwner: TComponent);
+
+
+
+
+  end;
+
+
+implementation
+
+end.
