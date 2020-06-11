@@ -1,0 +1,14 @@
+program CreateOrg;
+
+uses
+  Vcl.Forms,
+  uCreateOrg in 'uCreateOrg.pas' {frmCreateOrg};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+  Application.CreateForm(TfrmCreateOrg, frmCreateOrg);
+  Application.Run;
+end.
