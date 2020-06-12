@@ -1,0 +1,170 @@
+unit uFrmAlteraTituloPagar;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.Grids, Vcl.DBGrids,uUtil,  uTituloPagarDAO, uTituloPagarModel,
+  Vcl.StdCtrls, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, udmConexao,
+  FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
+  FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client,
+  Vcl.Buttons, EMsgDlg, dxSkinsCore, dxSkinsDefaultPainters, cxGraphics,
+  cxControls, cxLookAndFeels, cxLookAndFeelPainters, dxRibbonSkins,
+  dxRibbonCustomizationForm, cxClasses, dxRibbon, dxBar, cxBarEditItem;
+
+type
+  TfrmAlteraNumDocTP = class(TForm)
+    btnConsulta: TButton;
+    dbgrdTP: TDBGrid;
+    dsPreencheGrid: TDataSource;
+    qryObterTodos: TFDQuery;
+    btnFechar: TBitBtn;
+    btnExcluir: TButton;
+    PempecMsg: TEvMsgDlg;
+    qryExclusaoFull: TFDQuery;
+    edtLocale: TEdit;
+    dxBarManager1: TdxBarManager;
+    dxRibbon1Tab1: TdxRibbonTab;
+    dxRibbon1: TdxRibbon;
+    dxBarManager1Bar1: TdxBar;
+    dxBarManager1Bar2: TdxBar;
+    dxBarBtnSair: TdxBarLargeButton;
+    cxbrdtmPesquisa: TcxBarEditItem;
+    procedure FormCreate(Sender: TObject);
+    procedure btnConsultaClick(Sender: TObject);
+    procedure btnFecharClick(Sender: TObject);
+    procedure dbgrdTPTitleClick(Column: TColumn);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure btnExcluirClick(Sender: TObject);
+    procedure cxbrdtmPesquisaCurChange(Sender: TObject);
+  private
+    { Private declarations }
+    idOrganizacao : string;
+    codigoErro :string;
+    procedure inicializarDM(Sender: TObject);
+    function obterTodos(pIdOrganizacao: string): Boolean;
+  public
+    { Public declarations }
+  end;
+
+var
+  frmAlteraNumDocTP: TfrmAlteraNumDocTP;
+
+implementation
+
+{$R *.dfm}
+
+
+function TfrmAlteraNumDocTP.obterTodos(pIdOrganizacao: string): Boolean;
+begin
+codigoErro := 'AlteraTP-01';
+   try
+      qryObterTodos.Close;
+      qryObterTodos.Connection := dmConexao.Conn;
+      qryObterTodos.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+      qryObterTodos.Open;
+  except
+
+  raise(Exception).Create('Erro ao tentar Obter todos os TPs ' + codigoErro );
+
+  end;
+  Result := not qryObterTodos.IsEmpty;
+end;
+
+
+
+procedure TfrmAlteraNumDocTP.btnExcluirClick(Sender: TObject);
+var
+  titulo : TTituloPagarModel;
+  qry : TFDQuery;
+  cmdProc : string;
+  begin
+
+  dmConexao.conectarBanco;
+
+    titulo := TTituloPagarModel.Create;
+    titulo.FIDorganizacao := (dbgrdTP.DataSource.DataSet as TFDQuery).FieldByName('ID_ORGANIZACAO').AsString;
+    titulo.FID := (dbgrdTP.DataSource.DataSet as TFDQuery).FieldByName('ID_TITULO_PAGAR').AsString;
+
+    titulo := TTituloPagarDAO.obterPorID(titulo);
+
+    if not uutil.Empty(titulo.FID) then begin
+
+     // PempecMsg.MsgInformation('Titulo Encontrado' + titulo.Fdescricao);
+
+       qry := TFDQuery.Create(Self);
+      try
+            cmdProc := 'EXECUTE PROCEDURE sp_del_tp(' + QuotedStr(titulo.FIDorganizacao) + ',' + QuotedStr(titulo.FID) +')';
+         qry.Close;
+         qry.Connection := dmConexao.conn;
+         qry.SQL.Clear;
+         qry.SQL.Add(cmdProc);
+                  //   'EXECUTE PROCEDURE sp_del_tp('familia','23a765d7-5575-48d5-aa2d-90fb89764407')
+       {  qry.ParamByName('PID').AsString := titulo.FID;
+         qry.ParamByName('PIDORG').AsString := titulo.FIDorganizacao;   }
+
+         qry.ExecSQL;
+
+         if qry.RowsAffected >0  then begin
+            dmConexao.conn.Commit;
+            PempecMsg.MsgInformation('Titulo excluído da base de dados.  ' + titulo.Fdescricao);
+         end;
+
+      finally
+      FreeAndNil(qry);
+      end;
+
+    end;
+
+    dmConexao.conectarBanco;
+    obterTodos(idOrganizacao);
+
+end;
+
+procedure TfrmAlteraNumDocTP.btnFecharClick(Sender: TObject);
+begin
+     PostMessage(Self.Handle, WM_CLOSE, 0, 0);
+end;
+
+procedure TfrmAlteraNumDocTP.cxbrdtmPesquisaCurChange(Sender: TObject);
+begin
+  dbgrdTP.DataSource.DataSet.Locate('NUMERO_DOCUMENTO',UpperCase(cxbrdtmPesquisa.CurEditValue),[loPartialKey]);
+end;
+
+procedure TfrmAlteraNumDocTP.dbgrdTPTitleClick(Column: TColumn);
+begin
+(dbgrdTP.DataSource.DataSet as TFDQuery).IndexFieldNames :=Column.FieldName;
+end;
+
+
+procedure TfrmAlteraNumDocTP.btnConsultaClick(Sender: TObject);
+begin
+dbgrdTP.DataSource.DataSet.Next;
+dbgrdTP.Refresh;
+
+ShowMessage('Dados atualizados com sucesso');
+
+end;
+
+procedure TfrmAlteraNumDocTP.FormClose(Sender: TObject;
+  var Action: TCloseAction);
+begin
+Action :=caFree;
+end;
+
+procedure TfrmAlteraNumDocTP.FormCreate(Sender: TObject);
+begin
+  inicializarDM(Self);
+end;
+
+procedure TfrmAlteraNumDocTP.inicializarDM(Sender: TObject);
+begin
+
+idOrganizacao := TOrgAtual.getId;
+obterTodos(idOrganizacao);
+
+//
+
+end;
+
+end.

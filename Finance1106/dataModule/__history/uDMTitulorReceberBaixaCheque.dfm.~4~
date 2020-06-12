@@ -1,0 +1,9 @@
+object dmTRBCheque: TdmTRBCheque
+  OldCreateOrder = False
+  Height = 489
+  Width = 615
+  object FDQuery1: TFDQuery
+    Left = 280
+    Top = 224
+  end
+end
