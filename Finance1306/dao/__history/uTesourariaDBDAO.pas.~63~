@@ -1,0 +1,358 @@
+unit uTesourariaDBDAO;
+
+interface
+ {
+CREATE TABLE TESOURARIA_DEBITO (
+    ID_TESOURARIA_DEBITO           VARCHAR(36) NOT NULL,
+    ID_ORGANIZACAO                 VARCHAR(36) NOT NULL,
+    ID_HISTORICO                   VARCHAR(36),
+    ID_RESPONSAVEL                 VARCHAR(36),
+    ID_CEDENTE                     VARCHAR(36),
+    ID_TITULO_PAGAR_BAIXA          VARCHAR(36),
+    ID_USUARIO                     NUMERIC(5,0),
+    ID_LOTE_CONTABIL               VARCHAR(36),
+    ID_LOTE_DEPOSITO               VARCHAR(36),
+    ID_CONTA_BANCARIA_CREDITO      VARCHAR(36),
+    OBSERVACAO                     VARCHAR(200),
+    NUMERO_DOCUMENTO               VARCHAR(40),
+    DESCRICAO                      VARCHAR(120),
+    TIPO_LANCAMENTO                VARCHAR(1) NOT NULL
+    VALOR_NOMINAL                  NUMERIC(10,2) NOT NULL,
+    DATA_REGISTRO                  DATE,
+    DATA_CONTABIL                  DATE,
+    DATA_MOVIMENTO                 DATE NOT NULL,
+);
+
+
+}
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, FireDAC.Stan.Intf, FireDAC.Stan.Option,uTPBaixaModel, uFuncionarioModel, uCedenteModel, uCedenteDAO,
+  FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,uUsuarioModel, uUsuarioDAO,
+  uLoteContabilModel, uLoteContabilDAO, uContaBancariaCRModel, uContaBancariaCreditoDAO,uTesourariaDBModel,
+  FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB, uHistoricoModel, uHistoricoDAO, udmConexao, uUtil,
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client;
+
+
+  const
+   pTable : string = 'TESOURARIA_DEBITO';
+type
+ TTesourariaDBDAO = class
+  private
+    class function getModel (query :TFDQuery) : TTesourariaDBModel;
+  public
+    {métodos CRUD (Create, Read, Update e Delete)
+    para manipulação dos dados}
+    class function Insert(value :TTesourariaDBModel): Boolean;
+    class function obterPorID(value :TTesourariaDBModel): TTesourariaDBModel;
+    class function Delete(value :TTesourariaDBModel): Boolean;
+    class function deleteTodosPorTPB(value :TTesourariaDBModel): Boolean;
+
+  end;
+
+implementation
+
+class function TTesourariaDBDAO.Delete(value: TTesourariaDBModel): Boolean;
+var
+qryDelete : TFDQuery;
+xResp :Boolean;
+begin
+  xResp := False;
+  dmConexao.conectarBanco;
+  qryDelete := TFDQuery.Create(nil);
+  try
+    try
+
+      qryDelete.Close;
+      qryDelete.Connection := dmConexao.conn;
+      qryDelete.SQL.Clear;
+      qryDelete.SQL.Add('DELETE FROM ' + pTable);
+      qryDelete.SQL.Add('WHERE ID_ORGANIZACAO = :PIDORGANIZACAO  AND  ID_' + pTable + ' = :PID ');
+      qryDelete.ParamByName('PIDORGANIZACAO').AsString := value.FIDorganizacao;
+      qryDelete.ParamByName('PID').AsString := value.FID;
+
+      qryDelete.ExecSQL;
+      xResp := True;
+
+    except
+      xResp := False;
+      raise Exception.Create('Erro ao tentar DELETAR ' + pTable);
+
+    end;
+
+    Result := xResp;
+  finally
+    if Assigned(qryDelete) then
+    begin
+      FreeAndNil(qryDelete);
+    end;
+  end;
+
+
+end;
+
+class function TTesourariaDBDAO.deleteTodosPorTPB(value: TTesourariaDBModel): Boolean;
+var
+qryDelete : TFDQuery;
+sucesso :Boolean;
+begin
+  sucesso := False;
+  dmConexao.conectarBanco;
+  qryDelete := TFDQuery.Create(nil);
+  try
+    try
+
+      qryDelete.Close;
+      qryDelete.Connection := dmConexao.conn;
+      qryDelete.SQL.Clear;
+      qryDelete.SQL.Add('DELETE FROM ' + pTable);
+      qryDelete.SQL.Add('WHERE ID_ORGANIZACAO = :PIDORGANIZACAO  AND  ID_TITULO_PAGAR_BAIXA = :PID ');
+      qryDelete.ParamByName('PIDORGANIZACAO').AsString := value.FIDorganizacao;
+      qryDelete.ParamByName('PID').AsString := value.FIDTPB;
+
+      qryDelete.ExecSQL;
+      if qryDelete.RowsAffected >0 then begin  sucesso := True; dmConexao.conn.CommitRetaining; end;
+
+    except
+      sucesso := False;
+      raise Exception.Create('Erro ao tentar DELETAR ' + pTable);
+
+    end;
+
+    Result := sucesso;
+  finally
+    if Assigned(qryDelete) then
+    begin
+      FreeAndNil(qryDelete);
+    end;
+  end;
+
+
+end;
+
+class function TTesourariaDBDAO.getModel(query: TFDQuery): TTesourariaDBModel;
+var model :TTesourariaDBModel;
+cContaCredito : TContaBancariaCRModel;
+cedente : TCedenteModel;
+loteContabil : TLoteContabilModel;
+
+begin
+
+  model := TTesourariaDBModel.Create;
+  model.FContaBancariaCredito := TContaBancariaCRModel.Create;
+  model.FCedente := TCedenteModel.Create;
+  model.FLoteContabil := TLoteContabilModel.Create;
+
+
+  if not query.IsEmpty then begin
+
+    try
+
+
+      model.FID                     := query.FieldByName('ID_TESOURARIA_DEBITO').AsString;
+      model.FIDorganizacao          := query.FieldByName('ID_ORGANIZACAO').AsString;
+      model.FIDTPB                  := query.FieldByName('ID_TITULO_PAGAR_BAIXA').AsString;
+      model.FIDHistorico            := query.FieldByName('ID_HISTORICO').AsString;
+      model.FIDResponsavel          := query.FieldByName('ID_RESPONSAVEL').AsString;
+      model.FIDCedente              := query.FieldByName('ID_CEDENTE').AsString;
+      model.FIDUsuario              := query.FieldByName('ID_USUARIO').AsInteger;
+      model.FIDLoteContabil         := query.FieldByName('ID_LOTE_CONTABIL').AsString;
+      model.FIDloteDeposito         := query.FieldByName('ID_LOTE_DEPOSITO').AsString;
+      model.FIDcontaBancariaCredito := query.FieldByName('ID_CONTA_BANCARIA_CREDITO').AsString;
+      model.FvalorNominal           := query.FieldByName('VALOR_NOMINAL').AsCurrency;
+      model.Fobservacao             := query.FieldByName('OBSERVACAO').AsString;
+      model.FtipoLancamento         := query.FieldByName('TIPO_LANCAMENTO').AsString;
+      model.Fdescricao              := query.FieldByName('DESCRICAO').AsString;
+      model.FnumeroDocumento        := query.FieldByName('NUMERO_DOCUMENTO').AsString;
+      model.FdataRegistro           := query.FieldByName('DATA_REGISTRO').AsDateTime;
+      model.FdataContabil           := query.FieldByName('DATA_CONTABIL').AsDateTime;
+      model.FdataMovimento          := query.FieldByName('DATA_MOVIMENTO').AsDateTime;
+
+        try
+
+
+          model.FContaBancariaCredito.FID            := model.FIDcontaBancariaCredito;
+          model.FContaBancariaCredito.FIDOrganizacao := model.FIDOrganizacao;
+          model.FContaBancariaCredito                := TContaBancariaCreditoDAO.obterPorID(model.FContaBancariaCredito);
+
+          model.FCedente.FID            := model.FIDCedente;
+          model.FCedente.FIDOrganizacao := model.FIDOrganizacao;
+          model.FCedente                := TCedenteDAO.obterPorID(model.FCedente);
+
+          model.FLoteContabil.FID            := model.FIDLoteContabil;
+          model.FLoteContabil.FIDOrganizacao := model.FIDOrganizacao;
+          model.FLoteContabil                := TLoteContabilDAO.obterPorID(model.FLoteContabil);
+
+
+          // model.FtituloPagarBaixa
+
+        except
+          raise Exception.Create('Erro ao tentar obter Conta Contabil por ' + pTable);
+
+        end;
+
+    except
+      raise Exception.Create('Erro ao tentar Converter ' + pTable);
+
+    end;
+
+  end;
+
+
+   Result := model;
+
+end;
+
+class function TTesourariaDBDAO.Insert(value: TTesourariaDBModel): Boolean;
+var
+  qryInsert: TFDQuery;
+  cmdDB: string;
+begin
+  dmConexao.conectarBanco;
+  qryInsert := TFDQuery.Create(nil);
+  try
+
+
+     cmdDB := ' INSERT INTO TESOURARIA_DEBITO (ID_TESOURARIA_DEBITO, ID_ORGANIZACAO, ID_HISTORICO, ID_RESPONSAVEL, ID_CEDENTE, '+
+              ' ID_USUARIO, NUMERO_DOCUMENTO, DESCRICAO, DATA_REGISTRO, DATA_CONTABIL, DATA_MOVIMENTO, VALOR_NOMINAL,  '+
+              ' TIPO_LANCAMENTO, ID_CONTA_BANCARIA_CREDITO, '+
+              ' ID_TITULO_PAGAR_BAIXA, ID_LOTE_CONTABIL , ID_LOTE_DEPOSITO, OBSERVACAO   ) ' +
+              ' VALUES (:PIDTD,:PIDORGANIZACAO,:PIDHIST,:PIDRESPONSAVEL,:PIDCEDENTE, '+
+              ' :PIDUSER,:PNUMDOC, :PDESCRICAO, :PDTREGISTRO, :PDTCONTABIL, :PDTMOVIMENTO, :PVALOR, :PTIPO, :PIDCONTABANCO, '+
+              ' :PIDTITULO_PAGAR_BAIXA, :PIDLOTE_CONTABIL , :PIDLOTE_DEPOSITO, :POBSERVACAO   ) ' ;
+
+
+
+    qryInsert.Close;
+    qryInsert.Connection := dmConexao.conn;
+    qryInsert.SQL.Clear;
+    qryInsert.SQL.Add(cmdDB);
+    qryInsert.ParamByName('PIDTD').AsString :=value.FID;
+    qryInsert.ParamByName('PIDORGANIZACAO').AsString := value.FIDorganizacao;
+    qryInsert.ParamByName('PIDHIST').AsString := value.FIDHistorico;
+    qryInsert.ParamByName('PIDRESPONSAVEL').AsString := value.FIDResponsavel;
+
+    qryInsert.ParamByName('PIDCEDENTE').AsString := value.FIDCedente;
+    qryInsert.ParamByName('PIDUSER').AsInteger := value.FIDUsuario;
+    qryInsert.ParamByName('PIDCONTABANCO').AsString := value.FIDcontaBancariaCredito;
+    qryInsert.ParamByName('PIDTITULO_PAGAR_BAIXA').AsString := value.FIDTPB;
+    qryInsert.ParamByName('PIDLOTE_CONTABIL').AsString := value.FIDLoteContabil;
+    qryInsert.ParamByName('PIDLOTE_DEPOSITO').AsString := value.FIDloteDeposito;
+
+    qryInsert.ParamByName('PTIPO').AsString :=value.FtipoLancamento;
+    qryInsert.ParamByName('PNUMDOC').AsString := value.FnumeroDocumento;
+    qryInsert.ParamByName('PDESCRICAO').AsString := value.Fdescricao;
+    qryInsert.ParamByName('PDTREGISTRO').AsDate := value.FdataRegistro;
+    qryInsert.ParamByName('PDTCONTABIL').AsDate := value.FdataContabil;
+    qryInsert.ParamByName('PDTMOVIMENTO').AsDate := value.FdataMovimento;
+    qryInsert.ParamByName('PVALOR').AsCurrency := value.FvalorNominal   ;
+    qryInsert.ParamByName('POBSERVACAO').AsString := value.Fobservacao;
+
+    if uUtil.Empty(value.FID) then
+    begin
+      qryInsert.ParamByName('PID').AsString := dmConexao.obterNewID;
+    end;
+
+    if uUtil.Empty(value.FnumeroDocumento) then
+    begin
+      qryInsert.ParamByName('PNUMDOC').AsString := dmConexao.obterIdentificador('',value.FIDorganizacao, 'TD');
+     end;
+
+    if uUtil.Empty(value.FIDloteContabil) then
+    begin
+      qryInsert.ParamByName('PIDLOTE_CONTABIL').Value := null;
+    end;
+
+    if uUtil.Empty(value.FIDTPB) then
+    begin
+      qryInsert.ParamByName('PIDTITULO_PAGAR_BAIXA').Value := null;
+    end;
+
+    if uUtil.Empty(value.FIDloteDeposito) then
+    begin
+      qryInsert.ParamByName('PIDLOTE_DEPOSITO').Value := null;
+    end;
+
+    if uUtil.Empty(value.FIDcontaBancariaCredito) then
+    begin
+      qryInsert.ParamByName('PIDCONTABANCO').Value := null;
+    end;
+
+    if (value.FIDUsuario = 0) then
+    begin
+      qryInsert.ParamByName('PIDUSER').Value := null;
+
+    end;
+
+    if uUtil.Empty(value.FIDCedente) then
+    begin
+      qryInsert.ParamByName('PIDCEDENTE').Value := null;
+    end;
+
+
+     qryInsert.ExecSQL;
+
+   Result := System.True;
+
+
+  finally
+    if Assigned(qryInsert) then
+    begin
+      FreeAndNil(qryInsert);
+    end;
+  end;
+
+
+
+end;
+
+class function TTesourariaDBDAO.obterPorID( value: TTesourariaDBModel): TTesourariaDBModel;
+var
+qryPesquisa : TFDQuery;
+cmdSql:string;
+model: TTesourariaDBModel;
+begin
+  dmConexao.conectarBanco;
+  qryPesquisa := TFDQuery.Create(nil);
+   model := TTesourariaDBModel.Create;
+
+  try
+
+    try
+
+      qryPesquisa.Close;
+      qryPesquisa.Connection := dmConexao.conn;
+      qryPesquisa.SQL.Clear;
+      qryPesquisa.SQL.Add('SELECT * ');
+      qryPesquisa.SQL.Add('FROM ' + pTable);
+      qryPesquisa.SQL.Add('WHERE (ID_ORGANIZACAO = :PIDORGANIZACAO ) AND  ID_' + pTable + ' = :PID ');
+
+      qryPesquisa.ParamByName('PID').AsString := value.FID;
+      qryPesquisa.ParamByName('PIDORGANIZACAO').AsString := value.FIDorganizacao;
+
+      qryPesquisa.Open;
+
+      if not qryPesquisa.IsEmpty then
+      begin
+        model := getModel(qryPesquisa);
+      end;
+
+    except
+      raise Exception.Create('Erro ao tentar obter ' + pTable);
+
+    end;
+
+    Result := model;
+
+  finally
+    if Assigned(qryPesquisa) then
+    begin
+      FreeAndNil(qryPesquisa);
+    end;
+  end;
+
+end;
+
+
+end.

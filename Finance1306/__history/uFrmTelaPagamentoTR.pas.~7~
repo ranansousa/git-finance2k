@@ -1,0 +1,240 @@
+unit uFrmTelaPagamentoTR;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,uUtil,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,uFrmBaixaTRFP,
+  dxSkinsCore, dxSkinsDefaultPainters, cxGraphics, cxControls, cxLookAndFeels,
+  cxLookAndFeelPainters, dxRibbonSkins, dxRibbonCustomizationForm, cxClasses,
+  dxRibbon, dxBar, dxStatusBar, Data.DB, Vcl.Grids, Vcl.DBGrids, udmConexao, uDMOrganizacao,uTituloReceberModel,
+  FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
+  FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
+  FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client,
+  cxTextEdit, cxBarEditItem, EMsgDlg ;
+
+type
+  TfrmRecebimentoTitulos = class(TForm)
+    dxBarManager1: TdxBarManager;
+    menuBaixaTP: TdxRibbonTab;
+    dxRibbon1: TdxRibbon;
+    dxStatusBar: TdxStatusBar;
+    dbgrdMain: TDBGrid;
+    dsTitulos: TDataSource;
+    dxBarManager1Bar1: TdxBar;
+    dxBarManager1Bar2: TdxBar;
+    dxBarManager1Bar3: TdxBar;
+    cxbrdtmPesquisa: TcxBarEditItem;
+    dxBtnFechar: TdxBarLargeButton;
+    dxBtnPagar: TdxBarLargeButton;
+    dxBtnPagarAV: TdxBarLargeButton;
+    qryPreencheGrid: TFDQuery;
+    PempecMsg: TEvMsgDlg;
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormCreate(Sender: TObject);
+    procedure cxbrdtmPesquisaCurChange(Sender: TObject);
+    procedure dxBtnFecharClick(Sender: TObject);
+    procedure dbgrdMainTitleClick(Column: TColumn);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure dsTitulosDataChange(Sender: TObject; Field: TField);
+    procedure dxBtnPagarClick(Sender: TObject);
+    procedure dxBtnPagarAVClick(Sender: TObject);
+  private
+    { Private declarations }
+    FSListaIDTR :TStringList;
+    pIdTR,  pIdOrganizacao, pIdUsuario :string;
+      vlrDevido : Currency;
+      pTitulo :TTituloReceberModel;
+        procedure msgStatusBar(pPosicao: Integer; msg: string);
+    procedure limpaStatusBar;
+    procedure LimpaTela(Form: TForm);
+    procedure preencherGrid;
+    procedure limpar;
+    function preencheGrid(pIdOrganizacao: string): Boolean;
+  public
+    { Public declarations }
+  end;
+
+var
+  frmRecebimentoTitulos: TfrmRecebimentoTitulos;
+
+implementation
+
+{$R *.dfm}
+
+procedure TfrmRecebimentoTitulos.cxbrdtmPesquisaCurChange(Sender: TObject);
+begin
+ dbgrdMain.DataSource.DataSet.Locate('DOC',UpperCase(cxbrdtmPesquisa.CurEditValue),[loPartialKey]);
+end;
+
+procedure TfrmRecebimentoTitulos.dbgrdMainTitleClick(Column: TColumn);
+begin
+ (dbgrdMain.DataSource.DataSet as TFDQuery).IndexFieldNames :=Column.FieldName;
+end;
+
+procedure TfrmRecebimentoTitulos.dsTitulosDataChange(Sender: TObject;
+  Field: TField);
+begin
+  pIdTR := qryPreencheGrid.FieldByName('ID').AsString;
+
+  pTitulo := TTituloReceberModel.Create;
+  pTitulo.FIDorganizacao := pIdOrganizacao;
+  pTitulo.FID := pIdTR;
+
+ msgStatusBar(1,' Título '+ qryPreencheGrid.FieldByName('DOC').AsString + ' pronto para ser pago. ' );
+
+end;
+
+procedure TfrmRecebimentoTitulos.dxBtnFecharClick(Sender: TObject);
+begin
+ PostMessage(Self.Handle, WM_CLOSE, 0, 0);
+end;
+
+procedure TfrmRecebimentoTitulos.dxBtnPagarAVClick(Sender: TObject);
+begin
+ ShowMessage('Ainda não é possível pagar com acréscimos e deduções.');
+
+end;
+
+procedure TfrmRecebimentoTitulos.dxBtnPagarClick(Sender: TObject);
+begin
+
+  dbgrdMain.Enabled := False;
+  dbgrdMain.DataSource.DataSet.Close;
+
+
+ try
+          frmBaixaTRFP := TfrmBaixaTRFP.Create(Self, pTitulo);
+          frmBaixaTRFP.ShowModal;
+          FreeAndNil(frmBaixaTRFP);
+
+  except
+    on e: Exception do
+      ShowMessage(e.Message + sLineBreak + 'Contate o suporte. Informe erro: ' + ' TfrmBaixaFP ' );
+  end;
+
+  LimpaTela(Self);
+  limpar;
+
+
+end;
+
+procedure TfrmRecebimentoTitulos.FormClose(Sender: TObject;
+  var Action: TCloseAction);
+begin
+  Action := caFree;
+end;
+
+procedure TfrmRecebimentoTitulos.limpar;
+begin
+  dbgrdMain.Enabled := True;
+  preencherGrid;
+  limpaStatusBar;
+
+end;
+
+
+procedure TfrmRecebimentoTitulos.FormCreate(Sender: TObject);
+begin
+  pIdOrganizacao := uUtil.TOrgAtual.getId;
+
+  limpar;
+
+end;
+
+procedure TfrmRecebimentoTitulos.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  case key of
+    VK_F10: dxBtnPagar.Click;
+    VK_F12: dxBtnPagarAV.Click;
+
+  end;
+end;
+
+procedure TfrmRecebimentoTitulos.preencherGrid;
+begin
+  if preencheGrid(pIdOrganizacao)  then
+  begin
+    (dbgrdMain.DataSource.DataSet as TFDQuery).Last;
+    (dbgrdMain.DataSource.DataSet as TFDQuery).First;
+  end;
+
+
+end;
+procedure TfrmRecebimentoTitulos.msgStatusBar(pPosicao : Integer; msg :string);
+begin
+dxStatusBar.Panels[pPosicao].Text := msg;
+Application.ProcessMessages;
+end;
+
+procedure TfrmRecebimentoTitulos.limpaStatusBar;
+begin
+dxStatusBar.Panels[0].Text := 'Status ';
+dxStatusBar.Panels[1].Text := 'Ativo. Teclas de atalho:  [F10] = Pagar ';
+end;
+
+procedure TfrmRecebimentoTitulos.LimpaTela(Form: TForm);
+var
+  i: Integer;
+begin
+
+  for i := 0 to Form.ComponentCount - 1 do
+  begin
+    if Form.Components[i] is TCustomEdit then
+    begin
+      (Form.Components[i] as TCustomEdit).Clear;
+    end;
+
+    if Form.Components[i] is TLabel then
+    begin
+      TLabel(Form.Components[i]).Caption := '';
+    end;
+
+    if Form.Components[i] is TEdit then
+    begin
+      TEdit(Form.Components[i]).Clear;
+    end;
+
+   { if Form.Components[i] is TEvNumEdit then
+    begin
+      TEvNumEdit(Form.Components[i]).Clear ;
+    end;  }
+
+    if Form.Components[i] is TComboBox then
+    begin
+      TComboBox(Form.Components[i]).Clear ;
+      TComboBox(Form.Components[i]).ItemIndex := 0;
+    end;
+
+
+
+   end;
+end;
+
+
+function TfrmRecebimentoTitulos.preencheGrid(pIdOrganizacao: string) :Boolean;
+var
+sqlCmd :string;
+begin
+
+dmConexao.conectarBanco;
+ try
+    qryPreencheGrid.Close;
+    qryPreencheGrid.Connection := dmConexao.conn;
+    qryPreencheGrid.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+    qryPreencheGrid.Open;
+ except
+ raise Exception.Create('Erro ao obter lista de títulos...' );
+
+ end;
+
+ Result := not qryPreencheGrid.IsEmpty;
+
+end;
+
+
+
+
+
+end.
