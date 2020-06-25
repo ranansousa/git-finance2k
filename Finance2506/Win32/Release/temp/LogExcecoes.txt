@@ -1,0 +1,154 @@
+Data/Hora.......: 07/05/2020 18:50:06
+Mensagem........: HTTP/1.1 301 Moved Permanently
+Classe Exceção..: EIdHTTPProtocolException
+Formulário......: frmInfoUpdate
+Unit............: Vcl.ExtCtrls
+Controle Visual.: btnDown
+Usuario.........: RANAN SOUSA
+Versão Windows..: Windows 7
+----------------------------------------------------------------------
+Data/Hora.......: 07/05/2020 18:52:52
+Mensagem........: HTTP/1.1 301 Moved Permanently
+Classe Exceção..: EIdHTTPProtocolException
+Formulário......: frmInfoUpdate
+Unit............: Vcl.ExtCtrls
+Controle Visual.: btnDown
+Usuario.........: RANAN SOUSA
+Versão Windows..: Windows 7
+----------------------------------------------------------------------
+Data/Hora.......: 07/05/2020 18:52:54
+Mensagem........: Access violation at address 00A92F2C in module 'Finance.exe'. Read of address 00000150
+Classe Exceção..: EAccessViolation
+Formulário......: frmInfoUpdate
+Unit............: Vcl.ExtCtrls
+Controle Visual.: btnDown
+Usuario.........: RANAN SOUSA
+Versão Windows..: Windows 7
+----------------------------------------------------------------------
+Data/Hora.......: 12/05/2020 20:06:05
+Mensagem........: Erro ao tentar alterar CONTA_BANCARIA
+Classe Exceção..: Exception
+Formulário......: frmManterContaBancaria
+Unit............: dxBar
+Controle Visual.: edtSaldoInicial
+Usuario.........: RANAN SOUSA
+Versão Windows..: Windows 7
+----------------------------------------------------------------------
+Data/Hora.......: 12/05/2020 20:06:11
+Mensagem........: Erro ao tentar alterar CONTA_BANCARIA
+Classe Exceção..: Exception
+Formulário......: frmManterContaBancaria
+Unit............: dxBar
+Controle Visual.: edtContaBancaria
+Usuario.........: RANAN SOUSA
+Versão Windows..: Windows 7
+----------------------------------------------------------------------
+Data/Hora.......: 27/05/2020 20:52:39
+Mensagem........: Access violation at address 00F51F98 in module 'Finance.exe'. Read of address 00000020
+Classe Exceção..: EAccessViolation
+Formulário......: frmCTPHistorico_1
+Unit............: dxBar
+Controle Visual.: dbgTitulos
+Usuario.........: Ranan Sousa
+Versão Windows..: Windows 7
+----------------------------------------------------------------------
+Data/Hora.......: 27/05/2020 20:52:46
+Mensagem........: Access violation at address 00F51F98 in module 'Finance.exe'. Read of address 00000020
+Classe Exceção..: EAccessViolation
+Formulário......: frmCTPHistorico_1
+Unit............: dxBar
+Controle Visual.: dbgTitulos
+Usuario.........: Ranan Sousa
+Versão Windows..: Windows 7
+----------------------------------------------------------------------
+Data/Hora.......: 27/05/2020 22:26:42
+Mensagem........: Access violation at address 00C636E7 in module 'Finance.exe'. Read of aData/Hora.......: 11/06/2020 12:44:20
+Mensagem........: Access violation at address 0040BE46 in module 'Finance.exe'. Write of address 006F003B
+Classe Exceção..: EAccessViolation
+Formulário......: FrmPrincipal
+Unit............: dxBar
+Controle Visual.: cbxUsuario
+Usuario.........: Ranan Sousa
+Versão Windows..: Windows 7
+----------------------------------------------------------------------
+Data/Hora.......: 11/06/2020 12:44:27
+Mensagem........: Access violation at address 0040BE46 in module 'Finance.exe'. Write of address 006F003B
+Classe Exceção..: EAccessViolation
+Formulário......: FrmPrincipal
+Unit............: dxBar
+Controle Visual.: cbxUsuario
+Usuario.........: Ranan Sousa
+Versão Windows..: Windows 7
+----------------------------------------------------------------------
+Data/Hora.......: 11/06/2020 12:44:32
+Mensagem........: Access violation at address 0040BE46 in module 'Finance.exe'. Write of address 006F003B
+Classe Exceção..: EAccessViolation
+Formulário......: FrmPrincipal
+Unit............: dxBar
+Controle Visual.: cbxUsuario
+Usuario.........: Ranan Sousa
+Versão Windows..: Windows 7
+----------------------------------------------------------------------
+Data/Hora.......: 11/06/2020 12:44:37
+Mensagem........: Access violation at address 0040BE46 in module 'Finance.exe'. Write of address 006F003B
+Classe Exceção..: EAccessViolation
+Formulário......: FrmPrincipal
+Unit............: dxBar
+Controle Visual.: cbxUsuario
+Usuario.........: Ranan Sousa
+Versão Windows..: Windows 7
+----------------------------------------------------------------------
+Data/Hora.......: 11/06/2020 12:48:45
+Mensagem........: Access violation at address 0040BE46 in module 'Finance.exe'. Write of address 006F003B
+Classe Exceção..: EAccessViolation
+Formulário......: FrmPrincipal
+Unit............: dxBar
+Controle Visual.: cbxUsuario
+Usuario.........: Ranan Sousa
+Versão Windows..: Windows 7
+----------------------------------------------------------------------
+Data/Hora.......: 11/06/2020 12:48:51
+Mensagem........: Access violation at address 0040BE46 in module 'Finance.exe'. Write of address 006F003B
+Classe Exceção..: EAccessViolation
+Formulário......: FrmPrincipal
+Unit............: dxBar
+Controle Visual.: cbxUsuario
+Usuario.........: Ranan Sousa
+Versão Windows..: Windows 7
+----------------------------------------------------------------------
+Data/Hora.......: 11/06/2020 12:49:46
+Mensagem........: Access violation at address 0040BE46 in module 'Finance.exe'. Write of address 006F003B
+Classe Exceção..: EAccessViolation
+Formulário......: FrmPrincipal
+Unit............: dxBar
+Controle Visual.: cbxUsuario
+Usuario.........: Ranan Sousa
+Versão Windows..: Windows 7
+----------------------------------------------------------------------
+Data/Hora.......: 19/06/2020 12:27:13
+Mensagem........: Erro ao tentar Inserir TITULO [FireDAC][Phys][FB]violation of PRIMARY or UNIQUE KEY constraint "UNQ1_TITULO_PAGAR" on table "TITULO_PAGAR"
+Classe Exceção..: Exception
+Formulário......: frmTituloPagarParcelado
+Unit............: uFrmTituloPagarParcelado
+Controle Visual.: btnConfirmar
+Usuario.........: Ranan Sousa
+Versão Windows..: Windows 7
+----------------------------------------------------------------------
+Data/Hora.......: 19/06/2020 12:42:40
+Mensagem........: Erro ao tentar Inserir TITULO [FireDAC][Phys][FB]violation of PRIMARY or UNIQUE KEY constraint "UNQ1_TITULO_PAGAR" on table "TITULO_PAGAR"
+Classe Exceção..: Exception
+Formulário......: frmTituloPagarParcelado
+Unit............: uFrmTituloPagarParcelado
+Controle Visual.: btnConfirmar
+Usuario.........: Ranan Sousa
+Versão Windows..: Windows 7
+----------------------------------------------------------------------
+Data/Hora.......: 19/06/2020 13:04:41
+Mensagem........: Erro ao tentar Inserir TITULO [FireDAC][Phys][FB]violation of PRIMARY or UNIQUE KEY constraint "UNQ1_TITULO_PAGAR" on table "TITULO_PAGAR"
+Classe Exceção..: Exception
+Formulário......: frmTituloPagarParcelado
+Unit............: uFrmTituloPagarParcelado
+Controle Visual.: btnConfirmar
+Usuario.........: Ranan Sousa
+Versão Windows..: Windows 7
+----------------------------------------------------------------------

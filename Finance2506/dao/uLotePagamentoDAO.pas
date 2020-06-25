@@ -1,0 +1,297 @@
+unit uLotePagamentoDAO;
+interface
+uses
+  Winapi.Windows, Winapi.Messages, System.DateUtils, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, FireDAC.Stan.Intf, FireDAC.Stan.Option,uLotePagamentoModel,
+  FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,uContaContabilModel,
+  uContaBancariaDAO, uContaBancariaModel,
+  FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB, udmConexao, uUtil,
+  uContaBancariaChequeModel, uContaBancariaChequeDAO,
+  uUsuarioModel, uUsuarioDAO, uOrganizacaoModel, //uTituloPagarModel, uTituloPagarDAO,
+  uFormaPagamentoModel, uFormaPagamentoDAO, uTipoOperacaoBancariaModel, uTipoOperacaoBancariaDAO,
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client;
+
+  const
+   pTable : string = 'LOTE_PAGAMENTO';
+
+type
+ TLotePagamentoDAO = class
+  private
+   class function getLote (query :TFDQuery) : TLotePagamentoModel;
+  public
+    {métodos CRUD (Create, Read, Update e Delete)
+    para manipulação dos dados}
+
+    class function Insert(value :TLotePagamentoModel): Boolean;
+    class function obterPorID(value :TLotePagamentoModel): TLotePagamentoModel;
+    class function obterPorLote(value :TLotePagamentoModel): TLotePagamentoModel;
+    class function Delete(value :TLotePagamentoModel): Boolean;
+  end;
+
+implementation
+{ TLotePagamentoDAO }
+
+class function TLotePagamentoDAO.Delete(value: TLotePagamentoModel): Boolean;
+var
+qryDelete : TFDQuery;
+sucesso :Boolean;
+begin
+
+  sucesso := False;
+  dmConexao.conectarBanco;
+  qryDelete := TFDQuery.Create(nil);
+  try
+    try
+
+      qryDelete.Close;
+      qryDelete.Connection := dmConexao.conn;
+      qryDelete.SQL.Clear;
+      qryDelete.SQL.Add('DELETE FROM LOTE_PAGAMENTO  ');
+      qryDelete.SQL.Add('WHERE ID_ORGANIZACAO = :PIDORGANIZACAO  AND  ID_LOTE_PAGAMENTO = :PID ');
+      qryDelete.ParamByName('PIDORGANIZACAO').AsString := value.FIDorganizacao;
+      qryDelete.ParamByName('PID').AsString := value.FID;
+
+      qryDelete.ExecSQL;
+      if qryDelete.RowsAffected > 0 then begin  sucesso := True; end;
+
+    except
+      sucesso := False;
+      raise Exception.Create('Erro ao tentar DELETAR ' + pTable);
+
+    end;
+    Result := sucesso;
+  finally
+    if Assigned(qryDelete) then
+    begin
+      FreeAndNil(qryDelete);
+    end;
+  end;
+
+end;
+
+class function TLotePagamentoDAO.getLote (query: TFDQuery): TLotePagamentoModel;
+var cConta :TContaBancariaModel;
+lote : TLotePagamentoModel;
+begin
+
+  lote := TLotePagamentoModel.Create;
+  lote.FcontaBancaria := TContaBancariaModel.Create;
+  lote.Fusuario := TUsuarioModel.Create;
+  lote.Fcheque := TContaBancariaChequeModel.Create;
+  lote.FFOrmaPagamento := TFormaPagamentoModel.Create;
+  lote.FTOB := TTipoOperacaoBancariaModel.Create;
+
+
+    if not query.IsEmpty then begin
+
+       if not  query.IsEmpty then begin
+        lote.FID                      := (query.FieldByName('ID_LOTE_PAGAMENTO').AsString);
+        lote.FIDorganizacao           := (query.FieldByName('ID_ORGANIZACAO').AsString);
+        lote.FIDcontaBancaria         := (query.FieldByName('ID_CONTA_BANCARIA').AsString);
+        lote.FIDresponsavel           := (query.FieldByName('ID_FUNCIONARIO').AsString);
+        lote.FIDusuario               := (query.FieldByName('ID_USUARIO').AsInteger);
+        lote.FIDcheque                := (query.FieldByName('ID_CONTA_BANCARIA_CHEQUE').AsString);
+        lote.FIDformaPagamento        := (query.FieldByName('ID_FORMA_PAGAMENTO').AsString);
+        lote.FIDTOB                   := (query.FieldByName('ID_TIPO_OPERACAO_BANCARIA').AsString);
+        lote.Fstatus                  := (query.FieldByName('STATUS').AsString);
+        lote.FdataRegistro            := (query.FieldByName('DATA_REGISTRO').AsDateTime);
+        lote.FdataPagamento           := (query.FieldByName('DATA_PAGAMENTO').AsDateTime);
+        lote.Flote                    := (query.FieldByName('LOTE').AsString);
+        lote.Fvalor                   := (query.FieldByName('VALOR').AsCurrency);
+        lote.FqtdTitPag               := (query.FieldByName('QTD_TIT_PAG').AsInteger);
+        lote.Fnovo                    := False;
+
+       end;
+
+
+        try
+
+         lote.FcontaBancaria.FID            := lote.FIDcontaBancaria;
+         lote.FcontaBancaria.FIDorganizacao := lote.FIDorganizacao;
+         lote.FcontaBancaria  := TContaBancariaDAO.obterPorID(lote.FcontaBancaria);
+
+         lote.Fusuario.FID            := lote.FIDusuario;
+         lote.Fusuario.FIDorganizacao := lote.FIDorganizacao;
+         lote.Fusuario  := TUsuarioDAO.obterPorID(lote.Fusuario);
+
+         lote.Fcheque.FID            := lote.FIDcheque;
+         lote.Fcheque.FIDorganizacao := lote.FIDorganizacao;
+         lote.Fcheque  := TContaBancariaChequeDAO.obterPorID(lote.Fcheque);
+
+         lote.FFOrmaPagamento.FID            := lote.FIDformaPagamento;
+         lote.FFOrmaPagamento.FIDorganizacao := lote.FIDorganizacao;
+         lote.FFOrmaPagamento  := TFormaPagamentoDAO.obterPorID(lote.FFOrmaPagamento);
+
+         lote.FTOB.FID            := lote.FIDTOB;
+         lote.FTOB.FIDorganizacao := lote.FIDorganizacao;
+         lote.FTOB  := TTipoOperacaoBancariaDAO.obterPorID(lote.FTOB);
+
+        except
+          raise Exception.Create('Erro ao tentar obter detalhes do lote.');
+
+        end;
+  end;
+   Result := lote;
+
+end;
+
+class function TLotePagamentoDAO.Insert(value: TLotePagamentoModel): Boolean;
+var
+  qryInsert: TFDQuery;
+  cmdSql: string;
+  sucesso : Boolean;
+begin
+ sucesso := False;
+  dmConexao.conectarBanco;
+  qryInsert := TFDQuery.Create(nil);
+
+  try
+    try
+      cmdSql := ' INSERT INTO LOTE_PAGAMENTO '+
+                ' (ID_LOTE_PAGAMENTO, ID_ORGANIZACAO, ID_USUARIO,' +
+                ' ID_CONTA_BANCARIA, ID_FUNCIONARIO, ID_CONTA_BANCARIA_CHEQUE,'+
+                ' ID_TIPO_OPERACAO_BANCARIA, ID_FORMA_PAGAMENTO, LOTE, STATUS, '+
+                ' DATA_REGISTRO, DATA_PAGAMENTO, QTD_TIT_PAG, VALOR)'+
+                ' VALUES (:PID, :PIDORGANIZACAO, :PID_USUARIO, '+
+                ' :PIDCONTA_BANCARIA, :PIDFUNCIONARIO, :PIDCHEQUE, '+
+                ' :PIDTOB, :PIDFP, :PLOTE, :PSTATUS, '+
+                ' :PDT_REGISTRO, :PDT_PAGAMENTO, :PQTD, :PVALOR); ';
+
+      qryInsert.Close;
+      qryInsert.Connection := dmConexao.conn;
+      qryInsert.SQL.Clear;
+      qryInsert.SQL.Add(cmdSql);
+      qryInsert.ParamByName('PID').AsString                 := value.FID;
+      qryInsert.ParamByName('PIDORGANIZACAO').AsString      := value.FIDorganizacao;
+      qryInsert.ParamByName('PID_USUARIO').AsInteger        := value.FIDusuario;
+      qryInsert.ParamByName('PIDCONTA_BANCARIA').AsString   := value.FIDcontaBancaria;
+      qryInsert.ParamByName('PIDFUNCIONARIO').AsString      := value.FIDresponsavel;
+      qryInsert.ParamByName('PIDCHEQUE').AsString           := value.FIDcheque;
+      qryInsert.ParamByName('PIDTOB').AsString              := value.FIDTOB;
+      qryInsert.ParamByName('PIDFP').AsString               := value.FIDformaPagamento;
+      qryInsert.ParamByName('PLOTE').AsString               := value.Flote;
+      qryInsert.ParamByName('PSTATUS').AsString             := value.Fstatus;
+      qryInsert.ParamByName('PVALOR').AsCurrency            := value.Fvalor;
+      qryInsert.ParamByName('PQTD').AsInteger               := value.FqtdTitPag;
+      qryInsert.ParamByName('PDT_REGISTRO').AsDateTime      := value.FdataRegistro;
+      qryInsert.ParamByName('PDT_PAGAMENTO').AsDateTime     := value.FdataPagamento;
+
+
+      if uutil.Empty(value.FIDcontaBancaria) then
+      begin
+        qryInsert.ParamByName('PIDCONTA_BANCARIA').value := null;
+      end;
+
+       if uutil.Empty(value.FIDTOB) then
+      begin
+        qryInsert.ParamByName('PIDTOB').value := null;
+      end;
+
+
+      if uutil.Empty(value.FIDcheque) then
+      begin
+        qryInsert.ParamByName('PIDCHEQUE').value := null;
+      end;
+
+      qryInsert.ExecSQL;
+
+      if qryInsert.RowsAffected > 0 then
+      begin
+        sucesso := True;
+        //dmConexao.conn.CommitRetaining;
+
+      end;
+      Result := sucesso
+
+    except
+      Result := sucesso;
+     // dmConexao.conn.RollbackRetaining;
+
+      raise Exception.Create('Erro ao tentar inserir ' + pTable);
+    end;
+
+  finally
+    if Assigned(qryInsert) then
+    begin
+      FreeAndNil(qryInsert);
+    end;
+  end;
+end;
+
+class function TLotePagamentoDAO.obterPorID(value: TLotePagamentoModel): TLotePagamentoModel;
+var
+ lote : TLotePagamentoModel;
+ qryPesquisa : TFDQuery;
+ cmdSql : string;
+begin
+   lote := TLotePagamentoModel.Create;
+   dmConexao.conectarBanco;
+
+   try
+    cmdSql := ' SELECT * FROM LOTE_PAGAMENTO CBC '+
+              ' WHERE (CBC.ID_ORGANIZACAO =:PIDORGANIZACAO)AND (CBC.ID_LOTE_PAGAMENTO = :PID) ';
+
+    qryPesquisa := TFDQuery.Create(nil);
+    qryPesquisa.Close;
+    qryPesquisa.Connection := dmConexao.conn;
+    qryPesquisa.SQL.Clear;
+    qryPesquisa.SQL.Add(cmdSql);
+    qryPesquisa.ParamByName('PIDORGANIZACAO').AsString := value.FIDorganizacao;
+    qryPesquisa.ParamByName('PID').AsString := value.FID;
+
+    qryPesquisa.Open;
+
+     if not  qryPesquisa.IsEmpty then begin
+
+      lote := getLote(qryPesquisa);
+
+     end;
+
+
+   except
+   raise Exception.Create('Erro ao obter lote por ID');
+
+   end;
+
+   Result := lote;
+end;
+
+ class function TLotePagamentoDAO.obterPorLote(value: TLotePagamentoModel): TLotePagamentoModel;
+var
+lote : TLotePagamentoModel;
+ qryPesquisa : TFDQuery;
+ cmdSql : string;
+begin
+   lote :=TLotePagamentoModel.Create;
+   dmConexao.conectarBanco;
+
+   try
+    cmdSql := ' SELECT * FROM LOTE_PAGAMENTO TB '+
+              ' WHERE (TB.ID_ORGANIZACAO   = :PIDORGANIZACAO) '+
+              ' AND   (TB.LOTE  = :PLOTE) ';
+
+    qryPesquisa := TFDQuery.Create(nil);
+    qryPesquisa.Close;
+    qryPesquisa.Connection := dmConexao.conn;
+    qryPesquisa.SQL.Clear;
+    qryPesquisa.SQL.Add(cmdSql);
+    qryPesquisa.ParamByName('PLOTE').AsString := value.Flote;
+    qryPesquisa.ParamByName('PIDORGANIZACAO').AsString := value.FIDorganizacao;
+
+
+     qryPesquisa.Open;
+     if not  qryPesquisa.IsEmpty then begin
+
+      lote := getLote(qryPesquisa);
+
+     end;
+
+
+   except
+   raise Exception.Create('Erro ao obter '+ pTable + ' lote ');
+
+   end;
+
+   Result := lote;
+end;
+end.
