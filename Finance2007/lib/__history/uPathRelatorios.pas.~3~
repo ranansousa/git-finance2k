@@ -1,0 +1,10 @@
+unit uPathRelatorios;
+
+interface
+
+implementation
+
+
+function relatorioExtratoBancario() : string;
+
+end.

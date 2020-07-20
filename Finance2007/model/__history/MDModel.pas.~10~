@@ -1,0 +1,183 @@
+unit MDModel;
+
+
+interface
+
+{
+CREATE TABLE MOVIMENTO_DIARIO (
+    ID_MOVIMENTO_DIARIO  VARCHAR(36) NOT NULL,
+    ID_ORGANIZACAO       VARCHAR(36) NOT NULL,
+
+
+    DATA_REGISTRO        DATE,
+
+    ID_USUARIO           NUMERIC(5,0),
+    NUMERO_MOVIMENTO     NUMERIC(15,0),
+
+
+    CODIGO               VARCHAR(80),
+    OBJETO               VARCHAR(80),
+    DESCRICAO            VARCHAR(250),
+    ACAO                 VARCHAR(150),
+    VALOR_OPERACAO       NUMERIC(10,2),
+    STATUS               VARCHAR(50),
+    NOME_ESTACAO         VARCHAR(50),
+    NOME_SERVER          VARCHAR(50),
+    IP_ESTACAO           VARCHAR(50)
+
+);
+
+}
+uses
+  Windows, Messages, Classes, SysUtils,uOrganizacaoModel, System.Generics.Collections;
+
+type
+  TMDModel = class(TObject)
+  private
+    FFID: string;
+    FFIDorganizacao: string;
+    FFOrganizacao: TOrganizacaoModel;
+    FFIDusuario: Integer;
+    FFdataRegistro: TDateTime;
+    FFvalorOperacao: Currency;
+    FFnumeroMovimento: Integer;
+
+    FFcodigo: string;
+    FFobjeto: string;
+    FFdescricao: string;
+    FFacao: string;
+    FFstatus: string;
+    FFestacao: string;
+    FFserver: string;
+    FFipEstacao: string;
+    FFnovo :Boolean;
+
+
+    procedure SetFFacao(const Value: string);
+    procedure SetFFcodigo(const Value: string);
+    procedure setFFdataRegistro(const Value: TDateTime);
+    procedure SetFFdescricao(const Value: string);
+    procedure SetFFestacao(const Value: string);
+    procedure SetFFID(const Value: string);
+    procedure SetFFIDorganizacao(const Value: string);
+    procedure SetFFIDusuario(const Value: Integer);
+    procedure SetFFipEstacao(const Value: string);
+    procedure SetFFnumeroMovimento(const Value: Integer);
+    procedure SetFFobjeto(const Value: string);
+    procedure SetFFserver(const Value: string);
+    procedure SetFFstatus(const Value: string);
+    procedure SetFFvalorOperacao(const Value: Currency);
+
+  public
+
+    property FID                : string    read FFID                 write SetFFID;
+    property FIDorganizacao     : string    read FFIDorganizacao      write SetFFIDorganizacao;
+    property FIDusuario         : Integer   read FFIDusuario          write SetFFIDusuario;
+    property FdataRegistro      : TDateTime read FFdataRegistro       write setFFdataRegistro;
+    property FvalorOperacao     : Currency  read FFvalorOperacao      write SetFFvalorOperacao;
+    property FnumeroMovimento   : Integer   read FFnumeroMovimento    write SetFFnumeroMovimento;
+    property Fcodigo            : string    read FFcodigo             write SetFFcodigo;
+    property Fobjeto            : string    read FFobjeto             write SetFFobjeto;
+    property Fdescricao         : string    read FFdescricao          write SetFFdescricao;
+    property Facao              : string    read FFacao               write SetFFacao;
+    property Fstatus            : string    read FFstatus             write SetFFstatus;
+    property Festacao           : string    read FFestacao            write SetFFestacao;
+    property Fserver            : string    read FFserver             write SetFFserver;
+    property FipEstacao         : string    read FFipEstacao          write SetFFipEstacao;
+
+    property Fnovo :Boolean read FFnovo write FFnovo;
+
+
+    constructor Create;
+    destructor Destroy; override;
+
+
+  end;
+
+
+implementation
+
+{ TMDModel }
+
+constructor TMDModel.Create;
+begin
+FFnovo := True;
+end;
+
+destructor TMDModel.Destroy;
+begin
+
+  inherited;
+end;
+
+procedure TMDModel.SetFFacao(const Value: string);
+begin
+  FFacao := Value;
+end;
+
+procedure TMDModel.SetFFcodigo(const Value: string);
+begin
+  FFcodigo := Value;
+end;
+
+procedure TMDModel.setFFdataRegistro(const Value: TDateTime);
+begin
+  FFdataRegistro := Value;
+end;
+
+procedure TMDModel.SetFFdescricao(const Value: string);
+begin
+  FFdescricao := Value;
+end;
+
+procedure TMDModel.SetFFestacao(const Value: string);
+begin
+  FFestacao := Value;
+end;
+
+procedure TMDModel.SetFFID(const Value: string);
+begin
+  FFID := Value;
+end;
+
+procedure TMDModel.SetFFIDorganizacao(const Value: string);
+begin
+  FFIDorganizacao := Value;
+end;
+
+procedure TMDModel.SetFFIDusuario(const Value: Integer);
+begin
+  FFIDusuario := Value;
+end;
+
+procedure TMDModel.SetFFipEstacao(const Value: string);
+begin
+  FFipEstacao := Value;
+end;
+
+procedure TMDModel.SetFFnumeroMovimento(const Value: Integer);
+begin
+  FFnumeroMovimento := Value;
+end;
+
+procedure TMDModel.SetFFobjeto(const Value: string);
+begin
+  FFobjeto := Value;
+end;
+
+procedure TMDModel.SetFFserver(const Value: string);
+begin
+  FFserver := Value;
+end;
+
+procedure TMDModel.SetFFstatus(const Value: string);
+begin
+  FFstatus := Value;
+end;
+
+procedure TMDModel.SetFFvalorOperacao(const Value: Currency);
+begin
+  FFvalorOperacao := Value;
+end;
+
+end.
