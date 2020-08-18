@@ -1,0 +1,25 @@
+unit UDMTituloReceberBaixaDeducao;
+
+interface
+
+uses
+  System.SysUtils, System.Classes;
+
+type
+  TdmTRBDeducao = class(TDataModule)
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  dmTRBDeducao: TdmTRBDeducao;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+
+{$R *.dfm}
+
+end.

@@ -1,0 +1,58 @@
+unit uTituloPagarParceladoModel;
+
+interface
+
+uses
+  Windows, Messages, Classes, SysUtils, System.Generics.Collections,uTituloPagarModel;
+
+type
+  TTituloPagarParceladoModel = class(TObject)
+  private
+    //objetos
+     FFTituloPagar        : TTituloPagarModel; //titulo gerador
+    FSlistaTitulos    : TObjectList<TTituloPagarModel>;
+  public
+
+//objetos
+    property FTituloPagar: TTituloPagarModel read FFTituloPagar write FFTituloPagar;
+
+     {
+    property listaHistorico   : TObjectList<TTituloPagarHistoricoModel> read FSlistaHistorico  write FSlistaHistorico;
+    property listaCustos      : TObjectList<TTituloPagarCentroCustoModel> read FSlistaCustos      write FSlistaCustos;
+
+    procedure AdicionarHST(pHistorico: TTituloPagarHistoricoModel);
+    procedure AdicionarCC (pCentroCusto: TTituloPagarCentroCustoModel);  }
+
+    property listaTitulos   : TObjectList<TTituloPagarModel> read FSlistaTitulos  write FSlistaTitulos;
+
+    procedure AdicionarTP (pParcelado : TTituloPagarModel);
+
+
+    constructor Create;
+    destructor Destroy; override;
+
+
+  end;
+
+implementation
+
+
+
+procedure TTituloPagarParceladoModel.AdicionarTP (pParcelado : TTituloPagarModel);
+// TITULO_PAGAR_RATEIO_CC
+ var
+ I: Integer;
+ begin
+  FSlistaCustos.Add(TTituloPagarCentroCustoModel.Create);
+  I := FSlistaCustos.Count -1;
+  FSlistaCustos[I].FID            := pCentroCusto.FID;
+  FSlistaCustos[I].FIDorganizacao := pCentroCusto.FIDorganizacao;
+  FSlistaCustos[I].FIDCentroCusto := pCentroCusto.FIDCentroCusto;
+  FSlistaCustos[I].FIDTP          := pCentroCusto.FIDTP;
+  FSlistaCustos[I].FValor         := pCentroCusto.FValor;
+end;
+
+
+
+
+end.

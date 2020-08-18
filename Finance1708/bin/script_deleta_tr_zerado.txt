@@ -1,0 +1,12 @@
+DELETE FROM titulo_receber_historico TRH WHERE TRH.valor = 0;
+DELETE FROM titulo_receber_rateio_cc TRH2 WHERE TRH2.valor = 0 ;
+DELETE FROM titulo_receber_baixa_ac TRH3 WHERE TRH3.valor = 0 ;
+DELETE FROM titulo_receber_baixa_de TRH4 WHERE TRH4.valor = 0 ;
+DELETE FROM titulo_receber_baixa_fp TRH5 WHERE TRH5.valor = 0 ;
+DELETE FROM titulo_receber_baixa_cheque TRH6 WHERE TRH6.valor = 0;
+DELETE FROM titulo_receber_baixa_internet TRH7 WHERE TRH7.valor = 0;
+DELETE FROM tesouraria_credito TC WHERE TC.valor_nominal = 0;
+DELETE FROM titulo_receber_baixa TRH8 WHERE TRH8.valor_pago = 0;
+DELETE FROM titulo_receber TR WHERE TR.valor_nominal =0;
+
+

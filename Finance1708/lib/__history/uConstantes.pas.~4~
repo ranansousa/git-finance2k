@@ -1,0 +1,17 @@
+unit uConstantes;
+
+interface
+ uses IdHashMessageDigest, Classes, SysUtils;
+
+function getSenhaPadrao(): String;
+
+implementation
+
+
+function getSenhaPadrao(): String;
+begin
+  Result := '123456789';
+end;
+
+
+end.
