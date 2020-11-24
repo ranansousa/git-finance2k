@@ -1,0 +1,100 @@
+unit uTPBaixaDEModel;
+
+interface
+
+{
+CREATE TABLE TITULO_PAGAR_BAIXA_DE (
+    ID_TITULO_PAGAR_BAIXA_DE  VARCHAR(36) NOT NULL,
+    ID_ORGANIZACAO            VARCHAR(36) NOT NULL,
+    ID_TITULO_PAGAR_BAIXA     VARCHAR(36),
+    ID_TIPO_DEDUCAO           VARCHAR(36),
+    VALOR                     NUMERIC(10,2) NOT NULL
+);
+
+
+}
+uses
+  Windows, Messages, Classes, SysUtils,uTPBaixaModel, uTipoDeducaoModel;
+
+type
+  TTPBaixaDEModel = class(TObject)
+  private
+    FFID :string ;
+    FFIDOrganizacao :string;
+    FFIDtipoDeducao :string;
+    FFIDtituloPagarBaixa: string;
+    FFvalor :Currency;
+    FFtipoDeducao :TTipoDeducaoModel;
+    FFtituloPagarBaixa: TTPBaixaModel;
+    procedure SetFID(const Value: string);
+    procedure SetFIdOrganizacao(const Value: string);
+    procedure SetFIDtipoDeducao(const Value: string);
+    procedure SetFIDtituloPagarBaixa(const Value: string);
+    procedure SetFtipoDeducao(const Value: TTipoDeducaoModel);
+    procedure SetFtituloPagarBaixa(const Value: TTipoDeducaoModel);
+    procedure SetFvalor(const Value: Currency);
+
+
+
+   public
+
+    property FID :string read FFID write SetFID;
+    property FIDOrganizacao :string read FFIDOrganizacao write SetFIdOrganizacao;
+    property FIDtipoDeducao: string read FFIDtipoDeducao write SetFIDtipoDeducao;
+    property FIDtituloPagarBaixa: string read FFIDtituloPagarBaixa write SetFIDtituloPagarBaixa;
+    property Fvalor: Currency read FFvalor write SetFvalor;
+
+    property FtipoDeducao: TTipoDeducaoModel read FFtipoDeducao write SetFtipoDeducao;
+    property FtituloPagarBaixa: TTipoDeducaoModel read FFtituloPagarBaixa write SetFtituloPagarBaixa;
+
+
+
+    Constructor Create;
+
+
+  end;
+implementation
+
+{ TTPBaixaDEModel }
+
+constructor TTPBaixaDEModel.Create;
+begin
+//
+end;
+
+procedure TTPBaixaDEModel.SetFID(const Value: string);
+begin
+  FFID := Value;
+end;
+
+procedure TTPBaixaDEModel.SetFIdOrganizacao(const Value: string);
+begin
+  FFIDOrganizacao := Value;
+end;
+
+procedure TTPBaixaDEModel.SetFIDtipoDeducao(const Value: string);
+begin
+  FFIDtipoDeducao := Value;
+end;
+
+procedure TTPBaixaDEModel.SetFIDtituloPagarBaixa(const Value: string);
+begin
+  FFIDtituloPagarBaixa := Value;
+end;
+
+procedure TTPBaixaDEModel.SetFtipoDeducao(const Value: TTipoDeducaoModel);
+begin
+  FFtipoDeducao := Value;
+end;
+
+procedure TTPBaixaDEModel.SetFtituloPagarBaixa(const Value: TTipoDeducaoModel);
+begin
+  FFtituloPagarBaixa := Value;
+end;
+
+procedure TTPBaixaDEModel.SetFvalor(const Value: Currency);
+begin
+  FFvalor := Value;
+end;
+
+end.

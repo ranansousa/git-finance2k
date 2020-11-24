@@ -1,0 +1,46 @@
+unit uCheque;
+
+interface
+
+uses
+  Windows, Messages, Classes, SysUtils;
+
+type
+  TChequeModel = class(TObject)
+  private
+    FFNumeroCheque: string;
+    FFIdCheque :string;
+    FFValor: string;
+    FFIdContaBancaria: string;
+    FFIdTipoStatus: string;
+    FFObservacao :string;
+    FFPortador :string;
+    FFIdFuncionario :string;
+    FFDescricao: string;
+    FFIdOrganizacao : string;
+    FFIdUsuario :string;
+
+    FFDataRegistro: TDate;
+    FFDataEmissao: TDate;
+    FFDataCompensacao: TDate;
+    FFDataPrevisaoCompensacao: TDate;
+    FFDataEstorno: TDate;
+
+    FFQtdImpressao :Integer;
+
+
+  public
+
+    procedure SetFNumeroCheque(const Value: string);
+    procedure SetFConta(const Value: string);
+    procedure SetFDescricao(const Value: string);
+    procedure SetFDgReduz(const Value: string);
+    procedure SetFDgVer(const Value: string);
+    procedure SetFIdContaContabil(const Value: string);
+    procedure SetFIdOrganizacao(const Value: string);
+
+  end;
+
+implementation
+
+end.

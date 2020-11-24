@@ -1,0 +1,16 @@
+unit uConstantes;
+
+interface
+
+function getSenhaPadrao(): String;
+
+implementation
+
+
+function getSenhaPadrao(): String;
+begin
+  Result := '123456789';
+end;
+
+
+end.
