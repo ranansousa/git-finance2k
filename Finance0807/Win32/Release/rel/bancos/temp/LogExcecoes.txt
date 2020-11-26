@@ -1,9 +1,0 @@
-Data/Hora.......: 08/06/2020 17:05:58
-Mensagem........: Access violation at address 00CC90C9 in module 'Finance.exe'. Read of address 00000080
-Classe Exceção..: EAccessViolation
-Formulário......: frmBackup
-Unit............: Vcl.ComCtrls
-Controle Visual.: btnRestore
-Usuario.........: Ranan Sousa
-Versão Windows..: Windows 7
-----------------------------------------------------------------------

@@ -1,2 +1,0 @@
-D:\mega\desenvolvimento\Delphi\Finance\uFrmManutencao.pas
-  Interface Uses: cxLookAndFeelPainters,cxLookAndFeels,dxSkinsCore,dxSkinsDefaultPainters,FireDAC.DApt,FireDAC.DApt.Intf,FireDAC.DatS,FireDAC.Phys.Intf,FireDAC.Stan.Async,FireDAC.Stan.Error,FireDAC.Stan.Intf,FireDAC.Stan.Option,uDMContasPagarManter,uTPBaixaACDAO,uTPBaixaACModel,uTPBaixaChequeDAO,uTPBaixaChequeModel,uTPBaixaDEDAO,uTPBaixaDEModel,uTPBaixaFPDAO,uTPBaixaFPModel,uTPBaixaInternetDAO,uTPBaixaInternetModel,Vcl.Grids

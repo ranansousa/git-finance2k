@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<TfrxReport Version="6.3.7" DotMatrixReport="False" IniFile="\Software\Fast Reports" PreviewOptions.Buttons="167935" PreviewOptions.Zoom="1" PrintOptions.Printer="Default" PrintOptions.PrintOnSheet="0" ReportOptions.CreateDate="42573,4134647106" ReportOptions.Description.Text="" ReportOptions.LastChange="44120,7812103819" ScriptLanguage="PascalScript" ScriptText.Text="begin&#13;&#10;&#13;&#10;end.">
+  <Datasets>
+    <item DataSetName="DADOS_REL"/>
+  </Datasets>
+  <Variables>
+    <item Name=" Pempec"/>
+    <item Name="strRazaoSocial"/>
+    <item Name="strCNPJ"/>
+    <item Name="strEndereco"/>
+    <item Name="strCEP"/>
+    <item Name="strCidade"/>
+    <item Name="strUF"/>
+    <item Name="strTipoStatus"/>
+    <item Name="strTipo"/>
+    <item Name="cc_perc"/>
+    <item Name="strPeriodo"/>
+  </Variables>
+  <TfrxDataPage Name="Data" Height="1000" Left="0" Top="0" Width="1000"/>
+  <TfrxReportPage Name="Page1" Orientation="poLandscape" PaperWidth="297" PaperHeight="220" PaperSize="256" LeftMargin="10" RightMargin="10" TopMargin="10" BottomMargin="10" ColumnWidth="0" ColumnPositions.Text="" Frame.Typ="0" LargeDesignHeight="True" MirrorMode="0" PrintOnPreviousPage="True" HGuides.Text="" VGuides.Text="">
+    <TfrxPageHeader Name="PageHeader1" FillType="ftBrush" FillGap.Top="0" FillGap.Left="0" FillGap.Bottom="0" FillGap.Right="0" Frame.Typ="0" Height="120,72449" Left="0" Top="18,89765" Width="1046,92981">
+      <TfrxMemoView Name="Memo2" AllowVectorExport="True" Left="0" Top="0,33859" Width="109,60637" Height="22,67718" Font.Charset="1" Font.Color="0" Font.Height="-16" Font.Name="Arial" Font.Style="1" Frame.Typ="0" ParentFont="False" Text="Organização: "/>
+      <TfrxMemoView Name="strRazaoSocial1" AllowVectorExport="True" Left="117,28355" Top="0,33859" Width="449,76407" Height="18,89765" Font.Charset="1" Font.Color="0" Font.Height="-13" Font.Name="Arial" Font.Style="1" Frame.Typ="0" ParentFont="False" Text="[strRazaoSocial]"/>
+      <TfrxMemoView Name="Memo3" AllowVectorExport="True" Left="572,43321" Top="0,33859" Width="52,91342" Height="18,89765" Font.Charset="1" Font.Color="0" Font.Height="-16" Font.Name="Arial" Font.Style="1" Frame.Typ="0" ParentFont="False" Text="CNPJ:"/>
+      <TfrxMemoView Name="strCNPJ" AllowVectorExport="True" Left="639,97681" Top="0,33859" Width="158,74026" Height="18,89765" Font.Charset="1" Font.Color="0" Font.Height="-16" Font.Name="Arial" Font.Style="0" Frame.Typ="0" ParentFont="False" Text="[strCNPJ]"/>
+      <TfrxMemoView Name="Memo4" AllowVectorExport="True" Left="0" Top="25,01577" Width="109,60637" Height="18,89765" Font.Charset="1" Font.Color="0" Font.Height="-16" Font.Name="Arial" Font.Style="1" Frame.Typ="0" ParentFont="False" Text="Endereço:"/>
+      <TfrxMemoView Name="strEndereco" AllowVectorExport="True" Left="117,28355" Top="25,01577" Width="449,76407" Height="18,89765" Font.Charset="1" Font.Color="0" Font.Height="-16" Font.Name="Arial" Font.Style="0" Frame.Typ="0" ParentFont="False" Text="[strEndereco]"/>
+      <TfrxMemoView Name="strCEP" AllowVectorExport="True" Left="639,97681" Top="25,01577" Width="79,37013" Height="18,89765" Font.Charset="1" Font.Color="0" Font.Height="-16" Font.Name="Arial" Font.Style="0" Frame.Typ="0" ParentFont="False" Text="[strCEP]"/>
+      <TfrxMemoView Name="Memo5" AllowVectorExport="True" Left="570,70903" Top="25,01577" Width="56,69295" Height="18,89765" Font.Charset="1" Font.Color="0" Font.Height="-16" Font.Name="Arial" Font.Style="1" Frame.Typ="0" ParentFont="False" Text="CEP  :"/>
+      <TfrxMemoView Name="Memo6" AllowVectorExport="True" Left="818,7013" Top="25,01577" Width="98,26778" Height="18,89765" Font.Charset="1" Font.Color="0" Font.Height="-16" Font.Name="Arial" Font.Style="1" Frame.Typ="0" ParentFont="False" Text="CIDADE/UF:"/>
+      <TfrxMemoView Name="strCidade" AllowVectorExport="True" Left="922,20532" Top="25,01577" Width="120,94496" Height="18,89765" Font.Charset="1" Font.Color="0" Font.Height="-16" Font.Name="Arial" Font.Style="0" Frame.Typ="0" ParentFont="False" Text="[strCidade]/[strUF]">
+        <Formats>
+          <item/>
+          <item/>
+        </Formats>
+      </TfrxMemoView>
+      <TfrxMemoView Name="Page" AllowVectorExport="True" Left="986,45733" Top="0,33859" Width="56,69295" Height="18,89765" Font.Charset="1" Font.Color="0" Font.Height="-16" Font.Name="Arial" Font.Style="0" Frame.Typ="0" ParentFont="False" Text="[Page]">
+        <Formats>
+          <item/>
+          <item/>
+        </Formats>
+      </TfrxMemoView>
+      <TfrxMemoView Name="Memo15" AllowVectorExport="True" Left="934,98485" Top="0,33859" Width="45,35436" Height="18,89765" Font.Charset="1" Font.Color="0" Font.Height="-16" Font.Name="Arial" Font.Style="1" Frame.Typ="0" HAlign="haCenter" ParentFont="False" Text="PÁG."/>
+      <TfrxMemoView Name="Memo11" AllowVectorExport="True" Left="0" Top="61,81107" Width="559,37044" Height="22,67718" Font.Charset="1" Font.Color="0" Font.Height="-13" Font.Name="Tahoma" Font.Style="1" Frame.Typ="0" ParentFont="False" Text="RELATÓRIO DETALHADO POR FORNECEDOR/HISTÓRICO"/>
+      <TfrxMemoView Name="Memo77" AllowVectorExport="True" Left="589,60668" Top="61,81107" Width="75,5906" Height="22,67718" Font.Charset="1" Font.Color="0" Font.Height="-13" Font.Name="Tahoma" Font.Style="1" Frame.Typ="0" ParentFont="False" Text="PERÍODO: "/>
+      <TfrxMemoView Name="strPeriodo" AllowVectorExport="True" Left="695,43352" Top="61,81107" Width="317,48052" Height="18,89765" Font.Charset="1" Font.Color="0" Font.Height="-13" Font.Name="tahoma" Font.Style="1" Frame.Typ="0" ParentFont="False" VAlign="vaBottom" Text="[strPeriodo]"/>
+      <TfrxLineView Name="Line1" Align="baWidth" AllowVectorExport="True" Left="0" Top="90,04731" Width="1046,92981" Height="0" Color="0" Frame.Style="fsDouble" Frame.Typ="4"/>
+      <TfrxLineView Name="Line3" Align="baWidth" AllowVectorExport="True" Left="0" Top="57,47248" Width="1046,92981" Height="0" Color="0" Frame.Typ="4"/>
+      <TfrxLineView Name="Line5" Align="baWidth" AllowVectorExport="True" Left="0" Top="94,16543" Width="1046,92981" Height="0" Color="0" Frame.Typ="4"/>
+      <TfrxMemoView Name="Memo26" AllowVectorExport="True" Left="268,71668921" Top="97,72449" Width="143,62214" Height="11,33859" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="1" Frame.Typ="0" ParentFont="False" VAlign="vaBottom" Text="HISTÓRICO"/>
+      <TfrxMemoView Name="Memo27" AllowVectorExport="True" Left="49,81107" Top="97,72449" Width="64,25201" Height="11,33859" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="1" Frame.Typ="0" HAlign="haRight" ParentFont="False" VAlign="vaBottom" Text="DOCUMENTO"/>
+      <TfrxMemoView Name="Memo28" AllowVectorExport="True" Left="502,20501" Top="97,72449" Width="49,13389" Height="11,33859" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="1" Frame.Typ="0" HAlign="haCenter" ParentFont="False" VAlign="vaBottom" Text="DATA PAGTO"/>
+      <TfrxMemoView Name="Memo29" AllowVectorExport="True" Left="895,74861" Top="97,72449" Width="151,1812" Height="11,33859" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="1" Frame.Typ="0" HAlign="haRight" ParentFont="False" VAlign="vaBottom" Text="VALOR"/>
+      <TfrxMemoView Name="Memo30" AllowVectorExport="True" Left="606,28386" Top="97,72449" Width="49,13389" Height="11,33859" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="1" Frame.Typ="0" HAlign="haCenter" ParentFont="False" VAlign="vaBottom" Text="PARCELA"/>
+      <TfrxMemoView Name="Memo31" AllowVectorExport="True" Left="658,19728" Top="97,72449" Width="68,03154" Height="11,33859" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="1" Frame.Typ="0" HAlign="haCenter" ParentFont="False" VAlign="vaBottom" Text="STATUS"/>
+      <TfrxMemoView Name="Memo32" AllowVectorExport="True" Left="0" Top="97,72449" Width="49,13389" Height="11,33859" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="1" Frame.Typ="0" ParentFont="False" VAlign="vaBottom" Text="EMISSÃO"/>
+      <TfrxMemoView Name="Memo33" AllowVectorExport="True" Left="413,17347" Top="97,72449" Width="86,92919" Height="11,33859" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="1" Frame.Typ="0" ParentFont="False" VAlign="vaBottom" Text="DESCRIÇÃO"/>
+      <TfrxMemoView Name="Memo34" AllowVectorExport="True" Left="554,01608" Top="97,72449" Width="49,13389" Height="11,33859" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="1" Frame.Typ="0" HAlign="haCenter" ParentFont="False" VAlign="vaBottom" Text="VCTO"/>
+      <TfrxMemoView Name="Memo37" AllowVectorExport="True" Left="729,44929" Top="97,72449" Width="136,06308" Height="11,33859" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="1" Frame.Typ="0" ParentFont="False" VAlign="vaBottom" Text="CENTRO DE CUSTOS "/>
+      <TfrxMemoView Name="Memo38" AllowVectorExport="True" Left="115,50402" Top="97,72449" Width="151,1812" Height="11,33859" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="tahoma" Font.Style="1" Frame.Typ="0" ParentFont="False" VAlign="vaBottom" Text="FORNECEDOR"/>
+      <TfrxLineView Name="Line7" Align="baWidth" AllowVectorExport="True" Left="0" Top="114,06308" Width="1046,92981" Height="0" Color="0" Frame.Style="fsDouble" Frame.Typ="4"/>
+    </TfrxPageHeader>
+    <TfrxReportSummary Name="ReportSummary1" FillType="ftBrush" FillGap.Top="0" FillGap.Left="0" FillGap.Bottom="0" FillGap.Right="0" Frame.Typ="0" Height="68,03149606" Left="0" Top="332,59864" Width="1046,92981">
+      <TfrxLineView Name="Line2" AllowVectorExport="True" Left="0" Top="3" Width="1046,92981" Height="0" Color="0" Frame.Typ="4"/>
+      <TfrxMemoView Name="Memo22" AllowVectorExport="True" Left="794,02412" Top="10,33859" Width="98,26778" Height="18,89765" Font.Charset="1" Font.Color="0" Font.Height="-11" Font.Name="Arial" Font.Style="1" Frame.Typ="0" Fill.BackColor="15790320" HAlign="haRight" ParentFont="False" VAlign="vaCenter" Text="TOTAL GERAL"/>
+      <TfrxSysMemoView Name="SysMemo7" AllowVectorExport="True" Left="895,74861" Top="10,33859" Width="151,1812" Height="18,89765" DisplayFormat.DecimalSeparator="," DisplayFormat.FormatStr="%2.2n" DisplayFormat.Kind="fkNumeric" Font.Charset="1" Font.Color="0" Font.Height="-11" Font.Name="Arial" Font.Style="1" Frame.Typ="0" Fill.BackColor="15790320" HAlign="haRight" ParentFont="False" VAlign="vaCenter" Text="[SUM(&#60;DADOS_REL.&#34;VALOR_NOMINAL&#34;&#62;,DT_TITULOS)]"/>
+    </TfrxReportSummary>
+    <TfrxMemoView Name="Memo41" AllowVectorExport="True" Left="7,55906" Top="-7,55906" Width="49,13389" Height="15,11812" DataSetName="Titulos" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="Arial" Font.Style="0" Frame.Typ="0" ParentFont="False" Text=""/>
+    <TfrxPageFooter Name="PageFooter1" FillType="ftBrush" FillGap.Top="0" FillGap.Left="0" FillGap.Bottom="0" FillGap.Right="0" Frame.Typ="0" Height="22,67718" Left="0" Top="423,30736" Width="1046,92981">
+      <TfrxMemoView Name="Memo36" AllowVectorExport="True" Left="-1,22047" Top="3" Width="287,24428" Height="18,89765" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="Tahoma" Font.Style="1" Frame.Typ="0" ParentFont="False" VAlign="vaBottom" Text="Pempec Enterprise Finance"/>
+      <TfrxMemoView Name="Date" AllowVectorExport="True" Left="932,96908" Top="3" Width="56,69295" Height="18,89765" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="Tahoma" Font.Style="1" Frame.Typ="0" HAlign="haRight" ParentFont="False" VAlign="vaBottom" Text="[Date]"/>
+      <TfrxMemoView Name="Memo79" AllowVectorExport="True" Left="859,95331" Top="3" Width="71,81107" Height="18,89765" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="Tahoma" Font.Style="1" Frame.Typ="0" HAlign="haRight" ParentFont="False" VAlign="vaBottom" Text="Emitido em:  "/>
+      <TfrxMemoView Name="Time" AllowVectorExport="True" Left="993,45733" Top="3" Width="49,13389" Height="18,89765" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="Tahoma" Font.Style="1" Frame.Typ="0" HAlign="haRight" ParentFont="False" VAlign="vaBottom" Text="[Time]"/>
+    </TfrxPageFooter>
+    <TfrxGroupFooter Name="GroupFooter1" FillType="ftBrush" FillGap.Top="0" FillGap.Left="0" FillGap.Bottom="0" FillGap.Right="0" Frame.Typ="0" Height="11,33859" Left="0" Top="260,78757" Width="1046,92981"/>
+    <TfrxGroupHeader Name="GroupHeader2" FillType="ftBrush" FillGap.Top="0" FillGap.Left="0" FillGap.Bottom="0" FillGap.Right="0" Frame.Typ="0" Height="0" Left="0" Top="200,31509" Width="1046,92981" Condition="1=1"/>
+    <TfrxMasterData Name="DT_TITULOS" FillType="ftBrush" FillGap.Top="0" FillGap.Left="0" FillGap.Bottom="0" FillGap.Right="0" Frame.Typ="0" Height="15,1181102362205" Left="0" Top="222,99227" Width="1046,92981" ColumnWidth="0" ColumnGap="0" DataSetName="DADOS_REL" RowCount="0">
+      <TfrxMemoView Name="TitulosID_TIPO_STATUS" AllowVectorExport="True" Left="606,28386" Top="0" Width="49,13389" Height="11,33859" DataField="PARCELA" DataSetName="DADOS_REL" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="Arial" Font.Style="0" Frame.Typ="0" HAlign="haCenter" ParentFont="False" Text="[DADOS_REL.&#34;PARCELA&#34;]"/>
+      <TfrxMemoView Name="TitulosNUMERO_DOCUMENTO" AllowVectorExport="True" Left="49,81107" Top="0" Width="64,25201" Height="11,33859" DataField="NUMERO_DOCUMENTO" DataSetName="DADOS_REL" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="Arial" Font.Style="0" Frame.Typ="0" HAlign="haRight" ParentFont="False" Text="[DADOS_REL.&#34;NUMERO_DOCUMENTO&#34;]"/>
+      <TfrxMemoView Name="TitulosVALOR_NOMINAL" AllowVectorExport="True" Left="895,74861" Top="0" Width="151,1812" Height="11,33859" DataField="VALOR_NOMINAL" DataSetName="DADOS_REL" DisplayFormat.FormatStr="%2.2n" DisplayFormat.Kind="fkNumeric" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="Arial" Font.Style="0" Frame.Typ="0" HAlign="haRight" ParentFont="False" Text="[DADOS_REL.&#34;VALOR_NOMINAL&#34;]"/>
+      <TfrxMemoView Name="TitulosDATA_EMISSAO" AllowVectorExport="True" Left="0" Top="0" Width="49,13389" Height="11,33859" DataField="DATA_EMISSAO" DataSetName="DADOS_REL" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="Arial" Font.Style="0" Frame.Typ="0" ParentFont="False" Text="[DADOS_REL.&#34;DATA_EMISSAO&#34;]"/>
+      <TfrxMemoView Name="TitulosPARCELA" AllowVectorExport="True" Left="554,01608" Top="0" Width="49,13389" Height="11,33859" DataField="DATA_VENCIMENTO" DataSetName="DADOS_REL" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="Arial" Font.Style="0" Frame.Typ="0" HAlign="haRight" ParentFont="False" Text="[DADOS_REL.&#34;DATA_VENCIMENTO&#34;]"/>
+      <TfrxMemoView Name="TitulosDATA_PAGAMENTO" AllowVectorExport="True" Left="502,20501" Top="0" Width="49,13389" Height="11,33859" DataField="DATA_VENCIMENTO" DataSetName="DADOS_REL" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="Arial" Font.Style="0" Frame.Typ="0" HAlign="haRight" ParentFont="False" Text="[DADOS_REL.&#34;DATA_VENCIMENTO&#34;]"/>
+      <TfrxMemoView Name="Memo16" AllowVectorExport="True" Left="413,17347" Top="0" Width="86,92919" Height="11,33859" DataField="DESCRICAO" DataSetName="DADOS_REL" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="Arial" Font.Style="0" Frame.Typ="0" ParentFont="False" Text="[DADOS_REL.&#34;DESCRICAO&#34;]"/>
+      <TfrxMemoView Name="Memo17" AllowVectorExport="True" Left="658,19728" Top="0" Width="68,03154" Height="11,33859" DataField="ID_TIPO_STATUS" DataSetName="DADOS_REL" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="Arial" Font.Style="0" Frame.Typ="0" HAlign="haCenter" ParentFont="False" Text="[DADOS_REL.&#34;ID_TIPO_STATUS&#34;]"/>
+      <TfrxMemoView Name="Memo23" AllowVectorExport="True" Left="729,44929" Top="0" Width="136,06308" Height="11,33859" DataField="CENTRO_C" DataSetName="DADOS_REL" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="Arial" Font.Style="0" Frame.Typ="0" ParentFont="False" Text="[DADOS_REL.&#34;CENTRO_C&#34;]"/>
+      <TfrxMemoView Name="Memo18" AllowVectorExport="True" Left="115,50402" Top="0" Width="151,1812" Height="11,33859" DataField="NOME" DataSetName="DADOS_REL" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="Arial" Font.Style="1" Frame.Typ="0" ParentFont="False" Text="[DADOS_REL.&#34;NOME&#34;]"/>
+      <TfrxMemoView Name="TitulosDESCRICAO" AllowVectorExport="True" Left="268,71668921" Top="0" Width="143,62214" Height="11,33859" DataField="HISTORICO" DataSetName="DADOS_REL" Font.Charset="1" Font.Color="0" Font.Height="-8" Font.Name="Arial" Font.Style="1" Frame.Typ="0" ParentFont="False" Text="[DADOS_REL.&#34;HISTORICO&#34;]"/>
+    </TfrxMasterData>
+  </TfrxReportPage>
+</TfrxReport>
