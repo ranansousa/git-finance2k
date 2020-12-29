@@ -1,0 +1,9 @@
+Data/Hora.......: 29/12/2020 10:30:15
+Mensagem........: ' Código ' is not a valid integer value
+Classe Exceção..: EConvertError
+Formulário......: frmManterHistorico
+Unit............: dxBar
+Controle Visual.: frmManterHistorico
+Usuario.........: RANAN SOUSA
+Versão Windows..: Windows 7
+----------------------------------------------------------------------
