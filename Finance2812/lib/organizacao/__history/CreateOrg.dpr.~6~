@@ -1,0 +1,40 @@
+program CreateOrg;
+
+uses
+  Vcl.Forms,
+  uCreateOrg in 'uCreateOrg.pas' {frmCreateOrg},
+  uUtil in '..\uUtil.pas',
+  UCriptografia in '..\UCriptografia.pas',
+  uPempecExceptions in '..\uPempecExceptions.pas',
+  UVarGlobais in '..\UVarGlobais.pas',
+  uOrganizacaoDAO in '..\..\dao\uOrganizacaoDAO.pas',
+  uOrganizacaoModel in '..\..\model\uOrganizacaoModel.pas',
+  uBairroModel in '..\..\model\uBairroModel.pas',
+  uCidadeModel in '..\..\model\uCidadeModel.pas',
+  uEstadoModel in '..\..\model\uEstadoModel.pas',
+  udmConexao in '..\..\dataModule\udmConexao.pas' {dmConexao: TDataModule},
+  uFrmRegistraBaseDados in '..\..\uFrmRegistraBaseDados.pas' {frmRegistraBaseDados},
+  uMensagens in '..\uMensagens.pas',
+  uBairroDAO in '..\..\dao\uBairroDAO.pas',
+  uCidadeDAO in '..\..\dao\uCidadeDAO.pas',
+  uEstadoDAO in '..\..\dao\uEstadoDAO.pas',
+  Vcl.Themes,
+  Vcl.Styles,
+  uFrameEndereco in '..\..\frames\uFrameEndereco.pas' {frmEnd: TFrame},
+  uFrameBairro in '..\..\frames\uFrameBairro.pas',
+  uFrameCidade in '..\..\frames\uFrameCidade.pas',
+  uFrameEstado in '..\..\frames\uFrameEstado.pas',
+  uFrameGeneric in '..\..\frames\uFrameGeneric.pas' {frameGeneric: TFrame};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+  Application.Title := 'Pempec Enterprise Create Organizacao';
+  TStyleManager.TrySetStyle('Cyan Dusk');
+  Application.CreateForm(TfrmCreateOrg, frmCreateOrg);
+  Application.CreateForm(TdmConexao, dmConexao);
+  Application.CreateForm(TfrmRegistraBaseDados, frmRegistraBaseDados);
+  Application.Run;
+end.
