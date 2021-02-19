@@ -1,0 +1,168 @@
+unit uChequeModel;
+
+interface
+
+uses
+  Windows, Messages, Classes, SysUtils;
+
+type
+  TChequeModel = class(TObject)
+  private
+
+    FFNumeroCheque: string;
+    FFIdCheque :string;
+    FFIdContaBancaria: string;
+    FFIdTipoStatus: string;
+    FFObservacao :string;
+
+    FFPortador :string;
+    FFIdFuncionario :string;
+    FFDescricao: string;
+    FFIdOrganizacao : string;
+    FFIdUsuario :string;
+
+    FFDataRegistro: TDate;
+    FFDataEmissao: TDate;
+    FFDataCompensacao: TDate;
+    FFDataPrevisaoCompensacao: TDate;
+    FFDataEstorno: TDate;
+    FFValor: Currency;
+
+    FFQtdImpressao :Integer;
+
+    procedure SetNumeroCheque(const Value: string);
+    procedure SetIdCheque(const Value: string);
+    procedure SetIdContaBancaria(const Value: string);
+    procedure SetIdTipoStatus(const Value: string);
+    procedure SetObservacao(const Value: string);
+    procedure SetDescricao(const Value: string);
+    procedure SetIdFuncionario(const Value: string);
+    procedure SetIdOrganizacao(const Value: string);
+    procedure SetIdUsuario(const Value: string);
+    procedure SetPortador(const Value: string);
+    procedure SetDataCompensacao(const Value: TDate);
+    procedure SetDataEmissao(const Value: TDate);
+    procedure SetDataEstorno(const Value: TDate);
+    procedure SetDataPrevisaoCompensacao(const Value: TDate);
+    procedure SetDataRegistro(const Value: TDate);
+    procedure SetQtdImpressao(const Value: Integer);
+    procedure SetValor(const Value: Currency);
+
+ public
+
+    property  FNumeroCheque: string read FFNumeroCheque write SetNumeroCheque;
+    property  FIdCheque: string read FFIdCheque write SetIdCheque;
+    property  FIdContaBancaria: string read FFIdContaBancaria write SetIdContaBancaria;
+    property  FIdTipoStatus: string read FFIdTipoStatus write SetIdTipoStatus;
+    property  FObservacao: string read FFObservacao write SetObservacao;
+    property FPortador: string read FFPortador write SetPortador;
+    property FIdFuncionario: string read FFIdFuncionario write SetIdFuncionario;
+    property FDescricao: string read FFDescricao write SetDescricao;
+    property FIdOrganizacao: string read FFIdOrganizacao write SetIdOrganizacao;
+    property FIdUsuario: string read FFIdUsuario write SetIdUsuario;
+
+    property FDataRegistro: TDate read FFDataRegistro write SetDataRegistro;
+    property FDataEmissao: TDate read FFDataEmissao write SetDataEmissao;
+    property FDataCompensacao: TDate read FFDataCompensacao write SetDataCompensacao;
+    property FDataPrevisaoCompensacao: TDate read FFDataPrevisaoCompensacao write SetDataPrevisaoCompensacao;
+    property FDataEstorno: TDate read FFDataEstorno write SetDataEstorno;
+
+    property FValor: Currency read FFValor write SetValor;
+
+    property FQtdImpressao: Integer read FFQtdImpressao write SetQtdImpressao;
+
+
+
+
+  end;
+
+implementation
+
+{ TChequeModel }
+
+procedure TChequeModel.SetDataCompensacao(const Value: TDate);
+begin
+  FFDataCompensacao := Value;
+end;
+
+procedure TChequeModel.SetDataEmissao(const Value: TDate);
+begin
+  FFDataEmissao := Value;
+end;
+
+procedure TChequeModel.SetDataEstorno(const Value: TDate);
+begin
+  FFDataEstorno := Value;
+end;
+
+procedure TChequeModel.SetDataPrevisaoCompensacao(const Value: TDate);
+begin
+  FFDataPrevisaoCompensacao := Value;
+end;
+
+procedure TChequeModel.SetDataRegistro(const Value: TDate);
+begin
+  FFDataRegistro := Value;
+end;
+
+procedure TChequeModel.SetDescricao(const Value: string);
+begin
+  FFDescricao := Value;
+end;
+
+procedure TChequeModel.SetIdCheque(const Value: string);
+begin
+  FFIdCheque := Value;
+end;
+
+procedure TChequeModel.SetIdContaBancaria(const Value: string);
+begin
+  FFIdContaBancaria := Value;
+end;
+
+procedure TChequeModel.SetIdFuncionario(const Value: string);
+begin
+  FFIdFuncionario := Value;
+end;
+
+procedure TChequeModel.SetIdOrganizacao(const Value: string);
+begin
+  FFIdOrganizacao := Value;
+end;
+
+procedure TChequeModel.SetIdTipoStatus(const Value: string);
+begin
+  FFIdTipoStatus := Value;
+end;
+
+procedure TChequeModel.SetIdUsuario(const Value: string);
+begin
+  FFIdUsuario := Value;
+end;
+
+procedure TChequeModel.SetNumeroCheque(const Value: string);
+begin
+  FFNumeroCheque := Value;
+end;
+
+procedure TChequeModel.SetObservacao(const Value: string);
+begin
+  FFObservacao := Value;
+end;
+
+procedure TChequeModel.SetPortador(const Value: string);
+begin
+  FFPortador := Value;
+end;
+
+procedure TChequeModel.SetQtdImpressao(const Value: Integer);
+begin
+  FFQtdImpressao := Value;
+end;
+
+procedure TChequeModel.SetValor(const Value: Currency);
+begin
+  FFValor := Value;
+end;
+
+end.

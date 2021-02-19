@@ -1,0 +1,100 @@
+Data/Hora.......: 09/12/2020 22:02:20
+Mensagem........: [FireDAC][Stan][Eval]-101. Expression unexpectedly terminated
+Classe Exceção..: EFDException
+Formulário......: formEspelhoTP
+Unit............: dxBar
+Controle Visual.: dbgrdMain
+Usuario.........: Ranan Sousa
+Versão Windows..: Windows 7
+----------------------------------------------------------------------
+Data/Hora.......: 09/12/2020 22:04:41
+Mensagem........: [FireDAC][Stan][Eval]-101. Expression unexpectedly terminated
+Classe Exceção..: EFDException
+Formulário......: formEspelhoTP
+Unit............: dxBar
+Controle Visual.: dbgrdMain
+Usuario.........: Ranan Sousa
+Versão Windows..: Windows 7
+----------------------------------------------------------------------
+Data/Hora.......: 14/12/2020 19:43:03
+Mensagem........: Access violation at address 016D68B4 in module 'Finance.exe'. Read of address 000000E8
+Classe Exceção..: EAccessViolation
+Formulário......: frmManterTituloReceber
+Unit............: cxPC
+Controle Visual.: pgTitulo
+Usuario.........: Ranan Sousa
+Versão Windows..: Windows 7
+----------------------------------------------------------------------
+Data/Hora.......: 14/12/2020 19:45:00
+Mensagem........: Access violation at address 016D68B4 in module 'Finance.exe'. Read of address 000000E8
+Classe Exceção..: EAccessViolation
+Formulário......: frmManterTituloReceber
+Unit............: cxPC
+Controle Visual.: pgTitulo
+Usuario.........: Ranan Sousa
+Versão Windows..: Windows 7
+----------------------------------------------------------------------
+Data/Hora.......: 14/12/2020 19:54:27
+Mensagem........: Access violation at address 016D9652 in module 'Finance.exe'. Read of address 00000008
+Classe Exceção..: EAccessViolation
+Formulário......: frmManterTituloReceber
+Unit............: cxPC
+Controle Visual.: edtUltimoUpdate
+Usuario.........: Ranan Sousa
+Versão Windows..: Windows 7
+----------------------------------------------------------------------
+Data/Hora.......: 28/12/2020 19:59:03
+Mensagem........: Não foi possível conectar ao banco de dados!  192.168.15.200/3051:192.1Data/Hora.......: 28/12/2020 20:04:43
+Mensagem........: Problemas ao tentar obter o código do historico padrão 
+Classe Exceção..: Exception
+Formulário......: frmExportacao
+Unit............: dxBar
+Controle Visual.: frmExportacao
+Usuario.........: RANAN SOUSA
+Versão Windows..: Windows 7
+----------------------------------------------------------------------
+Data/Hora.......: 28/12/2020 20:06:16
+Mensagem........: Problemas ao tentar obter o código do historico padrão 
+Classe Exceção..: Exception
+Formulário......: frmExportacao
+Unit............: dxBar
+Controle Visual.: frmExportacao
+Usuario.........: RANAN SOUSA
+Versão Windows..: Windows 7
+----------------------------------------------------------------------
+Data/Hora.......: 28/12/2020 20:11:17
+Mensagem........: Problemas ao tentar obter o código do historico padrão 
+Classe Exceção..: Exception
+Formulário......: frmExportacao
+Unit............: dxBar
+Controle Visual.: frmExportacao
+Usuario.........: RANAN SOUSA
+Versão Windows..: Windows 7
+----------------------------------------------------------------------
+Data/Hora.......: 15/02/2021 20:24:14
+Mensagem........: Resource BBYES not found
+Classe Exceção..: EResNotFound
+Formulário......: FrmPrincipal
+Unit............: uFrmPrincipal
+Controle Visual.: btnLogin
+Usuario.........: 
+Versão Windows..: Windows 10
+----------------------------------------------------------------------
+Data/Hora.......: 15/02/2021 20:24:22
+Mensagem........: Resource BBNO not found
+Classe Exceção..: EResNotFound
+Formulário......: FrmPrincipal
+Unit............: uFrmPrincipal
+Controle Visual.: btnLogin
+Usuario.........: 
+Versão Windows..: Windows 10
+----------------------------------------------------------------------
+Data/Hora.......: 15/02/2021 20:25:14
+Mensagem........: Resource BBYES not found
+Classe Exceção..: EResNotFound
+Formulário......: FrmPrincipal
+Unit............: uFrmPrincipal
+Controle Visual.: btnLogin
+Usuario.........: 
+Versão Windows..: Windows 10
+----------------------------------------------------------------------

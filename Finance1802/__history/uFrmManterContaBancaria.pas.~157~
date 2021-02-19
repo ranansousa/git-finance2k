@@ -1,0 +1,814 @@
+unit uFrmManterContaBancaria;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, dxSkinsCore, dxSkinsDefaultPainters, udmConexao, uUtil, uDMOrganizacao,
+  cxGraphics, cxControls, cxLookAndFeels, cxLookAndFeelPainters, dxRibbonSkins,
+  dxRibbonCustomizationForm, dxStatusBar, cxClasses, dxRibbon, dxBar,  uContaContabilModel, uContaContabilDAO,uContaBancariaModel, uContaBancariaDAO,
+  uFrameContaContabil, Data.DB, FireDAC.Stan.Intf, FireDAC.Stan.Option,
+  FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
+  FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet,
+  FireDAC.Comp.Client, Vcl.Grids, Vcl.DBGrids, Vcl.StdCtrls, cxContainer,
+  cxEdit, cxTextEdit, cxBarEditItem,  uFrameBanco, ENumEd, Vcl.ExtCtrls, EMsgDlg;
+
+type
+  TfrmManterContaBancaria = class(TForm)
+    dxBarManager1: TdxBarManager;
+    dxRibbon1Tab1: TdxRibbonTab;
+    dxRibbon1: TdxRibbon;
+    dxStatusBar: TdxStatusBar;
+    frmContaContabil1: TfrmContaContabil;
+    dbgrd1: TDBGrid;
+    edtDescricaoConta: TEdit;
+    edtCODREDUZ: TEdit;
+    lbl1: TLabel;
+    edtContaContabil: TEdit;
+    lbl2: TLabel;
+    lbl3: TLabel;
+    lbl4: TLabel;
+    dxBarManager1Bar1: TdxBar;
+    dxBtnEditar: TdxBarLargeButton;
+    dxBarSalvar: TdxBar;
+    dxBtnSalvar: TdxBarLargeButton;
+    dxBarManager1Bar2: TdxBar;
+    dxBtnNovo: TdxBarLargeButton;
+    dxBarManager1Bar3: TdxBar;
+    dxBtnFechar: TdxBarLargeButton;
+    dxBarManager1Bar4: TdxBar;
+    dxBtnDeletar: TdxBarLargeButton;
+    dxBarManager1Bar5: TdxBar;
+    cxbrdtmPesquisa: TcxBarEditItem;
+    qryPreencheGrid: TFDQuery;
+    dsGrid: TDataSource;
+    edtAgencia: TEdit;
+    frmBanco1: TfrmBanco;
+    lbl5: TLabel;
+    lbl6: TLabel;
+    edtSaldoInicial: TEvNumEdit;
+    lbl7: TLabel;
+    edtContaBancaria: TEdit;
+    edtTitular: TEdit;
+    lbl8: TLabel;
+    rdStatus: TRadioGroup;
+    PempecMsg: TEvMsgDlg;
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormCreate(Sender: TObject);
+    procedure frmContaContabil1cbbContaContabilChange(Sender: TObject);
+    procedure dxBtnEditarClick(Sender: TObject);
+    procedure dxBtnSalvarClick(Sender: TObject);
+    procedure dxBtnFecharClick(Sender: TObject);
+    procedure dxBtnNovoClick(Sender: TObject);
+    procedure dxBtnDeletarClick(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure dbgrd1TitleClick(Column: TColumn);
+    procedure cxbrdtmPesquisaCurChange(Sender: TObject);
+    procedure dsGridDataChange(Sender: TObject; Field: TField);
+    procedure frmBanco1cbbBancoChange(Sender: TObject);
+  private
+    { Private declarations }
+   pIdContaContabil, pIdBanco, pIdContaBancaria,  pIdOrganizacao, pIdUsuario :string;
+   FslistaIdBancos,    FsListaIdContas : TStringList;
+    procedure inicializarDM(Sender: TObject);
+    procedure freeAndNilDM(Sender: TObject);
+    procedure limparPanel;
+    procedure msgStatusBar(pPosicao: Integer; msg: string);
+    procedure limpaStatusBar;
+    function salvarContaBancaria(PIDORGANIZACAO,PIDCONTA, PIDBANCO, PIDCONTACTB, PIDUSER, PCONTA, PAGENCIA, PTITULAR :string; PSALDO :Currency) :Boolean;
+    function qtdUso(pIdOrganizacao, pIdContaBancaria :string): Integer;
+    function deletar (pIdOrganizacao, pIdContaBancaria :string): Boolean;
+    function obterBanco(pIdBanco: String): Integer;
+    procedure LimpaTela(Form: TForm);
+    procedure controleEdit(Form: TForm; pValue: Boolean);
+    function liberaDeletar(cmd: string): Integer;
+
+
+
+  public
+    { Public declarations }
+    procedure preencheGrid(pIdOrganizacao :string);
+
+  end;
+
+var
+  frmManterContaBancaria: TfrmManterContaBancaria;
+
+implementation
+
+{$R *.dfm}
+
+procedure TfrmManterContaBancaria.cxbrdtmPesquisaCurChange(Sender: TObject);
+begin
+  dbgrd1.DataSource.DataSet.Locate('CONTA',UpperCase(cxbrdtmPesquisa.CurEditValue),[loPartialKey]);
+end;
+
+procedure TfrmManterContaBancaria.dbgrd1TitleClick(Column: TColumn);
+begin
+ (dbgrd1.DataSource.DataSet as TFDQuery).IndexFieldNames :=Column.FieldName;
+end;
+
+function TfrmManterContaBancaria.deletar(pIdOrganizacao, pIdContaBancaria: string): Boolean;
+var cmd :string;
+qryDel :TFDQuery;
+begin
+
+try
+      cmd := ' DELETE FROM CONTA_BANCARIA  WHERE (ID_ORGANIZACAO = :PIDORGANIZACAO) AND (ID_CONTA_BANCARIA = :PIDContaBancaria) ';
+
+      qryDel := TFDQuery.Create(Self);
+      qryDel.Close;
+      qryDel.Connection := dmConexao.conn;
+      qryDel.SQL.Clear;
+      qryDel.SQL.Add(cmd);
+      qryDel.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+      qryDel.ParamByName('PIDContaBancaria').AsString := pIdContaBancaria;
+      qryDel.ExecSQL;
+
+  dmConexao.conn.CommitRetaining;
+
+except
+  dmConexao.conn.RollbackRetaining;
+  Result := System.False;
+raise Exception.Create(' Não foi possível deletar o registro. Inform ao suporte.');
+
+end;
+  limparPanel;
+  Result := System.True;
+end;
+
+procedure TfrmManterContaBancaria.dsGridDataChange(Sender: TObject;
+  Field: TField);
+  var
+  idContaContabil :string;
+  I: Integer;
+   conta :TContaContabilModel;
+    contaBanco : TContaBancariaModel;
+
+begin
+
+      contaBanco := TContaBancariaModel.Create;
+      contaBanco.FIDorganizacao := pIdOrganizacao;
+      contaBanco.FID := (dbgrd1.DataSource.DataSet as TFDQuery).FieldByName('ID_CONTA_BANCARIA').AsString;
+      contaBanco := TContaBancariaDAO.obterPorID(contaBanco);
+
+      if not uUtil.Empty(contaBanco.FID) then begin
+
+          edtAgencia.Text       := contaBanco.Fagencia;
+          edtContaBancaria.Text := contaBanco.Fconta;
+          edtTitular.Text       := contaBanco.Ftitular;
+          edtSaldoInicial.Text := CurrToStr(contaBanco.FsaldoInicial);
+          pIdBanco             := contaBanco.FIDbanco;
+          frmBanco1.cbbBanco.ItemIndex := obterBanco(pIdBanco);
+          idContaContabil :=  contaBanco.FIDcontaContabil;
+          pIdContaBancaria :=  contaBanco.FID;
+
+          if contaBanco.Fativo = 1 then begin
+             rdStatus.ItemIndex :=0;
+          end else begin rdStatus.ItemIndex :=1; end;
+
+
+      end;
+
+  if not uUtil.Empty(idContaContabil) then
+  begin
+
+    for I := 0 to FsListaIdContas.Count - 1 do
+    begin
+      if FsListaIdContas[I].Equals(idContaContabil) then
+      begin
+        frmContaContabil1.cbbContaContabil.ItemIndex := I;
+        conta := TContaContabilModel.Create;
+        conta.FIDorganizacao := pIdOrganizacao;
+        conta.FID := idContaContabil;
+        conta := TContaContabilDAO.obterPorID(conta);
+
+        if not uUtil.Empty(conta.FCodigoReduzido) then
+        begin
+
+          edtDescricaoConta.Text := conta.FDescricao;
+          edtCODREDUZ.Text := conta.FCodigoReduzido;
+          edtContaContabil.Text := conta.FConta;
+        end;
+
+      end;
+    end;
+
+  end
+  else
+  begin
+    frmContaContabil1.cbbContaContabil.ItemIndex := 0;
+    edtDescricaoConta.Clear;
+    edtCODREDUZ.Clear;
+    edtContaContabil.Clear;
+  end;
+
+   if qtdUso(pIdOrganizacao, pIdContaBancaria) = 0 then
+    begin
+      dxBtnDeletar.Enabled := True;
+    end
+    else
+    begin
+      dxBtnDeletar.Enabled := False;
+    end;
+
+
+end;
+
+function TfrmManterContaBancaria.obterBanco(pIdBanco :String) :Integer;
+var
+  posicao: Integer;
+  I: Integer;
+begin
+  posicao := 0;
+
+  for I := 0 to FslistaIdBancos.Count -1 do begin
+       if FslistaIdBancos[I].Equals(pIdBanco) then begin
+         posicao := I;
+       end;
+  end;
+
+  Result := posicao;
+end;
+
+
+
+
+procedure TfrmManterContaBancaria.dxBtnDeletarClick(Sender: TObject);
+begin
+
+ if deletar(pIdOrganizacao, pIdContaBancaria) then begin
+  PempecMsg.MsgInformation('Registro deletado com sucesso.');
+ end;
+end;
+
+procedure TfrmManterContaBancaria.dxBtnEditarClick(Sender: TObject);
+begin
+  dbgrd1.Enabled :=False;
+  frmContaContabil1.cbbContaContabil.Enabled :=True;
+  frmBanco1.cbbBanco.Enabled :=True;
+  edtAgencia.Enabled :=True;
+  edtTitular.Enabled :=True;
+  edtSaldoInicial.Enabled :=True;
+  edtContaBancaria.Enabled :=True;
+
+
+  pIdContaBancaria :=  (dbgrd1.DataSource.DataSet as TFDQuery).FieldByName('ID_Conta_Bancaria').AsString;
+  pIdContaContabil := (dbgrd1.DataSource.DataSet as TFDQuery).FieldByName('ID_CONTA_CONTABIL').AsString;
+  pIdBanco         := (dbgrd1.DataSource.DataSet as TFDQuery).FieldByName('ID_BANCO').AsString;
+
+  dxBtnSalvar.Enabled :=true ;
+  dxBtnNovo.Enabled :=False;
+
+ cxbrdtmPesquisa.Enabled :=False;
+
+end;
+
+procedure TfrmManterContaBancaria.dxBtnFecharClick(Sender: TObject);
+begin
+ PostMessage(Self.Handle, WM_CLOSE, 0, 0);
+end;
+
+procedure TfrmManterContaBancaria.dxBtnNovoClick(Sender: TObject);
+begin
+
+  limparPanel;
+  dbgrd1.Enabled :=False;
+  (dbgrd1.DataSource.DataSet as TFDQuery).Close;
+  frmContaContabil1.cbbContaContabil.Enabled :=True;
+  frmContaContabil1.cbbContaContabil.ItemIndex :=0;
+  frmBanco1.cbbBanco.Enabled :=True;
+  frmBanco1.cbbBanco.ItemIndex :=0;
+
+  edtAgencia.Enabled :=True;
+  edtTitular.Enabled :=True;
+  edtSaldoInicial.Enabled :=True;
+  edtContaBancaria.Enabled :=True;
+
+
+  edtDescricaoConta.Clear;
+  edtCODREDUZ.Clear;
+  edtSaldoInicial.Clear;
+  edtContaContabil.Clear;
+  edtAgencia.Clear;
+  edtTitular.Clear;
+  edtSaldoInicial.Clear;
+  edtContaBancaria.Clear;
+
+
+  pIdContaBancaria :='';
+
+  dxBtnSalvar.Enabled      :=True;
+  dxBtnEditar.Enabled      :=False;
+
+
+  cxbrdtmPesquisa.Enabled :=False;
+
+
+end;
+
+procedure TfrmManterContaBancaria.dxBtnSalvarClick(Sender: TObject);
+var
+ conta :TContaContabilModel;
+ pAgencia, pConta, pTitular, pTipo :string;
+ pCodigo :Integer;
+pSaldo :Currency;
+contaBanco :TContaBancariaModel;
+sucesso :Boolean;
+
+
+begin
+sucesso := False;
+contaBanco :=  TContaBancariaModel.Create;
+
+  contaBanco.FIDorganizacao := pIdOrganizacao;
+  contaBanco.FIDbanco       := FslistaIdBancos[frmBanco1.cbbBanco.ItemIndex];
+  contaBanco.Ftitular       := UpperCase(edtTitular.Text);
+  contaBanco.Fagencia       := edtAgencia.Text;
+  contaBanco.Fconta         := edtContaBancaria.Text;
+  contaBanco.FsaldoInicial  := StrToCurr( edtSaldoInicial.Text);
+
+  if rdStatus.ItemIndex = 0  then begin
+   contaBanco.Fativo         := 1; // 0 INATIVO - 1 ATIVO
+  end else begin contaBanco.Fativo         := 0; end;
+
+  contaBanco.FIDusuario     := uUtil.TUserAtual.getUserId;
+
+  if frmContaContabil1.cbbContaContabil.ItemIndex > 0 then
+  begin
+    conta := TContaContabilModel.Create;
+    pIdContaContabil := FsListaIdContas[frmContaContabil1.cbbContaContabil.ItemIndex];
+    conta.FIDorganizacao := pIdOrganizacao;
+    conta.FID := pIdContaContabil;
+    conta := TContaContabilDAO.obterPorID(conta);
+
+    if not uUtil.Empty(conta.FID) then
+    begin
+      contaBanco.FIDcontaContabil := conta.FID;
+      contaBanco.FcontaContabil := conta;
+
+    end;
+
+  end;
+
+
+  if not uUtil.Empty(pIdContaBancaria) then
+  begin
+   // pIdContaBancaria := (dbgrd1.DataSource.DataSet as TFDQuery).FieldByName('ID_CONTA_BANCARIA').AsString;
+    contaBanco.FID := pIdContaBancaria;
+
+    sucesso := TContaBancariaDAO.Update(contaBanco);
+
+  end
+  else
+  begin
+     contaBanco.FID := dmConexao.obterNewID;
+     sucesso := TContaBancariaDAO.Insert(contaBanco);
+
+  end;
+
+
+  {
+ if  salvarContaBancaria(pIdOrganizacao,pIdContaBancaria, pIdBanco, pIdContaContabil,pIdUsuario,pConta,pAgencia,pTitular,pSaldo) then begin
+
+        ShowMessage('Registro salvo com sucesso.');
+ end;   }
+
+
+ if sucesso then begin
+
+     PempecMsg.MsgInformation('Registro salvo com sucesso.');
+
+ end;
+
+   limparPanel;
+
+end;
+
+procedure TfrmManterContaBancaria.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+ freeAndNilDM(Self);
+ Action :=caFree;
+
+end;
+
+procedure TfrmManterContaBancaria.FormCreate(Sender: TObject);
+begin
+ inicializarDM(Self);
+ limparPanel;
+end;
+
+procedure TfrmManterContaBancaria.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+ case key of
+  vk_f2: dxBtnEditar.Click;
+  vk_f4: dxBtnNovo.Click;
+  vk_f10: dxBtnSalvar.Click;
+end;
+
+end;
+
+procedure TfrmManterContaBancaria.freeAndNilDM(Sender: TObject);
+begin
+//nada
+end;
+
+procedure TfrmManterContaBancaria.frmBanco1cbbBancoChange(Sender: TObject);
+begin
+ pIdBanco := FslistaIdBancos[frmBanco1.cbbBanco.ItemIndex];
+
+end;
+
+procedure TfrmManterContaBancaria.frmContaContabil1cbbContaContabilChange(
+  Sender: TObject);
+  var
+  conta : TContaContabilModel;
+  contaBanco : TContaBancariaModel;
+
+begin
+  if frmContaContabil1.cbbContaContabil.ItemIndex > 0 then
+  begin
+
+    pIdContaContabil := FsListaIdContas[frmContaContabil1.cbbContaContabil.ItemIndex];
+    conta := TContaContabilModel.Create;
+    conta := frmContaContabil1.obterPorID(pIdOrganizacao, pIdContaContabil);
+
+    if not uUtil.Empty(conta.FCodigoReduzido) then
+    begin
+
+      edtDescricaoConta.Text := conta.FDescricao;
+      edtCODREDUZ.Text := conta.FCodigoReduzido;
+      edtContaContabil.Text := conta.FConta;
+      pIdContaContabil :=conta.FID;
+
+    end;
+
+  end;
+
+end;
+
+procedure TfrmManterContaBancaria.inicializarDM(Sender: TObject);
+begin
+ //nada
+ if not Assigned(dmOrganizacao) then begin
+    dmOrganizacao := TdmOrganizacao.Create(Self);
+ end;
+
+ limparPanel;
+
+end;
+
+procedure TfrmManterContaBancaria.limparPanel();
+var
+  I: Integer;
+begin
+ limpaStatusBar;
+ pIdOrganizacao := UUtil.TOrgAtual.getId;
+ pIdUsuario :=uutil.TUserAtual.getUserId;
+// frmPeriodo1.inicializa(IncDay(Now, -1), Now);
+ frmContaContabil1.obterTodos(pIdOrganizacao, frmContaContabil1.cbbContaContabil,FsListaIdContas);
+ frmBanco1.obterTodos(pIdOrganizacao, frmBanco1.cbbBanco, FslistaIdBancos);
+
+ //botao editar muda
+  dbgrd1.Enabled :=True;
+  frmContaContabil1.cbbContaContabil.Enabled :=False;
+  frmContaContabil1.cbbContaContabil.ItemIndex :=0;
+  frmBanco1.cbbBanco.Enabled :=False;
+  frmBanco1.cbbBanco.ItemIndex :=0;
+
+
+  edtDescricaoConta.Clear;
+  edtCODREDUZ.Clear;
+  edtContaContabil.Clear;
+
+
+  dxBtnNovo.Enabled := True;
+  dxBtnEditar.Enabled := True;
+  dxBtnSalvar.Enabled :=False;
+  dxBtnDeletar.Enabled := False;
+
+  //campos da conta bancaria
+  edtAgencia.Clear;
+  edtContaBancaria.Clear;
+  edtTitular.Clear;
+  edtSaldoInicial.Clear;
+
+
+ // LimpaTela(Self);
+
+  edtAgencia.Enabled :=False;
+  edtTitular.Enabled :=False;
+  edtSaldoInicial.Enabled :=False;
+  edtContaBancaria.Enabled :=False;
+
+  //botao novo
+
+   preencheGrid(pIdOrganizacao);
+
+end;
+
+procedure TfrmManterContaBancaria.msgStatusBar(pPosicao : Integer; msg :string);
+begin
+dxStatusBar.Panels[pPosicao].Text := msg;
+Application.ProcessMessages;
+end;
+
+procedure TfrmManterContaBancaria.preencheGrid(pIdOrganizacao: string);
+var
+sqlCmd :string;
+begin
+
+dmConexao.conectarBanco;
+ try
+
+    sqlCmd := ' SELECT CB.ID_CONTA_BANCARIA, CB.ID_BANCO,  CB.ID_ORGANIZACAO, CB.CONTA, ' +
+              ' CB.AGENCIA, CB.OBSERVACAO, CB.TITULAR, CB.LIMITE_CREDITO, CB.SALDO_INICIAL, '+
+              ' B.ID_BANCO, B.CODIGO_BANCO, B.NOME_BANCO, B.SIGLA_BANCO, ' +
+              ' CC.ID_CONTA_CONTABIL,  CC.DESCRICAO AS DSC_CTB, CC.CONTA AS CONTA_CTB, CC.CODREDUZ, '+
+              ' CC.TIPO, CC.DATA_REGISTRO ' +
+              ' FROM CONTA_BANCARIA CB ' +
+              ' LEFT OUTER JOIN BANCO B ON (CB.ID_BANCO = B.ID_BANCO) '+
+              ' LEFT OUTER JOIN CONTA_CONTABIL CC ON (CB.ID_CONTA_CONTABIL = CC.ID_CONTA_CONTABIL) AND (CB.ID_ORGANIZACAO = CC.ID_ORGANIZACAO) '+
+              ' WHERE (CB.ID_ORGANIZACAO = :PIDORGANIZACAO) ' +
+              ' ORDER BY CB.CONTA ' ;
+
+    qryPreencheGrid.Close;
+    qryPreencheGrid.Connection := dmConexao.conn;
+    qryPreencheGrid.SQL.Clear;
+    qryPreencheGrid.SQL.Add(sqlCmd);
+    qryPreencheGrid.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+    qryPreencheGrid.Open;
+
+    (dbgrd1.DataSource.DataSet as TFDQuery).Last;
+    (dbgrd1.DataSource.DataSet as TFDQuery).First;
+
+ except
+ raise Exception.Create('Erro ao obter lista de Contas');
+
+ end;
+
+
+end;
+
+function TfrmManterContaBancaria.liberaDeletar(cmd :string) : Integer;
+var
+qryPesquisa, qryTR : TFDQuery;
+begin
+dmConexao.conectarBanco;
+
+ try
+
+    qryPesquisa := TFDQuery.Create(Self);
+    qryPesquisa.Close;
+    qryPesquisa.Connection := dmConexao.conn;
+    qryPesquisa.SQL.Clear;
+    qryPesquisa.SQL.Add(cmd);
+    qryPesquisa.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+    qryPesquisa.ParamByName('PIDCONTA').AsString := pIdContaBancaria;
+    qryPesquisa.Open;
+
+   except
+   Result :=0;
+    raise Exception.Create('Erro ao consultar dados da conta  ');
+
+  end;
+
+  Result := qryPesquisa.RecordCount;;
+
+
+end;
+
+
+function TfrmManterContaBancaria.qtdUso(pIdOrganizacao,  pIdContaBancaria: string): Integer;
+  var
+qryPesquisa, qryTR : TFDQuery;
+cmd : string;
+qtd :Integer;
+
+
+begin
+
+  qtd :=0;
+
+  try
+    {
+    cmd := ' SELECT FIRST 1  CBD.ID_CONTA_BANCARIA_DEBITO,  CBCH.ID_CONTA_BANCARIA_CHEQUE,  CBC.ID_CONTA_BANCARIA_CREDITO, ' +
+           ' CB.ID_CONTA_BANCARIA, CB.ID_ORGANIZACAO, CB.CONTA, CBC.VALOR AS VLR_CR, CBCH.VALOR AS VLR_CH, CBD.VALOR  AS VLR_DB, '+
+           ' LD.ID_ORGANIZACAO, LP.ID_ORGANIZACAO, TP.ID_ORGANIZACAO, TR.ID_ORGANIZACAO '+
+           ' FROM CONTA_BANCARIA CB '+
+           ' INNER JOIN CONTA_BANCARIA_DEBITO  CBD  ON (CB.ID_ORGANIZACAO = CBD.ID_ORGANIZACAO)  AND (CB.ID_CONTA_BANCARIA = CBD.ID_CONTA_BANCARIA) '+
+           ' INNER JOIN CONTA_BANCARIA_CREDITO CBC  ON (CB.ID_ORGANIZACAO = CBC.ID_ORGANIZACAO)  AND (CB.ID_CONTA_BANCARIA = CBC.ID_CONTA_BANCARIA) '+
+           ' INNER JOIN CONTA_BANCARIA_CHEQUE  CBCH ON (CB.ID_ORGANIZACAO = CBCH.ID_ORGANIZACAO) AND (CB.ID_CONTA_BANCARIA = CBCH.ID_CONTA_BANCARIA) '+
+           ' INNER JOIN LOTE_DEPOSITO   LD           ON (CB.ID_ORGANIZACAO = LD.ID_ORGANIZACAO)   AND (CB.ID_CONTA_BANCARIA = LD.ID_CONTA_BANCARIA) '+
+           ' INNER JOIN LOTE_PAGAMENTO  LP           ON (CB.ID_ORGANIZACAO = LP.ID_ORGANIZACAO)   AND (CB.ID_CONTA_BANCARIA = LP.ID_CONTA_BANCARIA) '+
+           ' INNER JOIN TITULO_PAGAR_BAIXA_INTERNET TP ON (CB.ID_ORGANIZACAO = TP.ID_ORGANIZACAO)   AND (CB.ID_CONTA_BANCARIA = TP.ID_CONTA_BANCARIA) '+
+           ' INNER JOIN TITULO_RECEBER_BAIXA_INTERNET TR ON (CB.ID_ORGANIZACAO = TR.ID_ORGANIZACAO)   AND (CB.ID_CONTA_BANCARIA = TR.ID_CONTA_BANCARIA) '+
+           ' WHERE (CB.ID_ORGANIZACAO =:PIDORGANIZACAO) AND (CB.ID_CONTA_BANCARIA = :PIDCONTA) ' ; }
+
+
+      cmd := ' SELECT FIRST 1  CBD.ID_CONTA_BANCARIA_DEBITO FROM  CONTA_BANCARIA_DEBITO  CBD WHERE (CBD.ID_ORGANIZACAO =:PIDORGANIZACAO) AND (CBD.ID_CONTA_BANCARIA = :PIDCONTA) ' ;
+      qtd := qtd + liberaDeletar(cmd);
+
+      if qtd = 0 then begin
+
+      cmd := ' SELECT FIRST 1  CBD.ID_CONTA_BANCARIA_CREDITO FROM  CONTA_BANCARIA_CREDITO  CBD WHERE (CBD.ID_ORGANIZACAO =:PIDORGANIZACAO) AND (CBD.ID_CONTA_BANCARIA = :PIDCONTA) ' ;
+      qtd := qtd + liberaDeletar(cmd);
+
+      end;
+
+       if qtd = 0 then begin
+
+      cmd := ' SELECT FIRST 1  CBD.ID_CONTA_BANCARIA_CHEQUE FROM  CONTA_BANCARIA_CHEQUE  CBD WHERE (CBD.ID_ORGANIZACAO =:PIDORGANIZACAO) AND (CBD.ID_CONTA_BANCARIA = :PIDCONTA) ' ;
+      qtd := qtd + liberaDeletar(cmd);
+
+      end;
+
+      if qtd = 0 then begin
+
+      cmd := ' SELECT FIRST 1  CBD.ID_LOTE_DEPOSITO FROM  LOTE_DEPOSITO  CBD WHERE (CBD.ID_ORGANIZACAO =:PIDORGANIZACAO) AND (CBD.ID_CONTA_BANCARIA = :PIDCONTA) ' ;
+      qtd := qtd + liberaDeletar(cmd);
+
+      end;
+
+
+       if qtd = 0 then begin
+
+      cmd := ' SELECT FIRST 1  CBD.ID_LOTE_PAGAMENTO FROM  LOTE_PAGAMENTO  CBD WHERE (CBD.ID_ORGANIZACAO =:PIDORGANIZACAO) AND (CBD.ID_CONTA_BANCARIA = :PIDCONTA) ' ;
+      qtd := qtd + liberaDeletar(cmd);
+
+      end;
+
+
+      if qtd = 0 then begin
+
+      cmd := ' SELECT FIRST 1  CBD.ID_TITULO_PAGAR_BAIXA_INTERNET FROM  TITULO_PAGAR_BAIXA_INTERNET  CBD WHERE (CBD.ID_ORGANIZACAO =:PIDORGANIZACAO) AND (CBD.ID_CONTA_BANCARIA = :PIDCONTA) ' ;
+      qtd := qtd + liberaDeletar(cmd);
+
+      end;
+
+
+      if qtd = 0 then begin
+
+      cmd := ' SELECT FIRST 1  CBD.VALOR FROM TITULO_RECEBER_BAIXA_INTERNET CBD WHERE (CBD.ID_ORGANIZACAO =:PIDORGANIZACAO) AND (CBD.ID_CONTA_BANCARIA = :PIDCONTA) ' ;
+      qtd := qtd + liberaDeletar(cmd);
+
+      end;
+
+
+  except
+   Result :=0;
+    raise Exception.Create('Erro ao consultar dados da conta  ');
+
+  end;
+
+  Result := qtd;
+
+end;
+
+procedure TfrmManterContaBancaria.limpaStatusBar;
+begin
+dxStatusBar.Panels[0].Text := 'Status ';
+dxStatusBar.Panels[1].Text := 'Ativo. Teclas de atalho:  [F2] = Editar  - [F4] = Novo - [F10] = Salvar  ';
+end;
+
+function  TfrmManterContaBancaria.salvarContaBancaria(PIDORGANIZACAO,PIDCONTA, PIDBANCO, PIDCONTACTB, PIDUSER, PCONTA, PAGENCIA, PTITULAR :string; PSALDO :Currency) :Boolean;
+var
+idUser,cmdSalvar :string;
+qrySalvar :TFDQuery;
+begin
+
+ dmConexao.conectarBanco;
+ try
+  idUser := uutil.TUserAtual.getUserId;
+
+
+   cmdSalvar := ' UPDATE CONTA_BANCARIA  SET ID_BANCO = :PIDBANCO ,  ID_CONTA_CONTABIL = :PIDCONTACTB, '+
+                ' CONTA = :PCONTA , AGENCIA = :PAGENCIA, ID_USUARIO = :PIDUSER, ' +
+                ' TITULAR = :PTITULAR, SALDO_INICIAL = :PSALDO  ' +
+                ' WHERE (ID_ORGANIZACAO = :PIDORGANIZACAO) AND (ID_CONTA_BANCARIA = :PIDCONTA) ';
+
+
+
+   if UUTIL.Empty(PIDCONTA) then begin
+
+     PIDCONTA := dmConexao.obterNewID;
+
+
+     cmdSalvar := ' INSERT INTO CONTA_BANCARIA (ID_CONTA_BANCARIA, ID_ORGANIZACAO, ID_BANCO, ID_CONTA_CONTABIL, ID_USUARIO, ' +
+                  ' CONTA, AGENCIA, TITULAR, SALDO_INICIAL  ) ' +
+                  ' VALUES (:PIDCONTA, :PIDORGANIZACAO, :PIDBANCO, :PIDCONTACTB, :PIDUSER , '+
+                  ' :PCONTA, :PAGENCIA, :PTITULAR, :PSALDO ) ';
+
+   end;
+
+    if not uUtil.Empty(PIDCONTA) then
+    begin
+
+      qrySalvar := TFDQuery.Create(Self);
+      qrySalvar.Close;
+      qrySalvar.Connection := dmConexao.conn;
+      qrySalvar.SQL.Clear;
+      qrySalvar.SQL.Add(cmdSalvar);
+
+      qrySalvar.ParamByName('PIDCONTA').AsString := PIDCONTA;
+      qrySalvar.ParamByName('PIDORGANIZACAO').AsString := PIDORGANIZACAO;
+      qrySalvar.ParamByName('PIDBANCO').AsString := PIDBANCO;
+      qrySalvar.ParamByName('PIDCONTACTB').AsString := PIDCONTACTB;
+      qrySalvar.ParamByName('PIDUSER').AsString := PIDUSER;
+      qrySalvar.ParamByName('PCONTA').AsString := PCONTA;
+      qrySalvar.ParamByName('PAGENCIA').AsString := PAGENCIA;
+      qrySalvar.ParamByName('PTITULAR').AsString := UpperCase(PTITULAR);
+      qrySalvar.ParamByName('PSALDO').AsCurrency := PSALDO;
+
+      qrySalvar.ExecSQL;
+
+      dmConexao.conn.CommitRetaining;
+    end;
+
+ except
+ Result :=False;
+  raise Exception.Create('Erro ao tentar salvar o ContaBancaria.');
+ end;
+
+  Result :=True;
+end;
+
+
+procedure TfrmManterContaBancaria.LimpaTela(Form: TForm);
+var
+  i: Integer;
+begin
+
+  for i := 0 to Form.ComponentCount - 1 do
+  begin
+    if Form.Components[i] is TCustomEdit then
+    begin
+      (Form.Components[i] as TCustomEdit).Clear;
+    end;
+
+    if Form.Components[i] is TLabel then
+    begin
+      TLabel(Form.Components[i]).Caption := '';
+    end;
+
+    if Form.Components[i] is TEdit then
+    begin
+      TEdit(Form.Components[i]).Clear;
+    end;
+
+    if Form.Components[i] is TEvNumEdit then
+    begin
+      TEvNumEdit(Form.Components[i]).Clear ;
+    end;
+
+    if Form.Components[i] is TComboBox then
+    begin
+      TComboBox(Form.Components[i]).Clear ;
+      TComboBox(Form.Components[i]).ItemIndex := 0;
+    end;
+
+
+
+   end;
+end;
+
+procedure TfrmManterContaBancaria.controleEdit(Form: TForm; pValue :Boolean);
+var
+i: Integer;
+begin
+
+ for i := 0 to Form.ComponentCount - 1 do
+  begin
+    if Form.Components[i] is TCustomEdit then
+    begin
+      (Form.Components[i] as TCustomEdit).Enabled :=pValue;
+    end;
+
+    if Form.Components[i] is TLabel then
+    begin
+      TLabel(Form.Components[i]).Enabled :=pValue;
+    end;
+
+    if Form.Components[i] is TEdit then
+    begin
+      TEdit(Form.Components[i]).Enabled :=pValue;
+    end;
+
+    if Form.Components[i] is TEvNumEdit then
+    begin
+      TEvNumEdit(Form.Components[i]).Enabled :=pValue;
+    end;
+
+    if Form.Components[i] is TComboBox then
+    begin
+      TComboBox(Form.Components[i]).Enabled :=pValue;
+    end;
+
+   end;
+
+
+end;
+
+
+end.
