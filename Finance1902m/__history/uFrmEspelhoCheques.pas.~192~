@@ -1,0 +1,844 @@
+unit uFrmEspelhoCheques;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics, System.DateUtils,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, dxSkinsCore, dxSkinsDefaultPainters, udmConexao, uUtil,uContaBancariaModel,
+   uContaBancariaDAO, uContaBancariaChequeModel,  cxGraphics, cxControls, cxLookAndFeels, cxLookAndFeelPainters,
+   dxRibbonSkins, uContaContabilModel, uContaBancariaChequeDAO,  uOrganizacaoDAO, uOrganizacaoModel,
+  dxRibbonCustomizationForm, cxClasses, dxRibbon, dxBar, dxStatusBar,
+  cxContainer, cxEdit, cxLabel, cxTextEdit, uFrameContaBancaria, Vcl.StdCtrls,
+  FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, MDDAO,
+  FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
+  FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet,
+  FireDAC.Comp.Client, uFrameGeneric, uFrameResponsavel, EMsgDlg, uFrameCheque,
+  dxBarExtItems, Vcl.Grids, Vcl.DBGrids, Vcl.ExtCtrls, FireDAC.UI.Intf,
+  FireDAC.Comp.ScriptCommands, FireDAC.Stan.Util, FireDAC.Comp.Script,
+  cxBarEditItem, dxSparkline, frxClass, frxDBSet, cxCheckBox,uFrmEnviaMail,
+  frxExportBaseDialog, frxExportPDF;
+
+type
+  TfrmEspelhoCheques = class(TForm)
+    dxBarManager1: TdxBarManager;
+    dxRibbon1Tab1: TdxRibbonTab;
+    dxRibbon1: TdxRibbon;
+    dxStatusBar: TdxStatusBar;
+    dxBarManager1Bar2: TdxBar;
+    dxBarManager1Bar3: TdxBar;
+    dxBtnSair: TdxBarLargeButton;
+    dxBtnLimpar: TdxBarLargeButton;
+    dxBtnGerar: TdxBarLargeButton;
+    PempecMsg: TEvMsgDlg;
+    dxBarManager1Bar4: TdxBar;
+    dxBarCbxContas: TdxBarCombo;
+    dxBarCbxCheques: TdxBarCombo;
+    dxBarCbxStatus: TdxBarCombo;
+    dxBarManager1Bar1: TdxBar;
+    dxBarBtnConsulta: TdxBarLargeButton;
+    dxBarManager1Bar5: TdxBar;
+    dxBarDataInicial: TdxBarDateCombo;
+    dxBarDataFinal: TdxBarDateCombo;
+    dbgrdMain: TDBGrid;
+    dtsMain: TDataSource;
+    qryPreencheGrid: TFDQuery;
+    Panel1: TPanel;
+    sqlScriptContainer: TFDScript;
+    dxBarManager1Bar6: TdxBar;
+    cxBarPesquisaCheque: TcxBarEditItem;
+    Panel3: TPanel;
+    cxBarEditItem1: TcxBarEditItem;
+    dxBarManager1Bar7: TdxBar;
+    dxBarBtnImprimir: TdxBarLargeButton;
+    dxBarBtnEnviarEmail: TdxBarLargeButton;
+    frxRelatorio: TfrxReport;
+    frxDBDCheques: TfrxDBDataset;
+    fdmCheques: TFDMemTable;
+    chkTodos: TcxBarEditItem;
+    dxBarBtnCopiaCheque: TdxBarLargeButton;
+    qryCopiaChequeTP: TFDQuery;
+    qryCopiaChequeCBT: TFDQuery;
+    fdmEmiteCopia: TFDMemTable;
+    frxDBDEmiteCopia: TfrxDBDataset;
+    procedure dxBtnSairClick(Sender: TObject);
+    procedure dxBtnLimparClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure dxBarCbxContasChange(Sender: TObject);
+    procedure dxBarBtnConsultaClick(Sender: TObject);
+    procedure dbgrdMainTitleClick(Column: TColumn);
+    procedure dxBarCbxStatusChange(Sender: TObject);
+    procedure cxBarPesquisaChequeCurChange(Sender: TObject);
+    procedure dxBarBtnEnviarEmailClick(Sender: TObject);
+    procedure dxBarBtnImprimirClick(Sender: TObject);
+    procedure chkTodosCurChange(Sender: TObject);
+    procedure dtsMainDataChange(Sender: TObject; Field: TField);
+    procedure dxBarBtnCopiaChequeClick(Sender: TObject);
+
+  private
+    FslistaIdContaBancaria, FslistaIdCheque :TStringList;
+   pidStatus,  contaOrigem,  iDContaOrigem, pIdOperacao, pIdUsuario,  pIDOrganizacao :string;
+    pDataInicial, pDataFinal :TDateTime;
+   organizacaoModel : TOrganizacaoModel;
+   sucesso : Boolean;
+    procedure limpaPanel;
+    procedure msgStatusBar(pPosicao: Integer; msg: string);
+    procedure registraMovimentacao(pOrg, pTable, pAcao, pDsc, pStatus: string);
+    procedure preencheCheque (cheque :TContaBancariaChequeModel);
+
+    procedure preencheComboContas;
+    function montarSQL: Boolean;
+    function obterTodosCheques(sql: TStringList; pIdOrganizacao: string;
+      dtDataInicial, dtDataFinal: TDate): Boolean;
+    procedure inicializarVariaveisRelatorio;
+    function EmiteCopiaCheque(cheque: TContaBancariaChequeModel): Boolean;
+
+
+
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmEspelhoCheques: TfrmEspelhoCheques;
+
+implementation
+
+{$R *.dfm}
+
+
+function TfrmEspelhoCheques.obterTodosCheques(sql :TStringList; pIdOrganizacao : string; dtDataInicial, dtDataFinal: TDate): Boolean;
+var
+aux :Integer;
+begin
+
+  if sql.Count >0  then begin
+
+      try
+
+      qryPreencheGrid.Close;
+      qryPreencheGrid.Connection := dmConexao.Conn;
+      qryPreencheGrid.SQL.Clear;
+      qryPreencheGrid.SQL.Assign(sql);
+      qryPreencheGrid.Open;
+
+      except
+      raise(Exception).Create('Erro ao tentar  consultar os dados ' );
+      end;
+  end;
+
+
+  Result := not qryPreencheGrid.IsEmpty;
+
+end;
+
+procedure TfrmEspelhoCheques.msgStatusBar(pPosicao : Integer; msg :string);
+begin
+dxStatusBar.Panels[pPosicao].Text := msg;
+Application.ProcessMessages;
+end;
+
+
+procedure TfrmEspelhoCheques.preencheCheque(cheque: TContaBancariaChequeModel);
+begin
+
+ if not uUtil.Empty(cheque.FID) then begin
+
+  cheque.FIDorganizacao := cheque.FIDorganizacao;
+  cheque.FID := cheque.FID;
+  cheque := TContaBancariaChequeDAO.obterPorID(cheque);
+
+       {
+          ID_FUNCIONARIO             VARCHAR(36),
+          ID_TIPO_STATUS             VARCHAR(36),
+          NUMERO_CHEQUE              VARCHAR(10),
+          OBSERVACAO                 VARCHAR(250),
+          PORTADOR                   VARCHAR(150),
+
+          DATA_REGISTRO              DATE,
+          DATA_EMISSAO               DATE,
+          DATA_COMPENSACAO           DATE,
+          DATA_PREVISAO_COMPENSACAO  DATE,
+          DATA_ESTORNO               DATE,
+
+          VALOR                      NUMERIC(10,2),
+          QTD_IMPRESSAO              SMALLINT DEFAULT 0  }
+
+
+
+
+ end else begin
+
+  PempecMsg.MsgInformation ('Cheque não localizado.');
+
+ end;
+
+
+end;
+
+function TfrmEspelhoCheques.EmiteCopiaCheque(cheque: TContaBancariaChequeModel) :Boolean;
+var
+sucesso : Boolean;
+begin
+     sucesso := False;
+     fdmEmiteCopia.Close;
+
+     if not uutil.Empty(cheque.FID) then begin
+
+      qryCopiaChequeTP.Close;
+      qryCopiaChequeTP.Connection := dmConexao.Conn;
+      qryCopiaChequeTP.ParamByName('PIDORGANIZACAO').AsString := cheque.FIDorganizacao;
+      qryCopiaChequeTP.ParamByName('PID').AsString := cheque.FID;
+      qryCopiaChequeTP.Open;
+
+        if qryCopiaChequeTP.RecordCount = 1 then
+        begin
+
+        fdmEmiteCopia.Close;
+        fdmEmiteCopia.AppendData(qryCopiaChequeTP.Data, False);
+
+          sucesso := True;
+        end;
+
+        if not sucesso then
+        begin
+
+          qryCopiaChequeCBT.Close;
+          qryCopiaChequeCBT.Connection := dmConexao.Conn;
+          qryCopiaChequeCBT.ParamByName('PIDORGANIZACAO').AsString := cheque.FIDorganizacao;
+          qryCopiaChequeCBT.ParamByName('PID').AsString := cheque.FID;
+          qryCopiaChequeCBT.Open;
+
+          if qryCopiaChequeCBT.RecordCount = 1 then
+          begin
+            fdmEmiteCopia.Close;
+            fdmEmiteCopia.AppendData(qryCopiaChequeCBT.Data, False);
+
+            sucesso := True;
+          end;
+        end;
+     end;
+
+
+   Result := sucesso;
+
+
+
+end;
+
+procedure TfrmEspelhoCheques.preencheComboContas;
+begin
+
+  TContaBancariaDAO.comboDxBar(dxBarCbxContas, FslistaIdContaBancaria)
+
+end;
+
+
+procedure TfrmEspelhoCheques.dxBarBtnConsultaClick(Sender: TObject);
+var
+  conta : TContaBancariaModel;
+  value :TContaBancariaChequeModel;
+    sucesso : Boolean;
+begin
+   sucesso := True;
+   pDataInicial := dxBarDataInicial.Date;
+   pDataFinal   := dxBarDataFinal.Date;
+
+    if pDataInicial > pDataFinal then
+    begin
+      sucesso := False;
+      PempecMsg.MsgError('A data inicial não pode ser maior que a data final.');
+    end;
+
+    if sucesso then
+    begin
+      sucesso := False;
+
+      if dxBarCbxContas.ItemIndex > 0 then
+      begin
+
+        sucesso := True;
+
+      end;
+    end;
+
+    if sucesso then
+    begin
+
+      conta := TContaBancariaModel.Create;
+      value := TContaBancariaChequeModel.Create;
+
+      iDContaOrigem := FslistaIdContaBancaria[dxBarCbxContas.ItemIndex];
+      conta.FID := iDContaOrigem;
+      conta.FIDorganizacao := pIDOrganizacao;
+      conta := TContaBancariaDAO.obterPorID(conta);
+
+      if not uutil.Empty(conta.FID) then
+      begin
+       dxBarBtnImprimir.Enabled :=  montarSQL;
+      end;
+
+      msgStatusBar(3, 'Conta origem ' + conta.Fconta + ' selecionada');
+
+    end;
+
+end;
+
+procedure TfrmEspelhoCheques.dxBarBtnCopiaChequeClick(Sender: TObject);
+begin
+
+
+  if fdmEmiteCopia.RecordCount = 1 then
+  begin
+
+    frxRelatorio.Clear;
+    if not (frxRelatorio.LoadFromFile(uutil.TPathRelatorio.getListagemCheques)) then
+    begin
+      PempecMsg.MsgError('Não foi possível imprimir. Informe ao suporte : FALTA FR3 ');
+    end
+    else
+    begin
+      inicializarVariaveisRelatorio;
+      frxRelatorio.OldStyleProgress := True;
+      frxRelatorio.ShowProgress := True;
+      frxRelatorio.ShowReport;
+
+    end;
+
+  end
+  else
+  begin
+
+    PempecMsg.MsgInformation('Não foi possível emitir a cópia de cheque.');
+
+  end;
+
+
+
+
+
+end;
+
+procedure TfrmEspelhoCheques.dxBarBtnEnviarEmailClick(Sender: TObject);
+var
+localFile, assunto, arquivo :string;
+
+  conta : TContaBancariaModel;
+  value :TContaBancariaChequeModel;
+    sucesso : Boolean;
+    cmdSql :string;
+
+begin
+   sucesso := True;
+   pDataInicial := dxBarDataInicial.Date;
+   pDataFinal   := dxBarDataFinal.Date;
+
+
+   if pDataInicial > pDataFinal then begin
+      sucesso := False;
+      PempecMsg.MsgError('A data inicial não pode ser maior que a data final.');
+   end;
+
+  pDataInicial := dxBarDataInicial.Date;
+  pDataFinal := dxBarDataFinal.Date;
+
+  if sucesso then
+  begin
+
+    conta := TContaBancariaModel.Create;
+    value := TContaBancariaChequeModel.Create;
+
+    iDContaOrigem := FslistaIdContaBancaria[dxBarCbxContas.ItemIndex];
+    conta.FID := iDContaOrigem;
+    conta.FIDorganizacao := pIdOrganizacao;
+    conta := TContaBancariaDAO.obterPorID(conta);
+
+    if not uutil.Empty(conta.FID) then
+    begin
+      // dxBarBtnImprimir.Enabled :=  montarSQL;
+      fdmCheques.Close;
+      fdmCheques.AppendData(qryPreencheGrid.Data, False);
+
+    end;
+
+    msgStatusBar(3, 'Conta origem ' + conta.Fconta + ' selecionada');
+
+  end;
+
+
+  if (qryPreencheGrid.RecordCount > 0) then
+  begin
+
+    frxRelatorio.Clear;
+    if not (frxRelatorio.LoadFromFile(uutil.TPathRelatorio.getListagemCheques)) then
+    begin
+      PempecMsg.MsgError('Não foi possível imprimir. Informe ao suporte : FALTA FR3 ');
+    end
+    else
+    begin
+
+      //enviar por PDF
+      arquivo := 'LISTA_CHEQUES_' + FormatDateTime('dd.MM.yyyy_hh.mm.ss', now)  + '.PDF';
+      localFile := GetCurrentDir + '\rel\bancos\'; //informa a pasta onde o arquivo será gravado
+      dmConexao.frxPDFExport := TfrxPDFexport.Create(Self);
+
+      dmConexao.frxPDFExport.FileName := arquivo;
+      dmconexao.frxPDFExport.DefaultPath := localFile;
+      dmconexao.frxPDFExport.ShowDialog := False;
+      dmconexao.frxPDFExport.ShowProgress := False;
+      dmconexao.frxPDFExport.OverwritePrompt := True;
+
+
+      inicializarVariaveisRelatorio;
+
+      frxRelatorio.OldStyleProgress := True;
+      frxRelatorio.ShowProgress := True;
+      frxRelatorio.PrepareReport(True);
+
+      frxRelatorio.Export(dmconexao.frxPDFExport);
+
+      if Assigned(dmConexao.frxPDFExport) then
+      begin
+        dmConexao.frxPDFExport.Free;
+      end;
+
+
+      assunto := arquivo;
+      arquivo := localFile + arquivo;
+
+     frmEnviaMail := TfrmEnviaMail.Create(Self, arquivo, assunto);
+     frmEnviaMail.ShowModal;
+     FreeAndNil(frmEnviaMail);
+
+    end;
+
+  end;
+
+
+  msgStatusBar(1, 'Listagem  sendo enviada por e-mail.');
+
+
+
+end;
+
+procedure TfrmEspelhoCheques.dxBarBtnImprimirClick(Sender: TObject);
+var
+  conta : TContaBancariaModel;
+  value :TContaBancariaChequeModel;
+    sucesso : Boolean;
+    cmdSql :string;
+
+begin
+   sucesso := True;
+   pDataInicial := dxBarDataInicial.Date;
+   pDataFinal   := dxBarDataFinal.Date;
+
+
+   if pDataInicial > pDataFinal then begin
+      sucesso := False;
+      PempecMsg.MsgError('A data inicial não pode ser maior que a data final.');
+   end;
+
+    if sucesso then
+    begin
+
+      conta := TContaBancariaModel.Create;
+      value := TContaBancariaChequeModel.Create;
+
+      iDContaOrigem := FslistaIdContaBancaria[dxBarCbxContas.ItemIndex];
+      conta.FID := iDContaOrigem;
+      conta.FIDorganizacao := pIDOrganizacao;
+      conta := TContaBancariaDAO.obterPorID(conta);
+
+      if not uutil.Empty(conta.FID) then
+      begin
+      // dxBarBtnImprimir.Enabled :=  montarSQL;
+       fdmCheques.Close;
+       fdmCheques.AppendData(qryPreencheGrid.Data,False);
+
+      end;
+
+      msgStatusBar(3, 'Conta origem ' + conta.Fconta + ' selecionada');
+
+    end;
+
+
+  if qryPreencheGrid.RecordCount > 0 then
+  begin
+
+    frxRelatorio.Clear;
+    if not (frxRelatorio.LoadFromFile(uutil.TPathRelatorio.getListagemCheques)) then
+    begin
+      PempecMsg.MsgError('Não foi possível imprimir. Informe ao suporte : FALTA FR3 ');
+    end
+    else
+    begin
+      inicializarVariaveisRelatorio;
+      frxRelatorio.OldStyleProgress := True;
+      frxRelatorio.ShowProgress := True;
+      frxRelatorio.ShowReport;
+
+    end;
+
+  end
+  else
+  begin
+
+    PempecMsg.MsgInformation('Não existem dados a serem impressos.');
+
+  end;
+
+
+end;
+
+function TfrmEspelhoCheques.montarSQL: Boolean;
+var
+  lsSQL: TStringList;
+  tpStatus,  x: string;
+
+
+begin
+  dmConexao.conectarBanco;
+
+  lsSQL := TStringList.Create;
+  lsSQL.AddStrings(sqlScriptContainer.SQLScripts.FindScript('sqlCheques').SQL);
+  lsSQL.Add('WHERE');
+
+
+  lsSQL.Add(Format('  (CBC.ID_ORGANIZACAO = %s)', [QuotedStr(pIDOrganizacao)]));
+  lsSQL.Add('AND');
+  lsSQL.Add(Format('  (CBC.ID_CONTA_BANCARIA = %s)', [QuotedStr(iDContaOrigem)]));
+  lsSQL.Add('AND');
+
+
+
+   if (dxBarCbxStatus.ItemIndex = 0) then BEGIN //TODOS OS CHEQUES COM TODAS AS DATAS
+        lsSQL.Add(Format(' ( (CBC.DATA_REGISTRO BETWEEN %s AND %s)', [QuotedStr(FormatDateTime('dd.mm.yyyy', dxBarDataInicial.Date)), QuotedStr(FormatDateTime('dd.mm.yyyy', dxBarDataFinal.Date))]));
+        lsSQL.Add('OR');
+        lsSQL.Add(Format('  (CBC.DATA_EMISSAO BETWEEN %s AND %s)', [QuotedStr(FormatDateTime('dd.mm.yyyy', dxBarDataInicial.Date)), QuotedStr(FormatDateTime('dd.mm.yyyy', dxBarDataFinal.Date))]));
+        lsSQL.Add('OR');
+        lsSQL.Add(Format('  (CBC.DATA_COMPENSACAO BETWEEN %s AND %s)', [QuotedStr(FormatDateTime('dd.mm.yyyy', dxBarDataInicial.Date)), QuotedStr(FormatDateTime('dd.mm.yyyy', dxBarDataFinal.Date))]));
+        lsSQL.Add('OR');
+        lsSQL.Add(Format('  (CBC.DATA_ESTORNO BETWEEN %s AND %s)', [QuotedStr(FormatDateTime('dd.mm.yyyy', dxBarDataInicial.Date)), QuotedStr(FormatDateTime('dd.mm.yyyy', dxBarDataFinal.Date))]));
+        lsSQL.Add(' ) AND');
+        lsSQL.Add(Format('  (CBC.ID_TIPO_STATUS <> %s)', [QuotedStr('EXCLUIDO')]));
+        //lsSQL.Add('AND');    retirado em 27/05 . a clausula da organizacao ficou primeiro. Isto atrapalha o order by
+   END;
+
+   if (dxBarCbxStatus.ItemIndex = 1) then BEGIN //TODOS OS CHEQUES COM DATA EMISSAO NO PERIODO
+        lsSQL.Add(Format('  (CBC.DATA_EMISSAO BETWEEN %s AND %s)', [QuotedStr(FormatDateTime('dd.mm.yyyy', dxBarDataInicial.Date)), QuotedStr(FormatDateTime('dd.mm.yyyy', dxBarDataFinal.Date))]));
+        lsSQL.Add('AND');
+        lsSQL.Add(Format('  (CBC.ID_TIPO_STATUS = %s)', [QuotedStr(pidStatus)]));
+      //  lsSQL.Add('AND');
+
+   END;
+
+
+    if (dxBarCbxStatus.ItemIndex = 2) then BEGIN //TODOS OS CHEQUES COM DATA COMPENSACAO NO PERIODO
+
+        lsSQL.Add(Format('  (CBC.DATA_COMPENSACAO BETWEEN %s AND %s)', [QuotedStr(FormatDateTime('dd.mm.yyyy', dxBarDataInicial.Date)), QuotedStr(FormatDateTime('dd.mm.yyyy', dxBarDataFinal.Date))]));
+        lsSQL.Add('AND');
+        lsSQL.Add(Format('  (CBC.ID_TIPO_STATUS = %s)', [QuotedStr(pidStatus)]));
+       // lsSQL.Add('AND');
+
+   END;
+
+
+
+   if (dxBarCbxStatus.ItemIndex = 3) then BEGIN //TODOS OS CHEQUES DESATIVADOS
+        lsSQL.Add(Format(' ( (CBC.DATA_REGISTRO BETWEEN %s AND %s)', [QuotedStr(FormatDateTime('dd.mm.yyyy', dxBarDataInicial.Date)), QuotedStr(FormatDateTime('dd.mm.yyyy', dxBarDataFinal.Date))]));
+        lsSQL.Add('OR');
+        lsSQL.Add(Format('  (CBC.DATA_EMISSAO BETWEEN %s AND %s)', [QuotedStr(FormatDateTime('dd.mm.yyyy', dxBarDataInicial.Date)), QuotedStr(FormatDateTime('dd.mm.yyyy', dxBarDataFinal.Date))]));
+        lsSQL.Add('OR');
+        lsSQL.Add(Format('  (CBC.DATA_COMPENSACAO BETWEEN %s AND %s)', [QuotedStr(FormatDateTime('dd.mm.yyyy', dxBarDataInicial.Date)), QuotedStr(FormatDateTime('dd.mm.yyyy', dxBarDataFinal.Date))]));
+        lsSQL.Add('OR');
+        lsSQL.Add(Format('  (CBC.DATA_ESTORNO BETWEEN %s AND %s)', [QuotedStr(FormatDateTime('dd.mm.yyyy', dxBarDataInicial.Date)), QuotedStr(FormatDateTime('dd.mm.yyyy', dxBarDataFinal.Date))]));
+        lsSQL.Add(' ) AND');
+        lsSQL.Add(Format('  (CBC.ID_TIPO_STATUS = %s)', [QuotedStr(pidStatus)]));
+        //lsSQL.Add('AND');    retirado em 27/05 . a clausula da organizacao ficou primeiro. Isto atrapalha o order by
+   END;
+
+
+
+
+
+  lsSQL.Add('ORDER BY');
+  lsSQL.Add('  ' + 'CBC.NUMERO_CHEQUE');
+
+
+  Result := obterTodosCheques(lsSQL,pIDOrganizacao,dxBarDataInicial.Date, dxBarDataFinal.Date );
+
+
+
+  lsSql := nil;
+end;
+
+
+
+
+procedure TfrmEspelhoCheques.dxBarCbxContasChange(Sender: TObject);
+var
+  conta : TContaBancariaModel;
+  value :TContaBancariaChequeModel;
+    sucesso : Boolean;
+begin
+   sucesso := True;
+   pDataInicial := dxBarDataInicial.Date;
+   pDataFinal   := dxBarDataFinal.Date;
+
+      if pDataInicial > pDataFinal then
+      begin
+        sucesso := False;
+        PempecMsg.MsgError('A data inicial não pode ser maior que a data final.');
+      end;
+
+      if sucesso then
+      begin
+        sucesso := False;
+
+        if dxBarCbxContas.ItemIndex > 0 then
+        begin
+
+          sucesso := True;
+
+        end;
+      end;
+
+      if sucesso then
+      begin
+
+        conta := TContaBancariaModel.Create;
+        value := TContaBancariaChequeModel.Create;
+
+        iDContaOrigem := FslistaIdContaBancaria[dxBarCbxContas.ItemIndex];
+        conta.FID := iDContaOrigem;
+        conta.FIDorganizacao := pIdOrganizacao;
+        conta := TContaBancariaDAO.obterPorID(conta);
+
+        if not uutil.Empty(conta.FID) then
+        begin
+          value.FIDorganizacao := pIdOrganizacao;
+          value.FIDcontaBancaria := conta.FID;
+
+          TContaBancariaChequeDAO.comboDxBar(value, dxBarCbxCheques, FslistaIdCheque);
+
+        end;
+
+        msgStatusBar(3, 'Conta origem ' + conta.Fconta + ' selecionada');
+      end;
+
+end;
+
+procedure TfrmEspelhoCheques.dxBarCbxStatusChange(Sender: TObject);
+var
+indice : Integer;
+begin
+ pidStatus :=  ' TODOS ';
+ indice :=0;
+
+ if dxBarCbxStatus.ItemIndex > 0  then begin
+   indice := dxBarCbxStatus.ItemIndex;
+
+    if indice = 1 then
+    begin
+
+      pidStatus := 'EMITIDO';
+
+    end
+    else if indice = 2 then
+    begin
+
+      pidStatus := 'COMPENSADO';
+    end
+    else if indice = 3 then
+    begin
+
+      pidStatus := 'DESATIVADO';
+    end
+    else
+    begin
+
+      pidStatus := 'DESATIVADO';
+    end;
+
+
+ end;
+
+
+
+end;
+
+procedure TfrmEspelhoCheques.dxBtnLimparClick(Sender: TObject);
+begin
+ limpaPanel;
+end;
+
+procedure TfrmEspelhoCheques.dxBtnSairClick(Sender: TObject);
+begin
+ PostMessage(Self.Handle, WM_CLOSE, 0, 0);
+end;
+
+procedure TfrmEspelhoCheques.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+Action :=caFree;
+end;
+
+procedure TfrmEspelhoCheques.FormCreate(Sender: TObject);
+begin
+ sucesso := False;
+ pIDOrganizacao := uutil.TOrgAtual.getId;
+ organizacaoModel := TOrganizacaoModel.Create;
+ organizacaoModel.FID := pIDOrganizacao;
+ organizacaoModel := TOrganizacaoDAO.obterPorID(organizacaoModel);
+
+  if not uUtil.Empty(organizacaoModel.FID) then
+  begin
+
+    sucesso := organizacaoModel.Fvinculada;
+
+  end;
+
+
+
+ limpaPanel;
+
+end;
+
+procedure TfrmEspelhoCheques.chkTodosCurChange(Sender: TObject);
+begin
+
+  dxBarDataInicial.Date := TContaBancariaChequeDAO.obterDataRegistros('I'); // IncYear(Now, -5);
+  dxBarDataFinal.Date   := TContaBancariaChequeDAO.obterDataRegistros('F'); //IncYear(Now, 5);
+
+end;
+
+procedure TfrmEspelhoCheques.cxBarPesquisaChequeCurChange(Sender: TObject);
+begin
+ dbgrdMain.DataSource.DataSet.Locate('NUMERO_CHEQUE',UpperCase(cxBarPesquisaCheque.CurEditValue),[loPartialKey]);
+end;
+
+procedure TfrmEspelhoCheques.dbgrdMainTitleClick(Column: TColumn);
+begin
+(dbgrdMain.DataSource.DataSet as TFDQuery).IndexFieldNames :=Column.FieldName;
+end;
+
+procedure TfrmEspelhoCheques.dtsMainDataChange(Sender: TObject; Field: TField);
+var
+__contaBancaria, __numeroCheque :string;
+cheque : TContaBancariaChequeModel;
+begin
+
+ dxBarBtnCopiaCheque.Enabled := False;
+
+ __numeroCheque   := dbgrdMain.DataSource.DataSet.FieldByName('numero_cheque').AsString;
+ __contaBancaria := dbgrdMain.DataSource.DataSet.FieldByName('ID_CONTA_BANCARIA').AsString;
+
+  cheque := TContaBancariaChequeModel.Create;
+  cheque.FIDorganizacao := pIdOrganizacao;
+  cheque.FIDcontaBancaria := __contaBancaria;
+  cheque.FNumero := __numeroCheque;
+  cheque := TContaBancariaChequeDAO.obterPorNumero(cheque);
+
+  if not uUtil.Empty(cheque.FID) then
+  begin
+    if not uUtil.Empty(cheque.FIDtipoStatus) then
+    begin
+      if cheque.FIDtipoStatus.Equals('COMPENSADO') then begin
+
+        dxBarBtnCopiaCheque.Enabled := EmiteCopiaCheque(cheque);
+
+
+      end;
+    end;
+
+  end;
+
+end;
+
+procedure TfrmEspelhoCheques.limpaPanel;
+begin
+ // status
+  pidStatus := '';
+  dxBarCbxStatus.ItemIndex := 0;
+  dxBarBtnImprimir.Enabled := False;
+  chkTodos.EditValue := False;
+
+
+
+  iDContaOrigem := '';
+  pIDOrganizacao := uUtil.TOrgAtual.getId;
+  pIdUsuario := uutil.TUserAtual.getUserId;
+
+  msgStatusBar(0, 'Status : ');
+  msgStatusBar(1, 'Pronto : ');
+  msgStatusBar(2, '');
+  msgStatusBar(3, ' Selecione uma conta bancária... ');
+
+
+ dxBarDataInicial.Date  := StartOfTheYear(Now);
+ dxBarDataFinal.Date    := EndOfTheYear(Now);
+
+
+ //sempre por último
+
+ preencheComboContas;
+ dbgrdMain.DataSource.DataSet.Close;
+
+ {  retirado em 26/05/20 para nao usar o frame
+ frmContaBancaria1.obterTodos(pIDOrganizacao, frmContaBancaria1.cbbConta, FslistaIdContaBancaria);
+ frmContaBancaria1.cbbConta.ItemIndex :=0;
+  }
+
+end;
+
+
+procedure TfrmEspelhoCheques.registraMovimentacao(pOrg, pTable, pAcao, pDsc, pStatus: string);
+begin
+  TMDDAO.registroMD(pOrg, pTable, pAcao, pDsc, pStatus);
+
+end;
+
+procedure TfrmEspelhoCheques.inicializarVariaveisRelatorio;
+
+begin
+
+
+  if (organizacaoModel.Fvinculada) then
+  begin
+    sucesso := True;
+  end
+  else
+  begin
+    sucesso := False;
+    organizacaoModel.FID := uutil.TOrgAtual.getId;
+    organizacaoModel := TOrganizacaoDAO.obterPorID(organizacaoModel);
+    sucesso := organizacaoModel.Fvinculada;
+
+  end;
+
+  if sucesso then
+  begin
+
+
+     with frxRelatorio.Variables do
+    begin
+      Variables['strRazaoSocial'] := QuotedStr(organizacaoModel.FRazaoSocial);
+      Variables['strCNPJ'] := QuotedStr(organizacaoModel.FCNPJ);
+      Variables['strEndereco'] := QuotedStr(organizacaoModel.FLOGRADOURO +' '+ organizacaoModel.FCOMPLEMENTO + ' ' + organizacaoModel.FBairro.Fbairro);
+      Variables['strCEP'] := QuotedStr(organizacaoModel.FCEP);
+      Variables['strCidade'] := QuotedStr(organizacaoModel.FCidade.Fcidade);
+      Variables['strUF'] := QuotedStr(organizacaoModel.FIDESTADO);
+      Variables['strTipoStatus'] := QuotedStr(pidStatus);
+      Variables['strPeriodo'] :=QuotedStr( ' De  ' + DateToStr(dxBarDataInicial.Date) + '  até  ' + DateToStr(dxBarDataFinal.Date));
+
+    end;
+
+
+
+
+  end;
+end;
+
+
+end.

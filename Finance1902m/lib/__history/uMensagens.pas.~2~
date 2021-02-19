@@ -1,0 +1,88 @@
+unit uMensagens;
+
+interface
+
+function msgErroGravar(): String;
+function msgErroAbrir(): String;
+function msgEmDesenvolvimento(): String;
+function msgConsultaVazia(): String;
+function msgExitApplication(): String;
+function msgErroLicencaFinance(): String;
+function msgErroRegistro(): String;
+Function msgErroConversaoValor() :String;
+Function msgErroOrganizacaoNula() :String;
+Function msgErroNotServer() :String;
+Function msgSucesso() :String;
+Function msgErroIPServerBD():String;
+Function msgErroUsuario():String;
+Function msgteto():String;
+
+implementation
+
+
+
+   function msgErroUsuario(): String;
+begin
+  Result := 'O Usuário ou Senha digitados não foram validados.' + #13 + 'Verifique os dados digitados.';
+end;
+
+  function msgErroIPServerBD(): String;
+begin
+  Result := 'O IP do servidor não encontrado. Entre em contato com o Suporte.';
+end;
+
+  function msgErroNotServer(): String;
+begin
+  Result := 'Servidor não localizado. Entre em contato com o Suporte.';
+end;
+
+  function msgSucesso(): String;
+begin
+  Result := 'Operação concluída com sucesso.';
+end;
+ function msgErroOrganizacaoNula(): String;
+begin
+  Result := 'Ocorreu um erro ao tentar atribuir organização. Entre em contato com o Suporte.';
+end;
+
+function msgErroConversaoValor(): String;
+begin
+  Result := 'Ocorreu um erro ao tentar converter um valor. Entre em contato com o Suporte.';
+end;
+function msgErroRegistro(): String;
+begin
+  Result := 'Ocorreu um erro ao registro do sistema. Entre em contato com o Suporte.';
+end;
+
+function msgErroGravar(): String;
+begin
+  Result := 'Ocorreu um erro ao tentar gravar o registro.';
+end;
+
+function msgErroAbrir(): String;
+begin
+  Result := 'Ocorreu um erro ao tentar abrir o registro.';
+end;
+
+function msgEmDesenvolvimento(): String;
+begin
+  Result := 'Rotina em desenvolvimento. Aguarde...';
+end;
+
+function msgConsultaVazia(): String;
+begin
+  Result := ' A consulta solicitada não retornou resultados.' + #13 +
+    ' Verifique os dados informados.';
+end;
+
+function msgExitApplication(): String;
+begin
+  Result := #13 + ' A Aplicação será encerrada. Obrigado!.';
+end;
+
+function msgErroLicencaFinance(): String;
+begin
+  Result := 'Não foi possível validar a licença. ';
+end;
+
+end.

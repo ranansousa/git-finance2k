@@ -1,0 +1,35 @@
+object frameTR: TframeTR
+  Left = 0
+  Top = 0
+  Width = 304
+  Height = 58
+  TabOrder = 0
+  object redt1: TRichEdit
+    Left = 0
+    Top = 0
+    Width = 304
+    Height = 58
+    Align = alClient
+    Font.Charset = ANSI_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    Lines.Strings = (
+      '')
+    ParentFont = False
+    TabOrder = 0
+    Zoom = 100
+    ExplicitLeft = 56
+    ExplicitTop = 9
+  end
+  object cbbTR: TComboBox
+    Left = 24
+    Top = 14
+    Width = 257
+    Height = 21
+    AutoCompleteDelay = 5000
+    TabOrder = 1
+    Text = 'cbbTR'
+  end
+end

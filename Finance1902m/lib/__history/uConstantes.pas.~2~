@@ -1,0 +1,15 @@
+unit uConstantes;
+
+interface
+
+function getSenhaPadrao(): String;
+
+implementation
+
+function getSenhaPadrao(): String;
+begin
+  Result :=  ;
+end;
+
+
+end.
