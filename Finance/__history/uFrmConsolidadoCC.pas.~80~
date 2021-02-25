@@ -1,0 +1,369 @@
+unit uFrmConsolidadoCC;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
+  FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error,
+  FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async,
+  FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client,
+  System.DateUtils, cxGraphics, cxControls, cxLookAndFeels,
+  cxLookAndFeelPainters, dxRibbonSkins, dxSkinsDefaultPainters,
+  dxRibbonCustomizationForm, dxBar, EMsgDlg, cxClasses, Vcl.Grids, Vcl.DBGrids,
+  Vcl.ExtCtrls, dxStatusBar, dxRibbon, uDMOrganizacao, frxClass, MDDAO, uUtil,
+  udmConexao, dxSkinsCore;
+
+type
+  TfrmConsolidadoCC = class(TForm)
+    qryConsolidadoCC: TFDQuery;
+    dxBarManager1: TdxBarManager;
+    dxRibbon1Tab1: TdxRibbonTab;
+    dxRibbon1: TdxRibbon;
+    dsMain: TDataSource;
+    dxStatusBar: TdxStatusBar;
+    Panel1: TPanel;
+    dbgMain: TDBGrid;
+    dxBarManager1Bar1: TdxBar;
+    dxBarManager1Bar2: TdxBar;
+    dxBarManager1Bar3: TdxBar;
+    dxBarFechar: TdxBarLargeButton;
+    dxBarImprimir: TdxBarLargeButton;
+    cbxAnosPagtos: TdxBarCombo;
+    relatorio: TfrxReport;
+    qryAnosPagto: TFDQuery;
+    qryTodosCC: TFDQuery;
+    btnGerar: TdxBarButton;
+    fdmDados: TFDMemTable;
+    FDQuery1: TFDQuery;
+    PempecMsg: TEvMsgDlg;
+    procedure FormCreate(Sender: TObject);
+    procedure dxBarFecharClick(Sender: TObject);
+    procedure dxBarImprimirClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure btnGerarClick(Sender: TObject);
+  private
+    { Private declarations }
+    pIdOrganizacao: string;
+    procedure limpaTela(Sender: TObject);
+    procedure limpaStatusBar;
+    procedure msgStatusBar(pPosicao: Integer; msg: string);
+    procedure preencheComboAnos(pOrg: string);
+    procedure inicializarVariaveisRelatorio(dtInicial, dtFinal: TDate);
+    function obterAnos(pIdOrganizacao: string): Boolean;
+    function obterTodosCC(pIdOrganizacao: string): Boolean;
+
+    function obterDadosPagos(pIdOrganizacao: string; pAno: Integer): Boolean;
+    procedure registraMovimentacao(pOrg, pTable, pAcao, pDsc, pStatus: string);
+    procedure createTableVirtual;
+    procedure limparTable(var table: TFDMemTable);
+  public
+    { Public declarations }
+
+  end;
+
+var
+  frmConsolidadoCC: TfrmConsolidadoCC;
+
+implementation
+
+{$R *.dfm}
+
+{ TfrmConsolidadoCCC }
+
+procedure TfrmConsolidadoCC.btnGerarClick(Sender: TObject);
+ var
+  idCC, descricao :string;
+  valor : Currency;
+  aux_mes :Integer;
+
+begin
+  if obterTodosCC(pIdOrganizacao) then
+  begin
+
+    obterDadosPagos(pIdOrganizacao, StrToInt(cbxAnosPagtos.Text));
+    //inserir
+
+     valor :=0;
+
+     createTableVirtual;
+     limparTable(fdmDados);
+
+      fdmDados.Open;
+      qryTodosCC.First;
+      qryConsolidadoCC.Last;
+      qryConsolidadoCC.First;
+
+    while not qryTodosCC.Eof do
+    begin
+      aux_mes := 1;
+      descricao := qryTodosCC.FieldByName('DESCRICAO').AsString;
+      idCC := qryTodosCC.FieldByName('ID_CENTRO_CUSTO').AsString;
+      valor := 0;
+      qryConsolidadoCC.Filter := 'ID_CENTRO_CUSTO = ' + idCC;
+
+
+      while aux_mes <= 12 do
+      begin
+                // qryConsolidadoCC.Filter := aux_;
+                // fdmDados.InsertRecord( [descricao, 0]
+
+
+      end;
+
+
+       qryTodosCC.Next;
+    end;
+
+
+       // fdmDados.InsertRecord( [descricao, 0] );
+
+
+
+
+       dbgMain.DataSource.DataSet := fdmDados;
+       dbgMain.Refresh;
+
+
+
+    PempecMsg.MsgInformation('Processando... ') ;
+
+  end
+  else
+  begin
+
+    PempecMsg.MsgInformation ('Não foi possível obter dados. Consulta o suporte. ')
+
+  end;
+
+
+end;
+
+
+procedure TfrmConsolidadoCC.createTableVirtual();
+begin
+
+    fdmDados.FieldDefs.Add('DESCRICAO', ftString, 120, false);
+    fdmDados.FieldDefs.Add('JANE', ftCurrency, 0, false);
+    fdmDados.FieldDefs.Add('FEV', ftCurrency, 0, false);
+    fdmDados.FieldDefs.Add('MARC', ftCurrency, 0, false);
+    fdmDados.FieldDefs.Add('MAIO', ftCurrency, 0, false);
+    fdmDados.FieldDefs.Add('JUNH', ftCurrency, 0, false);
+    fdmDados.FieldDefs.Add('JULH', ftCurrency, 0, false);
+    fdmDados.FieldDefs.Add('AGOS', ftCurrency, 0, false);
+    fdmDados.FieldDefs.Add('SETE', ftCurrency, 0, false);
+    fdmDados.FieldDefs.Add('OUTU', ftCurrency, 0, false);
+    fdmDados.FieldDefs.Add('NOVE', ftCurrency, 0, false);
+    fdmDados.FieldDefs.Add('DEZE', ftCurrency, 0, false);
+
+    fdmDados.CreateDataSet;
+
+
+
+end;
+
+procedure TfrmConsolidadoCC.dxBarFecharClick(Sender: TObject);
+begin
+  PostMessage(Self.Handle, WM_CLOSE, 0, 0);
+end;
+
+procedure TfrmConsolidadoCC.dxBarImprimirClick(Sender: TObject);
+begin
+
+  msgStatusBar(3, 'Relatório enviado para impressão...');
+ //exibirRelatorioExportacao(dtpDataInicial.Date, dtpDataFinal.Date);
+
+
+ registraMovimentacao(pIdOrganizacao, 'CENTRO_CUSTO', 'DEMONSTRATIVO CONSOLIDADO RD', uutil.TUserAtual.getNameUser + ' solicitou DEMONSTRATIVO RD'  , 'SOLICITADO');
+
+end;
+
+procedure TfrmConsolidadoCC.FormClose(Sender: TObject;
+  var Action: TCloseAction);
+begin
+
+Action := caFree;
+end;
+
+procedure TfrmConsolidadoCC.FormCreate(Sender: TObject);
+begin
+  limpaTela(Self);
+  pIdOrganizacao := uutil.TOrgAtual.getId;
+
+  preencheComboAnos(pIdOrganizacao);
+
+end;
+
+procedure TfrmConsolidadoCC.limpaTela(Sender: TObject);
+begin
+  pIdOrganizacao := uutil.TOrgAtual.getId;
+
+  cbxAnosPagtos.Items.Clear;
+
+  if obterAnos(pIdOrganizacao) then
+  begin
+    preencheComboAnos(pIdOrganizacao);
+  end
+  else
+  begin
+    cbxAnosPagtos.Items.Add(IntToStr(YearOf(now)));
+
+  end;
+
+end;
+
+procedure TfrmConsolidadoCC.msgStatusBar(pPosicao: Integer; msg: string);
+begin
+  dxStatusBar.Panels[pPosicao].Text := msg;
+  Application.ProcessMessages;
+end;
+
+procedure TfrmConsolidadoCC.limpaStatusBar;
+begin
+  dxStatusBar.Panels[0].Text := 'Status ';
+  dxStatusBar.Panels[1].Text := 'Ativo. ';
+  dxStatusBar.Panels[2].Text := '  ';
+  dxStatusBar.Panels[3].Text := '  ';
+
+end;
+
+procedure TfrmConsolidadoCC.preencheComboAnos(pOrg: string);
+var
+  menorAno, maiorAno: Integer;
+begin
+
+  menorAno := YearOf(now);
+  maiorAno := YearOf(now);
+
+  menorAno := qryAnosPagto.FieldByName('MENOR').AsInteger;
+  maiorAno := qryAnosPagto.FieldByName('MAIOR').AsInteger;
+
+  while menorAno <= maiorAno do
+  begin
+
+    cbxAnosPagtos.Items.Add(IntToStr(menorAno));
+    Inc(menorAno);
+
+  end;
+
+  cbxAnosPagtos.ItemIndex := cbxAnosPagtos.Items.Count - 1;
+
+end;
+
+function TfrmConsolidadoCC.obterAnos(pIdOrganizacao: string): Boolean;
+begin
+
+  try
+    qryAnosPagto.Connection := dmConexao.Conn;
+    qryAnosPagto.Close;
+    qryAnosPagto.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+    qryAnosPagto.Open;
+
+    qryAnosPagto.FieldByName('MENOR').AsInteger;
+    qryAnosPagto.FieldByName('MAIOR').AsInteger;
+
+  except
+    raise(Exception).Create('Problemas ao consultar dados de pagamentos ');
+  end;
+
+  Result := not qryAnosPagto.IsEmpty;
+
+end;
+
+function TfrmConsolidadoCC.obterDadosPagos(pIdOrganizacao: string; pAno: Integer): Boolean;
+var
+  sucesso: Boolean;
+begin
+  sucesso := False;
+
+  qryConsolidadoCC.Close;
+  qryConsolidadoCC.Connection := dmConexao.conn;
+  qryConsolidadoCC.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+  qryConsolidadoCC.ParamByName('PANO').AsInteger := StrToInt(cbxAnosPagtos.Text);
+  qryConsolidadoCC.Open();
+
+  sucesso := not qryConsolidadoCC.IsEmpty;
+
+  Result := sucesso;
+
+end;
+
+function TfrmConsolidadoCC.obterTodosCC(pIdOrganizacao: string): Boolean;
+begin
+  qryTodosCC.Close;
+  qryTodosCC.Connection := dmConexao.conn;
+  qryTodosCC.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+  qryTodosCC.Open;
+
+  Result := not qryTodosCC.IsEmpty;
+
+
+end;
+
+procedure TfrmConsolidadoCC.inicializarVariaveisRelatorio(dtInicial, dtFinal: TDate);
+begin
+
+  with relatorio do
+  begin
+
+    Variables['strRazaoSocial'] := QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('RAZAO_SOCIAL').AsString);
+    Variables['strCNPJ'] := QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('CNPJ').AsString);
+    Variables['strEndereco'] := QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('ENDERECO').AsString);
+    Variables['strCEP'] := QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('CEP').AsString);
+    Variables['strCidade'] := QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('CIDADE').AsString);
+    Variables['strUF'] := QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('UF').AsString);
+    Variables['strPeriodo'] := QuotedStr(' de  ' + DateToStr(dtInicial) + '  até  ' + DateToStr(dtFinal));
+
+  end;
+end;
+
+procedure TfrmConsolidadoCC.registraMovimentacao(pOrg, pTable, pAcao, pDsc, pStatus: string);
+begin
+  TMDDAO.registroMD(pOrg, pTable, pAcao, pDsc, pStatus);
+
+end;
+
+
+{
+
+
+function TfrmBaixaFP.obterValorPago: Currency;
+var
+total :Currency;
+  I: Integer;
+begin
+ total :=0;
+ fdmFP.Open;
+ fdmFP.First;
+ while not fdmFP.Eof do begin
+
+ total := total + fdmFP.FieldByName('VALOR').AsCurrency;
+
+ fdmFP.Next;
+ end;
+
+
+  Result := total;
+
+end;
+
+
+}
+
+
+procedure TfrmConsolidadoCC.limparTable(var table :TFDMemTable);
+begin
+
+  table.Open;
+  table.First;
+  while not table.Eof do
+  begin
+    table.Delete;
+    table.Next;
+  end;
+
+
+end;
+
+end.
+
