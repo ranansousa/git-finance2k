@@ -1,0 +1,18 @@
+Data/Hora.......: 01/03/2021 13:03:09
+Mensagem........: Cannot create file "D:\Drive\Desenvolvimento\Delphi\Finance\bin\RELATORIOS\CENTRO_CUSTOS_ 01032021.CSV". O sistema não pode encontrar o caminho especificado
+Classe Exceção..: EFCreateError
+Formulário......: frmConsolidadoCC
+Unit............: dxBar
+Controle Visual.: dbgMain
+Usuario.........: Ranan Sousa
+Versão Windows..: Windows 10
+----------------------------------------------------------------------
+Data/Hora.......: 01/03/2021 13:03:55
+Mensagem........: Argument out of range
+Classe Exceção..: EArgumentOutOfRangeException
+Formulário......: frmConsolidadoCC
+Unit............: dxBar
+Controle Visual.: dbgMain
+Usuario.........: Ranan Sousa
+Versão Windows..: Windows 10
+----------------------------------------------------------------------

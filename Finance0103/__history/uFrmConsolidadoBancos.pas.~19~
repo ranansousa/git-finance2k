@@ -1,0 +1,1204 @@
+unit uFrmConsolidadoBancos;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
+  Vcl.StdCtrls, uUtil, udmConexao, uFrameContaBancaria, Data.DB, Vcl.Grids,
+  Vcl.DBGrids, FireDAC.Stan.Intf, FireDAC.Stan.Option, System.DateUtils,
+  FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
+  System.StrUtils, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
+  FireDAC.Comp.DataSet, uDMOrganizacao, FireDAC.Comp.Client, uFramePeriodo,
+  frxClass, frxDBSet, uFrmMostraProcesso, uFrmEnviaMail, uContaBancariaModel,
+  uContaBancariaDAO, uContaBancariaCRModel, uContaBancariaCreditoDAO,
+  uContaBancariaDBModel, uContaBancariaDebitoDAO, Vcl.ExtCtrls,
+  frxExportBaseDialog, Vcl.Buttons, cxGraphics, cxControls, cxLookAndFeels,
+  cxLookAndFeelPainters, dxSkinsCore, dxSkinsDefaultPainters, dxStatusBar,
+  dxRibbonSkins, dxRibbonCustomizationForm, cxClasses, dxRibbon, dxBar, EMsgDlg,
+  dxBarExtItems, cxRadioGroup, cxCheckGroup, cxCheckBox, cxBarEditItem,
+  frxExportPDF, frxExportMail, frxExportImage;
+
+type
+  TfrmConsolidadoBancos = class(TForm)
+    dbgrd1: TDBGrid;
+    dsSaldo: TDataSource;
+    qryObterConta: TFDQuery;
+    qrySaldosBancarios: TFDQuery;
+    qryObterTodasContas: TFDQuery;
+    qryLimpaDataset: TFDQuery;
+    qryPreparaDataset: TFDQuery;
+    qryInsereSaldoConta: TFDQuery;
+    frxRelatorioSaldos: TfrxReport;
+    frxDBSaldos: TfrxDBDataset;
+    qrySaldoDebito: TFDQuery;
+    qrySaldoCredito: TFDQuery;
+    dxBarManager1: TdxBarManager;
+    dxRibbon1Tab1: TdxRibbonTab;
+    dxRibbon1: TdxRibbon;
+    dxBarManager1Bar1: TdxBar;
+    dxBarManager1Bar2: TdxBar;
+    dxBarManager1Bar3: TdxBar;
+    dxBtnProcessar: TdxBarLargeButton;
+    dxBtnImprimir: TdxBarLargeButton;
+    dxBtnFechar: TdxBarLargeButton;
+    PempecMsg: TEvMsgDlg;
+    dxBarManager1Bar4: TdxBar;
+    dxBarManager1Bar5: TdxBar;
+    dxBarDataInicial: TdxBarDateCombo;
+    dxBarDataFinal: TdxBarDateCombo;
+    dxBarLargeButton1: TdxBarLargeButton;
+    dxBarCbxContas: TdxBarCombo;
+    qryObterTodos: TFDQuery;
+    Panel1: TPanel;
+    dxStatusBar: TdxStatusBar;
+    dxBarManager1Bar6: TdxBar;
+    cxBarEditItem1: TcxBarEditItem;
+    cxBarEditItem2: TcxBarEditItem;
+    chkJPG: TcxBarEditItem;
+    chkPDF: TcxBarEditItem;
+    dxBarBtnEnviaMail: TdxBarLargeButton;
+    dxBarEdit1: TdxBarEdit;
+    FDQuery1: TFDQuery;
+    cbxAnos: TdxBarCombo;
+    qryAnos: TFDQuery;
+    qryConsolidadoBancos: TFDQuery;
+    dsConsolida: TDataSource;
+    procedure FormCreate(Sender: TObject);
+    procedure btnProcessarSaldoClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure dbgrd1DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState);
+    procedure dsSaldoDataChange(Sender: TObject; Field: TField);
+    procedure dxBtnImprimirClick(Sender: TObject);
+    procedure dxBtnFecharClick(Sender: TObject);
+    procedure dxBtnProcessarClick(Sender: TObject);
+    procedure dxBarDataFinalChange(Sender: TObject);
+    procedure dxBarDataInicialChange(Sender: TObject);
+    procedure dxBarCbxContasChange(Sender: TObject);
+    procedure dxBarBtnEnviaMailClick(Sender: TObject);
+  private
+    { Private declarations }
+    FsListaIdContas: TStringList;
+    idConta, idOrganizacao: string;
+    pDataInicial, pDataFinal: TDate;
+    qtdRel: Integer;
+    function obterTodosSaldos(pIdOrganizacao: string): Boolean;
+    function obterSaldoPorConta(pIdOrganizacao, pIdConta: string): Boolean;
+    function limpaDataSet(): Boolean;
+    function preparaDataSet(pIdConta, pAno: string): Boolean;
+    procedure preparaDadosExibir(pIdOrganizacao, pIdConta: string);
+    function insereSaldos(piDconta, pMes: string; pValorSaldo: Currency): Boolean;
+    procedure preencheComboAno();
+    procedure limpaPanel;
+    procedure exibirRelatorioSaldos(dtInicial, dtFinal: TDate);
+    procedure inicializarVariaveisRelatorio(dtInicial, dtFinal: TDate);
+    function retornarCaminhoRelatorio: string;
+    procedure alinharColsGrid(pDbGrid: TDBGrid; qtdCol: Integer);
+
+    //usando
+    function obterSaldoAnterior(pIdOrganizacao, pIDConta: string; pDataInicial, pDataFinal: TDate): Currency;
+    function obterSaldoPorContaCredito(pIdOrganizacao, pIDConta: string; pDataInicial, pDataFinal: TDate): Currency;
+    function obterSaldoPorContaDebito(pIdOrganizacao, pIDConta: string; pDataInicial, pDataFinal: TDate): Currency;
+    procedure limpaStatusBar;
+    procedure msgStatusBar(pPosicao: Integer; msg: string);
+    function obterTodos(pIdValue: string; var combo: TdxBarCombo; var listaID: TStringList): boolean;
+    procedure preencheComboAnos(pOrg: string);
+    function obterTodosSaldosConsolidado(pIdOrganizacao: string;
+      pAno: Integer): Boolean;
+  public
+    { Public declarations }
+  end;
+
+var
+  frmConsolidadoBancos: TfrmConsolidadoBancos;
+
+implementation
+
+{$R *.dfm}
+
+procedure TfrmConsolidadoBancos.alinharColsGrid(pDbGrid: TDBGrid; qtdCol: Integer);
+var
+  I: Integer;
+begin
+  //alinha apenas os titulos das colunas
+  //recebe o DBGRID e a quantidade de colunas que ele possu
+
+
+  for I := 0 to qtdCol - 1 do
+  begin
+    pDbGrid.Columns[I].Title.alignment := taCenter;
+  end;
+
+end;
+
+procedure TfrmConsolidadoBancos.exibirRelatorioSaldos(dtInicial, dtFinal: TDate);
+begin
+
+  frxRelatorioSaldos.Clear;
+
+  if not (frxRelatorioSaldos.LoadFromFile(retornarCaminhoRelatorio)) then
+  begin
+
+  end
+  else
+  begin
+    inicializarVariaveisRelatorio(dtInicial, dtFinal);
+    frxRelatorioSaldos.OldStyleProgress := True;
+    frxRelatorioSaldos.ShowProgress := True;
+    frxRelatorioSaldos.ShowReport;
+  end;
+end;
+
+function TfrmConsolidadoBancos.retornarCaminhoRelatorio: string;
+begin
+  Result := uUtil.TPathRelatorio.getRelatorioSaldos;
+end;
+
+procedure TfrmConsolidadoBancos.inicializarVariaveisRelatorio(dtInicial, dtFinal: TDate);
+begin
+
+  with frxRelatorioSaldos.Variables do
+  begin
+
+    if dmOrganizacao.qryDadosEmpresa.RecordCount < 1 then
+    begin
+
+      dmOrganizacao.carregarDadosOrganizacaoFNC(idOrganizacao);
+
+    end;
+
+    Variables['strRazaoSocial'] := QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('RAZAO_SOCIAL').AsString);
+    Variables['strCNPJ'] := QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('CNPJ').AsString);
+    Variables['strEndereco'] := QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('ENDERECO').AsString);
+    Variables['strCEP'] := QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('CEP').AsString);
+    Variables['strCidade'] := QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('CIDADE').AsString);
+    Variables['strUF'] := QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('UF').AsString);
+    Variables['strPeriodo'] := QuotedStr(FormatDateTime('yyyy', pDataInicial));
+  end;
+
+end;
+
+procedure TfrmConsolidadoBancos.btnProcessarSaldoClick(Sender: TObject);
+var
+  aux: Integer;
+  idConta, itemPedido: string;
+begin
+
+  pDataInicial := dxBarDataInicial.Date;
+  pDataFinal := dxBarDataFinal.Date;
+
+  idConta := FsListaIdContas[dxBarCbxContas.ItemIndex];
+  dbgrd1.DataSource.DataSet.Close;
+  dxBtnProcessar.Enabled := False;
+  msgStatusBar(1, 'Processando...');
+
+    // descConta := frmContaBancaria1.cbbConta.Items[frmContaBancaria1.cbbConta.ItemIndex];
+  if ((idConta.Equals('0')) or (idConta.Equals('Sem ID'))) then
+  begin //nao foi escolhida uma conta válida e então precisa trazer de todas
+
+    obterTodosSaldos(idOrganizacao);
+  end
+  else
+  begin
+  //passou uma conta especifica
+    if dxBarCbxContas.ItemIndex > 0 then
+    begin
+      obterSaldoPorConta(idOrganizacao, idConta);
+    end
+    else
+    begin
+
+      obterTodosSaldos(idOrganizacao);
+
+    end;
+  end;
+  FreeAndNil(frmMostraProcesso);
+  msgStatusBar(1, 'Saldos processados. Prontos para impressão.');
+
+end;
+
+procedure TfrmConsolidadoBancos.dbgrd1DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState);
+var
+  pValor: Currency;
+begin
+
+  pValor := qrySaldosBancarios.FieldByName('JANEIRO').AsCurrency;
+
+  if ((qrySaldosBancarios.RecNo mod 2) = 0) then
+  begin //se for linha par.. printa
+
+    dbgrd1.Canvas.Brush.Color := clSilver;
+  end;
+
+  alinharColsGrid(dbgrd1, dbgrd1.Columns.Count);
+
+  //  navega com setas e mantem efeito de linha selecionada
+
+  if Rect.Top = TStringGrid(dbgrd1).CellRect(0, TStringGrid(dbgrd1).Row).Top then
+  begin
+    dbgrd1.Canvas.FillRect(Rect);
+    dbgrd1.Canvas.Font.Color := clWhite;
+    dbgrd1.Canvas.Brush.Color := clHighlight;
+    dbgrd1.DefaultDrawDataCell(Rect, Column.Field, State)
+  end;
+
+  dbgrd1.DefaultDrawColumnCell(Rect, DataCol, Column, State);
+end;
+
+procedure TfrmConsolidadoBancos.dsSaldoDataChange(Sender: TObject; Field: TField);
+begin
+  {Remove barra horizontal do DBgrid1}
+  ShowScrollBar(dbgrd1.handle, SB_VERT, False);
+
+end;
+
+procedure TfrmConsolidadoBancos.dxBarBtnEnviaMailClick(Sender: TObject);
+var
+  assunto, arquivo: string;
+//frxPDFExport : TfrxPDFExport;
+begin
+ //frxPDFExport := TfrxPDFExport.Create(Self);
+  Inc(qtdRel);
+ //só enviar um tipo.
+  chkPDF.EditValue := True;
+
+  if chkJPG.EditValue then
+  begin
+    chkPDF.EditValue := False;
+  end;
+
+  pDataInicial := dxBarDataInicial.Date;
+  pDataFinal := dxBarDataFinal.Date;
+
+  if (qrySaldosBancarios.RecordCount > 0) then
+  begin
+
+    {
+    if chkJPG.EditValue then begin
+      //enviar por PDF
+      arquivo := 'SSD_CONTAS_' + FormatDateTime('dd.MM.yyyy_hh.mm.ss', now)  + '.JPG';
+
+      uutil.GravarImagemJPGFormulario(arquivo, Self);
+
+
+    end;   }
+
+
+    if chkPDF.EditValue then
+    begin
+
+      frxRelatorioSaldos.Clear;
+      frxRelatorioSaldos.LoadFromFile(retornarCaminhoRelatorio);
+      //enviar por PDF
+      arquivo := 'SD_CONTAS_' + FormatDateTime('dd.MM.yyyy_hh.mm', now) + '_' + IntToStr(qtdRel) + '.PDF';
+
+      dmConexao.frxPDFExport := TfrxPDFexport.Create(Self);
+
+      dmConexao.frxPDFExport.FileName := arquivo;
+      dmconexao.frxPDFExport.DefaultPath := GetCurrentDir + '\rel\bancos\';
+      dmconexao.frxPDFExport.ShowDialog := False;
+      dmconexao.frxPDFExport.ShowProgress := False;
+      dmconexao.frxPDFExport.OverwritePrompt := True;
+
+      inicializarVariaveisRelatorio(Now, Now);
+
+      frxRelatorioSaldos.OldStyleProgress := True;
+      frxRelatorioSaldos.ShowProgress := True;
+      frxRelatorioSaldos.PrepareReport(True);
+
+      frxRelatorioSaldos.Export(dmconexao.frxPDFExport);
+
+      if Assigned(dmConexao.frxPDFExport) then
+      begin
+        dmConexao.frxPDFExport.Free;
+      end;
+
+      assunto := arquivo;
+
+      arquivo := GetCurrentDir + '\rel\bancos\' + arquivo;
+
+    end;
+
+    if chkJPG.EditValue then
+    begin
+
+      frxRelatorioSaldos.Clear;
+      frxRelatorioSaldos.LoadFromFile(retornarCaminhoRelatorio);
+      //enviar por PDF
+      arquivo := 'SD_CONTAS_' + FormatDateTime('dd.MM.yyyy_hh.mm', now) + '_' + IntToStr(qtdRel) + '.JPG';
+
+      dmConexao.frxJPEGExport := TfrxJPEGExport.Create(Self);
+
+      dmConexao.frxJPEGExport.FileName := arquivo;
+      dmconexao.frxJPEGExport.DefaultPath := GetCurrentDir + '\rel\bancos\';
+      dmconexao.frxJPEGExport.ShowDialog := False;
+      dmconexao.frxJPEGExport.ShowProgress := False;
+      dmconexao.frxJPEGExport.OverwritePrompt := True;
+      dmconexao.frxJPEGExport.SeparateFiles := False;
+
+      inicializarVariaveisRelatorio(Now, Now);
+
+      frxRelatorioSaldos.OldStyleProgress := True;
+      frxRelatorioSaldos.ShowProgress := True;
+      frxRelatorioSaldos.PrepareReport(True);
+
+      frxRelatorioSaldos.Export(dmconexao.frxJPEGExport);
+
+      if Assigned(dmConexao.frxJPEGExport) then
+      begin
+        dmConexao.frxJPEGExport.Free;
+      end;
+
+      assunto := arquivo;
+
+      arquivo := GetCurrentDir + '\rel\bancos\' + arquivo;
+
+    end;
+
+    frmEnviaMail := TfrmEnviaMail.Create(Self, arquivo, assunto);
+    frmEnviaMail.ShowModal;
+    FreeAndNil(frmEnviaMail);
+
+  end;
+
+  msgStatusBar(1, 'Relatório sendo impresso.');
+
+end;
+
+procedure TfrmConsolidadoBancos.dxBarCbxContasChange(Sender: TObject);
+begin
+
+  if dxBarCbxContas.ItemIndex > (-2) then
+  begin //a partir de TODAS
+    dxBtnProcessar.Enabled := True;
+  end;
+
+end;
+
+procedure TfrmConsolidadoBancos.dxBarDataFinalChange(Sender: TObject);
+begin
+
+  dxBtnProcessar.Enabled := True;
+
+end;
+
+procedure TfrmConsolidadoBancos.dxBarDataInicialChange(Sender: TObject);
+begin
+  dxBtnProcessar.Enabled := True;
+end;
+
+procedure TfrmConsolidadoBancos.dxBtnFecharClick(Sender: TObject);
+begin
+  PostMessage(Self.Handle, WM_CLOSE, 0, 0);
+end;
+
+procedure TfrmConsolidadoBancos.dxBtnImprimirClick(Sender: TObject);
+begin
+  pDataInicial := dxBarDataInicial.Date;
+  pDataFinal := dxBarDataFinal.Date;
+
+  if (qrySaldosBancarios.RecordCount > 0) then
+  begin
+    exibirRelatorioSaldos(pDataInicial, pDataFinal);
+    limpaPanel;
+  end
+  else
+  begin
+    dxBtnImprimir.Enabled := false;
+    PempecMsg.MsgWarning('Não existem dados para imprimir.');
+  end;
+
+  msgStatusBar(1, 'Relatório sendo impresso.');
+
+end;
+
+procedure TfrmConsolidadoBancos.dxBtnProcessarClick(Sender: TObject);
+var
+  pAno, aux: Integer;
+  idConta, itemPedido: string;
+
+
+begin
+
+  pDataInicial := dxBarDataInicial.Date;
+  pDataFinal := dxBarDataFinal.Date;
+
+  pAno := StrToInt(cbxAnos.Text);
+
+
+  idConta := FsListaIdContas[dxBarCbxContas.ItemIndex];
+  dbgrd1.DataSource.DataSet.Close;
+  dxBtnProcessar.Enabled := False;
+  msgStatusBar(1, 'Processando...');
+
+  //passou uma conta especifica
+  if dxBarCbxContas.ItemIndex > 0 then
+  begin
+    obterSaldoPorConta(idOrganizacao, idConta);
+  end
+  else
+  begin
+
+    //obterTodosSaldos(idOrganizacao); desativado
+     dxBtnImprimir.Enabled := False;
+
+    if obterTodosSaldosConsolidado(idOrganizacao, pAno) then begin
+
+      dxBtnImprimir.Enabled := True;
+
+    end;
+
+
+
+  end;
+
+  FreeAndNil(frmMostraProcesso);
+  msgStatusBar(1, 'Saldos processados. Prontos para impressão.');
+
+end;
+
+procedure TfrmConsolidadoBancos.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+
+  Action := caFree; // sempre como ultimo comando
+
+end;
+
+procedure TfrmConsolidadoBancos.FormCreate(Sender: TObject);
+begin
+
+  dmConexao.conectarBanco;
+
+  if not uUtil.Empty(TOrgAtual.getId) then
+  begin
+    idOrganizacao := TOrgAtual.getId;
+  end;
+
+  if not Assigned(dmOrganizacao) then
+  begin
+    dmOrganizacao := TdmOrganizacao.Create(self);
+  end;
+
+  limpaPanel;
+
+  preencheComboAnos(idOrganizacao);
+
+end;
+
+function TfrmConsolidadoBancos.insereSaldos(piDconta, pMes: string; pValorSaldo: Currency): Boolean;
+var
+  cmdSql: string;
+begin
+  dmConexao.conectarBanco;
+
+  cmdSql := ' UPDATE CONTA_BANCARIA_SALDO ' + ' SET ' + pMes + ' = :PVALOR WHERE ID_CONTA_BANCARIA = :PIDCONTA ';
+
+  try
+
+    qryInsereSaldoConta.Close;
+    qryInsereSaldoConta.Connection := dmConexao.conn;
+    qryInsereSaldoConta.SQL.Clear;
+    qryInsereSaldoConta.SQL.Add(cmdSql);
+
+    qryInsereSaldoConta.ParamByName('PIDCONTA').AsString := piDconta;
+    qryInsereSaldoConta.ParamByName('PVALOR').AsCurrency := pValorSaldo;
+    qryInsereSaldoConta.ExecSQL;
+
+    dmConexao.conn.CommitRetaining;
+
+  except
+
+    raise Exception.Create('Erro ao tentar inserir o saldo ');
+
+  end;
+
+end;
+
+procedure TfrmConsolidadoBancos.preencheComboAno;
+var
+  dataHoje: TDateTime;
+  anoAtual: Integer;
+  I: Integer;
+begin
+  dataHoje := uutil.getDataServer;
+  anoAtual := YearOf(now); // StrToInt(FormatDateTime('yyyy', dataHoje));
+
+end;
+
+function TfrmConsolidadoBancos.limpaDataSet: Boolean;
+begin
+  dmConexao.conectarBanco;
+
+  try
+
+    qryLimpaDataset.Close;
+    qryLimpaDataset.Connection := dmConexao.conn;
+    qryLimpaDataset.ExecSQL;
+
+    dmConexao.conn.CommitRetaining;
+
+  except
+    raise Exception.Create('Erro ao tentar limpar a tabela de saldos...');
+
+  end;
+
+  Result := System.True;
+
+end;
+
+function TfrmConsolidadoBancos.preparaDataSet(pIdConta, pAno: string): Boolean;
+begin
+
+  dmConexao.conectarBanco;
+
+  try
+    qryPreparaDataset.Close;
+    qryPreparaDataset.Connection := dmConexao.conn;
+    qryPreparaDataset.ParamByName('PIDCONTA').AsString := pIdConta;
+    qryPreparaDataset.ParamByName('PANO').AsString := pAno;
+    qryPreparaDataset.ExecSQL;
+
+    dmConexao.conn.CommitRetaining;
+    Result := System.True;
+
+  except
+    Result := System.False;
+    dmConexao.conn.RollbackRetaining;
+
+    raise Exception.Create('Erro ao preparar a tabela de base');
+
+  end;
+
+  Result := System.True;
+
+end;
+
+procedure TfrmConsolidadoBancos.limpaPanel;
+begin
+
+  FsListaIdContas := TStringList.Create;
+      {
+ frmContaBancaria1.obterTodos(idOrganizacao, frmContaBancaria1.cbbConta, FsListaIdContas);
+ frmContaBancaria1.cbbConta.Items.Add('TODAS AS CONTAS ');
+ FsListaIdContas.Add('0');
+                             }
+  //combo novo
+  obterTodos(idOrganizacao, dxBarCbxContas, FsListaIdContas);
+
+  dxBarDataInicial.Date := StartOfTheMonth(now);
+  dxBarDataFinal.Date := EndOfTheMonth(now);
+
+  pDataInicial := dxBarDataInicial.Date;
+  pDataFinal := dxBarDataFinal.Date;
+
+  dxBtnImprimir.Enabled := False;
+  limpaStatusBar;
+
+  dxBtnProcessar.Enabled := True;
+
+  chkPDF.EditValue := True;
+  chkJPG.EditValue := False;
+
+end;
+
+function TfrmConsolidadoBancos.obterSaldoPorConta(pIdOrganizacao, pIdConta: string): Boolean;
+var
+  pAno: string;
+begin
+// fazer igual fez na obter todos... só que por conta
+  msgStatusBar(1, 'Processando...');
+  dmConexao.conectarBanco;
+  limpaDataSet;  //deleta tudo que estiver na tabela do saldo
+
+
+  if dxBarCbxContas.ItemIndex > 0 then
+  begin
+    pAno := IntToStr(YearOf(now)); //  FormatDateTime('yyyy', dxBarDataInicial.Date);
+
+    idConta := FsListaIdContas[dxBarCbxContas.ItemIndex];
+    preparaDataSet(idConta, pAno);
+    preparaDadosExibir(idOrganizacao, idConta);
+
+  end;
+
+end;
+
+function TfrmConsolidadoBancos.obterTodosSaldosConsolidado(pIdOrganizacao: string; pAno: Integer): Boolean;
+var
+  sucesso: Boolean;
+
+begin
+  sucesso := False;
+  pAno := StrToInt(cbxAnos.Text);
+
+  if pAno < 1900 then
+  begin
+    pAno := YearOf(now);
+  end;
+
+  qryConsolidadoBancos.Close;
+  qryConsolidadoBancos.Connection := dmConexao.conn;
+  qryConsolidadoBancos.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+  qryConsolidadoBancos.ParamByName('PANO').AsInteger := pAno;
+  qryConsolidadoBancos.Open();
+
+  sucesso := not qryConsolidadoBancos.IsEmpty;
+
+  Result := sucesso;
+
+end;
+
+function TfrmConsolidadoBancos.obterTodosSaldos(pIdOrganizacao: string): Boolean;
+var
+  pConta, pCampo, pMes, pAno, idConta: string;
+  vlrSaldoAnterior, vlrGlobal, vlrCR, vlrDB, vlrSaldo: Currency;
+  anoAnt, I: Integer;
+  pDataInicial, pDataFinal, pDataAnterior: string;
+  dtInicial, dtFinal: TDate;
+begin
+  msgStatusBar(1, 'Processando...');
+
+  if Assigned(frmMostraProcesso) then
+  begin
+    FreeAndNil(frmMostraProcesso);
+  end;
+
+  pAno := FormatDateTime('yyyy', dxBarDataInicial.Date);
+
+  if uUtil.Empty(pAno) then
+  begin
+    pAno := FormatDateTime('yyyy', uUtil.getDataServer);
+  end;
+
+  anoAnt := StrToInt(pAno) - 1;
+
+  dmConexao.conectarBanco;
+  limpaDataSet;  //deleta tudo que estiver na tabela do saldo
+
+  try
+    qryObterTodasContas.Close;
+    qryObterTodasContas.Connection := dmConexao.conn;
+    qryObterTodasContas.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+    qryObterTodasContas.Open;
+    qryObterTodasContas.First;
+
+  except
+    raise Exception.Create('Erro ao tentar obter todas as contas bancárias... ');
+
+  end;
+
+  if qryObterTodasContas.RecordCount > 0 then
+  begin
+    dxBtnImprimir.Enabled := True;
+    qryObterTodasContas.First;
+
+      //insere as contas existentes para o ano determinado
+    while not qryObterTodasContas.Eof do
+    begin
+      idConta := qryObterTodasContas.FieldByName('ID_CONTA_BANCARIA').AsString;
+      preparaDataSet(idConta, pAno);
+      qryObterTodasContas.Next;
+    end;
+
+      //alterar a tupla preparada acima
+      // com o saldo encontrado para o mes determinado
+    qryObterTodasContas.First;
+
+    frmMostraProcesso := TfrmMostraProcesso.Create(Self, 'Saldo das contas', qryObterTodasContas.RecordCount, qryObterTodasContas.RecNo);
+    frmMostraProcesso.Show;
+
+    while not qryObterTodasContas.Eof do
+    begin
+      frmMostraProcesso.avancaPB(qryObterTodasContas.RecNo);
+
+      idConta := qryObterTodasContas.FieldByName('ID_CONTA_BANCARIA').AsString;
+      preparaDadosExibir(idOrganizacao, idConta);
+      qryObterTodasContas.Next;
+
+    end;
+
+    FreeAndNil(frmMostraProcesso);
+
+  end;
+
+end;
+
+function TfrmConsolidadoBancos.obterSaldoAnterior(pIdOrganizacao, pIDConta: string; pDataInicial, pDataFinal: TDate): Currency;
+var
+  valorDB, valorCR, vlrSaldo: Currency;
+  pDataInicio: TDate;
+  conta: TContaBancariaModel;
+begin
+  valorDB := 0;
+  valorCR := 0;
+  vlrSaldo := 0;
+ //  pDataInicio :=  StrToDate('01/01/1990');
+  conta := TContaBancariaModel.Create;
+  conta.FIDorganizacao := pIdOrganizacao;
+  conta.FID := pIDConta;
+  conta := TContaBancariaDAO.obterPorID(conta);
+
+  try
+  //mudado em 11/2 para teste usando OBJETO
+    {  valorDB := obterSaldoPorContaDebito(pIdOrganizacao, pIDConta, pDataInicio,IncDay(pDataInicial, -1));
+      valorCR := obterSaldoPorContaCredito(pIdOrganizacao, pIDConta, pDataInicio,IncDay(pDataInicial, -1));
+
+      vlrSaldo := valorCR - valorDB;  }
+
+    valorDB := TContaBancariaDebitoDAO.obterSaldoAnterior(conta, pDataInicial);
+    valorCR := TContaBancariaCreditoDAO.obterSaldoAnterior(conta, pDataInicial);
+
+    vlrSaldo := valorCR - valorDB;
+
+  except
+
+    raise Exception.Create('Erro ao obter saldo anterior...');
+
+  end;
+
+  Result := vlrSaldo;
+end;
+
+function TfrmConsolidadoBancos.obterSaldoPorContaDebito(pIdOrganizacao, pIDConta: string; pDataInicial, pDataFinal: TDate): Currency;
+var
+  valor: Currency;
+  conta: TContaBancariaModel;
+begin
+  valor := 0;
+  try
+
+    conta := TContaBancariaModel.Create;
+    conta.FIDorganizacao := pIdOrganizacao;
+    conta.FID := pIDConta;
+    conta := TContaBancariaDAO.obterPorID(conta);
+
+    valor := TContaBancariaDebitoDAO.obterSaldoPeriodo(conta, pDataInicial, pDataFinal);
+
+    {
+
+    dmConexao.conectarBanco;
+    try
+
+      qrySaldoDebito.Close;
+      qrySaldoDebito.Connection := dmConexao.conn;
+      qrySaldoDebito.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+      qrySaldoDebito.ParamByName('PIDCONTA').AsString       := pIDConta ;
+      qrySaldoDebito.ParamByName('DTDATAINICIAL').AsDate    := pDataInicial;
+      qrySaldoDebito.ParamByName('DTDATAFINAL').AsDate      := pDataFinal;
+      qrySaldoDebito.Open;
+
+      if not qrySaldoDebito.IsEmpty then
+       valor := qrySaldoDebito.FieldByName('SALDO').AsCurrency;   }
+
+  except
+    raise Exception.Create('Erro ao obter saldo débito ');
+  end;
+
+  Result := valor;
+end;
+
+function TfrmConsolidadoBancos.obterSaldoPorContaCredito(pIdOrganizacao, pIDConta: string; pDataInicial, pDataFinal: TDate): Currency;
+var
+  valor: Currency;
+  conta: TContaBancariaModel;
+begin
+  dmConexao.conectarBanco;
+  valor := 0;
+  try
+    conta := TContaBancariaModel.Create;
+    conta.FIDorganizacao := pIdOrganizacao;
+    conta.FID := pIDConta;
+    conta := TContaBancariaDAO.obterPorID(conta);
+
+    valor := TContaBancariaCreditoDAO.obterSaldoPeriodo(conta, pDataInicial, pDataFinal);
+      {
+      qrySaldoCredito.Close;
+      qrySaldoCredito.Connection := dmConexao.conn;
+      qrySaldoCredito.ParamByName('PIDORGANIZACAO').AsString := pIdOrganizacao;
+      qrySaldoCredito.ParamByName('PIDCONTA').AsString       := pIDConta ;
+      qrySaldoCredito.ParamByName('DTDATAINICIAL').AsDate    := pDataInicial;
+      qrySaldoCredito.ParamByName('DTDATAFINAL').AsDate      := pDataFinal;
+      qrySaldoCredito.Open;
+
+      if not qrySaldoCredito.IsEmpty then
+       valor := qrySaldoCredito.FieldByName('SALDO').AsCurrency;  }
+
+
+  except
+    raise Exception.Create('Erro ao obter saldo crédito ');
+  end;
+
+  Result := valor;
+
+end;
+
+procedure TfrmConsolidadoBancos.preparaDadosExibir(pIdOrganizacao, pIdConta: string);
+var
+  pConta, pCampo, pMes, pAno, idConta: string;
+  vlrSaldoAnterior, vlrGlobal, vlrCR, vlrDB, vlrSaldo: Currency;
+  anoAnt, I: Integer;
+  pDataInicial, pDataFinal, pDataAnterior: string;
+  dtInicial, dtFinal: TDate;
+begin
+
+  pAno := FormatDateTime('yyyy', dxBarDataInicial.Date);
+
+  idConta := pIdConta;
+
+  if uUtil.Empty(pAno) then
+  begin
+    pAno := FormatDateTime('yyyy', uUtil.getDataServer);
+  end;
+
+  anoAnt := StrToInt(pAno) - 1;
+
+
+ //fazer isso para o ano inteiro. A cada mes em separado
+
+
+  vlrCR := 0;
+  vlrDB := 0;
+  vlrGlobal := 0;
+  vlrSaldo := 0;
+
+  if (StrToInt(FormatDateTime('mm', dxBarDataFinal.Date))) >= 1 then
+  begin
+
+    pMes := '01';
+    pCampo := 'JANE';
+    pDataInicial := '01' + '/' + pMes + '/' + pAno;
+    dtFinal := EndOfTheMonth(StrToDate(pDataInicial));
+    pDataFinal := FormatDateTime('dd', dtFinal) + '/' + pMes + '/' + pAno;
+
+    vlrSaldoAnterior := obterSaldoAnterior(idOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+    vlrDB := obterSaldoPorContaDebito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+    vlrCR := obterSaldoPorContaCredito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+
+    vlrSaldo := vlrSaldoAnterior + (vlrCR - vlrDB);
+    insereSaldos(idConta, pCampo, vlrSaldo);
+
+  end;
+
+  vlrCR := 0;
+  vlrDB := 0;
+  vlrSaldo := 0;
+
+  if (StrToInt(FormatDateTime('mm', dxBarDataFinal.Date))) >= 2 then
+  begin
+
+    pMes := '02';
+    pCampo := 'FEVE';
+    pDataInicial := '01' + '/' + pMes + '/' + pAno;
+    dtFinal := EndOfTheMonth(StrToDate(pDataInicial));
+    pDataFinal := FormatDateTime('dd', dtFinal) + '/' + pMes + '/' + pAno;
+    vlrSaldoAnterior := obterSaldoAnterior(idOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+    vlrDB := obterSaldoPorContaDebito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+    vlrCR := obterSaldoPorContaCredito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+
+    vlrSaldo := vlrSaldoAnterior + (vlrCR - vlrDB);
+    insereSaldos(idConta, pCampo, vlrSaldo);
+
+  end;
+
+  vlrCR := 0;
+  vlrDB := 0;
+  vlrSaldo := 0;
+
+  if (StrToInt(FormatDateTime('mm', dxBarDataFinal.Date))) >= 3 then
+  begin
+
+    pMes := '03';
+    pCampo := 'MARC';
+    pDataInicial := '01' + '/' + pMes + '/' + pAno;
+    dtFinal := EndOfTheMonth(StrToDate(pDataInicial));
+    pDataFinal := FormatDateTime('dd', dtFinal) + '/' + pMes + '/' + pAno;
+    vlrSaldoAnterior := obterSaldoAnterior(idOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+    vlrDB := obterSaldoPorContaDebito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+    vlrCR := obterSaldoPorContaCredito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+
+    vlrSaldo := vlrSaldoAnterior + (vlrCR - vlrDB);
+    insereSaldos(idConta, pCampo, vlrSaldo);
+
+  end;
+
+  vlrCR := 0;
+  vlrDB := 0;
+  vlrSaldo := 0;
+
+  if (StrToInt(FormatDateTime('mm', dxBarDataFinal.Date))) >= 4 then
+  begin
+
+    pMes := '04';
+    pCampo := 'ABRI';
+    pDataInicial := '01' + '/' + pMes + '/' + pAno;
+    dtFinal := EndOfTheMonth(StrToDate(pDataInicial));
+    pDataFinal := FormatDateTime('dd', dtFinal) + '.' + pMes + '.' + pAno;
+    pDataFinal := FormatDateTime('dd', dtFinal) + '/' + pMes + '/' + pAno;
+    vlrSaldoAnterior := obterSaldoAnterior(idOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+    vlrDB := obterSaldoPorContaDebito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+    vlrCR := obterSaldoPorContaCredito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+
+    vlrSaldo := vlrSaldoAnterior + (vlrCR - vlrDB);
+    insereSaldos(idConta, pCampo, vlrSaldo);
+
+  end;
+
+  vlrCR := 0;
+  vlrDB := 0;
+  vlrSaldo := 0;
+
+  if (StrToInt(FormatDateTime('mm', dxBarDataFinal.Date))) >= 5 then
+  begin
+
+    pMes := '05';
+    pCampo := 'MAIO';
+    pDataInicial := '01' + '/' + pMes + '/' + pAno;
+    dtFinal := EndOfTheMonth(StrToDate(pDataInicial));
+    pDataFinal := FormatDateTime('dd', dtFinal) + '/' + pMes + '/' + pAno;
+    vlrSaldoAnterior := obterSaldoAnterior(idOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+    vlrDB := obterSaldoPorContaDebito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+    vlrCR := obterSaldoPorContaCredito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+
+    vlrSaldo := vlrSaldoAnterior + (vlrCR - vlrDB);
+    insereSaldos(idConta, pCampo, vlrSaldo);
+
+  end;
+
+  vlrCR := 0;
+  vlrDB := 0;
+  vlrSaldo := 0;
+
+  if (StrToInt(FormatDateTime('mm', dxBarDataFinal.Date))) >= 6 then
+  begin
+
+    pMes := '06';
+    pCampo := 'JUNH';
+    pDataInicial := '01' + '/' + pMes + '/' + pAno;
+    dtFinal := EndOfTheMonth(StrToDate(pDataInicial));
+    pDataFinal := FormatDateTime('dd', dtFinal) + '/' + pMes + '/' + pAno;
+    vlrSaldoAnterior := obterSaldoAnterior(idOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+    vlrDB := obterSaldoPorContaDebito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+    vlrCR := obterSaldoPorContaCredito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+
+    vlrSaldo := vlrSaldoAnterior + (vlrCR - vlrDB);
+    insereSaldos(idConta, pCampo, vlrSaldo);
+
+  end;
+
+  vlrCR := 0;
+  vlrDB := 0;
+  vlrSaldo := 0;
+
+  if (StrToInt(FormatDateTime('mm', dxBarDataFinal.Date))) >= 7 then
+  begin
+
+    pMes := '07';
+    pCampo := 'JULH';
+    pDataInicial := '01' + '/' + pMes + '/' + pAno;
+    dtFinal := EndOfTheMonth(StrToDate(pDataInicial));
+    pDataFinal := FormatDateTime('dd', dtFinal) + '/' + pMes + '/' + pAno;
+    vlrSaldoAnterior := obterSaldoAnterior(idOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+    vlrDB := obterSaldoPorContaDebito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+    vlrCR := obterSaldoPorContaCredito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+
+    vlrSaldo := vlrSaldoAnterior + (vlrCR - vlrDB);
+    insereSaldos(idConta, pCampo, vlrSaldo);
+
+  end;
+
+  vlrCR := 0;
+  vlrDB := 0;
+  vlrSaldo := 0;
+
+  if (StrToInt(FormatDateTime('mm', dxBarDataFinal.Date))) >= 8 then
+  begin
+
+    pMes := '08';
+    pCampo := 'AGOS';
+    pDataInicial := '01' + '/' + pMes + '/' + pAno;
+    dtFinal := EndOfTheMonth(StrToDate(pDataInicial));
+    pDataFinal := FormatDateTime('dd', dtFinal) + '/' + pMes + '/' + pAno;
+    vlrSaldoAnterior := obterSaldoAnterior(idOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+    vlrDB := obterSaldoPorContaDebito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+    vlrCR := obterSaldoPorContaCredito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+
+    vlrSaldo := vlrSaldoAnterior + (vlrCR - vlrDB);
+    insereSaldos(idConta, pCampo, vlrSaldo);
+
+  end;
+
+  vlrCR := 0;
+  vlrDB := 0;
+  vlrSaldo := 0;
+
+  if (StrToInt(FormatDateTime('mm', dxBarDataFinal.Date))) >= 9 then
+  begin
+
+    pMes := '09';
+    pCampo := 'SETE';
+    pDataInicial := '01' + '/' + pMes + '/' + pAno;
+    dtFinal := EndOfTheMonth(StrToDate(pDataInicial));
+    pDataFinal := FormatDateTime('dd', dtFinal) + '/' + pMes + '/' + pAno;
+    vlrSaldoAnterior := obterSaldoAnterior(idOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+    vlrDB := obterSaldoPorContaDebito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+    vlrCR := obterSaldoPorContaCredito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+
+    vlrSaldo := vlrSaldoAnterior + (vlrCR - vlrDB);
+    insereSaldos(idConta, pCampo, vlrSaldo);
+
+  end;
+
+  vlrCR := 0;
+  vlrDB := 0;
+  vlrSaldo := 0;
+
+  if (StrToInt(FormatDateTime('mm', dxBarDataFinal.Date))) >= 10 then
+  begin
+
+    pMes := '10';
+    pCampo := 'OUTU';
+    pDataInicial := '01' + '/' + pMes + '/' + pAno;
+    dtFinal := EndOfTheMonth(StrToDate(pDataInicial));
+    pDataFinal := FormatDateTime('dd', dtFinal) + '/' + pMes + '/' + pAno;
+    vlrSaldoAnterior := obterSaldoAnterior(idOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+    vlrDB := obterSaldoPorContaDebito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+    vlrCR := obterSaldoPorContaCredito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+
+    vlrSaldo := vlrSaldoAnterior + (vlrCR - vlrDB);
+    insereSaldos(idConta, pCampo, vlrSaldo);
+
+  end;
+
+  vlrCR := 0;
+  vlrDB := 0;
+  vlrSaldo := 0;
+
+  if (StrToInt(FormatDateTime('mm', dxBarDataFinal.Date))) >= 11 then
+  begin
+
+    pMes := '11';
+    pCampo := 'NOVE';
+    pDataInicial := '01' + '/' + pMes + '/' + pAno;
+    dtFinal := EndOfTheMonth(StrToDate(pDataInicial));
+    pDataFinal := FormatDateTime('dd', dtFinal) + '/' + pMes + '/' + pAno;
+    vlrSaldoAnterior := obterSaldoAnterior(idOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+    vlrDB := obterSaldoPorContaDebito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+    vlrCR := obterSaldoPorContaCredito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+
+    vlrSaldo := vlrSaldoAnterior + (vlrCR - vlrDB);
+    insereSaldos(idConta, pCampo, vlrSaldo);
+
+  end;
+
+  vlrCR := 0;
+  vlrDB := 0;
+  vlrSaldo := 0;
+
+  if (StrToInt(FormatDateTime('mm', dxBarDataFinal.Date))) >= 12 then
+  begin
+
+    vlrCR := 0;
+    vlrDB := 0;
+    vlrSaldo := 0;
+    pMes := '12';
+    pCampo := 'DEZE';
+    pDataInicial := '01' + '/' + pMes + '/' + pAno;
+    dtFinal := EndOfTheMonth(StrToDate(pDataInicial));
+    pDataFinal := FormatDateTime('dd', dtFinal) + '/' + pMes + '/' + pAno;
+    vlrSaldoAnterior := obterSaldoAnterior(idOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+    vlrDB := obterSaldoPorContaDebito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+    vlrCR := obterSaldoPorContaCredito(pIdOrganizacao, idConta, StrToDate(pDataInicial), StrToDate(pDataFinal));
+
+    vlrSaldo := vlrSaldoAnterior + (vlrCR - vlrDB);
+    insereSaldos(idConta, pCampo, vlrSaldo);
+
+  end;
+
+  qrySaldosBancarios.Close;
+  qrySaldosBancarios.Connection := dmConexao.conn;
+  qrySaldosBancarios.Open;
+
+  if not qrySaldosBancarios.IsEmpty then
+  begin
+
+    dxBtnImprimir.Enabled := True;
+
+  end
+  else
+  begin
+    dxBtnImprimir.Enabled := False;
+  end;
+
+end;
+
+function TfrmConsolidadoBancos.obterTodos(pIdValue: string; var combo: TdxBarCombo; var listaID: TStringList): boolean;
+begin
+
+  dmConexao.conectarBanco;
+  idOrganizacao := TOrgAtual.getId;
+
+  listaID := TStringList.Create;
+  listaID.Clear;
+  listaID.Add('Sem ID');
+  combo.Items.Clear;
+  combo.Items.Add('Processar todas as contas');
+
+  qryObterTodos.Close;
+  qryObterTodos.Connection := dmConexao.conn;
+  qryObterTodos.ParamByName('PIDORGANIZACAO').AsString := idOrganizacao;
+  qryObterTodos.Open;
+
+  if not qryObterTodos.IsEmpty then
+  begin
+    qryObterTodos.First;
+
+    while not qryObterTodos.Eof do
+    begin
+      combo.Items.Add(qryObterTodos.FieldByName('CONTA').AsString);
+      listaID.Add(qryObterTodos.FieldByName('ID_CONTA_BANCARIA').AsString);
+      qryObterTodos.Next;
+    end;
+    qryObterTodos.Close;
+    combo.ItemIndex := 0;
+
+  end;
+
+end;
+
+procedure TfrmConsolidadoBancos.limpaStatusBar;
+begin
+  dxStatusBar.Panels[0].Text := 'Status ';
+  dxStatusBar.Panels[1].Text := 'Escolha uma conta bancária caso deseje ou clique em processar para todas! ';
+end;
+
+procedure TfrmConsolidadoBancos.msgStatusBar(pPosicao: Integer; msg: string);
+begin
+  dxStatusBar.Panels[pPosicao].Text := msg;
+  Application.ProcessMessages;
+end;
+
+procedure TfrmConsolidadoBancos.preencheComboAnos(pOrg: string);
+var
+  menorAno, maiorAno: Integer;
+begin
+
+  menorAno := YearOf(now);
+  maiorAno := YearOf(now);
+
+  menorAno := qryAnos.FieldByName('MENOR').AsInteger;
+  maiorAno := qryAnos.FieldByName('MAIOR').AsInteger;
+
+  while menorAno <= maiorAno do
+  begin
+
+    cbxAnos.Items.Add(IntToStr(menorAno));
+    Inc(menorAno);
+
+  end;
+
+  cbxAnos.ItemIndex := cbxAnos.Items.Count - 1;
+
+end;
+
+end.
+

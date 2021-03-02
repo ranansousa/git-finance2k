@@ -1,0 +1,254 @@
+unit uTPBaixaDEDAO;
+
+interface
+
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, FireDAC.Stan.Intf, FireDAC.Stan.Option,uTPBaixaDEModel,
+  FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,uTipoDeducaoModel,uTipoDeducaoDAO,
+  FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB, udmConexao, uUtil,
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client;
+
+
+  const
+   pTable : string = 'TITULO_PAGAR_BAIXA_DE';
+
+
+
+type
+ TTPBaixaDEDAO = class
+  private
+    class function getModel (query :TFDQuery) : TTPBaixaDEModel;
+  public
+    {métodos CRUD (Create, Read, Update e Delete)
+    para manipulação dos dados}
+    class function Insert(value :TTPBaixaDEModel): Boolean;
+    class function obterPorID(value :TTPBaixaDEModel): TTPBaixaDEModel;
+    class function Update(value :TTPBaixaDEModel): Boolean;
+    class function Delete(value :TTPBaixaDEModel): Boolean;
+    class function deletePorTPBaixa(value :TTPBaixaDEModel): Boolean;
+
+
+  end;
+
+implementation
+
+class function TTPBaixaDEDAO.Delete(value: TTPBaixaDEModel): Boolean;
+var
+qryDelete : TFDQuery;
+xResp :Boolean;
+begin
+
+xResp := False;
+ dmConexao.conectarBanco;
+ try
+
+  qryDelete := TFDQuery.Create(nil);
+  qryDelete.Close;
+  qryDelete.Connection := dmConexao.conn;
+  qryDelete.SQL.Clear;
+  qryDelete.SQL.Add('DELETE FROM '+pTable     );
+  qryDelete.SQL.Add('WHERE ID_ORGANIZACAO = :PIDORGANIZACAO  AND  ID_'+pTable +  ' = :PID '  );
+  qryDelete.ParamByName('PIDORGANIZACAO').AsString := value.FIDorganizacao;
+  qryDelete.ParamByName('PID').AsString := value.FID;
+
+  qryDelete.ExecSQL;
+  xResp := True;
+
+
+ except
+ xResp := False;
+ raise Exception.Create('Erro ao tentar DELETAR ' + pTable);
+
+ end;
+
+  Result := xResp;
+end;
+
+
+
+class function TTPBaixaDEDAO.deletePorTPBaixa(value: TTPBaixaDEModel): Boolean;
+var
+qryDelete : TFDQuery;
+sucesso :Boolean;
+begin
+sucesso := False;
+
+ dmConexao.conectarBanco;
+ try
+
+  qryDelete := TFDQuery.Create(nil);
+  qryDelete.Close;
+  qryDelete.Connection := dmConexao.conn;
+  qryDelete.SQL.Clear;
+  qryDelete.SQL.Add('DELETE FROM '+pTable     );
+  qryDelete.SQL.Add('WHERE ID_ORGANIZACAO = :PIDORGANIZACAO  AND  ID_TITULO_PAGAR_BAIXA = :PID '  );
+  qryDelete.ParamByName('PIDORGANIZACAO').AsString := value.FIDorganizacao;
+  qryDelete.ParamByName('PID').AsString := value.FIDtituloPagarBaixa;
+
+  qryDelete.ExecSQL;
+  if qryDelete.RowsAffected >0  then begin
+    sucesso := True;
+    dmConexao.conn.CommitRetaining;
+  end;
+
+
+ except
+ sucesso := False;
+ raise Exception.Create('Erro ao tentar DELETAR ' + pTable);
+
+ end;
+
+  Result := sucesso;
+end;
+
+class function TTPBaixaDEDAO.getModel(query: TFDQuery): TTPBaixaDEModel;
+var model :TTPBaixaDEModel;
+
+begin
+
+  if not query.IsEmpty then begin
+
+    try
+
+      model                     := TTPBaixaDEModel.Create;
+      model.FID                 := query.FieldByName('ID_TITULO_PAGAR_BAIXA_DE').AsString;
+      model.FIDorganizacao      := query.FieldByName('ID_ORGANIZACAO').AsString;
+      model.FIDtituloPagarBaixa := query.FieldByName('ID_TITULO_PAGAR_BAIXA').AsString;
+      model.FIDtipoDeducao      := query.FieldByName('ID_TIPO_DEDUCAO').AsString;
+      model.Fvalor              := query.FieldByName('VALOR').AsCurrency;
+
+        try
+          model.FtipoDeducao                := TTipoDeducaoModel.Create;
+          model.FtipoDeducao.FID            := model.FIDtipoDeducao;
+          model.FtipoDeducao.FIDOrganizacao := model.FIDOrganizacao;
+          model.FtipoDeducao                := TTipoDeducaoDAO.obterPorID(model.FtipoDeducao);
+
+        except
+          raise Exception.Create('Erro ao tentar obter tipo deducao por ' + pTable);
+
+        end;
+
+    except
+          raise Exception.Create('Erro ao tentar Converter ' + pTable);
+
+    end;
+
+  end;
+   Result := model;
+
+end;
+
+class function TTPBaixaDEDAO.Insert(value: TTPBaixaDEModel): Boolean;
+var
+  qry: TFDQuery;
+  cmdSql: string;
+begin
+  dmConexao.conectarBanco;
+  qry := TFDQuery.Create(nil);
+  try
+
+
+     cmdSql :=  ' INSERT INTO TITULO_PAGAR_BAIXA_DE '+
+                ' (ID_TITULO_PAGAR_BAIXA_DE, ID_ORGANIZACAO, ID_TITULO_PAGAR_BAIXA, ID_TIPO_DEDUCAO, VALOR ) '+
+                ' VALUES (:PID, :PIDORGANIZACAO, :PIDBAIXA,:PIDTIPO_DE, :PVALOR ) ';
+
+    qry.Close;
+    qry.Connection := dmConexao.conn;
+    qry.SQL.Clear;
+    qry.SQL.Add(cmdSql);
+    qry.ParamByName('PID').AsString                   := value.FID;
+    qry.ParamByName('PIDORGANIZACAO').AsString        := value.FIDorganizacao;
+    qry.ParamByName('PIDTIPO_DE').AsString            := value.FIDtipoDeducao;
+    qry.ParamByName('PIDBAIXA').AsString              := value.FIDtituloPagarBaixa;
+    qry.ParamByName('PVALOR').AsCurrency              := value.Fvalor ;
+    qry.ExecSQL;
+
+  Result := System.True;
+  finally
+    if Assigned(qry) then
+    begin
+      FreeAndNil(qry);
+    end;
+  end;
+
+end;
+
+class function TTPBaixaDEDAO.obterPorID( value: TTPBaixaDEModel): TTPBaixaDEModel;
+var
+qryPesquisa : TFDQuery;
+cmdSql:string;
+model: TTPBaixaDEModel;
+begin
+
+dmConexao.conectarBanco;
+try
+  qryPesquisa := TFDQuery.Create(nil);
+  qryPesquisa.Close;
+  qryPesquisa.Connection := dmConexao.conn;
+  qryPesquisa.SQL.Clear;
+  qryPesquisa.SQL.Add('SELECT * '  );
+  qryPesquisa.SQL.Add('FROM ' + pTable  );
+  qryPesquisa.SQL.Add('WHERE ID_'+pTable+ ' = :PID '  );
+
+  qryPesquisa.ParamByName('PID').AsString := value.FID;
+  qryPesquisa.Open;
+
+  if not qryPesquisa.IsEmpty then begin
+
+      model := TTPBaixaDEModel.Create;
+      model := getModel(qryPesquisa);  end;
+
+
+except
+raise Exception.Create('Erro ao tentar obter ' + pTable );
+
+end;
+
+ Result := model;
+end;
+
+class function TTPBaixaDEDAO.Update(value: TTPBaixaDEModel): Boolean;
+var
+  qry: TFDQuery;
+  cmdSql: string;
+begin
+  dmConexao.conectarBanco;
+  qry := TFDQuery.Create(nil);
+  try
+    try
+
+     cmdSql := ' UPDATE TITULO_PAGAR_BAIXA_DE '+
+               ' SET ID_TITULO_PAGAR_BAIXA  = :PIDBAIXA, '+
+               '     ID_TIPO_DEDUCAO        = :PIDTIPO_DE,'+
+               '     VALOR                  = :PVALOR '+
+               ' WHERE (ID_TITULO_PAGAR_BAIXA_DE = :PID) AND (ID_ORGANIZACAO = :PIDORGANIZACAO) ';
+
+
+    qry.Close;
+    qry.Connection := dmConexao.conn;
+    qry.SQL.Clear;
+    qry.SQL.Add(cmdSql);
+    qry.ParamByName('PID').AsString                   := value.FID;
+    qry.ParamByName('PIDORGANIZACAO').AsString        := value.FIDorganizacao;
+    qry.ParamByName('PIDTIPO_DE').AsString            := value.FIDtipoDeducao;
+    qry.ParamByName('PIDBAIXA').AsString              := value.FIDtituloPagarBaixa;
+    qry.ParamByName('PVALOR').AsCurrency              := value.Fvalor ;
+    qry.ExecSQL;
+
+    except
+      Result := False;
+      raise Exception.Create('Erro ao tentar alterar ' + pTable);
+    end;
+
+    Result := System.True;
+  finally
+    if Assigned(qry) then
+    begin
+      FreeAndNil(qry);
+    end;
+  end;
+
+end;
+end.

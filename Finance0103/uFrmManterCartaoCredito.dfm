@@ -1,0 +1,651 @@
+object frmManterCartaoCredito: TfrmManterCartaoCredito
+  Left = 0
+  Top = 0
+  Caption = 'Manuten'#231#227'o cart'#227'o de cr'#233'dito'
+  ClientHeight = 523
+  ClientWidth = 784
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  KeyPreview = True
+  OldCreateOrder = False
+  Position = poDesktopCenter
+  OnClose = FormClose
+  OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
+  PixelsPerInch = 96
+  TextHeight = 13
+  object lbl1: TLabel
+    Left = 33
+    Top = 212
+    Width = 39
+    Height = 13
+    Caption = 'Dia Vcto'
+  end
+  object lbl2: TLabel
+    Left = 352
+    Top = 156
+    Width = 37
+    Height = 13
+    Caption = 'N'#250'mero'
+  end
+  object lbl3: TLabel
+    Left = 600
+    Top = 238
+    Width = 40
+    Height = 13
+    Caption = 'Validade'
+  end
+  object lbl4: TLabel
+    Left = 31
+    Top = 238
+    Width = 76
+    Height = 13
+    Caption = 'C'#243'd. seguran'#231'a'
+  end
+  object lbl5: TLabel
+    Left = 352
+    Top = 238
+    Width = 30
+    Height = 13
+    Caption = 'Titular'
+  end
+  object lbl6: TLabel
+    Left = 31
+    Top = 148
+    Width = 84
+    Height = 13
+    Caption = 'Cart'#227'o de cr'#233'dito'
+  end
+  object lbl7: TLabel
+    Left = 185
+    Top = 212
+    Width = 55
+    Height = 13
+    Caption = 'Dia Compra'
+  end
+  object lbl8: TLabel
+    Left = 600
+    Top = 156
+    Width = 27
+    Height = 13
+    Caption = 'Limite'
+  end
+  object lbl9: TLabel
+    Left = 185
+    Top = 238
+    Width = 42
+    Height = 13
+    Caption = 'Bandeira'
+  end
+  object dxRibbon1: TdxRibbon
+    Left = 0
+    Top = 0
+    Width = 784
+    Height = 125
+    BarManager = dxBarManager1
+    ColorSchemeName = 'UserSkin'
+    Contexts = <>
+    TabOrder = 6
+    TabStop = False
+    object dxRibbon1Tab1: TdxRibbonTab
+      Active = True
+      Caption = 'Manuten'#231#227'o de cart'#245'es de cr'#233'dito'
+      Groups = <
+        item
+          Caption = 'Novo'
+          ToolbarName = 'dxBarManager1Bar2'
+        end
+        item
+          ToolbarName = 'dxBarManager1Bar1'
+        end
+        item
+          ToolbarName = 'dxBarSalvar'
+        end
+        item
+          ToolbarName = 'dxBarManager1Bar4'
+        end
+        item
+          ToolbarName = 'dxBarManager1Bar5'
+        end
+        item
+          ToolbarName = 'dxBarManager1Bar6'
+        end
+        item
+          ToolbarName = 'dxBarManager1Bar3'
+        end>
+      Index = 0
+    end
+  end
+  object dxStatusBar: TdxStatusBar
+    Left = 0
+    Top = 503
+    Width = 784
+    Height = 20
+    Panels = <
+      item
+        PanelStyleClassName = 'TdxStatusBarTextPanelStyle'
+      end
+      item
+        PanelStyleClassName = 'TdxStatusBarTextPanelStyle'
+      end>
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+  end
+  object dbgrdMain: TDBGrid
+    Left = 0
+    Top = 302
+    Width = 784
+    Height = 201
+    Align = alBottom
+    DataSource = dsGrid
+    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+    TabOrder = 10
+    TitleFont.Charset = DEFAULT_CHARSET
+    TitleFont.Color = clWindowText
+    TitleFont.Height = -11
+    TitleFont.Name = 'Tahoma'
+    TitleFont.Style = []
+    OnCellClick = dbgrdMainCellClick
+    OnTitleClick = dbgrdMainTitleClick
+    Columns = <
+      item
+        Expanded = False
+        FieldName = 'CARTAO'
+        Title.Alignment = taCenter
+        Title.Caption = 'CART'#195'O'
+        Title.Font.Charset = DEFAULT_CHARSET
+        Title.Font.Color = clWindowText
+        Title.Font.Height = -11
+        Title.Font.Name = 'Tahoma'
+        Title.Font.Style = [fsBold]
+        Width = 150
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'NUMERO'
+        Title.Alignment = taCenter
+        Title.Caption = 'N'#218'MERO'
+        Title.Font.Charset = DEFAULT_CHARSET
+        Title.Font.Color = clWindowText
+        Title.Font.Height = -11
+        Title.Font.Name = 'Tahoma'
+        Title.Font.Style = [fsBold]
+        Width = 150
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'TITULAR'
+        Title.Alignment = taCenter
+        Title.Font.Charset = DEFAULT_CHARSET
+        Title.Font.Color = clWindowText
+        Title.Font.Height = -11
+        Title.Font.Name = 'Tahoma'
+        Title.Font.Style = [fsBold]
+        Width = 200
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'DATA_VALIDADE'
+        Title.Alignment = taCenter
+        Title.Caption = 'VALIDADE'
+        Title.Font.Charset = DEFAULT_CHARSET
+        Title.Font.Color = clWindowText
+        Title.Font.Height = -11
+        Title.Font.Name = 'Tahoma'
+        Title.Font.Style = [fsBold]
+        Width = 100
+        Visible = True
+      end
+      item
+        Alignment = taCenter
+        Expanded = False
+        FieldName = 'DIA_COMPRA'
+        Title.Alignment = taCenter
+        Title.Caption = 'DIA CP'
+        Title.Font.Charset = DEFAULT_CHARSET
+        Title.Font.Color = clWindowText
+        Title.Font.Height = -11
+        Title.Font.Name = 'Tahoma'
+        Title.Font.Style = [fsBold]
+        Width = 50
+        Visible = True
+      end>
+  end
+  object edtNumeroCartao: TEdit
+    Tag = 1
+    Left = 352
+    Top = 175
+    Width = 225
+    Height = 21
+    AutoSelect = False
+    AutoSize = False
+    Color = clMoneyGreen
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+    TabOrder = 0
+  end
+  object edtDiaVcto: TEdit
+    Tag = 1
+    Left = 86
+    Top = 209
+    Width = 43
+    Height = 21
+    Alignment = taCenter
+    Color = clMoneyGreen
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    MaxLength = 2
+    ParentFont = False
+    TabOrder = 2
+  end
+  object edtCodigoSeg: TEdit
+    Left = 33
+    Top = 261
+    Width = 96
+    Height = 21
+    Alignment = taRightJustify
+    Color = clMoneyGreen
+    Enabled = False
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    MaxLength = 6
+    ParentFont = False
+    PasswordChar = '#'
+    TabOrder = 4
+    Text = '0000'
+  end
+  object edtTitular: TEdit
+    Tag = 1
+    Left = 352
+    Top = 261
+    Width = 225
+    Height = 21
+    Color = cl3DLight
+    TabOrder = 7
+    Text = 'edtTitular'
+  end
+  object edtBandeira: TEdit
+    Left = 185
+    Top = 261
+    Width = 113
+    Height = 21
+    Alignment = taRightJustify
+    Color = cl3DLight
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    MaxLength = 30
+    ParentFont = False
+    TabOrder = 5
+  end
+  object edtLimite: TEvNumEdit
+    Tag = 1
+    Left = 600
+    Top = 175
+    Width = 121
+    Height = 21
+    Glyph.Data = {
+      7E050000424D7E0500000000000036000000280000001A0000000D0000000100
+      2000000000004805000000000000000000000000000000000000FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF009A6A39009767360093643400906131008C5E2F00895B
+      2C0085582A00825527007F522500FF00FF00FF00FF00FF00FF00FF00FF008585
+      8500828282007F7F7F007D7D7D007A7A7A007777770075757500727272006F6F
+      6F00FF00FF00FF00FF00FF00FF00FF00FF009F6E3C00E3947600DC8B6A00D682
+      5E00D07A5300CB724900C66B3F00C66B3F0082552700FF00FF00FF00FF00FF00
+      FF00FF00FF0089898900B1B1B100A9A9A900A1A1A10099999900929292008B8B
+      8B008B8B8B0072727200FF00FF00FF00FF00FF00FF00FF00FF00A2713E00FFFF
+      FF00D0A08000FFFFFF00D0A08000FFFFFF00D0A08000E9D7C30085582A00FF00
+      FF00FF00FF00FF00FF00FF00FF008B8B8B00FFFFFF00B7B7B700FFFFFF00B7B7
+      B700FFFFFF00B7B7B700E0E0E00075757500FF00FF00FF00FF00FF00FF00FF00
+      FF00A5734000E3947600DC8B6A00D6825E00D07A5300CB724900C66B3F00C66B
+      3F00895B2C00FF00FF00FF00FF00FF00FF00FF00FF008D8D8D00B1B1B100A9A9
+      A900A1A1A10099999900929292008B8B8B008B8B8B0077777700FF00FF00FF00
+      FF00FF00FF00FF00FF00A8764200FFFFFF00D0A08000FFFFFF00D0A08000FFFF
+      FF00D0A08000E9D7C3008C5E2F00FF00FF00FF00FF00FF00FF00FF00FF008F8F
+      8F00FFFFFF00B7B7B700FFFFFF00B7B7B700FFFFFF00B7B7B700E0E0E0007A7A
+      7A00FF00FF00FF00FF00FF00FF00FF00FF00AB794400E3947600DC8B6A00D682
+      5E00D07A5300CB724900C66B3F00C66B3F0090613100FF00FF00FF00FF00FF00
+      FF00FF00FF0092929200B1B1B100A9A9A900A1A1A10099999900929292008B8B
+      8B008B8B8B007D7D7D00FF00FF00FF00FF00FF00FF00FF00FF00AE7B4600FFFF
+      FF00D0A08000FFFFFF00D0A08000FFFFFF00D0A08000E9D7C30093643400FF00
+      FF00FF00FF00FF00FF00FF00FF0093939300FFFFFF00B7B7B700FFFFFF00B7B7
+      B700FFFFFF00B7B7B700E0E0E0007F7F7F00FF00FF00FF00FF00FF00FF00FF00
+      FF00B17E4800E3947600DC8B6A00D6825E00D07A5300CB724900C66B3F00C66B
+      3F0097673600FF00FF00FF00FF00FF00FF00FF00FF0096969600B1B1B100A9A9
+      A900A1A1A10099999900929292008B8B8B008B8B8B0082828200FF00FF00FF00
+      FF00FF00FF00FF00FF00B4814A00FFF9F900FFF3F300FFEDED00FFE7E700FFDC
+      DC00FFD0D000FFD0D0009A6A3900FF00FF00FF00FF00FF00FF00FF00FF009999
+      9900FBFBFB00F8F8F800F4F4F400F0F0F000E9E9E900E2E2E200E2E2E2008585
+      8500FF00FF00FF00FF00FF00FF00FF00FF00B9854E00FFFFFF00FFF9F900FFF3
+      F300FFEDED00FFE7E700FFDCDC00FFDCDC009F6E3C00FF00FF00FF00FF00FF00
+      FF00FF00FF009C9C9C00FFFFFF00FBFBFB00F8F8F800F4F4F400F0F0F000E9E9
+      E900E9E9E90089898900FF00FF00FF00FF00FF00FF00FF00FF00BC875000B985
+      4E00B4814A00B17E4800AE7B4600AB794400A8764200A5734000A2713E00FF00
+      FF00FF00FF00FF00FF00FF00FF009E9E9E009C9C9C0099999900969696009393
+      9300929292008F8F8F008D8D8D008B8B8B00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+      FF00}
+    TabOrder = 1
+  end
+  object edtDiaCompra: TEdit
+    Tag = 1
+    Left = 254
+    Top = 209
+    Width = 43
+    Height = 21
+    Alignment = taCenter
+    Color = clMoneyGreen
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    MaxLength = 2
+    ParentFont = False
+    TabOrder = 3
+  end
+  object dtpValidade: TDateTimePicker
+    Left = 600
+    Top = 261
+    Width = 121
+    Height = 21
+    Date = 43829.898770312500000000
+    Time = 43829.898770312500000000
+    TabOrder = 8
+  end
+  inline frmCartaoCredito1: TfrmCartaoCredito
+    Left = 23
+    Top = 167
+    Width = 301
+    Height = 35
+    TabOrder = 11
+    ExplicitLeft = 23
+    ExplicitTop = 167
+    inherited cbbCartao: TComboBox
+      Tag = 1
+      Left = 6
+      Width = 268
+      ExplicitLeft = 6
+      ExplicitWidth = 268
+    end
+  end
+  object dxBarManager1: TdxBarManager
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = 'Segoe UI'
+    Font.Style = []
+    Categories.Strings = (
+      'Default')
+    Categories.ItemsVisibles = (
+      2)
+    Categories.Visibles = (
+      True)
+    PopupMenuLinks = <>
+    UseSystemFont = True
+    Left = 664
+    Top = 56
+    PixelsPerInch = 96
+    object dxBarManager1Bar1: TdxBar
+      Caption = 'Editar'
+      CaptionButtons = <>
+      DockedLeft = 54
+      DockedTop = 0
+      FloatLeft = 818
+      FloatTop = 8
+      FloatClientWidth = 0
+      FloatClientHeight = 0
+      ItemLinks = <
+        item
+          Visible = True
+          ItemName = 'dxBtnEditar'
+        end>
+      OneOnRow = False
+      Row = 0
+      UseOwnFont = False
+      Visible = True
+      WholeRow = False
+    end
+    object dxBarSalvar: TdxBar
+      Caption = 'Salvar'
+      CaptionButtons = <>
+      DockedLeft = 109
+      DockedTop = 0
+      FloatLeft = 818
+      FloatTop = 8
+      FloatClientWidth = 0
+      FloatClientHeight = 0
+      ItemLinks = <
+        item
+          Visible = True
+          ItemName = 'dxBtnSalvar'
+        end>
+      OneOnRow = False
+      Row = 0
+      UseOwnFont = False
+      Visible = True
+      WholeRow = False
+    end
+    object dxBarManager1Bar2: TdxBar
+      Caption = 'Custom 1'
+      CaptionButtons = <>
+      DockedLeft = 0
+      DockedTop = 0
+      FloatLeft = 818
+      FloatTop = 8
+      FloatClientWidth = 0
+      FloatClientHeight = 0
+      ItemLinks = <
+        item
+          Visible = True
+          ItemName = 'dxBtnNovo'
+        end>
+      OneOnRow = False
+      Row = 0
+      UseOwnFont = False
+      Visible = True
+      WholeRow = False
+    end
+    object dxBarManager1Bar3: TdxBar
+      Caption = 'Sair'
+      CaptionButtons = <>
+      DockedLeft = 486
+      DockedTop = 0
+      FloatLeft = 818
+      FloatTop = 8
+      FloatClientWidth = 0
+      FloatClientHeight = 0
+      ItemLinks = <
+        item
+          Visible = True
+          ItemName = 'dxBtnFechar'
+        end>
+      OneOnRow = False
+      Row = 0
+      UseOwnFont = False
+      Visible = True
+      WholeRow = False
+    end
+    object dxBarManager1Bar4: TdxBar
+      Caption = 'Excluir'
+      CaptionButtons = <>
+      DockedLeft = 165
+      DockedTop = 0
+      FloatLeft = 818
+      FloatTop = 8
+      FloatClientWidth = 0
+      FloatClientHeight = 0
+      ItemLinks = <
+        item
+          Visible = True
+          ItemName = 'dxBtnDeletar'
+        end>
+      OneOnRow = False
+      Row = 0
+      UseOwnFont = False
+      Visible = True
+      WholeRow = False
+    end
+    object dxBarManager1Bar5: TdxBar
+      Caption = 'Pesquisar'
+      CaptionButtons = <>
+      DockedLeft = 227
+      DockedTop = 0
+      FloatLeft = 818
+      FloatTop = 8
+      FloatClientWidth = 0
+      FloatClientHeight = 0
+      ItemLinks = <
+        item
+          UserDefine = [udWidth]
+          UserWidth = 144
+          Visible = True
+          ItemName = 'cxbrdtmPesquisa'
+        end>
+      OneOnRow = False
+      Row = 0
+      UseOwnFont = False
+      Visible = True
+      WholeRow = False
+    end
+    object dxBarManager1Bar6: TdxBar
+      Caption = 'Limpar'
+      CaptionButtons = <>
+      DockedLeft = 424
+      DockedTop = 0
+      FloatLeft = 818
+      FloatTop = 8
+      FloatClientWidth = 0
+      FloatClientHeight = 0
+      ItemLinks = <
+        item
+          Visible = True
+          ItemName = 'dxBtnLimpar'
+        end>
+      OneOnRow = False
+      Row = 0
+      UseOwnFont = False
+      Visible = True
+      WholeRow = False
+    end
+    object dxBtnEditar: TdxBarLargeButton
+      Caption = 'Editar'#13#10
+      Category = 0
+      Hint = 'Editar'#13#10' registro. F2'
+      Visible = ivAlways
+      OnClick = dxBtnEditarClick
+    end
+    object dxBtnSalvar: TdxBarLargeButton
+      Caption = 'Salvar'
+      Category = 0
+      Hint = 'Salvar registro. F10'
+      Visible = ivAlways
+      OnClick = dxBtnSalvarClick
+    end
+    object dxBtnNovo: TdxBarLargeButton
+      Caption = 'Novo'
+      Category = 0
+      Hint = 'Novo registro. F4'
+      Visible = ivAlways
+      OnClick = dxBtnNovoClick
+    end
+    object dxBtnFechar: TdxBarLargeButton
+      Caption = 'Fechar'
+      Category = 0
+      Hint = 'Fechar'
+      Visible = ivAlways
+      OnClick = dxBtnFecharClick
+    end
+    object dxBtnDeletar: TdxBarLargeButton
+      Caption = 'Deletar'
+      Category = 0
+      Hint = 'Deletar'
+      Visible = ivAlways
+      OnClick = dxBtnDeletarClick
+    end
+    object cxbrdtmPesquisa: TcxBarEditItem
+      Caption = 'Cart'#227'o'
+      Category = 0
+      Hint = 'Pesquisa por cart'#227'o'
+      Visible = ivAlways
+      OnCurChange = cxbrdtmPesquisaCurChange
+      PropertiesClassName = 'TcxTextEditProperties'
+    end
+    object dxBtnLimpar: TdxBarLargeButton
+      Caption = 'Limpar'
+      Category = 0
+      Hint = 'Limpar'
+      Visible = ivAlways
+      OnClick = dxBtnLimparClick
+    end
+  end
+  object dsGrid: TDataSource
+    AutoEdit = False
+    DataSet = qryPreencheGrid
+    OnDataChange = dsGridDataChange
+    Left = 168
+    Top = 373
+  end
+  object qryPreencheGrid: TFDQuery
+    Connection = dmConexao.conn
+    SQL.Strings = (
+      'SELECT '
+      '        C.ID_CARTAO_CREDITO,'
+      '        C.ID_ORGANIZACAO,'
+      '        C.CARTAO,'
+      '        C.NUMERO,'
+      '        C.LIMITE,'
+      '        C.DIA_VENCIMENTO,'
+      '        C.DATA_VALIDADE,'
+      '        C.TITULAR,'
+      '        C.CODIGO_SEGURANCA,'
+      '        C.BANDEIRA,'
+      '        C.DIA_COMPRA'
+      ''
+      'FROM CARTAO_CREDITO C'
+      ''
+      'WHERE (C.ID_ORGANIZACAO = :PIDORGANIZACAO)'
+      ''
+      'ORDER BY C.CARTAO'
+      ''
+      ''
+      ''
+      '')
+    Left = 264
+    Top = 376
+    ParamData = <
+      item
+        Name = 'PIDORGANIZACAO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 36
+      end>
+  end
+end
