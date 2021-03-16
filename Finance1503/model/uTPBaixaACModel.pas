@@ -1,0 +1,96 @@
+unit uTPBaixaACModel;
+
+interface
+
+{
+
+CREATE TABLE TITULO_PAGAR_BAIXA_AC (
+    ID_TITULO_PAGAR_BAIXA_AC  VARCHAR(36) NOT NULL,
+    ID_ORGANIZACAO            VARCHAR(36) NOT NULL,
+    ID_TITULO_PAGAR_BAIXA     VARCHAR(36),
+    ID_TIPO_ACRESCIMO         VARCHAR(36),
+    VALOR                     NUMERIC(10,2) NOT NULL,
+
+);
+
+}
+uses
+  Windows, Messages, Classes, SysUtils, uTipoAcrescimoModel;
+
+type
+  TTPBaixaACModel = class(TObject)
+  private
+    FFID :string ;
+    FFIDOrganizacao :string;
+    FFIDtipoAcrescimo :string;
+    FFIDtituloPagarBaixa: string;
+    FFvalor :Currency;
+    FFtipoAcrescimo :TTipoAcrescimoModel;
+  //  FFtituloPagarBaixa: TTPBaixaModel;
+
+    procedure SetFID(const Value: string);
+    procedure SetFIdOrganizacao(const Value: string);
+    procedure SetFIDtipoAcrescimo(const Value: string);
+    procedure SetFIDtituloPagarBaixa(const Value: string);
+    procedure SetFtipoAcrescimo(const Value: TTipoAcrescimoModel);
+    procedure SetFvalor(const Value: Currency);
+
+
+   public
+
+    property FID :string read FFID write SetFID;
+    property FIDOrganizacao :string read FFIDOrganizacao write SetFIdOrganizacao;
+    property FIDtipoAcrescimo: string read FFIDtipoAcrescimo write SetFIDtipoAcrescimo;
+    property FIDtituloPagarBaixa: string read FFIDtituloPagarBaixa write SetFIDtituloPagarBaixa;
+    property Fvalor: Currency read FFvalor write SetFvalor;
+
+    property FtipoAcrescimo: TTipoAcrescimoModel read FFtipoAcrescimo write SetFtipoAcrescimo;
+   // property FtituloPagarBaixa: TTPBaixaModel read FFtituloPagarBaixa write SetFtituloPagarBaixa;
+
+
+
+    Constructor Create;
+
+
+  end;
+implementation
+
+{ TTPBaixaACModel }
+
+constructor TTPBaixaACModel.Create;
+begin
+//
+end;
+
+procedure TTPBaixaACModel.SetFID(const Value: string);
+begin
+  FFID := Value;
+end;
+
+procedure TTPBaixaACModel.SetFIdOrganizacao(const Value: string);
+begin
+  FFIDOrganizacao := Value;
+end;
+
+procedure TTPBaixaACModel.SetFIDtipoAcrescimo(const Value: string);
+begin
+  FFIDtipoAcrescimo := Value;
+end;
+
+procedure TTPBaixaACModel.SetFIDtituloPagarBaixa(const Value: string);
+begin
+  FFIDtituloPagarBaixa := Value;
+end;
+
+procedure TTPBaixaACModel.SetFtipoAcrescimo(const Value: TTipoAcrescimoModel);
+begin
+  FFtipoAcrescimo := Value;
+end;
+
+
+procedure TTPBaixaACModel.SetFvalor(const Value: Currency);
+begin
+  FFvalor := Value;
+end;
+
+end.

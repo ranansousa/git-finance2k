@@ -1,0 +1,386 @@
+unit uFrmManterUsuario;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics, System.Math,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, dxSkinsCore, dxSkinsDefaultPainters, udmConexao, uUtil, uDMOrganizacao,
+  cxGraphics, cxControls, cxLookAndFeels, cxLookAndFeelPainters, dxRibbonSkins,
+  dxRibbonCustomizationForm, dxStatusBar, cxClasses, dxRibbon, dxBar,
+   Data.DB, FireDAC.Stan.Intf, FireDAC.Stan.Option, uUsuarioDAO, uUsuarioModel,
+  FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
+  FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet,
+  FireDAC.Comp.Client, Vcl.Grids, Vcl.DBGrids, Vcl.StdCtrls, cxContainer,
+  cxEdit, cxTextEdit, cxBarEditItem, EMsgDlg;
+
+type
+  TfrmManterUsuario = class(TForm)
+    dxBarManager1: TdxBarManager;
+    dxRibbon1Tab1: TdxRibbonTab;
+    dxRibbon1: TdxRibbon;
+    dxStatusBar: TdxStatusBar;
+    dbgrd1: TDBGrid;
+    dsMain: TDataSource;
+    lbl1: TLabel;
+    lbl2: TLabel;
+    dxBarManager1Bar1: TdxBar;
+    dxBtnEditar: TdxBarLargeButton;
+    dxBarSalvar: TdxBar;
+    dxBtnSalvar: TdxBarLargeButton;
+    dxBarManager1Bar2: TdxBar;
+    dxBtnNovo: TdxBarLargeButton;
+    dxBarManager1Bar3: TdxBar;
+    dxBtnFechar: TdxBarLargeButton;
+    dxBarManager1Bar4: TdxBar;
+    dxBtnDeletar: TdxBarLargeButton;
+    dxBarManager1Bar5: TdxBar;
+    cxbrdtmPesquisa: TcxBarEditItem;
+    qryPreencheGrid: TFDQuery;
+    dxBarManager1Bar6: TdxBar;
+    dxBtnLimpar: TdxBarLargeButton;
+    PempecMsg: TEvMsgDlg;
+    edtLogin: TEdit;
+    edtNome: TEdit;
+    chkAtivo: TCheckBox;
+    chkAdm: TCheckBox;
+    chkLA: TCheckBox;
+    obterIDUSER: TFDQuery;
+    chkContador: TCheckBox;
+    dxBarManager1Bar7: TdxBar;
+    dxBtnResetSenha: TdxBarLargeButton;
+    chkOrg: TCheckBox;
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormCreate(Sender: TObject);
+    procedure dsMainDataChange(Sender: TObject; Field: TField);
+    procedure dxBtnEditarClick(Sender: TObject);
+    procedure dxBtnSalvarClick(Sender: TObject);
+    procedure dxBtnFecharClick(Sender: TObject);
+    procedure dxBtnNovoClick(Sender: TObject);
+    procedure dxBtnDeletarClick(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure dbgrd1TitleClick(Column: TColumn);
+    procedure cxbrdtmPesquisaCurChange(Sender: TObject);
+    procedure dxBtnLimparClick(Sender: TObject);
+    procedure dxBtnResetSenhaClick(Sender: TObject);
+  private
+    { Private declarations }
+   pIdOrganizacao, pIdUsuario :string;
+    procedure inicializarDM(Sender: TObject);
+    procedure limparPanel;
+    procedure msgStatusBar(pPosicao: Integer; msg: string);
+    procedure limpaStatusBar;
+
+  public
+    { Public declarations }
+    procedure preencheGrid(pIdOrganizacao :string);
+
+  end;
+
+var
+  frmManterUsuario: TfrmManterUsuario;
+
+implementation
+
+{$R *.dfm}
+
+procedure TfrmManterUsuario.cxbrdtmPesquisaCurChange(Sender: TObject);
+begin
+  dbgrd1.DataSource.DataSet.Locate('NOME',UpperCase(cxbrdtmPesquisa.CurEditValue),[loPartialKey]);
+end;
+
+procedure TfrmManterUsuario.dbgrd1TitleClick(Column: TColumn);
+begin
+ (dbgrd1.DataSource.DataSet as TFDQuery).IndexFieldNames :=Column.FieldName;
+end;
+
+
+procedure TfrmManterUsuario.dsMainDataChange(Sender: TObject;
+  Field: TField);
+  var
+    I: Integer;
+ usuario : TUsuarioModel;
+begin
+
+  usuario := TUsuarioModel.Create;
+  usuario.FID := qryPreencheGrid.FieldByName('ID_USUARIO').AsInteger;
+  usuario := TUsuarioDAO.obterPorID(usuario);
+
+  if usuario.FID > 0 then
+  begin
+
+    edtNome.Text := usuario.Fnome;
+    edtLogin.Text := usuario.Flogin;
+    chkLA.Checked := False;
+    chkAdm.Checked := False;
+    chkAtivo.Checked := False;
+
+    if usuario.Fativo > 0 then
+    begin
+      chkAtivo.Checked := True;
+    end;
+    if usuario.Fadmin > 0 then
+    begin
+      chkAdm.Checked := True;
+    end;
+
+    if usuario.FloginAutomatico  then
+    begin
+      chkLA.Checked := True;
+    end;
+
+
+  end;
+
+   dxBtnEditar.Enabled := True;
+
+end;
+
+procedure TfrmManterUsuario.dxBtnDeletarClick(Sender: TObject);
+var
+    I: Integer;
+ usuario : TUsuarioModel;
+begin
+
+  usuario     := TUsuarioModel.Create;
+  usuario.FID := qryPreencheGrid.FieldByName('ID_USUARIO').AsInteger;
+  usuario     := TUsuarioDAO.obterPorID(usuario);
+
+  usuario.Fativo :=0;
+  usuario.Fadmin :=0;
+  usuario.FloginAutomatico :=False;
+  usuario.Fsenha := '';
+
+  if TUsuarioDAO.Update(usuario) then  begin
+
+    PempecMsg.MsgInformation('Usuário ' + usuario.Fnome + ' desativado com sucesso.');
+    FreeAndNil(usuario);
+  end;
+
+end;
+
+procedure TfrmManterUsuario.dxBtnEditarClick(Sender: TObject);
+
+begin
+
+  pIdUsuario := IntToStr(qryPreencheGrid.FieldByName('ID_USUARIO').AsInteger);
+
+  dbgrd1.Enabled :=False;
+
+  cxbrdtmPesquisa.Enabled :=False;
+
+
+  dxBtnSalvar.Enabled :=true ;
+  dxBtnNovo.Enabled :=False;
+
+end;
+
+procedure TfrmManterUsuario.dxBtnFecharClick(Sender: TObject);
+begin
+ PostMessage(Self.Handle, WM_CLOSE, 0, 0);
+end;
+
+procedure TfrmManterUsuario.dxBtnLimparClick(Sender: TObject);
+begin
+limparPanel;
+end;
+
+procedure TfrmManterUsuario.dxBtnNovoClick(Sender: TObject);
+begin
+  limparPanel;
+
+  dbgrd1.Enabled := False;
+  (dbgrd1.DataSource.DataSet as TFDQuery).Close;
+  pIdUsuario :='';
+  edtNome.Clear;
+  edtLogin.Clear;
+  chkLA.Checked := False;
+  chkAdm.Checked := False;
+  chkAtivo.Checked := False;
+  cxbrdtmPesquisa.Enabled := False;
+  dxBtnSalvar.Enabled := True;
+end;
+
+procedure TfrmManterUsuario.dxBtnResetSenhaClick(Sender: TObject);
+var
+ usuario :TUsuarioModel;
+begin
+    usuario := TUsuarioModel.Create;
+    usuario.FID := (dbgrd1.DataSource.DataSet as TFDQuery).FieldByName('ID_USUARIO').AsInteger;
+    usuario := TUsuarioDAO.obterPorID(usuario);
+
+    if not uUtil.Empty(usuario.Fsenha) then
+    begin
+
+      if TUsuarioDAO.resetSenha(usuario) then
+      begin
+        PempecMsg.MsgInformation('A senha de ' + usuario.Fnome + ' foi resetada com sucesso.'+ #13 + ' Faça login com a senha padrão.' );
+      end;
+
+    end;
+
+  
+  
+   limparPanel;
+
+end;
+
+procedure TfrmManterUsuario.dxBtnSalvarClick(Sender: TObject);
+var
+ usuario :TUsuarioModel;
+begin
+  usuario := TUsuarioModel.Create;
+
+  if not uutil.Empty(pIdUsuario) then
+  begin
+     
+    usuario.FID := (dbgrd1.DataSource.DataSet as TFDQuery).FieldByName('ID_USUARIO').AsInteger;
+    usuario := TUsuarioDAO.obterPorID(usuario);
+  end;
+
+  usuario.Flogin := edtLogin.Text;
+  usuario.Fnome := UpperCase(edtNome.Text);
+  usuario.Fativo := IfThen(chkAtivo.Checked, 1, 0);
+  usuario.Fadmin := IfThen(chkAdm.Checked, 1, 0);
+  usuario.FloginAutomatico := chkLA.Checked;
+  if not chkContador.Checked then begin usuario.FIDorganizacao := uutil.TOrgAtual.getId; end;
+   if chkOrg.Checked then begin usuario.FIDorganizacao := '' end;
+
+  if usuario.Fnovo then
+  begin
+   obterIDUSER.Close;
+   obterIDUSER.Open;
+   
+    usuario.FID := obterIDUSER.FieldByName('NEWID').AsInteger;
+    usuario.Fsenha := '123456';
+
+   
+   
+    
+    if TUsuarioDAO.Insert(usuario) then
+    begin
+      PempecMsg.MsgInformation('Usuário ' + usuario.Fnome + ' inserido com sucesso.');
+    end;
+
+    
+  end
+  else
+  begin
+
+    if TUsuarioDAO.Update(usuario) then
+    begin
+      PempecMsg.MsgInformation('Usuário ' + usuario.Fnome + ' atualizado com sucesso.');
+    end;
+
+  end;
+
+   limparPanel;
+
+end;
+
+procedure TfrmManterUsuario.FormClose(Sender: TObject; var Action: TCloseAction);
+begin            
+ Action :=caFree;
+end;
+
+procedure TfrmManterUsuario.FormCreate(Sender: TObject);
+begin
+ inicializarDM(Self);
+end;
+
+procedure TfrmManterUsuario.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+ case key of
+  vk_f2: dxBtnEditar.Click;
+  vk_f4: dxBtnNovo.Click;
+  vk_f10: dxBtnSalvar.Click;
+end;
+
+end;
+
+
+procedure TfrmManterUsuario.inicializarDM(Sender: TObject);
+begin
+ 
+ limparPanel;
+
+end;
+
+procedure TfrmManterUsuario.limparPanel();
+begin
+ limpaStatusBar;
+ pIdOrganizacao := UUtil.TOrgAtual.getId;
+ pIdUsuario := IntToStr(uutil.TUserAtual.getUserId);
+
+  preencheGrid(pIdOrganizacao);
+
+ //botao editar muda
+  dbgrd1.Enabled :=True;
+  pIdUsuario := '';
+  edtNome.Clear;
+  edtLogin.Clear;
+  chkLA.Checked := False;
+  chkAdm.Checked := False;
+  chkAtivo.Checked := False;
+  cxbrdtmPesquisa.Enabled := False;
+
+  dxBtnNovo.Enabled := True;
+  dxBtnEditar.Enabled := False;
+  dxBtnSalvar.Enabled := False;
+  dxBtnDeletar.Enabled := False;
+  cxbrdtmPesquisa.Enabled := True;
+
+
+
+end;
+
+procedure TfrmManterUsuario.msgStatusBar(pPosicao : Integer; msg :string);
+begin
+dxStatusBar.Panels[pPosicao].Text := msg;
+Application.ProcessMessages;
+end;
+
+procedure TfrmManterUsuario.preencheGrid(pIdOrganizacao: string);
+var
+sqlCmd :string;
+begin
+
+ dmConexao.conectarBanco;
+
+ try
+
+    sqlCmd := ' SELECT U.NOME, U.LOGIN, U.ID_USUARIO, U.ID_ORGANIZACAO, O.FANTASIA '+
+              ' FROM USUARIO U '+
+              ' LEFT OUTER JOIN ORGANIZACAO O ON (O.ID_ORGANIZACAO = U.ID_ORGANIZACAO)' +
+              ' WHERE 1=1  ORDER BY U.NOME ' ;
+
+
+
+    qryPreencheGrid.Close;
+    qryPreencheGrid.Connection := dmConexao.conn;
+    qryPreencheGrid.SQL.Clear;
+    qryPreencheGrid.SQL.Add(sqlCmd);
+
+    qryPreencheGrid.Open;
+
+    (dbgrd1.DataSource.DataSet as TFDQuery).Last;
+    (dbgrd1.DataSource.DataSet as TFDQuery).First;
+
+ except
+ raise Exception.Create('Erro ao obter lista de usuários');
+
+ end;
+
+
+end;
+
+
+procedure TfrmManterUsuario.limpaStatusBar;
+begin
+dxStatusBar.Panels[0].Text := 'Status ';
+dxStatusBar.Panels[1].Text := 'Ativo. Teclas de atalho:  [F2] = Editar  - [F4] = Novo - [F10] = Salvar  ';
+end;
+
+
+
+end.

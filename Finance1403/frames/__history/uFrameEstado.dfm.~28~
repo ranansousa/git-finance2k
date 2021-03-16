@@ -1,0 +1,49 @@
+inherited frmEstado: TfrmEstado
+  Width = 270
+  Height = 29
+  ExplicitWidth = 270
+  ExplicitHeight = 29
+  inherited lblID: TLabel
+    Left = 27
+    Top = 46
+    ExplicitLeft = 27
+    ExplicitTop = 46
+  end
+  object redtrd: TRichEdit [1]
+    Left = 0
+    Top = 0
+    Width = 270
+    Height = 29
+    Align = alClient
+    Font.Charset = ANSI_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    Lines.Strings = (
+      '')
+    ParentFont = False
+    TabOrder = 1
+    Zoom = 100
+    ExplicitLeft = 104
+    ExplicitTop = 80
+    ExplicitWidth = 121
+    ExplicitHeight = 48
+  end
+  inherited cbbcombo: TComboBox
+    Top = 0
+    Width = 270
+    Align = alClient
+    ExplicitLeft = 3
+    ExplicitWidth = 264
+  end
+  inherited qryObterPorID: TFDQuery
+    Left = 32
+    Top = 16
+  end
+  inherited qryObterTodos: TFDQuery
+    SQL.Strings = ()
+    Left = 104
+    Top = 16
+  end
+end

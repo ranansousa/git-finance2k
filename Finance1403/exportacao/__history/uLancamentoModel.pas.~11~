@@ -1,0 +1,47 @@
+unit uLancamentoModel;
+
+//classe que implementa o objeto lancamento. tabela CLANCAMENTOS (MEGA)
+// o DM importarMega vai receber uma lista desses objetos e persistir no SGBD
+
+interface
+
+uses
+  Windows, Messages, Classes, SysUtils;
+
+type
+  TLancamentoModel = class(TObject)
+  private
+    FHistorico: string;
+    FDdgContaDebito: string;
+    FCcodReduzDeb: Integer;
+    FCcontaDebito: string;
+    FFilial: Integer;
+    FIdEmpresa: Integer;
+    FDgCodigoReduzDeb: string;
+    FDdataLanc: TDateTime;
+    FValor: Currency;
+    FCodReduzCre: Integer;
+    FIdLancamento: Integer;
+    FDgContaCredito: string;
+    FDgCodigoReduzCre: string;
+    FCentroCusto: Integer;
+    FAno: String;
+    FFlag :string;
+    FContaCredito: string;
+    FLote: Integer;
+    FExecTrg: string;
+    FLinha: Integer;
+    FCodHistorico: Integer;
+    FTipo: string;
+    FCcomplemento: string;
+    FData: TDateTime;
+
+
+  end;
+
+implementation
+
+
+end.
+
+

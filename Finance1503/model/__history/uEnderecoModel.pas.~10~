@@ -1,0 +1,179 @@
+unit uEnderecoModel;
+
+interface
+
+
+uses
+  Windows, Messages, Classes, SysUtils,uOrganizacaoModel;
+
+type
+  TCedenteModel = class(TObject)
+  private
+    FFID: string;
+    FFLOGRADOURO :string;
+    FFCOMPLEMENTO :string;
+    FFIDESTADO: string;
+    FFIDorganizacao :string;
+    FFIDBAIRRO: string;
+    FFNUMERO: string;
+    FFCEP: string;
+    FFIDCIDADE: string;
+    FFOrganizacao :TOrganizacaoModel;
+
+
+    function getFFOrganizacao: TOrganizacaoModel;
+    function getFFID: string;
+    function getFFIDorganizacao: string;
+    function getFFCEP: string;
+    function getFFCOMPLEMENTO: string;
+    function getFFIDBAIRRO: string;
+    function getFFIDCIDADE: string;
+    function getFFIDESTADO: string;
+    function getFFLOGRADOURO: string;
+    function getFFNUMERO: string;
+
+
+    procedure SetFCEP(const Value: string);
+    procedure SetFCOMPLEMENTO(const Value: string);
+    procedure SetFID(const Value: string);
+    procedure SetFIDBAIRRO(const Value: string);
+    procedure SetFIDCIDADE(const Value: string);
+    procedure SetFIDESTADO(const Value: string);
+    procedure SetFIDorganizacao(const Value: string);
+    procedure SetFLOGRADOURO(const Value: string);
+    procedure SetFNUMERO(const Value: string);
+    procedure SetForganizacao(const Value: TOrganizacaoModel);
+
+  public
+
+    property FID: string read getFFID write SetFID;
+    property FIDorganizacao: string read getFFIDorganizacao write SetFIDorganizacao;
+    property Forganizacao: TOrganizacaoModel read getFFOrganizacao write SetForganizacao;
+    property FIDCIDADE: string read getFFIDCIDADE write SetFIDCIDADE;
+    property FCEP: string read getFFCEP write SetFCEP;
+    property FNUMERO: string read getFFNUMERO write SetFNUMERO;
+    property FIDBAIRRO: string read getFFIDBAIRRO write SetFIDBAIRRO;
+    property FIDESTADO: string read getFFIDESTADO write SetFIDESTADO;
+    property FCOMPLEMENTO: string read getFFCOMPLEMENTO write SetFCOMPLEMENTO;
+    property FLOGRADOURO: string read getFFLOGRADOURO write SetFLOGRADOURO;
+
+
+      Constructor Create;
+
+  end;
+
+implementation
+
+{ TCedenteModel }
+
+constructor TCedenteModel.Create;
+begin
+
+end;
+
+function TCedenteModel.getFFCEP: string;
+begin
+  Result := FFCEP;
+end;
+
+
+function TCedenteModel.getFFCOMPLEMENTO: string;
+begin
+   Result := FFCOMPLEMENTO;
+end;
+
+
+function TCedenteModel.getFFID: string;
+begin
+  Result := FFID;
+end;
+
+function TCedenteModel.getFFIDBAIRRO: string;
+begin
+  Result := FFIDBAIRRO;
+end;
+
+function TCedenteModel.getFFIDCIDADE: string;
+begin
+  Result := FFIDCIDADE;
+end;
+
+
+function TCedenteModel.getFFIDESTADO: string;
+begin
+   Result := FFIDESTADO;
+end;
+
+function TCedenteModel.getFFIDorganizacao: string;
+begin
+  Result := FFIDorganizacao;
+end;
+
+function TCedenteModel.getFFLOGRADOURO: string;
+begin
+Result := FFLOGRADOURO;
+end;
+
+
+function TCedenteModel.getFFNUMERO: string;
+begin
+ Result := FFNUMERO;
+end;
+
+function TCedenteModel.getFFOrganizacao: TOrganizacaoModel;
+begin
+  Result := FFOrganizacao;
+end;
+
+
+procedure TCedenteModel.SetFCEP(const Value: string);
+begin
+ FFCEP :=Value;
+end;
+
+procedure TCedenteModel.SetFCOMPLEMENTO(const Value: string);
+begin
+    FFCOMPLEMENTO :=Value;
+end;
+
+procedure TCedenteModel.SetFID(const Value: string);
+begin
+   FFID :=Value;
+end;
+
+procedure TCedenteModel.SetFIDBAIRRO(const Value: string);
+begin
+   FFIDBAIRRO :=Value;
+end;
+
+procedure TCedenteModel.SetFIDCIDADE(const Value: string);
+begin
+   FFIDCIDADE :=Value;
+end;
+
+procedure TCedenteModel.SetFIDESTADO(const Value: string);
+begin
+  FFIDESTADO :=Value;
+end;
+
+procedure TCedenteModel.SetFIDorganizacao(const Value: string);
+begin
+   FFIDorganizacao :=Value;
+end;
+
+procedure TCedenteModel.SetFLOGRADOURO(const Value: string);
+begin
+   FFLOGRADOURO :=Value;
+end;
+
+procedure TCedenteModel.SetFNUMERO(const Value: string);
+begin
+   FFNUMERO :=Value;
+end;
+
+procedure TCedenteModel.SetForganizacao(const Value: TOrganizacaoModel);
+begin
+   FFOrganizacao :=Value;
+end;
+
+end.

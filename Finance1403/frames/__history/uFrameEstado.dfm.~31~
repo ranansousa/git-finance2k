@@ -1,0 +1,27 @@
+inherited frmEstado: TfrmEstado
+  Width = 270
+  Height = 29
+  ExplicitWidth = 270
+  ExplicitHeight = 29
+  inherited lblID: TLabel
+    Left = 27
+    Top = 46
+    ExplicitLeft = 27
+    ExplicitTop = 46
+  end
+  inherited cbbcombo: TComboBox
+    Top = 0
+    Width = 264
+    ExplicitTop = 0
+    ExplicitWidth = 264
+  end
+  inherited qryObterPorID: TFDQuery
+    Left = 32
+    Top = 16
+  end
+  inherited qryObterTodos: TFDQuery
+    SQL.Strings = ()
+    Left = 104
+    Top = 16
+  end
+end

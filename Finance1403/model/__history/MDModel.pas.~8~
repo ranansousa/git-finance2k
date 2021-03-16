@@ -1,0 +1,84 @@
+unit MDModel;
+
+
+interface
+
+{
+CREATE TABLE MOVIMENTO_DIARIO (
+    ID_MOVIMENTO_DIARIO  VARCHAR(36) NOT NULL,
+    ID_ORGANIZACAO       VARCHAR(36) NOT NULL,
+
+
+    DATA_REGISTRO        DATE,
+
+    ID_USUARIO           NUMERIC(5,0),
+    NUMERO_MOVIMENTO     NUMERIC(15,0),
+
+
+    CODIGO               VARCHAR(80),
+    OBJETO               VARCHAR(80),
+    DESCRICAO            VARCHAR(250),
+    ACAO                 VARCHAR(150),
+    VALOR_OPERACAO       NUMERIC(10,2),
+    STATUS               VARCHAR(50),
+    NOME_ESTACAO         VARCHAR(50),
+    NOME_SERVER          VARCHAR(50),
+    IP_ESTACAO           VARCHAR(50)
+
+);
+
+}
+uses
+  Windows, Messages, Classes, SysUtils,uOrganizacaoModel, System.Generics.Collections;
+
+type
+  TMDModel = class(TObject)
+  private
+    FFID: string;
+    FFIDorganizacao: string;
+    FFOrganizacao: TOrganizacaoModel;
+    FFIDusuario: Integer;
+    FFdataRegistro: TDateTime;
+    FFvalorOperacao: Currency;
+    FFnumeroMovimento: Integer;
+
+    FFcodigo: string;
+    FFobjeto: string;
+    FFdescricao: string;
+    FFacao: string;
+    FFstatus: string;
+    FFestacao: string;
+    FFserver: string;
+    FFipEstacao: string;
+    FFnovo :Boolean;
+
+  public
+
+    property FID                : string    read FFID                 write SetFFID;
+    property FIDorganizacao     : string    read FFIDorganizacao      write SetFFIDorganizacao;
+    property FIDusuario         : Integer   read FFIDusuario          write SetFFIDusuario;
+    property FdataRegistro      : TDateTime read FFdataRegistro       write setFFdataRegistro;
+    property FvalorOperacao     : Currency  read FFvalorOperacao      write SetFFvalorOperacao;
+    property FnumeroMovimento   : Integer   read FFnumeroMovimento    write SetFFnumeroMovimento;
+    property Fcodigo            : string    read FFcodigo             write SetFFcodigo;
+    property Fobjeto            : string    read FFobjeto             write SetFFobjeto;
+    property Fdescricao         : string    read FFdescricao          write SetFFdescricao;
+    property Facao              : string    read FFacao               write SetFFacao;
+    property Fstatus            : string    read FFstatus             write SetFFstatus;
+    property Festacao           : string    read FFestacao            write SetFFestacao;
+    property Fserver            : string    read FFserver             write SetFFserver;
+    property FipEstacao         : string    read FFipEstacao          write SetFFipEstacao;
+
+    property Fnovo :Boolean read FFnovo write FFnovo;
+
+
+    constructor Create;
+    destructor Destroy; override;
+
+
+  end;
+
+
+implementation
+
+end.

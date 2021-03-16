@@ -1,0 +1,80 @@
+unit uDMContasPagarManter;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, FireDAC.Stan.Intf, FireDAC.Stan.Option,
+  FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
+  FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB,
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.Forms, udmConexao;
+
+type
+  TdmContasPagarManter = class(TDataModule)
+    qryDeletaExcluidos: TFDQuery;
+  private
+    { Private declarations }
+    procedure inicializarDM(Sender: TObject);
+  public
+    { Public declarations }
+
+    function deletarTitulosPorTipoStatus(pidOrganizacao,
+      status: String): Boolean;
+
+  end;
+
+var
+  dmContasPagarManter: TdmContasPagarManter;
+
+implementation
+
+{ %CLASSGROUP 'Vcl.Controls.TControl' }
+
+{$R *.dfm}
+{ TdmContasPagarManter }
+
+function TdmContasPagarManter.deletarTitulosPorTipoStatus(pidOrganizacao,
+  status: String): Boolean;
+begin
+  try
+    if not qryDeletaExcluidos.Connection.Connected then
+    begin
+      qryDeletaExcluidos.Connection := dmConexao.Conn;
+    end;
+  Except
+    raise Exception.Create
+      ('Problemas ao tentar conectar com base. Erro : DELTP-1');
+  end;
+
+  qryDeletaExcluidos.Close;
+  qryDeletaExcluidos.Connection := dmConexao.Conn;
+  qryDeletaExcluidos.ParamByName('PIDSTATUS').AsString := status;
+  qryDeletaExcluidos.ParamByName('PIDORGANIZACAO').AsString := pidOrganizacao;
+
+   qryDeletaExcluidos.SQL.SaveToFile(ExtractFilePath(Application.ExeName) + 'delTP.log');
+
+  try
+    qryDeletaExcluidos.ExecSQL;
+  Except
+    raise Exception.Create
+      ('Problemas ao tentar deletar registros. Erro : DELTP-2');
+  end;
+
+  dmConexao.Conn.Commit;
+
+   Result := System.True;
+
+end;
+
+procedure TdmContasPagarManter.inicializarDM(Sender: TObject);
+begin
+  if not(Assigned(dmConexao)) then
+  begin
+    dmConexao := TdmConexao.Create(Self);
+  end
+  else
+  begin
+    dmConexao.conectarBanco;
+  end;
+end;
+
+end.

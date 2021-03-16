@@ -1,0 +1,18 @@
+Data/Hora.......: 15/03/2021 21:47:34
+Mensagem........: Integer overflow
+Classe Exceção..: EIntOverflow
+Formulário......: FrmPrincipal
+Unit............: cxPC
+Controle Visual.: btnLogin
+Usuario.........: Ranan Sousa
+Versão Windows..: Windows 10
+----------------------------------------------------------------------
+Data/Hora.......: 15/03/2021 23:38:21
+Mensagem........: Integer overflow
+Classe Exceção..: EIntOverflow
+Formulário......: FrmPrincipal
+Unit............: cxPC
+Controle Visual.: btnLogin
+Usuario.........: Ranan Sousa
+Versão Windows..: Windows 10
+----------------------------------------------------------------------
