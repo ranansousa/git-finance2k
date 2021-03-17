@@ -1,0 +1,18 @@
+
+CREATE TABLE CONTA_BANCARIA_SALDO (
+    ID_CONTA_BANCARIA  VARCHAR(36),
+    ANO                VARCHAR(4),
+    JANE               NUMERIC(18,2) default 0,
+    FEVE               NUMERIC(18,2) default 0,
+    MARC               NUMERIC(18,2) default 0,
+    ABRI               NUMERIC(18,2) default 0,
+    MAIO               NUMERIC(18,2) default 0,
+    JUNH               NUMERIC(18,2) default 0,
+    JULH               NUMERIC(18,2) default 0,
+    AGOS               NUMERIC(18,2) default 0,
+    SETE               NUMERIC(18,2) default 0,
+    OUTU               NUMERIC(18,2) default 0,
+    NOVE               NUMERIC(18,2) default 0,
+    DEZE               NUMERIC(18,2) default 0
+);
+

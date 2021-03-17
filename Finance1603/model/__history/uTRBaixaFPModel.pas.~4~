@@ -1,0 +1,50 @@
+unit uTRBaixaFPModel;
+
+{table
+
+CREATE TABLE TITULO_RECEBER_BAIXA_FP (
+    ID_TITULO_RECEBER_BAIXA_FP  VARCHAR(36) NOT NULL,
+    ID_ORGANIZACAO              VARCHAR(36) NOT NULL,
+    ID_TITULO_RECEBER_BAIXA     VARCHAR(36),
+    ID_FORMA_PAGAMENTO          VARCHAR(36),
+    VALOR                       NUMERIC(10,2) NOT NULL,
+
+);
+
+}
+
+
+interface
+ USes
+  Windows, Messages, Classes, SysUtils,uContaContabilModel,uFormaPagamentoModel,uOrganizacaoModel;
+
+ type
+  TTRBaixaFPModel = class(TObject)
+
+  private
+
+    FFID: string;
+    FFIDorganizacao: string;
+    FFFormaPagamento: TFormaPagamentoModel;
+    FFOrganizacao: TOrganizacaoModel;
+    FFValor :Currency;
+    FFIDTPBaixa: string;// n trazer  o objeto. Apenas setar o ID
+
+  public
+
+    property FFormaPagamento: TFormaPagamentoModel  read FFFormaPagamento write SetFFFormaPagamento;
+    property FIDorganizacao: string                 read FFIDorganizacao  write SetFFIDorganizacao;
+    property Forganizacao: TOrganizacaoModel        read FFOrganizacao    write SetForganizacao;
+    property FIDTPBaixa: string                     read FFIDTPBaixa      write setFFIDTPBaixa;
+    property FValor: Currency                       read FFValor          write SetFFValor;
+    property FID: string                            read FFID             write SetFFID;
+
+  Constructor Create;
+
+
+  end;
+
+
+implementation
+
+end.

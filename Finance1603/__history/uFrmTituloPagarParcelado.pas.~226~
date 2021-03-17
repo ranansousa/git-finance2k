@@ -1,0 +1,407 @@
+unit uFrmTituloPagarParcelado;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,System.DateUtils,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, ENumEd, Data.DB, uTituloPagarModel, System.Generics.Collections,
+  Vcl.Grids, Vcl.DBGrids, FireDAC.Stan.Intf, FireDAC.Stan.Option, udmConexao, uUtil,uTituloPagarParceladoModel,
+  FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,uTituloPagarDAO,
+  FireDAC.DApt.Intf, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.Buttons;
+
+type
+  TfrmTituloPagarParcelado = class(TForm)
+    edtQtdParcelas: TEdit;
+    Label1: TLabel;
+    edtValorDespesa: TEvNumEdit;
+    Label2: TLabel;
+    dsTP: TDataSource;
+    gridTP: TDBGrid;
+    fdmTPParcelado: TFDMemTable;
+    edtValorTP: TEvNumEdit;
+    edtFornecedor: TEdit;
+    Label3: TLabel;
+    edtDescricao: TEdit;
+    Label4: TLabel;
+    Label5: TLabel;
+    btnGerarParcs: TBitBtn;
+    btnLimpar: TBitBtn;
+    btnSair: TBitBtn;
+    edtTotalParcelado: TEvNumEdit;
+    Label6: TLabel;
+    btnConfirmar: TBitBtn;
+    edtDocPrincipal: TEdit;
+    Label7: TLabel;
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure btnSairClick(Sender: TObject);
+    procedure edtQtdParcelasChange(Sender: TObject);
+    procedure btnGerarParcsClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure btnLimparClick(Sender: TObject);
+    procedure btnConfirmarClick(Sender: TObject);
+    procedure gridTPCellClick(Column: TColumn);
+  private
+    { Private declarations }
+    parcela :Integer;
+    tituloMain : TTituloPagarModel;
+    pIDorganizacao :string;
+      sucesso : Boolean;
+      valorDespesa : Currency;
+    procedure createTable;
+    procedure limparTable;
+    function obterTotalParcelado :Currency;
+    procedure liberaBtnProvisao;
+    procedure AdicionarTP(var collTitulos : TObjectList<TTituloPagarParceladoModel>; pParcela: TTituloPagarParceladoModel);
+    function clonaParcela(pValor: Currency; pDoc, pParcela: string; pVcto: TDateTime;  var tituloPrincipal :TTituloPagarModel ): TTituloPagarParceladoModel;
+
+
+  public
+    { Public declarations }
+
+    function getSucesso :Boolean;
+
+    constructor Create (AOwner :TComponent; var pTitulo :TTituloPagarModel);
+
+
+  end;
+
+var
+  frmTituloPagarParcelado: TfrmTituloPagarParcelado;
+
+implementation
+
+{$R *.dfm}
+
+{ TfrmTituloPagarParcelado }
+
+procedure TfrmTituloPagarParcelado.AdicionarTP(var collTitulos : TObjectList<TTituloPagarParceladoModel>; pParcela: TTituloPagarParceladoModel);
+// TITULO_PAGAR_
+ var
+ X: Integer;
+ aux :string;
+ begin
+  collTitulos.Add(TTituloPagarParceladoModel.Create);
+  X := collTitulos.Count -1;
+  collTitulos[X].FTituloPagar  := pParcela.FTituloPagar;
+  collTitulos[X].Fparcela      := pParcela.Fparcela;
+
+  aux :='LISTA '+  collTitulos[X].FTituloPagar.Fparcela ;
+  aux :=' TP '  +   pParcela.FTituloPagar.Fparcela;
+
+end;
+
+function TfrmTituloPagarParcelado.clonaParcela(pValor :Currency; pDoc, pParcela :string; pVcto :TDateTime; var tituloPrincipal :TTituloPagarModel ) : TTituloPagarParceladoModel;
+var
+   tituloParcelado : TTituloPagarParceladoModel;
+J :Integer;
+tituloPagar :TTituloPagarModel;
+iDTP :string;
+begin
+  tituloPagar :=TTituloPagarModel.Create;
+  iDTP := dmConexao.obterNewID;
+
+      tituloPagar.FID                     := iDTP;
+      tituloPagar.FIDorganizacao          := uUtil.TOrgAtual.getId;
+      tituloPagar.FIDusuario              := uutil.TUserAtual.getUserId;
+      tituloPagar.FIDResponsavel          := tituloPrincipal.FIDResponsavel;
+      tituloPagar.FIDHistorico            := tituloPrincipal.FIDHistorico;
+      tituloPagar.FIDCedente              := tituloPrincipal.FIDCedente;
+      tituloPagar.FIDTipoCobranca         := tituloPrincipal.FIDTipoCobranca;
+      tituloPagar.FIDLocalPagamento       := tituloPrincipal.FIDLocalPagamento;
+      tituloPagar.FIDTipoStatus           := tituloPrincipal.FIDTipoStatus;
+      tituloPagar.FIDCentroCusto          := tituloPrincipal.FIDCentroCusto;
+      tituloPagar.FIDNotaFiscalEntrada    := tituloPrincipal.FIDNotaFiscalEntrada;
+      tituloPagar.FIDContaContabilDebito  := tituloPrincipal.FIDContaContabilDebito;
+      tituloPagar.FIDContaContabilCredito := tituloPrincipal.FIDContaContabilCredito;
+      tituloPagar.Fdescricao              := tituloPrincipal.Fdescricao;
+      tituloPagar.Fobservacao             := tituloPrincipal.Fobservacao;
+
+      tituloPagar.FdataRegistro           := Now;
+      tituloPagar.FdataEmissao            := tituloPrincipal.FdataEmissao;
+      tituloPagar.FdataUltimaAtualizacao  := Now;
+
+
+      tituloPagar.FprevisaoCartorio       := tituloPrincipal.FprevisaoCartorio;
+      tituloPagar.FdataProtocolo          := tituloPrincipal.FdataProtocolo;
+
+
+      tituloPagar.FvalorNominal           := pValor;
+      tituloPagar.FdataVencimento         := pVcto;
+      tituloPagar.Fparcela                := pParcela;
+    //  tituloPagar.FregistroProvisao       //:= //o DAO CUIDAO DISSO
+      tituloPagar.FnumeroDocumento        := pDoc;
+
+
+      tituloPagar.Fcontrato               := tituloPrincipal.Fcontrato;
+      tituloPagar.FcodigoBarras           := tituloPrincipal.FcodigoBarras;
+      tituloPagar.Fcarteira               := tituloPrincipal.Fcarteira;
+      tituloPagar.Fmoeda                  := tituloPrincipal.Fmoeda;
+
+      tituloPagar.listaHistorico          := tituloPrincipal.listaHistorico;
+      tituloPagar.listaCustos             := tituloPrincipal.listaCustos;
+
+
+     tituloParcelado                                := TTituloPagarParceladoModel.Create;
+     tituloParcelado.FTituloPagar                   := tituloPagar;
+
+
+
+
+  Result := tituloParcelado;
+
+end;
+
+
+
+procedure TfrmTituloPagarParcelado.btnConfirmarClick(Sender: TObject);
+var
+ J,  I: Integer;
+  aux : string;
+  tituloParcelado : TTituloPagarParceladoModel;
+  titulo : TTituloPagarModel;
+  collTitulos : TObjectList<TTituloPagarParceladoModel>;
+  pValor :Currency;
+ pDoc, pParcela :string;
+  pVcto :TDateTime;
+begin
+I :=0;
+ sucesso := False;
+ //criar a colecao de TP com base nas infs do DBGRID
+    collTitulos := TObjectList<TTituloPagarParceladoModel>.Create;
+    collTitulos.Clear;
+
+    fdmTPParcelado.Open;
+    fdmTPParcelado.First;
+
+   while not fdmTPParcelado.Eof do    begin
+
+     pValor   := fdmTPParcelado.FieldByName('VALOR').AsCurrency;
+     pParcela := fdmTPParcelado.FieldByName('PARC').AsString;
+     pVcto    := fdmTPParcelado.FieldByName('DATA_VENCIMENTO').AsDateTime;
+     pDoc     := fdmTPParcelado.FieldByName('DOCUMENTO').AsString;
+
+     tituloParcelado := TTituloPagarParceladoModel.Create;
+     tituloParcelado := clonaParcela(pValor, pDoc, pParcela, pVcto, tituloMain);
+
+
+      AdicionarTP(collTitulos, tituloParcelado);
+      fdmTPParcelado.Next;
+
+  end;
+
+  if collTitulos.Count > 0 then
+  begin
+
+   if TTituloPagarDAO.InsertParcelados(collTitulos) then begin
+
+    sucesso := True;
+
+   end;
+
+  end
+  else
+  begin
+    ShowMessage('Não foi possível salvar provisão. A lista está vazia.');
+
+end;
+
+ PostMessage(Self.Handle, WM_CLOSE, 0, 0);
+
+end;
+
+
+procedure TfrmTituloPagarParcelado.liberaBtnProvisao;
+begin
+
+  btnConfirmar.Enabled := False;
+
+  if valorDespesa > 0 then
+  begin
+
+    if edtValorDespesa.Value = obterTotalParcelado then
+    begin
+      btnConfirmar.Enabled := True;
+    end;
+  end;
+
+
+
+end;
+procedure TfrmTituloPagarParcelado.btnGerarParcsClick(Sender: TObject);
+var
+titulo : TTituloPagarModel;
+ nDoc, I: Integer;
+doc,  parc :string;
+begin
+
+ dmConexao.conectarBanco;
+ //montar uma colecao de X TP
+  limparTable;
+  parc := '1 / '+intTostr(parcela);
+  tituloMain.FnumeroDocumento :=  dmConexao.obterIdentificador((edtDocPrincipal.Text + '0' + '1'), pIDorganizacao, 'TP' );
+
+  fdmTPParcelado.Open;
+  fdmTPParcelado.InsertRecord([tituloMain.FnumeroDocumento,(edtValorDespesa.Value / parcela), parc, tituloMain.FID, uUtil.TFormat.proximoDiaUtil(tituloMain.FdataVencimento)]);
+
+  for I := 2 to parcela do begin
+
+     parc := intTostr(I) + ' / ' +intTostr(parcela);
+     doc := edtDocPrincipal.Text + '0' + intTostr(I);
+     doc := IntToStr((StrToInt(tituloMain.FnumeroDocumento)+ (I-1)));
+     doc := dmConexao.obterIdentificador(doc, pIDorganizacao, 'TP');
+
+
+     titulo                         := TTituloPagarModel.Create;
+     titulo.FID                     := dmConexao.obterNewID;
+     titulo.FnumeroDocumento        := doc;
+     titulo.FIDHistorico            := tituloMain.FIDHistorico;
+     titulo.Fdescricao              := tituloMain.Fdescricao;
+     titulo.FIDTituloPagarAnterior  := tituloMain.FID;
+     titulo.FTituloPagar := tituloMain;
+     titulo.FvalorNominal           := (edtValorDespesa.Value / parcela);
+     titulo.FdataVencimento         := uUtil.TFormat.proximoDiaUtil(IncMonth(tituloMain.FdataVencimento, (I-1)));
+
+     fdmTPParcelado.Open;
+     fdmTPParcelado.InsertRecord([titulo.FnumeroDocumento,(edtValorDespesa.Value / parcela), parc, titulo.FID, titulo.FdataVencimento]);
+
+  end;
+
+
+  edtTotalParcelado.Value := obterTotalParcelado;
+  valorDespesa := obterTotalParcelado;
+  liberaBtnProvisao;
+
+
+
+end;
+
+procedure TfrmTituloPagarParcelado.btnLimparClick(Sender: TObject);
+begin
+limparTable;
+  edtTotalParcelado.Value := obterTotalParcelado;
+end;
+
+procedure TfrmTituloPagarParcelado.btnSairClick(Sender: TObject);
+begin
+ limparTable;
+  edtTotalParcelado.Value := obterTotalParcelado;
+ PostMessage(Self.Handle, WM_CLOSE, 0, 0);
+end;
+
+
+constructor TfrmTituloPagarParcelado.Create(AOwner: TComponent; var pTitulo: TTituloPagarModel);
+begin
+  inherited Create(AOwner);
+  pIDorganizacao := uUtil.TOrgAtual.getId;
+  // createTable;
+   limparTable;
+
+   parcela                      := StrToInt(pTitulo.Fparcela);
+   edtQtdParcelas.Text          := pTitulo.Fparcela;
+   edtValorTP.Value             := pTitulo.FvalorNominal;
+   edtValorDespesa.Value        := (parcela * pTitulo.FvalorNominal);
+   edtFornecedor.Text           := pTitulo.FCedente.Fnome;
+   edtDescricao.Text            := pTitulo.FHistorico.FDescricao + ' ' + pTitulo.Fdescricao;
+   edtDocPrincipal.Text         := pTitulo.FnumeroDocumento;
+   valorDespesa := 0;
+
+   fdmTPParcelado.Open;
+   fdmTPParcelado.InsertRecord([pTitulo.FnumeroDocumento,pTitulo.FvalorNominal, pTitulo.Fparcela, pTitulo.FID, pTitulo.FdataVencimento ]);
+
+   tituloMain := pTitulo;
+   sucesso := False; //só fica true quando insere a coleção das parcelas
+
+end;
+
+procedure TfrmTituloPagarParcelado.createTable;
+begin
+
+    fdmTPParcelado.FieldDefs.Add('DOCUMENTO', ftString, 50, false);
+    fdmTPParcelado.FieldDefs.Add('VALOR', ftCurrency, 0, false);
+    fdmTPParcelado.FieldDefs.Add('PARC', ftString, 20, false);
+    fdmTPParcelado.FieldDefs.Add('ID', ftString, 36, false);
+    fdmTPParcelado.FieldDefs.Add('DATA_VENCIMENTO', ftDate, 0, false);
+
+
+
+
+    fdmTPParcelado.CreateDataSet;
+
+
+
+end;
+
+
+procedure TfrmTituloPagarParcelado.edtQtdParcelasChange(Sender: TObject);
+begin
+  parcela := StrToInt(edtQtdParcelas.Text);
+
+if parcela > 0  then begin
+
+  edtValorDespesa.Value := edtValorTP.Value * parcela;
+
+end else begin ShowMessage('A parcela não pode ser menor que 1'); edtQtdParcelas.Text := '1';  end;
+end;
+
+procedure TfrmTituloPagarParcelado.FormClose(Sender: TObject;
+  var Action: TCloseAction);
+begin
+Action :=caFree;
+end;
+
+procedure TfrmTituloPagarParcelado.FormCreate(Sender: TObject);
+begin
+
+  if not Assigned(dmConexao) then begin
+     dmConexao := TdmConexao.Create(Self);
+  end;
+
+  dmConexao.conectarBanco;
+ btnConfirmar.Enabled := False;
+end;
+
+
+
+function TfrmTituloPagarParcelado.getSucesso: Boolean;
+begin
+Result := sucesso;
+end;
+
+procedure TfrmTituloPagarParcelado.gridTPCellClick(Column: TColumn);
+begin
+  edtTotalParcelado.Value := obterTotalParcelado;
+  liberaBtnProvisao;
+end;
+
+procedure TfrmTituloPagarParcelado.limparTable;
+begin
+  fdmTPParcelado.Open;
+  fdmTPParcelado.First;
+  while not fdmTPParcelado.Eof do
+  begin
+    fdmTPParcelado.Delete;
+    fdmTPParcelado.Next;
+  end;
+    gridTP.DataSource.DataSet.Close;
+    gridTP.Refresh;
+    liberaBtnProvisao;
+
+end;
+
+function TfrmTituloPagarParcelado.obterTotalParcelado: Currency;
+var
+  total: Currency;
+  I: Integer;
+begin
+  total := 0;
+  fdmTPParcelado.Open;
+  fdmTPParcelado.First;
+  while not fdmTPParcelado.Eof do  begin
+
+    total := total + fdmTPParcelado.FieldByName('VALOR').AsCurrency;
+    fdmTPParcelado.Next;
+  end;
+  Result := total;
+end;
+
+end.

@@ -1,0 +1,36 @@
+Data/Hora.......: 15/03/2021 21:47:34
+Mensagem........: Integer overflow
+Classe Exceção..: EIntOverflow
+Formulário......: FrmPrincipal
+Unit............: cxPC
+Controle Visual.: btnLogin
+Usuario.........: Ranan Sousa
+Versão Windows..: Windows 10
+----------------------------------------------------------------------
+Data/Hora.......: 15/03/2021 23:38:21
+Mensagem........: Integer overflow
+Classe Exceção..: EIntOverflow
+Formulário......: FrmPrincipal
+Unit............: cxPC
+Controle Visual.: btnLogin
+Usuario.........: Ranan Sousa
+Versão Windows..: Windows 10
+----------------------------------------------------------------------
+Data/Hora.......: 16/03/2021 16:06:08
+Mensagem........: Access violation at address 0040BF5E in module 'Finance.exe'. Write of address 006F003B
+Classe Exceção..: EAccessViolation
+Formulário......: FrmPrincipal
+Unit............: dxBar
+Controle Visual.: cbxUsuario
+Usuario.........: Ranan Sousa
+Versão Windows..: Windows 10
+----------------------------------------------------------------------
+Data/Hora.......: 16/03/2021 16:06:13
+Mensagem........: Access violation at address 0040BF5E in module 'Finance.exe'. Write of address 006F003B
+Classe Exceção..: EAccessViolation
+Formulário......: FrmPrincipal
+Unit............: dxBar
+Controle Visual.: cbxUsuario
+Usuario.........: Ranan Sousa
+Versão Windows..: Windows 10
+----------------------------------------------------------------------
