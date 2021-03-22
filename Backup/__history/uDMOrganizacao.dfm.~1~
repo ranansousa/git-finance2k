@@ -1,0 +1,5 @@
+object dmOrganizacao: TdmOrganizacao
+  OldCreateOrder = False
+  Height = 150
+  Width = 413
+end

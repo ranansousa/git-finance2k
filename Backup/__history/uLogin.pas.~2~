@@ -1,0 +1,50 @@
+unit uLogin;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons, Vcl.ExtCtrls,
+  uBackup;
+
+type
+  TfrmLogin = class(TForm)
+    edtUsuario: TLabeledEdit;
+    BitBtn1: TBitBtn;
+    procedure BitBtn1Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmLogin: TfrmLogin;
+
+implementation
+
+{$R *.dfm}
+
+procedure TfrmLogin.BitBtn1Click(Sender: TObject);
+begin
+
+ try
+
+  if not(Assigned(FrmBackup)) then begin
+        FrmBackup := TFrmBackup.Create(Self);
+  end;
+  if not (edtUsuario.Text = '')  then begin
+
+        FrmBackup.ShowModal;
+        FreeAndNil(FrmBackup);
+    end else begin
+      ShowMessage('Não foi possível abrir o sistema' + sLineBreak + 'Contate o Administrador!');
+    end;
+  except on e: Exception do
+    ShowMessage(e.Message + sLineBreak + 'Contate o administrador!');
+  end;
+
+
+end;
+
+end.

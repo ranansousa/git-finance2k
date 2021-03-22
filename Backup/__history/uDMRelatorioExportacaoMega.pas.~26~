@@ -1,0 +1,78 @@
+unit uDMRelatorioExportacaoMega;
+
+interface
+
+uses
+  System.SysUtils, ShellApi,System.Classes, frxClass, frxDBSet,
+  Winapi.Windows, Winapi.Messages, Vcl.Forms,System.Variants,
+  udmConexao, uDMOrganizacao,uDMExportaFinance, FireDAC.Stan.Intf,
+  FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
+  FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
+  Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client;
+
+type
+  TdmRelExportacaoMega = class(TDataModule)
+    frxRelatorioExportacaoMega: TfrxReport;
+    frxDBTitulos: TfrxDBDataset;
+    frxDBHistoricos: TfrxDBDataset;
+    frxDBCentroCusto: TfrxDBDataset;
+  private
+    { Private declarations }
+
+  public
+    { Public declarations }
+    function retornarCaminhoRelatorio: string;
+    procedure inicializarVariaveisRelatorio;
+    procedure exibirRelatorioExportacao;
+  end;
+
+var
+  dmRelExportacaoMega: TdmRelExportacaoMega;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+
+{$R *.dfm}
+
+function TdmRelExportacaoMega.retornarCaminhoRelatorio: string;
+begin
+  Result := ExtractFilePath(Application.ExeName) + 'relExportacaoMegaContabil.fr3';
+end;
+
+procedure TdmRelExportacaoMega.inicializarVariaveisRelatorio;
+var
+tipo:String;
+begin
+tipo := 'TPPROV';
+  with frxRelatorioExportacaoMega.Variables do begin
+    Variables['strRazaoSocial'] := QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('RAZAO_SOCIAL').AsString);
+    Variables['strCNPJ'       ] := QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('CNPJ'        ).AsString);
+    Variables['strEndereco'   ] := QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('ENDERECO'    ).AsString);
+    Variables['strCEP'        ] := QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('CEP'         ).AsString);
+    Variables['strCidade'     ] := QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('CIDADE'      ).AsString);
+    Variables['strUF'         ] := QuotedStr(dmOrganizacao.qryDadosEmpresa.FieldByName('UF'          ).AsString);
+    Variables['strTipo'       ] := QuotedStr(tipo);
+
+
+   end;
+
+end;
+
+procedure TdmRelExportacaoMega.exibirRelatorioExportacao;
+begin
+
+  frxRelatorioExportacaoMega.Clear;
+  if not (frxRelatorioExportacaoMega.LoadFromFile(retornarCaminhoRelatorio)) then begin
+    //Mensagem não encontrou o arquivo do relatorio. Fazer try p levantar erros
+
+  end else begin
+    inicializarVariaveisRelatorio;
+    frxRelatorioExportacaoMega.OldStyleProgress := True;
+    frxRelatorioExportacaoMega.ShowProgress     := True;
+    frxRelatorioExportacaoMega.ShowReport;
+  end;
+end;
+
+
+end.

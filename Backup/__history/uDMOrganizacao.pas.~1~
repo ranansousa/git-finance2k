@@ -1,0 +1,25 @@
+unit uDMOrganizacao;
+
+interface
+
+uses
+  System.SysUtils, System.Classes;
+
+type
+  TdmOrganizacao = class(TDataModule)
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  dmOrganizacao: TdmOrganizacao;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+
+{$R *.dfm}
+
+end.

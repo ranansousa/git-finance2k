@@ -1,0 +1,110 @@
+unit uDMMegaContabil;
+
+interface
+
+uses
+  System.SysUtils, System.Classes,
+  udmConexao, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
+  FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
+  FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet,
+  FireDAC.Comp.Client;
+
+type
+  TdmMegaContabil = class(TDataModule)
+    qryDadosEmpresaMega: TFDQuery;
+    qryExistLote: TFDQuery;
+    qryGenIdClotes: TFDQuery;
+    qryVerificaFechamento: TFDQuery;
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  function  carregarDadosEmpresaMega(pCnpj :string) : Boolean;
+  function verificaSeExistLote(pIDEmpresa,pLote  :Integer; pAno :String) : Boolean;
+ function verificaFechamento(pIDEmpresa :Integer; pDataInicial,pDataFinal :String) : String;
+  function lotesRestritos(pLote :Integer) : Boolean;
+  function retornarIDPorTabela(pTabela :String) : Integer;
+  end;
+
+
+  var
+  dmMegaContabil: TdmMegaContabil;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+
+{$R *.dfm}
+
+ function TdmMegaContabil.verificaFechamento(pIDEmpresa :Integer; pDataInicial,pDataFinal :String) : String;
+ begin
+    qryVerificaFechamento.Close;
+    qryVerificaFechamento.Connection := dmConexao.ConnMega;
+    qryVerificaFechamento.ParamByName('pIDEmpresa').AsInteger :=pIDEmpresa ;
+    qryVerificaFechamento.ParamByName(':pDataInicial').AsDateTime:= StrToDate(pDataInicial);
+    qryVerificaFechamento.ParamByName(':pDataFinal').AsDateTime:= StrToDate(pDataFinal);
+
+    qryVerificaFechamento.Open;
+
+       Result := not qryVerificaFechamento.IsEmpty;
+
+ end;
+
+ function TdmMegaContabil.lotesRestritos(pLote :Integer) : Boolean;
+//verifica se um lote está entre os lotes restritos. Retorne TRUE caso esteja.
+// restritos:  9999 / 9901 até 9912 / 901 até 912 / 9001 até 9012
+   var
+   rst : Boolean;
+  begin
+   rst := false;
+
+   if (pLote  > 900 ) then begin
+      rst := true;
+   end;
+
+   Result := rst;
+   end;
+
+
+   function TdmMegaContabil.retornarIDPorTabela(pTabela :String) : Integer;
+
+   var
+   comando :string;
+   begin
+
+//   select gen_id(gen_id_clotes,1) from rdb$database
+    comando :=  'SELECT GEN_ID(gen_id_'+ pTabela + ',1) FROM RDB$DATABASE';
+
+    qryGenIdClotes.Close;
+    qryGenIdClotes.Connection := dmConexao.ConnMega;
+    qryGenIdClotes.SQL.Clear;
+    qryGenIdClotes.SQL.Add( comando );
+    qryGenIdClotes.Open;
+    Result := qryGenIdClotes.Fields[0].AsInteger;
+
+   end;
+
+
+ function TdmMegaContabil.VerificaSeExistLote(pIDEmpresa,pLote :Integer; pAno :String) : Boolean;
+ begin
+    qryExistLote.Close;
+    qryExistLote.Connection := dmConexao.ConnMega;
+    qryExistLote.ParamByName('pLote').AsInteger :=pLote ;
+    qryExistLote.ParamByName('pIDEmpresa').AsInteger :=pIDEmpresa ;
+    qryExistLote.ParamByName('pAno').AsString  :=pAno ;
+    qryExistLote.Open;
+
+       Result := not qryExistLote.IsEmpty;
+ end;
+
+
+function TdmMegaContabil.carregarDadosEmpresaMega(pCnpj :string) : Boolean;
+begin
+    qryDadosEmpresaMega.Close;
+    qryDadosEmpresaMega.ParamByName('pCnpj').AsString :=pCnpj ;
+    qryDadosEmpresaMega.Open;
+    Result := not     qryDadosEmpresaMega.IsEmpty;
+end;
+
+
+end.

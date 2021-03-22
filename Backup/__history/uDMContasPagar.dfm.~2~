@@ -1,0 +1,10 @@
+object DataModule1: TDataModule1
+  OldCreateOrder = False
+  Height = 150
+  Width = 215
+  object DSPreencheGridMain: TDataSource
+    AutoEdit = False
+    Left = 87
+    Top = 48
+  end
+end
